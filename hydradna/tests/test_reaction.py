@@ -46,8 +46,30 @@ def test_reaction():
     f2 = Feature('f1', 'type')
     f2.end = 19
     frag3.add_feature(len(frag3)-10, len(frag3)-1, f2)
-    fused = Reaction.cyclic_assembly(fragments)
-    print fused[0].get_feature_ranges()
+    fused = Reaction.cyclic_assembly(fragments)[0]
+
+
+    def s(seq):
+        return Sequence(sequence=seq)
+
+    def rans(length):
+        return s(''.join([random.choice('AGTC') for x in range(length)]))
+
+    h1 = rans(20)
+    h2 = rans(20)
+    h3 = rans(20)
+    f1 = rans(20)
+    f2 = rans(20)
+    f3 = rans(20)
+
+    fg1 = h1 + f1 + h2
+    fg2 = h2 + f2 + h3
+    fg3 = h3 + f3 + h1
+    fused = Reaction.cyclic_assembly([fg1, fg2, fg3])
+
+    expected = h1 + f1 + h2 + f2 + h3 + f3
+
+    assert(len(fused[0].search_all(expected)) == 1)
 
 
     # perumations of all fragments
