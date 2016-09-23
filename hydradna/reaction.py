@@ -109,22 +109,27 @@ class Reaction(object):
         return products, matches
 
     @staticmethod
-    def pcr_analysis(template, p1, p2, min_bases):
-        products, matches = Reaction._pcr(template, p1, p2, min_bases)
-        report = ''
-
-
-    @staticmethod
     def pcr(template, p1, p2, min_bases=MIN_BASES):
         products, matches = Reaction._pcr(template, p1, p2, min_bases)
         # rename products
         for p, m in zip(products, matches):
-            print m
             p.name = '{} PCR[{}, {}]'.format(template.name, m[0]['pos'], len(template) - m[1]['pos'])
-            p.description = """
-                            PCR Product:\n
-                            Input:\n
-                            \tfwd_primer: {} {}\n""".format(str(p1), str(m[0]))
+            report = """*** PCR ***
+                        INPUTS:
+                        Template: {template}
+                        P1: {primer1} {match1}
+                        P2: {primer2} {match2}
+
+                        OUTPUS:
+                        Products: {numproducts}""".format(**dict(
+                template=template.name,
+                primer1=str(p1),
+                match1=str(m[0]),
+                primer2=str(p2),
+                match2=str(m[1]),
+                numproducts=len(products)
+            ))
+            p.description = report
         return products
 
     @staticmethod
