@@ -1,6 +1,6 @@
 from nose.tools import *
 
-from hydradna import *
+from hydradna.hydradna import *
 
 
 

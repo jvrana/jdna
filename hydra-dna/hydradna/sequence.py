@@ -1,8 +1,6 @@
-from hydradna.models.linkedset import *
-from hydradna.models.nucleotide import *
-from hydradna.utilities import Utilities
 from collections import defaultdict
-
+from hydradna.nucleotide import Nucleotide
+from hydradna.linkedset import LinkedSet
 
 class Sequence(LinkedSet):
 

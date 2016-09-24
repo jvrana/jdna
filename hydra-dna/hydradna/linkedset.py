@@ -1,6 +1,4 @@
-from copy import deepcopy
-from hydradna.models.link import *
-
+from hydradna.link import Link
 
 class LinkedSet(object):
 

@@ -1,7 +1,9 @@
 from hydradna_config import *
 import itertools
-from hydradna.models import *
 import warnings
+from copy import deepcopy
+from hydradna.utilities import Utilities
+from hydradna.sequence import Sequence
 
 
 class Reaction(object):

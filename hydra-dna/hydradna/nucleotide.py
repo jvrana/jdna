@@ -1,5 +1,4 @@
-from hydradna.models.linkedset import *
-from hydradna.models.feature import *
+from hydradna.link import Link
 from itertools import combinations
 
 class Nucleotide(Link):

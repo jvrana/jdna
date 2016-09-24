@@ -1,5 +1,7 @@
-from hydradna import *
 import re
+from hydradna.feature import Feature
+from hydradna.sequence import Sequence
+
 class Convert:
 
     @staticmethod
