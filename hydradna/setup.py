@@ -15,9 +15,9 @@ config = {
     'url': '',
     'download_url': '',
     'author_email': 'justin.vrana@gmail.com',
-    'version': '0.0.0',
+    'version': '0.1.0',
     'install_requires': [],
-    'packages': ['hydradna'],
+    'packages': ['.'],
     'scripts': [],
     'name': 'hydradna',
     'license': 'Copyright University of Washington'
