@@ -52,9 +52,9 @@ class Reaction(object):
         return anneal
 
     @staticmethod
-    def polymerase(template, primer, direction='forward'):
+    def polymerase(template, primer, min_bases, direction='forward'):
         products = []
-        ann = Reaction.anneal_primer(template, primer)
+        ann = Reaction.anneal_primer(template, primer, min_bases=min_bases)
         matches = None
         if direction=='forward':
             matches = ann['F']
@@ -87,104 +87,50 @@ class Reaction(object):
                         overhang.fuse(new_product)
                     new_product.reverse_complement()
                 products.append(new_product)
-        return products
+        return products, matches
 
     @staticmethod
-    def pcr(template, p1, p2):
+    def _pcr(template, p1, p2, min_bases):
         def _polymerase_helper(template, primers, direction='forward'):
             x = []
+            y = []
             for p in primers:
-                x += Reaction.polymerase(template, p, direction=direction)
-            return x
+                products, matches = Reaction.polymerase(template, p, min_bases, direction=direction)
+                x += products
+                y += matches
+            return zip(x, y)
 
         products = []
-        fwd_products = _polymerase_helper(template, [p1, p2], direction='forward')
-        for fwd_product in fwd_products:
-            rev_products = _polymerase_helper(fwd_product, [p1, p2], direction='reverse')
-            products += rev_products
+        matches = []
+        for fwd_product, fwd_match in _polymerase_helper(template, [p1, p2], direction='forward'):
+            for product, rev_match in _polymerase_helper(fwd_product, [p1, p2], direction='reverse'):
+                products.append(product)
+                matches.append((fwd_match, rev_match))
+        return products, matches
+
+    @staticmethod
+    def pcr(template, p1, p2, min_bases=MIN_BASES):
+        products, matches = Reaction._pcr(template, p1, p2, min_bases)
+        # rename products
+        for p, m in zip(products, matches):
+            p.name = '{} PCR[{}, {}]'.format(template.name, m[0]['pos'], len(template) - m[1]['pos'])
+            report = """*** PCR ***
+                        INPUTS:
+                        Template: {template}
+                        P1: {primer1} {match1}
+                        P2: {primer2} {match2}
+
+                        OUTPUS:
+                        Products: {numproducts}""".format(**dict(
+                template=template.name,
+                primer1=str(p1),
+                match1=str(m[0]),
+                primer2=str(p2),
+                match2=str(m[1]),
+                numproducts=len(products)
+            ))
+            p.description = report
         return products
-
-    # @staticmethod
-    # def pcr_analysis(template, p1, p2, min_bases=MIN_BASES):
-    #     products, fwd_report, rev_report = Reaction._pcr(template, p1, p2, min_bases=min_bases)
-    #     primer_dict = {p1: 1, p2: 2}
-    #     print products
-    #     print "***  PCR  ***"
-    #     print "-" * 10
-    #     print "INPUT:"
-    #     print ">Template length: {}".format(len(template))
-    #     print ">Primer 1: {}".format(p1)
-    #     print ">Primer 2: {}".format(p2)
-    #     print "-"*10
-    #     print "OUTPUT:"
-    #     print "Num Products: {}".format(len(products))
-    #     for i, z in enumerate(zip(products, fwd_report, rev_report)):
-    #         p, f, r = z
-    #         print
-    #         print "\tProduct {}".format(i)
-    #         print "\t Length: {}".format(len(p))
-    #         print "\t\tTm_anneal\tTm_whole\tAnnealLen\t5'Pos"
-    #         print "\tF_Bind (p{}):".format(primer_dict[f['primer']]), \
-    #             '\t\t'.join([str(f[x]) for x in \
-    #                          ['tm_anneal', 'tm_whole', 'anneal_length', 'anneal_pos']])
-    #         print "\tR_Bind (p{}):".format(primer_dict[r['primer']]), \
-    #             '\t\t'.join([str(r[x]) for x in \
-    #                          ['tm_anneal', 'tm_whole', 'anneal_length', 'anneal_pos']])
-
-
-    # @staticmethod
-    # def pcr(template, p1, p2, min_bases=MIN_BASES):
-    #
-    #     # Annealing locations for p1
-    #     ann1 = Reaction.anneal_primer(template, p1, min_bases=min_bases)
-    #
-    #     # Annealing locations for p2
-    #     ann2 = Reaction.anneal_primer(template, p2, min_bases=min_bases)
-    #
-    #     # Group fwd and rev matches
-    #     fwd_matches = ann1['F'] + ann2['F']
-    #     rev_matches = ann1['R'] + ann2['R']
-    #
-    #     # All possible paired matches
-    #     pairs = itertools.product(fwd_matches, rev_matches)
-    #     print list(pairs)
-    #     pairs = itertools.product(fwd_matches, rev_matches)
-    #     products = []
-    #     for fwd, rev in pairs:
-    #         # Copy the template
-    #         template_copy = deepcopy(template)
-    #
-    #         # Find the start binding position
-    #         s = fwd['pos'] - fwd['len']
-    #         start = template_copy.get()[s]
-    #
-    #         # Cut the start
-    #         start.cut_prev()
-    #
-    #         # Simulate the polymerase
-    #         fwd_product =
-    #
-    #         # Find binding positions on the template
-    #         s = fwd['pos'] - fwd['len']
-    #         e = len(template_copy) - rev['pos'] + rev['len'] - 1
-    #         start = template_copy.get()[s]
-    #         end = template_copy.get()[e]
-    #
-    #         # Move forward from start to end
-    #         # Simulate the polymerase
-    #         postart.fwd(stop_link=end)
-    #
-    #         start.cut_prev()
-    #         end.cut_next()
-    #         product = Sequence(first_nt=start)
-    #
-    #         # Fuse the overhangs
-    #         overhang1 = p1.cut(len(p1) - fwd['len'])[0]
-    #         overhang2 = p2.cut(len(p2) - rev['len'])[0]
-    #         product.insert(overhang1, 0)
-    #         product.insert(overhang2.reverse_complement(), len(product))
-    #         products.append(product)
-    #     return products
 
     @staticmethod
     def assembly_cycles(fragments, max_homology, min_homology):
@@ -224,7 +170,7 @@ class Reaction(object):
             # Copy fragments in cycle
             cy = deepcopy(cy)
 
-            # Pair fragments for assembly
+            # Pair fragments for cyclic assembly
             x1 = cy
             x2 = x1[1:] + x1[:1]
             pairs = zip(x1, x2)
@@ -233,9 +179,28 @@ class Reaction(object):
             for right, left in pairs:
                 match = Reaction.anneal_threeprime(right, left)[0]
                 nt = right.get()[match[0]]
-                nt.cut_prev()
+                p = nt.cut_prev()
                 right.first = nt
 
+                # Fixing homology features
+                homology1 = Sequence(first_nt=p)
+
+                nt = left.get()[len(left) - match[0] - 1]
+                n = nt.cut_next()
+                left.first = nt
+                homology2 = Sequence(first_nt=n)
+
+                # add features for homology1
+                if homology1.first is not None:
+                    if not len(homology1) == len(homology2):
+                        raise Exception("Homologies for assembly are different lengths.")
+
+                for n1 in homology1.get():
+                    for n2 in homology2.get():
+                        n1.copy_features_from(n1)
+
+                # fuse homology to left
+                left.fuse(homology1)
             # Fuse all fragments
             for p in pairs:
                 right, left = p
@@ -243,6 +208,12 @@ class Reaction(object):
 
             products.append(x1[0])
         return products
+
+    @staticmethod
+    def end_homology(left, right):
+        match = Reaction.anneal_threeprime(right, left)[0]
+        nt = right.get()[match[0]]
+        right.cut
 
     @staticmethod
     def tm(seq):

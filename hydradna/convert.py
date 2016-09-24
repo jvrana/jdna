@@ -27,14 +27,14 @@ class Convert:
         for a in data['annotations']:
             # Feature name, type, strand, color
 
-            name, start, end = Convert.parse_feature_name(a['name'])
+            name, span_start, span_end, span_length = Convert.parse_feature_name(a['name'])
             newf = Feature(name, a['type'], strand=a['strand'], color=a['color'])
-            newf.start = start
-            newf.end = end
-
-            start = a['start']
-            end = fix_end(a['end'])
-            seq.add_feature(start, end, newf)
+            start_index = 0
+            if span_start is not None:
+                start_index = int(span_start)
+            seq.add_feature(a['start'], fix_end(a['end']), newf, start_index=start_index)
+            if span_length is not None:
+                newf.length = int(span_length)
         return seq
 
     @staticmethod
@@ -44,6 +44,7 @@ class Convert:
         data['circular'] = seq.is_cyclic()
         data['annotations'] = []
         data['bases'] = str(seq)
+        data['description'] = seq.description
         def add_annotation(f):
             data['annotations'].append(f)
 
@@ -53,15 +54,13 @@ class Convert:
                 end = 0
             return end
 
-        features = seq.get_feature_ranges()
+        features = seq.get_features()
         for f in features:
-            ranges = features[f]
-            if not len(ranges) == 1:
-                raise Exception("Feature cannot be in more than one place.")
-            start, end = ranges[0]
-
+            range, span = features[f]
+            start, end = range
+            span = '[{},{},{}]'.format(span[0], span[1], f.length)
             add_annotation(dict(
-                name=str(f),
+                name=str(f.name) + ' ' + str(span),
                 type=f.type,
                 start=start,
                 end=fix_end(end),
@@ -72,9 +71,8 @@ class Convert:
 
     @staticmethod
     def parse_feature_name(fname):
-        g = re.search('(.+)(\[(\d+)\.\.\.(\d*)\])|(.+)', fname)
-        name, span, start, end, fullname = g.groups()
+        g = re.search('(.+)(\[(\d+),(\d*),(\d*)\])|(.+)', fname)
+        name, span, span_start, span_end, span_length, fullname = g.groups()
         if name is None:
-            start = 0
             name = fullname
-        return name, start, end
+        return name, span_start, span_end, span_length
