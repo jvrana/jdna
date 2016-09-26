@@ -1,0 +1,19 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+
+# Compiled python modules.
+*.pyc
+
+# Setuptools distribution folder.
+/dist/i
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
+/*.egg
