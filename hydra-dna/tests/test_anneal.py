@@ -1,36 +1,34 @@
-from nose.tools import *
-
-from hydradna.hydradna import *
-
+import pytest
+from jdna.core import Sequence
+from jdna.core import Reaction
 
 
 # Anneal
 
-def test_anneal():
-    #test 3' anneal
+def anneal_test(start, end, template):
+    primer_seq = str(template)[start:end]
+    primer1 = Sequence(sequence=str(template)[start:end])
+    ann = Reaction.anneal_threeprime(template, primer1)
+    s = ann[0][0]
+    l = ann[0][1]
+    assert primer_seq == str(template)[s - l:s]
+
+
+def test_3prime_anneal():
+    # test 3' anneal
     start = 10
     end = 30
+    template = Sequence(
+        sequence='ACGCGGTATGTCTGTCTATTGATGTGGTTCTGATGTGCAGTCTGTCTATTGATGTGTGCGTCATGTACGTTCGCGGCGTATATGGGTATGTCTGTCTATTGTTGCTGTGCTGATGTGCGTGTCTGTATTATGCGGCGA')
+    anneal_test(start, end, template)
 
-    template = Sequence(sequence= 'ACGCGGTATGTCTGTCTATTGATGTGGTTCTGATGTGCAGTCTGTCTATTGATGTGTGCGTCATGTACGTTCGCGGCGTATATGGGTATGTCTGTCTATTGTTGCTGTGCTGATGTGCGTGTCTGTATTATGCGGCGA')
-    primer_seq = str(template)[start:end]
-    primer1 = Sequence(sequence=str(template)[start:end])
-    ann = Reaction.anneal_threeprime(template, primer1)
-    s = ann[0][0]
-    l = ann[0][1]
-    assert_equal(primer_seq, str(template)[s-l:s])
-
-
+def test_3primer_anneal_at_end():
     #test 3' anneal
+    template = Sequence(
+        sequence='ACGCGGTATGTCTGTCTATTGATGTGGTTCTGATGTGCAGTCTGTCTATTGATGTGTGCGTCATGTACGTTCGCGGCGTATATGGGTATGTCTGTCTATTGTTGCTGTGCTGATGTGCGTGTCTGTATTATGCGGCGA')
     start = len(template)-25
     end = len(template)
-
-    template = Sequence(sequence= 'ACGCGGTATGTCTGTCTATTGATGTGGTTCTGATGTGCAGTCTGTCTATTGATGTGTGCGTCATGTACGTTCGCGGCGTATATGGGTATGTCTGTCTATTGTTGCTGTGCTGATGTGCGTGTCTGTATTATGCGGCGA')
-    primer_seq = str(template)[start:end]
-    primer1 = Sequence(sequence=str(template)[start:end])
-    ann = Reaction.anneal_threeprime(template, primer1)
-    s = ann[0][0]
-    l = ann[0][1]
-    assert_equal(primer_seq, str(template)[s-l:s])
+    anneal_test(start, end, template)
 
 
     #test 3' anneal

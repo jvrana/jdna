@@ -77,8 +77,8 @@ class Nucleotide(Link):
         return (start.features[feature], end.features[feature])
 
     # def update_feature_span(self, feature, delta_i):
-    #     start = self._feature_rev(feature)[-1]
-    #     for n in start._feature_fwd(feature):
+    #     start = self.feature_rev(feature)[-1]
+    #     for n in start.feature_fwd(feature):
     #         n.features[feature] += delta_i
 
     def _remove_overlapping_features(self):
@@ -111,12 +111,12 @@ class Nucleotide(Link):
                 if f1.name == f2.name and f1_pos + 1 == f2_pos:
                     delset.add((f1, f2, f1_copy))
         for f1, f2, f1_copy in delset:
-            for n in n1._feature_rev(f1):
+            for n in n1.feature_rev(f1):
                 try:
                     n.replace_feature(f1, f1_copy)
                 except:
                     pass
-            for n in n2._feature_fwd(f2):
+            for n in n2.feature_fwd(f2):
                 try:
                     n.replace_feature(f2, f1_copy)
                 except:

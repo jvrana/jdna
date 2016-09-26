@@ -42,8 +42,8 @@ class Sequence(LinkedSet):
         for feature in features_to_nts:
             nt_to_i_list = features_to_nts[feature]
             nts, indices = zip(*nt_to_i_list)
-            first = nts[0]._feature_rev(feature)[-1]
-            last = nts[0]._feature_fwd(feature)[-1]
+            first = nts[0].feature_rev(feature)[-1]
+            last = nts[0].feature_fwd(feature)[-1]
             nt_to_i = dict(zip(self.get(), range(len(self))))
             feature_range = (first.features[feature], last.features[feature])
             pos_ranges = (nt_to_i[first], nt_to_i[last])

@@ -9,18 +9,22 @@ try:
 except ImportError:
 	from distutils.command.build_py import build_py
 
-config = {
-    'description': 'hydradna',
-    'author': 'Justin Vrana',
-    'url': '',
-    'download_url': '',
-    'author_email': 'justin.vrana@gmail.com',
-    'version': '0.1.0',
-    'install_requires': [],
-    'packages': ['hydradna'],
-    'scripts': [],
-    'name': 'hydradna',
-    'license': 'Copyright University of Washington'
-}
 
-setup(**config)
+def readme():
+    with open('README.rst') as f:
+        return f.read()
+
+
+setup(
+    name='jdna',
+    version='0.1',
+    packages=['jdna'],
+    url='https://github.com/jvrana/jdna',
+    license='MIT',
+    author='Justin Vrana',
+    author_email='justin.vrana@gmail.com',
+    description='A(nother) pythonic DNA manipulator',
+    long_description=readme(),
+    keywords='dna biology cloning',
+    tests_require=['pytest'],
+)

@@ -1,8 +1,8 @@
-from itertools import combinations
 from collections import defaultdict
 import itertools
 import warnings
-from copy import deepcopy
+from copy import copy, deepcopy
+import random
 
 # Default values
 MIN_BASES = 13
@@ -174,6 +174,10 @@ class Link(object):
     def equivalent(self, other):
         return self.data == other.data
 
+    def __copy__(self):
+        copied = Link(self.data)
+        return copied
+
     def __repr__(self):
         return str(self)
 
@@ -181,7 +185,7 @@ class Link(object):
         return str(self.data)
 
 
-class LinkedSet(object):
+class DoubleLinkedList(object):
 
     def __init__(self, first=None, data_sequence=None):
         if data_sequence is not None:
@@ -235,7 +239,7 @@ class LinkedSet(object):
         if len(self) in i and cut_prev:
             i.remove(len(self))
         self._inbounds(i)
-        self_copy = deepcopy(self)
+        self_copy = copy(self)
         all_links = self_copy.get()
         for cut_loc in i:
             link = all_links[cut_loc]
@@ -243,7 +247,7 @@ class LinkedSet(object):
                 link.cut_prev()
             else:
                 link.cut_next()
-        return LinkedSet._group_links(all_links)
+        return DoubleLinkedList._group_links(all_links)
 
     #TODO: Speed up with set
     @staticmethod
@@ -253,17 +257,17 @@ class LinkedSet(object):
             first_link = link.find_first()
             if first_link not in unique_first_links:
                 unique_first_links.append(first_link)
-        return [LinkedSet(first=l) for l in unique_first_links]
+        return [DoubleLinkedList(first=l) for l in unique_first_links]
 
-    def insert(self, linkedset, i, copy_insertion=True):
+    def insert(self, linkedlist, i, copy_insertion=True):
         if i == len(self.get()):
             pass
         else:
             self._inbounds(i)
-        if linkedset.is_cyclic():
+        if linkedlist.is_cyclic():
             raise TypeError("Cannot insert a cyclic sequence")
         if copy_insertion:
-            linkedset = deepcopy(linkedset)
+            linkedlist = copy(linkedlist)
         #TODO: This copies the insertion sequence, you want that?
         if i == len(self.get()):
             loc2 = None
@@ -271,8 +275,8 @@ class LinkedSet(object):
         else:
             loc2 = self.get()[i]
             loc1 = loc2.prev()
-        first = linkedset.get()[0]
-        last = linkedset.get()[-1]
+        first = linkedlist.get()[0]
+        last = linkedlist.get()[-1]
         first.set_prev(loc1)
         last.set_next(loc2)
         if i == 0:  # Special case in which user inserts sequence in front of their sequence; they probably intend to re-index it
@@ -319,9 +323,6 @@ class LinkedSet(object):
             self.reindex(1)
         return self
 
-    def copy(self):
-        return deepcopy(self)
-
     def slice(self, i, j, fwd=True):
         links = self.get()
         start = links[i]
@@ -333,13 +334,25 @@ class LinkedSet(object):
         if sec_links[-1] is stop:
             return sec_links
         else:
-            raise IndexError("Improper indices for linkedset.")
+            raise IndexError("Improper indices for linkedlist.")
+
+    def __copy__(self):
+        copied = DoubleLinkedList(first=Link(''))
+        copied.__dict__.update(self.__dict__)
+        copied.first = copy(self.get_first())
+        curr = copied.first
+        for link in self.get()[1:]:
+            copied_link = copy(link)
+            curr.set_next(copied_link)
+            curr = copied_link
+        if self.is_cyclic():
+            copied.make_cyclic()
+        return copied
 
     def __reversed__(self):
-        l_copy = deepcopy(self)
-        for s in l_copy.get():
+        for s in self.get():
             s.swap()
-        return l_copy
+        return self
 
     def __len__(self):
         return len(self.get())
@@ -355,6 +368,35 @@ class LinkedSet(object):
 
     def __str__(self):
         return ''.join(str(x) for x in self.get())
+
+
+class Feature(object):
+
+    def __init__(self, name, type='misc feature', strand=1, color=None):
+        self.name = name
+        self.type = type
+        self.strand = 1
+        self._length = None
+        if color is None:
+            color = random_color()
+        self.color = color
+
+    def __str__(self):
+        return '{} {}'.format(self.name, self.type)
+
+    def __repr__(self):
+        return str(self)
+
+
+def rgb_to_hex(r, g, b):
+    def clamp(x):
+        return max(0, min(x, 255))
+
+    return "#{0:02x}{1:02x}{2:02x}".format(clamp(r), clamp(g), clamp(b))
+
+def random_color():
+    rgb = [int(random.random()*255) for x in range(3)]
+    return rgb_to_hex(*rgb)
 
 
 class Nucleotide(Link):
@@ -401,11 +443,11 @@ class Nucleotide(Link):
             nxt = super(Nucleotide, self).cut_next()
         return nxt
 
-    def _feature_fwd(self, feature):
+    def feature_fwd(self, feature):
         stop = lambda x: feature not in x.features
         return self._propogate(lambda x: x.next(), stop_criteria=stop)
 
-    def _feature_rev(self, feature):
+    def feature_rev(self, feature):
         stop = lambda x: feature not in x.features
         return self._propogate(lambda x: x.prev(), stop_criteria=stop)
 
@@ -428,18 +470,18 @@ class Nucleotide(Link):
         del self.features[feature]
 
     def get_feature_span(self, feature):
-        start = self._feature_rev(feature)[-1]
-        end = self._feature_fwd(feature)[-1]
+        start = self.feature_rev(feature)[-1]
+        end = self.feature_fwd(feature)[-1]
         return (start.features[feature], end.features[feature])
 
     # def update_feature_span(self, feature, delta_i):
-    #     start = self._feature_rev(feature)[-1]
-    #     for n in start._feature_fwd(feature):
+    #     start = self.feature_rev(feature)[-1]
+    #     for n in start.feature_fwd(feature):
     #         n.features[feature] += delta_i
 
     def _remove_overlapping_features(self):
         # type: () -> Nucleotide
-        feature_pairs = combinations(self.features.keys(), 2)
+        feature_pairs = itertools.combinations(self.features.keys(), 2)
         tobedel = set()
         for f1, f2 in feature_pairs:
             if f1.name == f2.name:
@@ -460,22 +502,22 @@ class Nucleotide(Link):
             for f2 in n2.features:
                 f1_pos = n1.features[f1]
                 f2_pos = n2.features[f2]
-                f1_copy = deepcopy(f1)
+                f1_copy = copy(f1)
                 # same name & consecutive position
                 if f1 is f2:
                     continue
                 if f1.name == f2.name and f1_pos + 1 == f2_pos:
                     delset.add((f1, f2, f1_copy))
         for f1, f2, f1_copy in delset:
-            for n in n1._feature_rev(f1):
+            for n in n1.feature_rev(f1):
                 try:
                     n.replace_feature(f1, f1_copy)
-                except:
+                except KeyError:
                     pass
-            for n in n2._feature_fwd(f2):
+            for n in n2.feature_fwd(f2):
                 try:
                     n.replace_feature(f2, f1_copy)
-                except:
+                except KeyError:
                     pass
 
 
@@ -493,12 +535,12 @@ class Nucleotide(Link):
             # If this feature spans
             if f in x2.features:
                 # Grab the sequences for the split feature
-                frag1 = x1._feature_rev(f)
-                frag2 = x2._feature_fwd(f)
+                frag1 = x1.feature_rev(f)
+                frag2 = x2.feature_fwd(f)
 
                 # Make two copies of the feature
-                f1 = deepcopy(f)
-                f2 = deepcopy(f)
+                f1 = copy(f)
+                f2 = copy(f)
 
                 # Swap original feature for copy
                 for n in frag1:
@@ -506,8 +548,13 @@ class Nucleotide(Link):
                 for n in frag2:
                     n.replace_feature(f, f2)
 
+    def __copy__(self):
+        copied = super(Nucleotide, self).__copy__()
+        copied.features = copy(self.features)
+        return copied
 
-class Sequence(LinkedSet):
+
+class Sequence(DoubleLinkedList):
 
     def __init__(self, first_nt=None, sequence=None, name='unknown'):
         super(Sequence, self).__init__(first=first_nt, data_sequence=sequence)
@@ -538,7 +585,7 @@ class Sequence(LinkedSet):
         features = defaultdict(list)
         for i, x in enumerate(self.get()):
             for f in x.features:
-                features[f].append((x,i))
+                features[f].append((x, i))
         return features
 
     def get_features(self):
@@ -547,8 +594,8 @@ class Sequence(LinkedSet):
         for feature in features_to_nts:
             nt_to_i_list = features_to_nts[feature]
             nts, indices = zip(*nt_to_i_list)
-            first = nts[0]._feature_rev(feature)[-1]
-            last = nts[0]._feature_fwd(feature)[-1]
+            first = nts[0].feature_rev(feature)[-1]
+            last = nts[0].feature_fwd(feature)[-1]
             nt_to_i = dict(zip(self.get(), range(len(self))))
             feature_range = (first.features[feature], last.features[feature])
             pos_ranges = (nt_to_i[first], nt_to_i[last])
@@ -579,8 +626,8 @@ class Sequence(LinkedSet):
                 found.append(feature)
         return found
 
-    def create_feature(self, name, type, start, end):
-        f = Feature(name, type)
+    def create_feature(self, name, feature_type, start, end):
+        f = Feature(name, feature_type)
         self.add_feature(start, end, f)
         return f
 
@@ -610,7 +657,7 @@ class Sequence(LinkedSet):
     def chop_prev(self, i):
         self._chop(i, lambda x: x.cut_prev())
 
-    def chop_prev(self, i):
+    def chop_next(self, i):
         self._chop(i, lambda x: x.cut_next())
 
     def cut(self, i, cut_prev=True):
@@ -625,7 +672,7 @@ class Sequence(LinkedSet):
         return self
 
     def __add__(self, other):
-        return deepcopy(self).fuse(deepcopy(other))
+        return copy(self).fuse(copy(other))
 
     def __repr__(self):
         return str(self)
@@ -665,7 +712,7 @@ class Reaction(object):
 
     @staticmethod
     def anneal_primer(template, primer, min_bases=MIN_BASES):
-        rc_template = deepcopy(template).reverse_complement()
+        rc_template = copy(template).reverse_complement()
         fwd_matches = Reaction.anneal_threeprime(template, primer, min_bases=min_bases)
         # for f in fwd_matches:
         #     primer.cut
@@ -708,7 +755,7 @@ class Reaction(object):
                         overhang.fuse(new_product)
                 elif direction == 'reverse':
                     # If reverse...
-                    new_product = deepcopy(template).reverse_complement().cut(pos)[-1]
+                    new_product = copy(template).reverse_complement().cut(pos)[-1]
                     # Fuse overhang
                     if overhang is not None:
                         overhang.fuse(new_product)
@@ -775,7 +822,7 @@ class Reaction(object):
                    and less_than_max_homology(m) \
                    and complete_match(m)
 
-        fragments += [deepcopy(f).reverse_complement() for f in fragments[1:]]
+        fragments += [copy(f).reverse_complement() for f in fragments[1:]]
         pairs = itertools.product(fragments, fragments[:]) #itertools.permutations(fragments, 2)
         graph = []
         for pair in pairs:
@@ -789,6 +836,7 @@ class Reaction(object):
     # TODO: make a linear assembly
     @staticmethod
     def cyclic_assembly(fragments, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
+
         cycles = Reaction.assembly_cycles(fragments, max_homology=max_homology, min_homology=min_homology)
         if len(cycles) > 1:
             warnings.warn("More than one assembly found.")
@@ -905,7 +953,7 @@ class Utilities:
     def group_ranges(lst):
         pos = (j - i for i, j in enumerate(lst))
         t = 0
-        for i, els in groupby(pos):
+        for i, els in itertools.groupby(pos):
             l = len(list(els))
             el = lst[t]
             t += l

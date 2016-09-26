@@ -479,11 +479,11 @@ class Nucleotide(Link):
                         fused_features.add(f)
 
         for d in del1:
-            for n in n1._feature_rev(d):
+            for n in n1.feature_rev(d):
                 n.features.remove(d)
                 [n.features.add(x) for x in fused_features]
         for d in del2:
-            for n in n2._feature_fwd(d):
+            for n in n2.feature_fwd(d):
                 n.features.remove(d)
                 [n.features.add(x) for x in fused_features]
 
