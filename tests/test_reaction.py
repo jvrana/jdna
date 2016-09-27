@@ -95,56 +95,9 @@ def test_gibsons_with_inversions():
     frag3 = create_product(f3, oh3, oh4)
     frag4 = create_product(f4, oh4, oh1)
     frag3.create_feature('feature', 'type', 0, 10)
-    frag4.create_feature('feature', 'type', len(frag4)-10, len(frag4))
+    frag4.create_feature('feature', 'type', len(frag4)-10, len(frag4)-1)
     fragments = [frag1, frag2.reverse_complement(), frag3, frag4]
     products = Reaction.cyclic_assembly(fragments)
     expected = ''.join([str(x) for x in [oh1, f1, oh2, f2, oh3, f3, oh4, f4]])
     assert len(products[0].search_all(Sequence(sequence=expected))) == 1
-
-
-
-
-
-
-        # # # test pcr analysis
-    # # # Reaction.pcr_analysis(template, f, r)
-    # #
-    # # # Test Gibson
-    # frag1 = Sequence(sequence='AGTCGGCGGATCTATGCTGACTGATGTGTGATGTATGCTTGTGTAGTCGTTGAGTCTGATCTG')
-    # frag2 = Sequence(sequence='TAGTCGTTGAGTCTGATCTGgtcgtagcgcgagcgttgtggcggattctatatatgttgcGGGGAGTGTTCGGTGCGGTGTTATAG')
-    # frag3 = Sequence(sequence='GGGGAGTGTTCGGTGCGGTGTTATAGgtcgtagcgcgagcgatcttcttgtggcggattctatatatgttgcAGTCGGCGGATCTATGCTGA')
-    # frag4 = Sequence(sequence='GGGGAGTGTTCGGTGCGGTGTTATAGgtcgtagcgcgagcgatcttcttgtggcggattctatatatgttgcAGTCGGCGGATCTATGCTGA')
-    #
-    # # Reaction.assembly([frag1, frag2, frag3, frag4])
-    # # Don't forget to deepcopy all the fragments
-    # fragments = [frag1, frag2, frag3]
-    # f1 = Feature('f1', 'type')
-    # frag1.add_feature(0, 30, f1)
-    #
-    # f2 = Feature('f1', 'type')
-    # f2.end = 19
-    # frag3.add_feature(len(frag3)-10, len(frag3)-1, f2)
-    # fused = Reaction.cyclic_assembly(fragments)[0]
-    #
-    #
-    # def s(seq):
-    #     return Sequence(sequence=seq)
-    #
-    # def rans(length):
-    #     return s(''.join([random.choice('AGTC') for x in range(length)]))
-    #
-    # h1 = rans(20)
-    # h2 = rans(20)
-    # h3 = rans(20)
-    # f1 = rans(20)
-    # f2 = rans(20)
-    # f3 = rans(20)
-    #
-    # fg1 = h1 + f1 + h2
-    # fg2 = h2 + f2 + h3
-    # fg3 = h3 + f3 + h1
-    # fused = Reaction.cyclic_assembly([fg1, fg2, fg3])
-    #
-    # expected = h1 + f1 + h2 + f2 + h3 + f3
-    #
-    # assert(len(fused[0].search_all(expected)) == 1)
+    assert len(products[0].get_features()) == 1
