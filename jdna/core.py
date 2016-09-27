@@ -65,13 +65,18 @@ class Link(object):
         self.__assign_prev(None)
         return prev_link
 
+    def break_connections(self):
+        self.set_next(None)
+        self.set_prev(None)
+
     def remove(self):
         next_link = self.next()
         prev_link = self.prev()
         if next_link is not None:
-            next_link.__assign_prev(prev_link)
+            next_link.set_prev(prev_link)
         if prev_link is not None:
-            prev_link.__assign_next(next_link)
+            prev_link.set_next(next_link)
+        self.break_connections()
         return
 
     def swap(self):
@@ -175,8 +180,12 @@ class Link(object):
         return self.data == other.data
 
     def __copy__(self):
-        copied = Link(self.data)
+        copied = type(self)(self.data)
         return copied
+
+    def __deepcopy__(self, memo):
+        raise NotImplementedError("copy.deepcopy not implemented with class"\
+                "{}. Use copy.copy instead.".format(self.__class__.__name__))
 
     def __repr__(self):
         return str(self)
@@ -187,16 +196,16 @@ class Link(object):
 
 class DoubleLinkedList(object):
 
-    def __init__(self, first=None, data_sequence=None):
-        if data_sequence is not None:
-            self.initialize(data_sequence)
+    def __init__(self, first=None, sequence=None):
+        if sequence is not None:
+            self.initialize(sequence)
         elif first is not None:
             self.first = first
 
-    def initialize(self, data_sequence):
-        self.first = Link(data_sequence[0])
+    def initialize(self, sequence):
+        self.first = Link(sequence[0])
         current = self.first
-        for d in data_sequence[1:]:
+        for d in sequence[1:]:
             new = Link(d)
             current.set_next(new)
             current = new
@@ -207,6 +216,9 @@ class DoubleLinkedList(object):
         first = self.first.find_first()
         self.first = first
         return self.first
+
+    def set_first(self, link):
+        self.first = link
 
     def make_cyclic(self):
         return self.get_first().make_cyclic()
@@ -233,11 +245,15 @@ class DoubleLinkedList(object):
         if isinstance(i, tuple):
             i = list(i)
         if isinstance(i, int):
-            i = list(set([i]))
+            i = [i]
+        # Special case in which i == len
         i = list(set(i))
-        i.sort()
         if len(self) in i and cut_prev:
             i.remove(len(self))
+            if self.is_cyclic():
+                i.append(0)
+        i = list(set(i))
+        i.sort()
         self._inbounds(i)
         self_copy = copy(self)
         all_links = self_copy.get()
@@ -285,7 +301,13 @@ class DoubleLinkedList(object):
 
     def remove(self, i):
         self._inbounds(i)
-        return self.get()[i].remove()
+        to_be_removed = self.get()[i]
+        new_first = self.get_first()
+        if i == 0:
+            new_first = new_first.next()
+        to_be_removed.remove()
+        self.first = new_first
+        return
 
     def reindex(self, i):
         self._inbounds(i)
@@ -336,8 +358,9 @@ class DoubleLinkedList(object):
         else:
             raise IndexError("Improper indices for linkedlist.")
 
+
     def __copy__(self):
-        copied = DoubleLinkedList(first=Link(''))
+        copied = type(self)(first=Link(''))
         copied.__dict__.update(self.__dict__)
         copied.first = copy(self.get_first())
         curr = copied.first
@@ -348,6 +371,10 @@ class DoubleLinkedList(object):
         if self.is_cyclic():
             copied.make_cyclic()
         return copied
+
+    def __deepcopy__(self, memo):
+        raise NotImplementedError("copy.deepcopy not implemented with class" \
+                              "{}. Use copy.copy instead.".format(self.__class__.__name__))
 
     def __reversed__(self):
         for s in self.get():
@@ -376,7 +403,7 @@ class Feature(object):
         self.name = name
         self.type = type
         self.strand = 1
-        self._length = None
+        self.length = None
         if color is None:
             color = random_color()
         self.color = color
@@ -550,21 +577,21 @@ class Nucleotide(Link):
 
     def __copy__(self):
         copied = super(Nucleotide, self).__copy__()
-        copied.features = copy(self.features)
+        copied.features = deepcopy(self.features)
         return copied
 
 
 class Sequence(DoubleLinkedList):
 
-    def __init__(self, first_nt=None, sequence=None, name='unknown'):
-        super(Sequence, self).__init__(first=first_nt, data_sequence=sequence)
+    def __init__(self, first=None, sequence=None, name='unknown'):
+        super(Sequence, self).__init__(first=first, sequence=sequence)
         self.name = name
         self.description = ''
 
-    def initialize(self, data_sequence):
-        self.first = Nucleotide(data_sequence[0])
+    def initialize(self, sequence):
+        self.first = Nucleotide(sequence[0])
         current = self.first
-        for d in data_sequence[1:]:
+        for d in sequence[1:]:
             new = Nucleotide(d)
             current.set_next(new)
             current = new
@@ -578,7 +605,7 @@ class Sequence(DoubleLinkedList):
             raise IndexError("Feature index error")
         for i, n in enumerate(feature_nts):
             n.add_feature(feature, i+start_index)
-        feature.length = len(feature_nts)-1
+        feature.length = len(feature_nts)
         return feature
 
     def _features_to_i(self):
@@ -645,24 +672,9 @@ class Sequence(DoubleLinkedList):
         self.complement()
         return self
 
-    def _chop(self, i, cut_method):
-        self._inbounds(i)
-        nt = self.get()[i]
-        n = cut_method(nt)
-        if n is None:
-            return self, None
-        remaining = Sequence(first_nt=n)
-        return self, remaining
-
-    def chop_prev(self, i):
-        self._chop(i, lambda x: x.cut_prev())
-
-    def chop_next(self, i):
-        self._chop(i, lambda x: x.cut_next())
-
     def cut(self, i, cut_prev=True):
         fragments = super(Sequence, self).cut(i, cut_prev)
-        fragments = [Sequence(first_nt=f.get_first()) for f in fragments]
+        fragments = [Sequence(first=f.get_first()) for f in fragments]
         return fragments
 
     def fuse(self, seq):
@@ -670,6 +682,9 @@ class Sequence(DoubleLinkedList):
         l = seq.get_first()
         f.set_next(l)
         return self
+
+    def __copy__(self):
+        return super(Sequence, self).__copy__()
 
     def __add__(self, other):
         return copy(self).fuse(copy(other))
@@ -843,7 +858,7 @@ class Reaction(object):
         products = []
         for cy in cycles:
             # Copy fragments in cycle
-            cy = deepcopy(cy)
+            cy = copy(cy)
 
             # Pair fragments for cyclic assembly
             x1 = cy
@@ -858,18 +873,19 @@ class Reaction(object):
                 right.first = nt
 
                 # Fixing homology features
-                homology1 = Sequence(first_nt=p)
+                homology1 = Sequence(first=p)
 
                 nt = left.get()[len(left) - match[0] - 1]
                 n = nt.cut_next()
                 left.first = nt
-                homology2 = Sequence(first_nt=n)
+                homology2 = Sequence(first=n)
 
                 # add features for homology1
                 if homology1.first is not None:
                     if not len(homology1) == len(homology2):
                         raise Exception("Homologies for assembly are different lengths.")
 
+                # copy features while removing overlapping ones
                 for n1 in homology1.get():
                     for n2 in homology2.get():
                         n1.copy_features_from(n1)
