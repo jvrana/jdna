@@ -2,5 +2,5 @@
 
 
 from jdna.core import (
-    Link, DoubleLinkedList, Nucleotide, Sequence, Reaction
+    Link, DoubleLinkedList, Nucleotide, Sequence, Reaction, Convert
 )
