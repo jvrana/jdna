@@ -256,15 +256,21 @@ class DoubleLinkedList(object):
         i = list(set(i))
         i.sort()
         self._inbounds(i)
-        self_copy = copy(self)
+        # self_copy = copy(self)
+        self_copy = self
         all_links = self_copy.get()
+        cut_links = []
         for cut_loc in i:
             link = all_links[cut_loc]
+            cut_links.append(link)
+            c = None
             if cut_prev:
-                link.cut_prev()
+                c = link.cut_prev()
             else:
-                link.cut_next()
-        return DoubleLinkedList._group_links(all_links)
+                c = link.cut_next()
+            if c is not None:
+                cut_links.append(c)
+        return DoubleLinkedList._group_links(cut_links)
 
     #TODO: Speed up with set
     @staticmethod
@@ -361,14 +367,14 @@ class DoubleLinkedList(object):
 
 
     def __copy__(self):
-        copied = type(self)(first=Link(''))
+        copied = type(self)(sequence='X')
         copied.__dict__.update(self.__dict__)
-        copied.first = copy(self.get_first())
-        curr = copied.first
-        for link in self.get()[1:]:
-            copied_link = copy(link)
-            curr.set_next(copied_link)
-            curr = copied_link
+        copied.initialize(str(self))
+        # curr = copied.first
+        # for link in self.get()[1:]:
+        #     copied_link = copy(link)
+        #     curr.set_next(copied_link)
+        #     curr = copied_link
         if self.is_cyclic():
             copied.make_cyclic()
         return copied
@@ -685,7 +691,9 @@ class Sequence(DoubleLinkedList):
         return self
 
     def __copy__(self):
-        return super(Sequence, self).__copy__()
+        copied = super(Sequence, self).__copy__()
+
+        return copied
 
     def __add__(self, other):
         return copy(self).fuse(copy(other))
@@ -728,12 +736,12 @@ class Reaction(object):
 
     @staticmethod
     def anneal_primer(template, primer, min_bases=MIN_BASES):
-        rc_template = copy(template).reverse_complement()
         fwd_matches = Reaction.anneal_threeprime(template, primer, min_bases=min_bases)
         # for f in fwd_matches:
         #     primer.cut
-        rev_matches = Reaction.anneal_threeprime(rc_template, primer, min_bases=min_bases)
-
+        template.reverse_complement()
+        rev_matches = Reaction.anneal_threeprime(template, primer, min_bases=min_bases)
+        template.reverse_complement()
         def ca(matches):
             return [dict(pos=m[0], len=m[1], tm=Reaction.tm(primer.cut(len(primer) - m[1])[-1])) for m in matches]
 

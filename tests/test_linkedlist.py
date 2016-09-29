@@ -48,7 +48,7 @@ def test_copy():
     l = DoubleLinkedList(sequence=seq)
     l_copy = copy(l)
     assert str(l) == str(l_copy)
-    assert l_copy.get()[0] is not l.get()[0]
+    assert id(l_copy.get()[0]) is not id(l.get()[0])
     from copy import deepcopy
     with pytest.raises(NotImplementedError):
         deepcopy(l)
@@ -59,9 +59,10 @@ def test_insertion():
     l = DoubleLinkedList(sequence=seq)
     for i in range(len(l) + 1):
         l_copy = copy(l)
-        insertion = DoubleLinkedList(sequence='XYZ')
+        insertion_seq = 'XYZ'
+        insertion = DoubleLinkedList(sequence=insertion_seq)
         l_copy.insert(insertion, i)
-        assert str(l_copy) == seq[:i] + str(insertion) + seq[i:]
+        assert str(l_copy) == seq[:i] + str(insertion_seq) + seq[i:]
 
 
 def test_insertion_index_error():
@@ -82,6 +83,11 @@ def test_circular_cutting():
         fragments = [str(x) for x in l.cut(cs)]
         expected = [seq[cs[-1]:] + seq[:cs[0]]]
         expected += [seq[cs[i]:cs[i + 1]] for i in range(len(cs) - 1)]
+        expected.sort()
+        fragments.sort()
+        print expected
+        print fragments
+        assert len(expected) == len(fragments)
         for e, f in zip(expected, fragments):
             assert str(e) == str(f)
 
@@ -94,6 +100,9 @@ def test_linear_cutting():
         expected = [seq[:cs[0]]]
         expected += [seq[cs[i]:cs[i + 1]] for i in range(len(cs) - 1)]
         expected += [seq[cs[-1]:]]
+        assert len(expected) == len(fragments)
+        expected.sort()
+        fragments.sort()
         for e, f in zip(expected, fragments):
             assert_true(str(e) == str(f))
             assert_equal(len(fragments), len(cs) + 1)
