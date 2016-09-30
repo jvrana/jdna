@@ -7,15 +7,21 @@ bseq = None
 with open('test_data/seq1.json') as f:
     bseq = json.load(f)
 hseq = Convert.from_benchling(bseq)
-
+print len(hseq)
 #
-# print 'cutting'
-# hseq.cut((15, 2000))
+
+
+p1 = Sequence(sequence=str(hseq)[10:30])
+p2 = Sequence(sequence=str(hseq)[3000:3020]).reverse_complement()
+
+Reaction.pcr(hseq, p1, p2)
+
 # print 'cut'
 # import itertools
 #
 
-
+# hseq = Sequence(sequence='a'*10000)
+# hseq.cut([1,4,5])
 
 
 # import itertools

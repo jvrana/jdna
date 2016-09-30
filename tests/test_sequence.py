@@ -83,8 +83,7 @@ def test_circular_cutting():
         fragments = [str(x) for x in l.cut(cs)]
         expected = [seq[cs[-1]:] + seq[:cs[0]]]
         expected += [ seq[cs[i]:cs[i+1]] for i in range(len(cs)-1) ]
-        for e, f in zip(expected, fragments):
-            assert str(e) == str(f)
+        assert set(expected) == set(fragments)
 
 def test_linear_cutting():
     seq = 'This is a test string for the linked data set.'
@@ -92,11 +91,11 @@ def test_linear_cutting():
     for cs in [[10, 15, 20], [4, 10, 15]]:
         fragments = [str(x) for x in l.cut(cs)]
         expected = [seq[:cs[0]]]
-        expected += [ seq[cs[i]:cs[i+1]] for i in range(len(cs)-1) ]
+        expected += [seq[cs[i]:cs[i+1]] for i in range(len(cs)-1)]
         expected += [seq[cs[-1]:]]
-        for e, f in zip(expected, fragments):
-            assert_true(str(e) == str(f))
-            assert_equal(len(fragments), len(cs)+1)
+        expected = set(expected)
+        fragments = set(fragments)
+        assert expected == fragments
 
 def test_search():
     query_seq = 'ABCDEFGHIJKLMNOP'
@@ -165,7 +164,7 @@ def test_cutting():
         while '' in expected:
             expected.remove('')
         fragments = seq.cut(c)
-        assert [str(x) for x in fragments] == expected
+        assert set([str(x) for x in fragments]) == set(expected)
 
     test_cut([1, 5, 7])
     test_cut((5,len(seq)-1))
@@ -315,6 +314,7 @@ def test_copying_features():
     seq.add_feature(0, 5, f)
     seq_copy = copy(seq)
     assert f not in seq_copy.get_features().keys()
+    assert len(seq_copy.get_features()) == 1
     assert f in seq.get_features()
 
 def test_add_feature_to_cyclic():
@@ -374,3 +374,11 @@ def test_maintain_features_after_reverse():
     seq.add_feature(5, 10, f1)
     seq.reverse_complement()
     assert seq.get_features() == {f1: [(len(seq)-1-10, len(seq)-1-5), (5, 0)]}
+
+def test_chop():
+    seq = Sequence(sequence='agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta')
+    for i in range(len(seq)):
+        assert str(seq.chop_off_fiveprime(i)) == str(seq)[i:]
+
+    for i in range(len(seq)):
+        assert str(seq.chop_off_threeprime(i)) == str(seq)[:i+1]

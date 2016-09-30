@@ -85,8 +85,6 @@ def test_circular_cutting():
         expected += [seq[cs[i]:cs[i + 1]] for i in range(len(cs) - 1)]
         expected.sort()
         fragments.sort()
-        print expected
-        print fragments
         assert len(expected) == len(fragments)
         for e, f in zip(expected, fragments):
             assert str(e) == str(f)

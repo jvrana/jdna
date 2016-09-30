@@ -256,20 +256,22 @@ class DoubleLinkedList(object):
         i = list(set(i))
         i.sort()
         self._inbounds(i)
-        # self_copy = copy(self)
-        self_copy = self
+        self_copy = copy(self)
         all_links = self_copy.get()
         cut_links = []
         for cut_loc in i:
             link = all_links[cut_loc]
-            cut_links.append(link)
             c = None
             if cut_prev:
                 c = link.cut_prev()
+                if c is not None:
+                    cut_links.append(c)
+                cut_links.append(link)
             else:
+                cut_links.append(link)
                 c = link.cut_next()
-            if c is not None:
-                cut_links.append(c)
+                if c is not None:
+                    cut_links.append(c)
         return DoubleLinkedList._group_links(cut_links)
 
     #TODO: Speed up with set
@@ -684,6 +686,16 @@ class Sequence(DoubleLinkedList):
         fragments = [Sequence(first=f.get_first()) for f in fragments]
         return fragments
 
+    def chop_off_fiveprime(self, i):
+        if self.is_cyclic():
+            raise IndexError('Cannot chop a cyclic sequence.')
+        return self.cut(i)[-1]
+
+    def chop_off_threeprime(self, i):
+        if self.is_cyclic():
+            raise IndexError('Cannot chop a cyclic sequence.')
+        return self.cut(i, cut_prev=False)[0]
+
     def fuse(self, seq):
         f = self.get_first().find_last()
         l = seq.get_first()
@@ -692,7 +704,10 @@ class Sequence(DoubleLinkedList):
 
     def __copy__(self):
         copied = super(Sequence, self).__copy__()
-
+        features = self.get_features()
+        for f in features:
+            pos, span = features[f]
+            copied.add_feature(pos[0], pos[1], copy(f), start_index=span[0])
         return copied
 
     def __add__(self, other):
@@ -743,7 +758,7 @@ class Reaction(object):
         rev_matches = Reaction.anneal_threeprime(template, primer, min_bases=min_bases)
         template.reverse_complement()
         def ca(matches):
-            return [dict(pos=m[0], len=m[1], tm=Reaction.tm(primer.cut(len(primer) - m[1])[-1])) for m in matches]
+            return [dict(primer=primer, pos=m[0], len=m[1], tm=Reaction.tm(primer.cut(len(primer) - m[1])[-1])) for m in matches]
 
         anneal = dict(F=ca(fwd_matches), R=ca(rev_matches))
 
@@ -808,27 +823,60 @@ class Reaction(object):
 
     @staticmethod
     def pcr(template, p1, p2, min_bases=MIN_BASES):
-        products, matches = Reaction._pcr(template, p1, p2, min_bases)
-        # rename products
-        for p, m in zip(products, matches):
-            p.name = '{} PCR[{}, {}]'.format(template.name, m[0]['pos'], len(template) - m[1]['pos'])
-            report = """*** PCR ***
-                        INPUTS:
-                        Template: {template}
-                        P1: {primer1} {match1}
-                        P2: {primer2} {match2}
+        ann1 = Reaction.anneal_primer(template, p1)
+        ann2 = Reaction.anneal_primer(template, p2)
 
-                        OUTPUS:
-                        Products: {numproducts}""".format(**dict(
-                template=template.name,
-                primer1=str(p1),
-                match1=str(m[0]),
-                primer2=str(p2),
-                match2=str(m[1]),
-                numproducts=len(products)
-            ))
-            p.description = report
+        f = ann1['F'] + ann2['F']
+        r = ann1['R'] + ann2['R']
+
+        pairs = itertools.product(f, r)
+        products = []
+        for pair in pairs:
+            copied = copy(template)
+            nts = copied.get()
+            start_index = pair[0]['pos'] - pair[0]['len']
+            end_index = len(template) - pair[1]['pos'] + pair[1]['len'] - 1
+            fwd_primer = copy(pair[0]['primer'])
+            rev_primer = copy(pair[1]['primer'])
+
+
+
+            o1 = fwd_primer.get()[len(fwd_primer) - pair[0]['len']].cut_prev()
+            o2 = rev_primer.get()[len(rev_primer) - pair[1]['len']].cut_prev()
+            rev_primer.reverse_complement()
+            s = nts[start_index]
+            e = nts[end_index]
+            s.cut_prev()
+            e.cut_next()
+
+            # fuse overhangs
+            if o1 is not None:
+                Sequence(first=o1).fuse(copied)
+            if o2 is not None:
+                copied.fuse(Sequence(first=o2))
+            products.append(copied)
         return products
+        # products, matches = Reaction._pcr(template, p1, p2, min_bases)
+        # # rename products
+        # for p, m in zip(products, matches):
+        #     p.name = '{} PCR[{}, {}]'.format(template.name, m[0]['pos'], len(template) - m[1]['pos'])
+        #     report = """*** PCR ***
+        #                 INPUTS:
+        #                 Template: {template}
+        #                 P1: {primer1} {match1}
+        #                 P2: {primer2} {match2}
+        #
+        #                 OUTPUS:
+        #                 Products: {numproducts}""".format(**dict(
+        #         template=template.name,
+        #         primer1=str(p1),
+        #         match1=str(m[0]),
+        #         primer2=str(p2),
+        #         match2=str(m[1]),
+        #         numproducts=len(products)
+        #     ))
+        #     p.description = report
+        # return products
 
     @staticmethod
     def assembly_cycles(fragments, max_homology, min_homology):
