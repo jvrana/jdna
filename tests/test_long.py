@@ -3,19 +3,28 @@ from copy import copy, deepcopy
 import random
 import json
 import re
-bseq = None
-with open('test_data/seq1.json') as f:
-    bseq = json.load(f)
-hseq = Convert.from_benchling(bseq)
-print len(hseq)
+# bseq = None
+# with open('test_data/seq1.json') as f:
+#     bseq = json.load(f)
+# hseq = Convert.from_benchling(bseq)
+# print len(hseq)
+# #
 #
+#
+# p1 = Sequence(sequence=str(hseq)[10:30])
+# p2 = Sequence(sequence=str(hseq)[3000:3020]).reverse_complement()
+#
+# Reaction.pcr(hseq, p1, p2)
 
+import glob
 
-p1 = Sequence(sequence=str(hseq)[10:30])
-p2 = Sequence(sequence=str(hseq)[3000:3020]).reverse_complement()
+dnas = []
+for file in glob.glob('test_data/Fragment*json'):
+    with open(file, 'r') as f:
+        bseq = json.load(f)
+        dnas.append(Convert.from_benchling(bseq))
 
-Reaction.pcr(hseq, p1, p2)
-
+assert len(Reaction.cyclic_assembly(dnas)) == 1
 # print 'cut'
 # import itertools
 #

@@ -11,7 +11,28 @@ def test_pcr():
         assert str(expected).lower() == str(products[0]).lower()
         return products
     template = Sequence(sequence=''.join([random.choice('atgc') for x in range(200)]))
-    pcr(template, 0, 20, 'gtagggatct', len(template)-20, len(template), 'ggtagcagtcag')[0]
+    random_overhang1 = ''.join([random.choice('atcg') for x in range(20)])
+    random_overhang2 = ''.join([random.choice('atcg') for x in range(21)])
+    pcr(template, 0, 20, random_overhang1, len(template)-20, len(template), random_overhang2)[0]
+
+def test_cyclic_pcr():
+    def pcr(template, fi, fj, foh, ri, rj, roh):
+        f = Sequence(sequence=foh + str(template)[fi:fj])
+        r = Sequence(sequence=str(template)[ri:rj]+roh).reverse_complement()
+        expected = foh + str(template)[fi:] + str(template)[:rj] + roh
+        products = Reaction.pcr(template, f, r)
+        print foh
+        print roh
+        print str(template)[ri:rj]
+        assert str(expected).lower() == str(products[0]).lower()
+        return products
+    template = Sequence(sequence=''.join([random.choice('atgc') for x in range(200)]))
+    template.make_cyclic()
+    random_overhang1 = ''.join([random.choice('atcg') for x in range(20)])
+    random_overhang2 = ''.join([random.choice('atcg') for x in range(21)])
+    pcr(template, len(template)-40, len(template)-20, random_overhang1, 100, 120, random_overhang2)[0]
+
+
 
 def test_gibson():
 

@@ -4,9 +4,8 @@
     <list default="true" id="e04068ac-9f54-4fe2-81eb-d70a5184a738" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jdna/core.py" afterPath="$PROJECT_DIR$/jdna/core.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/test_linkedlist.py" afterPath="$PROJECT_DIR$/tests/test_linkedlist.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/test_long.py" afterPath="$PROJECT_DIR$/tests/test_long.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/test_sequence.py" afterPath="$PROJECT_DIR$/tests/test_sequence.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/test_reaction.py" afterPath="$PROJECT_DIR$/tests/test_reaction.py" />
     </list>
     <ignored path="jdna.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -24,8 +23,8 @@
     <SUITE FILE_PATH="coverage/jdna$sequence.coverage" NAME="sequence Coverage Results" MODIFIED="1474648149647" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hydradna/models" />
     <SUITE FILE_PATH="coverage/jdna$test_convert.coverage" NAME="test_convert Coverage Results" MODIFIED="1475118810614" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/jdna$simple_test.coverage" NAME="simple_test Coverage Results" MODIFIED="1474926778355" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/jdna$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1475279216630" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/jdna$test_long.coverage" NAME="test_long Coverage Results" MODIFIED="1475279482359" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/jdna$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1475341183803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/jdna$test_long.coverage" NAME="test_long Coverage Results" MODIFIED="1475345639898" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/jdna$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1474945833019" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/realworld_tests" />
   </component>
   <component name="CreatePatchCommitExecutor">
@@ -40,8 +39,8 @@
       <file leaf-file-name="core.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jdna/core.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="705">
-              <caret line="862" column="0" selection-start-line="862" selection-start-column="0" selection-end-line="878" selection-end-column="25" />
+            <state relative-caret-position="435">
+              <caret line="912" column="51" selection-start-line="912" selection-start-column="51" selection-end-line="912" selection-end-column="51" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
                 <element signature="e#209#4932#0" expanded="false" />
@@ -49,10 +48,46 @@
                 <element signature="e#11088#11471#0" expanded="false" />
                 <element signature="e#11503#11625#0" expanded="false" />
                 <element signature="e#11651#11729#0" expanded="false" />
-                <element signature="e#11761#16517#0" expanded="false" />
-                <element signature="e#29898#31784#0" expanded="false" />
-                <marker date="1475279215000" expanded="true" signature="24602:25730" ph="..." />
+                <marker date="1475345639000" expanded="true" signature="24650:25813" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="jdna78.pstat" pinned="false" current-in-tab="false">
+        <entry file="mock:///Users/Justin/Library/Caches/PyCharm2016.2/snapshots/jdna78.pstat">
+          <provider selected="true" editor-type-id="profiler-session-editor">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="jdna77.pstat" pinned="false" current-in-tab="false">
+        <entry file="mock:///Users/Justin/Library/Caches/PyCharm2016.2/snapshots/jdna77.pstat">
+          <provider selected="true" editor-type-id="profiler-session-editor">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="jdna76.pstat" pinned="false" current-in-tab="false">
+        <entry file="mock:///Users/Justin/Library/Caches/PyCharm2016.2/snapshots/jdna76.pstat">
+          <provider selected="true" editor-type-id="profiler-session-editor">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="jdna75.pstat" pinned="false" current-in-tab="false">
+        <entry file="mock:///Users/Justin/Library/Caches/PyCharm2016.2/snapshots/jdna75.pstat">
+          <provider selected="true" editor-type-id="profiler-session-editor">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Fragment 15434 P1G1-Citrine-TP.json" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/test_data/Fragment 15434 P1G1-Citrine-TP.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -60,8 +95,8 @@
       <file leaf-file-name="test_reaction.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/archives/hydra-dna/tests/test_reaction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="22" selection-start-line="2" selection-start-column="22" selection-end-line="2" selection-end-column="22" />
+            <state relative-caret-position="255">
+              <caret line="17" column="4" selection-start-line="17" selection-start-column="4" selection-end-line="17" selection-end-column="4" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
               </folding>
@@ -69,21 +104,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test_sequence.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_sequence.py">
+      <file leaf-file-name="test_reaction.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/test_reaction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="485">
-              <caret line="383" column="63" selection-start-line="383" selection-start-column="63" selection-end-line="383" selection-end-column="63" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test_linkedlist.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_linkedlist.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="731">
-              <caret line="86" column="24" selection-start-line="86" selection-start-column="24" selection-end-line="86" selection-end-column="24" />
+            <state relative-caret-position="270">
+              <caret line="21" column="63" selection-start-line="21" selection-start-column="63" selection-end-line="21" selection-end-column="63" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -94,51 +119,17 @@
       <file leaf-file-name="test_long.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/test_long.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="18" column="13" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="13" />
-              <folding>
-                <element signature="e#0#88#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="120">
+              <caret line="26" column="47" selection-start-line="26" selection-start-column="47" selection-end-line="26" selection-end-column="47" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="jdna73.pstat" pinned="false" current-in-tab="false">
-        <entry file="mock:///Users/Justin/Library/Caches/PyCharm2016.2/snapshots/jdna73.pstat">
+      <file leaf-file-name="jdna74.pstat" pinned="false" current-in-tab="false">
+        <entry file="mock:///Users/Justin/Library/Caches/PyCharm2016.2/snapshots/jdna74.pstat">
           <provider selected="true" editor-type-id="profiler-session-editor">
             <state />
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="copy.py" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/anaconda/lib/python2.7/copy.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="200">
-              <caret line="65" column="4" selection-start-line="65" selection-start-column="4" selection-end-line="65" selection-end-column="4" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MANIFEST.in" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MANIFEST.in">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="5" selection-start-line="0" selection-start-column="5" selection-end-line="0" selection-end-column="5" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test_reaction.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_reaction.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="195">
-              <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#13#0" expanded="true" />
-              </folding>
-            </state>
           </provider>
         </entry>
       </file>
@@ -174,7 +165,6 @@
         <option value="$PROJECT_DIR$/tests/test_features.py" />
         <option value="$PROJECT_DIR$/tests/simple_test.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/tests/test_reaction.py" />
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/realworld_tests/scrapeaquarium.py" />
         <option value="$PROJECT_DIR$/realworld_tests/benchlinghelper.py" />
@@ -185,6 +175,7 @@
         <option value="$PROJECT_DIR$/tests/test_convert.py" />
         <option value="$PROJECT_DIR$/tests/test_linkedlist.py" />
         <option value="$PROJECT_DIR$/tests/test_sequence.py" />
+        <option value="$PROJECT_DIR$/tests/test_reaction.py" />
         <option value="$PROJECT_DIR$/jdna/core.py" />
         <option value="$PROJECT_DIR$/tests/test_long.py" />
       </list>
@@ -197,7 +188,7 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1787" />
+    <option name="x" value="95" />
     <option name="y" value="23" />
     <option name="width" value="1693" />
     <option name="height" value="1005" />
@@ -227,8 +218,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -271,6 +260,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="tests" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test_data" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jdna" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jdna" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="jdna" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -291,6 +298,8 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -674,39 +683,39 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unnamed - 2016.09.30 at 16h 10m 32s.xml">
+    <history-entry file="Unnamed - 2016.10.01 at 09h 50m 30s.xml">
       <configuration name="Unnamed" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unnamed - 2016.09.30 at 16h 13m 04s.xml">
+    <history-entry file="Unnamed - 2016.10.01 at 09h 51m 54s.xml">
       <configuration name="Unnamed" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unnamed - 2016.09.30 at 16h 13m 53s.xml">
+    <history-entry file="Unnamed - 2016.10.01 at 09h 54m 18s.xml">
       <configuration name="Unnamed" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unnamed - 2016.09.30 at 16h 22m 09s.xml">
+    <history-entry file="Unnamed - 2016.10.01 at 09h 55m 23s.xml">
       <configuration name="Unnamed" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unnamed - 2016.09.30 at 16h 22m 31s.xml">
+    <history-entry file="Unnamed - 2016.10.01 at 09h 55m 35s.xml">
       <configuration name="Unnamed" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unnamed - 2016.09.30 at 16h 22m 47s.xml">
+    <history-entry file="Unnamed - 2016.10.01 at 09h 56m 44s.xml">
       <configuration name="Unnamed" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unnamed - 2016.09.30 at 16h 23m 10s.xml">
+    <history-entry file="Unnamed - 2016.10.01 at 09h 57m 10s.xml">
       <configuration name="Unnamed" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unnamed - 2016.09.30 at 16h 23m 30s.xml">
+    <history-entry file="Unnamed - 2016.10.01 at 09h 58m 12s.xml">
       <configuration name="Unnamed" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unnamed - 2016.09.30 at 16h 44m 58s.xml">
+    <history-entry file="Unnamed - 2016.10.01 at 09h 58m 55s.xml">
       <configuration name="Unnamed" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unnamed - 2016.09.30 at 16h 46m 59s.xml">
+    <history-entry file="Unnamed - 2016.10.01 at 09h 59m 49s.xml">
       <configuration name="Unnamed" configurationId="tests" />
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1787" y="23" width="1693" height="1005" extended-state="0" />
+    <frame x="95" y="23" width="1693" height="1005" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24985233" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -751,13 +760,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/anaconda/lib/python2.7/copy.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2280">
-          <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/hydradna/setup.py" />
     <entry file="file://$PROJECT_DIR$/hydradna/models/linkedset.py" />
     <entry file="file://$PROJECT_DIR$/hydradna/models/link.py" />
@@ -939,7 +941,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-274">
           <caret line="0" column="13126" selection-start-line="0" selection-start-column="13118" selection-end-line="0" selection-end-column="13126" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -947,9 +948,32 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
           <caret line="10" column="53" selection-start-line="10" selection-start-column="53" selection-end-line="10" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_sequence.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5700">
+          <caret line="383" column="63" selection-start-line="383" selection-start-column="63" selection-end-line="383" selection-end-column="63" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_linkedlist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1230">
+          <caret line="86" column="24" selection-start-line="86" selection-start-column="24" selection-end-line="86" selection-end-column="24" />
           <folding>
-            <element signature="e#0#37#0" expanded="true" />
+            <element signature="e#0#13#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda/lib/python2.7/copy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="945">
+          <caret line="65" column="4" selection-start-line="65" selection-start-column="4" selection-end-line="65" selection-end-column="4" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -961,46 +985,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/anaconda/lib/python2.7/copy.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="65" column="4" selection-start-line="65" selection-start-column="4" selection-end-line="65" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_sequence.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="485">
-          <caret line="383" column="63" selection-start-line="383" selection-start-column="63" selection-end-line="383" selection-end-column="63" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_reaction.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/archives/hydra-dna/tests/test_reaction.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="22" selection-start-line="2" selection-start-column="22" selection-end-line="2" selection-end-column="22" />
+        <state relative-caret-position="255">
+          <caret line="17" column="4" selection-start-line="17" selection-start-column="4" selection-end-line="17" selection-end-column="4" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_linkedlist.py">
+    <entry file="file://$PROJECT_DIR$/tests/test_data/Fragment 15434 P1G1-Citrine-TP.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="731">
-          <caret line="86" column="24" selection-start-line="86" selection-start-column="24" selection-end-line="86" selection-end-column="24" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_reaction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="21" column="63" selection-start-line="21" selection-start-column="63" selection-end-line="21" selection-end-column="63" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
@@ -1009,8 +1015,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/jdna/core.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="705">
-          <caret line="862" column="0" selection-start-line="862" selection-start-column="0" selection-end-line="878" selection-end-column="25" />
+        <state relative-caret-position="435">
+          <caret line="912" column="51" selection-start-line="912" selection-start-column="51" selection-end-line="912" selection-end-column="51" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
             <element signature="e#209#4932#0" expanded="false" />
@@ -1018,20 +1024,16 @@
             <element signature="e#11088#11471#0" expanded="false" />
             <element signature="e#11503#11625#0" expanded="false" />
             <element signature="e#11651#11729#0" expanded="false" />
-            <element signature="e#11761#16517#0" expanded="false" />
-            <element signature="e#29898#31784#0" expanded="false" />
-            <marker date="1475279215000" expanded="true" signature="24602:25730" ph="..." />
+            <marker date="1475345639000" expanded="true" signature="24650:25813" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_long.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="13" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="13" />
-          <folding>
-            <element signature="e#0#88#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="120">
+          <caret line="26" column="47" selection-start-line="26" selection-start-column="47" selection-end-line="26" selection-end-column="47" />
+          <folding />
         </state>
       </provider>
     </entry>

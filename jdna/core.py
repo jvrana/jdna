@@ -456,10 +456,12 @@ class Nucleotide(Link):
         self.data = self.base_pairing[self.data]
 
     def set_next(self, nucleotide):
+        self.cut_next()
         super(Nucleotide, self).set_next(nucleotide)
         Nucleotide.fuse_features(self, nucleotide)
 
     def set_prev(self, nucleotide):
+        self.cut_prev()
         super(Nucleotide, self).set_prev(nucleotide)
         Nucleotide.fuse_features(nucleotide, self)
 
@@ -832,8 +834,8 @@ class Reaction(object):
         pairs = itertools.product(f, r)
         products = []
         for pair in pairs:
-            copied = copy(template)
-            nts = copied.get()
+            product = copy(template)
+            nts = product.get()
             start_index = pair[0]['pos'] - pair[0]['len']
             end_index = len(template) - pair[1]['pos'] + pair[1]['len'] - 1
             fwd_primer = copy(pair[0]['primer'])
@@ -849,12 +851,13 @@ class Reaction(object):
             s.cut_prev()
             e.cut_next()
 
+            product.first = s
             # fuse overhangs
             if o1 is not None:
-                Sequence(first=o1).fuse(copied)
+                Sequence(first=o1).fuse(product)
             if o2 is not None:
-                copied.fuse(Sequence(first=o2))
-            products.append(copied)
+                product.fuse(Sequence(first=o2))
+            products.append(product)
         return products
         # products, matches = Reaction._pcr(template, p1, p2, min_bases)
         # # rename products
@@ -895,15 +898,20 @@ class Reaction(object):
                    and complete_match(m)
 
         fragments += [copy(f).reverse_complement() for f in fragments[1:]]
+        fragment_to_id = {}
+        for i, f in enumerate(fragments):
+            fragment_to_id[f] = i
         pairs = itertools.product(fragments, fragments[:]) #itertools.permutations(fragments, 2)
-        graph = []
+        graph = defaultdict(list)
         for pair in pairs:
             x = pair
             match = Reaction.anneal_threeprime(*pair, min_bases=min_homology)
             if match and pass_conditions(match):
-                graph.append(pair)
+                left, right = fragment_to_id[pair[0]], fragment_to_id[pair[1]]
+                graph[left].append(right)
+        print graph
         cycles = Utilities.Graph.find_cycles(graph)
-        return cycles
+        return [[fragments[x] for x in y] for y in cycles]
 
     # TODO: make a linear assembly
     @staticmethod
@@ -978,49 +986,76 @@ class Utilities:
     class Graph:
 
         @staticmethod
-        def find_cycles(graph, min_path_length=1):
-            def find_new_cycles(path):
-                start_node = path[0]
-                next_node = None
-                sub = []
+        def find_cycles(graph, min_path_length=2):
+            def find_cyclic_paths(G, path):
+                if len(path) >= min_path_length and path[-1] == path[0]:
+                    return [path[:-1]]
+                paths = []
+                if path[-1] not in G:
+                    return []
+                for node in graph[path[-1]]:
+                    if node not in path[1:]:
+                        newpaths = find_cyclic_paths(G, path[:] + [node])
+                        paths += newpaths
+                return paths
 
-                # visit each edge and each node of each edge
-                for edge in graph:
-                    node1, node2 = edge
-                    if start_node == node1:
-                        next_node = node2
-                    if not visited(next_node, path):
-                        # neighbor node not on path yet
-                        sub = [next_node]
-                        sub.extend(path)
-                        # explore extended path
-                        find_new_cycles(sub)
-                    elif len(path) >= min_path_length and next_node == path[-1]:
-                        # cycle found
-                        p = invert(path)
-                        p = rotate_to_smallest(p)
-                        if is_new(p): # and isNew(inv):
-                            cycles.append(p)
-
-            def invert(pth):
-                return rotate_to_smallest(pth[::-1])
-
-            #  rotate cycle path such that it begins with the smallest node
             def rotate_to_smallest(path):
                 n = path.index(min(path))
                 return path[n:] + path[:n]
 
-            def is_new(path):
-                return path not in cycles
+            unique_cycles = []
+            for g in graph:
+                cycles = find_cyclic_paths(graph, [g])
+                for cy in cycles:
+                    cy = rotate_to_smallest(cy)
+                    if cy not in unique_cycles:
+                        unique_cycles.append(cy)
+            return unique_cycles
 
-            def visited(node, path):
-                return node in path
-
-            cycles = []
-            for e in graph:
-                for n in e:
-                    find_new_cycles([n])
-            return cycles
+        # @staticmethod
+        # def find_cycles(graph, min_path_length=1):
+        #     def find_new_cycles(path):
+        #         start_node = path[0]
+        #         next_node = None
+        #         sub = []
+        #
+        #         # visit each edge and each node of each edge
+        #         for edge in graph:
+        #             node1, node2 = edge
+        #             if start_node == node1:
+        #                 next_node = node2
+        #             if not visited(next_node, path):
+        #                 # neighbor node not on path yet
+        #                 sub = [next_node]
+        #                 sub.extend(path)
+        #                 # explore extended path
+        #                 find_new_cycles(sub)
+        #             elif len(path) >= min_path_length and next_node == path[-1]:
+        #                 # cycle found
+        #                 p = invert(path)
+        #                 p = rotate_to_smallest(p)
+        #                 if is_new(p): # and isNew(inv):
+        #                     cycles.append(p)
+        #
+        #     def invert(pth):
+        #         return rotate_to_smallest(pth[::-1])
+        #
+        #     #  rotate cycle path such that it begins with the smallest node
+        #     def rotate_to_smallest(path):
+        #         n = path.index(min(path))
+        #         return path[n:] + path[:n]
+        #
+        #     def is_new(path):
+        #         return path not in cycles
+        #
+        #     def visited(node, path):
+        #         return node in path
+        #
+        #     cycles = []
+        #     for e in graph:
+        #         for n in e:
+        #             find_new_cycles([n])
+        #     return cycles
 
     @staticmethod
     def group_ranges(lst):
