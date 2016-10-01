@@ -882,7 +882,7 @@ class Reaction(object):
         # return products
 
     @staticmethod
-    def assembly_cycles(fragments, max_homology, min_homology):
+    def assembly_cycles(fragment_list, max_homology, min_homology):
         def complete_match(m):
             return m[0][0] == m[0][1]
 
@@ -896,7 +896,7 @@ class Reaction(object):
             return one_match(m) \
                    and less_than_max_homology(m) \
                    and complete_match(m)
-
+        fragments = fragment_list[:]
         fragments += [copy(f).reverse_complement() for f in fragments[1:]]
         fragment_to_id = {}
         for i, f in enumerate(fragments):
@@ -909,14 +909,44 @@ class Reaction(object):
             if match and pass_conditions(match):
                 left, right = fragment_to_id[pair[0]], fragment_to_id[pair[1]]
                 graph[left].append(right)
-        print graph
         cycles = Utilities.Graph.find_cycles(graph)
         return [[fragments[x] for x in y] for y in cycles]
+
+    # @staticmethod
+    # def fast_assembly_cycles(fragments, max_homology, min_homology):
+    #
+    #     def matches(left, right):
+    #         left = left.lower()
+    #         right = right.lower()
+    #         if not left[-min_homology:] in right[:max_homology]:
+    #             return False
+    #         if not right[:min_homology] in left[-max_homology:]:
+    #             return False
+    #         if right[:max_homology+1] == left[-max_homology-1:]:
+    #             return False
+    #         return True
+    #
+    #     fragments += [copy(f).reverse_complement() for f in fragments[1:]]
+    #     fragment_to_id = {}
+    #     fragmentstr_to_id = {}
+    #     for i, f in enumerate(fragments):
+    #         fragment_to_id[f] = i
+    #         fragmentstr_to_id[str(f)] = i
+    #     fragment_strs = fragmentstr_to_id.keys()
+    #     pairs = itertools.product(fragment_strs, fragment_strs[:])  # itertools.permutations(fragments, 2)
+    #     graph = defaultdict(list)
+    #     for left, right in pairs:
+    #         if matches(left, right):
+    #             l, r = [fragmentstr_to_id[x] for x in [left, right]]
+    #             graph[l].append(r)
+    #     print graph
+    #     cycles = Utilities.Graph.find_cycles(graph)
+    #     return [[fragments[x] for x in y] for y in cycles]
 
     # TODO: make a linear assembly
     @staticmethod
     def cyclic_assembly(fragments, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
-
+        fragments = [copy(f) for f in fragments]
         cycles = Reaction.assembly_cycles(fragments, max_homology=max_homology, min_homology=min_homology)
         if len(cycles) > 1:
             warnings.warn("More than one assembly found.")
@@ -987,76 +1017,33 @@ class Utilities:
 
         @staticmethod
         def find_cycles(graph, min_path_length=2):
-            def find_cyclic_paths(G, path):
-                if len(path) >= min_path_length and path[-1] == path[0]:
-                    return [path[:-1]]
-                paths = []
-                if path[-1] not in G:
-                    return []
-                for node in graph[path[-1]]:
-                    if node not in path[1:]:
-                        newpaths = find_cyclic_paths(G, path[:] + [node])
-                        paths += newpaths
-                return paths
-
-            def rotate_to_smallest(path):
-                n = path.index(min(path))
-                return path[n:] + path[:n]
 
             unique_cycles = []
             for g in graph:
-                cycles = find_cyclic_paths(graph, [g])
+                cycles = Utilities.Graph.find_cyclic_paths(graph, [g])
                 for cy in cycles:
-                    cy = rotate_to_smallest(cy)
+                    cy = Utilities.Graph.rotate_to_smallest(cy)
                     if cy not in unique_cycles:
                         unique_cycles.append(cy)
             return unique_cycles
 
-        # @staticmethod
-        # def find_cycles(graph, min_path_length=1):
-        #     def find_new_cycles(path):
-        #         start_node = path[0]
-        #         next_node = None
-        #         sub = []
-        #
-        #         # visit each edge and each node of each edge
-        #         for edge in graph:
-        #             node1, node2 = edge
-        #             if start_node == node1:
-        #                 next_node = node2
-        #             if not visited(next_node, path):
-        #                 # neighbor node not on path yet
-        #                 sub = [next_node]
-        #                 sub.extend(path)
-        #                 # explore extended path
-        #                 find_new_cycles(sub)
-        #             elif len(path) >= min_path_length and next_node == path[-1]:
-        #                 # cycle found
-        #                 p = invert(path)
-        #                 p = rotate_to_smallest(p)
-        #                 if is_new(p): # and isNew(inv):
-        #                     cycles.append(p)
-        #
-        #     def invert(pth):
-        #         return rotate_to_smallest(pth[::-1])
-        #
-        #     #  rotate cycle path such that it begins with the smallest node
-        #     def rotate_to_smallest(path):
-        #         n = path.index(min(path))
-        #         return path[n:] + path[:n]
-        #
-        #     def is_new(path):
-        #         return path not in cycles
-        #
-        #     def visited(node, path):
-        #         return node in path
-        #
-        #     cycles = []
-        #     for e in graph:
-        #         for n in e:
-        #             find_new_cycles([n])
-        #     return cycles
+        @staticmethod
+        def find_cyclic_paths(graph, path, min_path_length=2):
+            if len(path) >= min_path_length and path[-1] == path[0]:
+                return [path[:-1]]
+            paths = []
+            if path[-1] not in graph:
+                return []
+            for node in graph[path[-1]]:
+                if node not in path[1:]:
+                    newpaths = Utilities.Graph.find_cyclic_paths(graph, path[:] + [node], min_path_length=min_path_length)
+                    paths += newpaths
+            return paths
 
+        @staticmethod
+        def rotate_to_smallest(path):
+            n = path.index(min(path))
+            return path[n:] + path[:n]
     @staticmethod
     def group_ranges(lst):
         pos = (j - i for i, j in enumerate(lst))
