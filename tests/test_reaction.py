@@ -122,3 +122,30 @@ def test_gibsons_with_inversions():
     expected = ''.join([str(x) for x in [oh1, f1, oh2, f2, oh3, f3, oh4, f4]])
     assert len(products[0].search_all(Sequence(sequence=expected))) == 1
     assert len(products[0].get_features()) == 1
+
+def test_gibson_feature_fusion():
+    def ran_seq(l):
+        return ''.join([random.choice('agtc') for x in range(l)])
+
+
+    template = Sequence(sequence='aataaaccagccagccggaagggccgagcgcagaagtggtcctgcaactttatccgcctccatccagtctattaattgttgccgggaagctagagtaagtagttcgccagttaatagtttgcgcaacgttgttgccattgctacaggcatcgtggtgtcacgctcgtcgtttggtatggcttcattcagctccggttcccaacgatcaaggcgagttacatgatcccccatgttgtgcaaaaaagcggttagctccttcggtcctccgatcgttgtcagaagtaagttggccgcagtgttatcactcatggttatggcagcactgcataattctcttactgtcatgccatccgtaagatgcttttctgtgactggtgagtactcaaccaagtcattctgagaatagtgtatgcggcgaccgagttgctcttgcccggcgtcaatacgggata')
+    template.create_feature('feature', 'type', 0, len(template)-1)
+    template.make_cyclic()
+    oh1 = ran_seq(20)
+    oh2 = ran_seq(20)
+
+    p1 = Sequence(sequence=str(template)[10:30])
+    p2 = Sequence(sequence=str(template)[200:220]).reverse_complement()
+    p3 = Sequence(sequence=str(template)[180:200])
+    p4 = Sequence(sequence=str(template)[30:50]).reverse_complement()
+
+    frag1 = Reaction.pcr(template, p1, p2)[0]
+    frag2 = Reaction.pcr(template, p3, p4)[0]
+    print frag2
+    fragments = [frag1, frag2]
+    products = Reaction.cyclic_assembly(fragments)
+    expected = str(template)
+    print frag1.get_features()
+    print frag2.get_features()
+    print template.get_features()
+    assert len(products[0].search_all(Sequence(sequence=expected))) == 1

@@ -576,6 +576,12 @@ class Nucleotide(Link):
                 frag1 = x1.feature_rev(f)
                 frag2 = x2.feature_fwd(f)
 
+                # check if its a cyclic feature
+                if x2 in frag1:
+                    continue
+                if x1 in frag2:
+                    continue
+
                 # Make two copies of the feature
                 f1 = copy(f)
                 f2 = copy(f)
@@ -634,28 +640,69 @@ class Sequence(DoubleLinkedList):
             nts, indices = zip(*nt_to_i_list)
             first = nts[0].feature_rev(feature)[-1]
             last = nts[0].feature_fwd(feature)[-1]
+            if last.next() == nts[0]:
+                first = nts[0]
             nt_to_i = dict(zip(self.get(), range(len(self))))
             feature_range = (first.features[feature], last.features[feature])
             pos_ranges = (nt_to_i[first], nt_to_i[last])
             feature_info[feature] = [pos_ranges, feature_range]
         return feature_info
 
+    # def get_features(self):
+    #     features_to_nts = self._features_to_i()
+    #     feature_info = {}
+    #     nt_to_i = dict(zip(self.get(), range(len(self))))
+    #     for feature in features_to_nts:
+    #         nt_to_i_list = features_to_nts[feature]
+    #         nts, indices = zip(*nt_to_i_list)
+    #         first = nts[0].feature_rev(feature)[-1]
+    #         last = nts[0].feature_fwd(feature)[-1]
+    #         feature_pos = []
+    #         feature_span = []
+    #         for ntf in first.feature_fwd(feature):
+    #             feature_pos.append(nt_to_i[ntf])
+    #             feature_span.append(ntf.features[feature])
+    #
+    #         feature_pos = Utilities.rotate_to_smallest(feature_pos)
+    #         feature_span = Utilities.rotate_to_smallest(feature_span)
+    #
+    #         feature_pos_ranges = list(Utilities.group_ranges(feature_pos))
+    #         feature_span_ranges = list(Utilities.group_ranges(feature_span))
+    #
+    #         if len(feature_span_ranges) > 1:
+    #             raise Exception("Error occured with Feature {} at indices {}".format(feature, feature_span_ranges))
+    #
+    #         pos1 = feature_pos_ranges[0][0]
+    #         pos2 = feature_pos_ranges[0][-1]
+    #         span1 = feature_span_ranges[0][0]
+    #         span2 = feature_span_ranges[0][-1]
+    #         if len(feature_pos_ranges) == 2:
+    #             if self.is_cyclic():
+    #                 pos1 = feature_pos_ranges[1][0]
+    #                 pos2 = feature_pos_ranges[0][-1]
+    #             else:
+    #                 raise Exception(
+    #                     "Error occured is position of Feature {} at positions {}".format(feature, feature_pos_ranges))
+    #         feature_info[feature] = [(pos1, pos2), (span1, span2)]
+    #     return feature_info
+
     def print_features(self):
-        features = self.get_feature_pos()
-        print "Features:",
-        for f in features:
-            e = f.end
-            if e is None:
-                e = ''
-            span = '[{}...{}]'.format(f.start, e)
-            if f.end == None and f.start == 0:
-                span = ''
-            print '{}{} {}'.format(f.name, span, f.type),
-            ranges = list(Utilities.group_ranges(features[f]))
-            feature_ranges = []
-            for r in ranges:
-                print '{}...{},'.format(r[0], r[-1]),
-        print
+        raise NotImplementedError()
+        # features = self.get_feature_pos()
+        # print "Features:",
+        # for f in features:
+        #     e = f.end
+        #     if e is None:
+        #         e = ''
+        #     span = '[{}...{}]'.format(f.start, e)
+        #     if f.end == None and f.start == 0:
+        #         span = ''
+        #     print '{}{} {}'.format(f.name, span, f.type),
+        #     ranges = list(Utilities.group_ranges(features[f]))
+        #     feature_ranges = []
+        #     for r in ranges:
+        #         print '{}...{},'.format(r[0], r[-1]),
+        # print
 
     def find_feature(self, name=None):
         found = []
@@ -834,24 +881,28 @@ class Reaction(object):
         pairs = itertools.product(f, r)
         products = []
         for pair in pairs:
+            # make a new product
             product = copy(template)
             nts = product.get()
             start_index = pair[0]['pos'] - pair[0]['len']
             end_index = len(template) - pair[1]['pos'] + pair[1]['len'] - 1
-            fwd_primer = copy(pair[0]['primer'])
-            rev_primer = copy(pair[1]['primer'])
-
-
-
-            o1 = fwd_primer.get()[len(fwd_primer) - pair[0]['len']].cut_prev()
-            o2 = rev_primer.get()[len(rev_primer) - pair[1]['len']].cut_prev()
-            rev_primer.reverse_complement()
             s = nts[start_index]
             e = nts[end_index]
             s.cut_prev()
             e.cut_next()
 
+            # if end is not in the product, continue
             product.first = s
+            if e not in product.get():
+                continue
+
+            # get overhangs of primers
+            fwd_primer = copy(pair[0]['primer'])
+            rev_primer = copy(pair[1]['primer'])
+            o1 = fwd_primer.get()[len(fwd_primer) - pair[0]['len']].cut_prev()
+            o2 = rev_primer.get()[len(rev_primer) - pair[1]['len']].cut_prev()
+            rev_primer.reverse_complement()
+
             # fuse overhangs
             if o1 is not None:
                 Sequence(first=o1).fuse(product)
@@ -951,9 +1002,9 @@ class Reaction(object):
         if len(cycles) > 1:
             warnings.warn("More than one assembly found.")
         products = []
-        for cy in cycles:
+        for cyno, cy in enumerate(cycles):
             # Copy fragments in cycle
-            cy = copy(cy)
+            cy = [copy(x) for x in cy]
 
             # Pair fragments for cyclic assembly
             x1 = cy
@@ -992,7 +1043,12 @@ class Reaction(object):
                 right, left = p
                 left.fuse(right)
 
-            products.append(x1[0])
+            # Annotate new product
+            cyprod = x1[0]
+            cyprod.name = 'Cyclic Product {}'.format(cyno)
+
+
+            products.append(cyprod)
         return products
 
     @staticmethod
@@ -1022,7 +1078,7 @@ class Utilities:
             for g in graph:
                 cycles = Utilities.Graph.find_cyclic_paths(graph, [g])
                 for cy in cycles:
-                    cy = Utilities.Graph.rotate_to_smallest(cy)
+                    cy = Utilities.rotate_to_smallest(cy)
                     if cy not in unique_cycles:
                         unique_cycles.append(cy)
             return unique_cycles
@@ -1040,10 +1096,11 @@ class Utilities:
                     paths += newpaths
             return paths
 
-        @staticmethod
-        def rotate_to_smallest(path):
-            n = path.index(min(path))
-            return path[n:] + path[:n]
+    @staticmethod
+    def rotate_to_smallest(path):
+        n = path.index(min(path))
+        return path[n:] + path[:n]
+
     @staticmethod
     def group_ranges(lst):
         pos = (j - i for i, j in enumerate(lst))
@@ -1053,6 +1110,27 @@ class Utilities:
             el = lst[t]
             t += l
             yield range(el, el + l)
+
+    @staticmethod
+    def lcs(S, T):
+        m = len(S)
+        n = len(T)
+        counter = [[0] * (n + 1) for x in range(m + 1)]
+        longest = 0
+        lcs_set = set()
+        for i in range(m):
+            for j in range(n):
+                if S[i] == T[j]:
+                    c = counter[i][j] + 1
+                    counter[i + 1][j + 1] = c
+                    if c > longest:
+                        lcs_set = set()
+                        longest = c
+                        lcs_set.add(S[i - c + 1:i + 1])
+                    elif c == longest:
+                        lcs_set.add(S[i - c + 1:i + 1])
+
+        return lcs_set
 
 
 class Convert:

@@ -5,7 +5,7 @@ from copy import copy
 
 
 # <editor-fold desc="Basic Tests">
-def test_DoubleLinkedList():
+def test_Sequence():
     seq = 'This is a test string for the linked data set.'
     l = Sequence(sequence=seq)
     assert str(l) == seq
@@ -30,6 +30,11 @@ def test_cyclic_vs_liner():
     l.linearize(1)
     assert ~l.is_cyclic()
 
+def test_features_linearizing():
+    seq = Sequence(sequence='agttggagcg')
+    seq.create_feature('feature', 'type', 0, len(seq)-1)
+    seq.make_cyclic()
+    seq.linearize()
 
 def test_reindexing():
     seq = 'This is a test string for the linked data set.'
