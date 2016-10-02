@@ -813,62 +813,62 @@ class Reaction(object):
 
         return anneal
 
-    @staticmethod
-    def polymerase(template, primer, min_bases, direction='forward'):
-        products = []
-        ann = Reaction.anneal_primer(template, primer, min_bases=min_bases)
-        matches = None
-        if direction=='forward':
-            matches = ann['F']
-        elif direction=='reverse':
-            matches = ann['R']
-        for match in matches:
-                # New Product
-                new_product = None
+    # @staticmethod
+    # def polymerase(template, primer, min_bases, direction='forward'):
+    #     products = []
+    #     ann = Reaction.anneal_primer(template, primer, min_bases=min_bases)
+    #     matches = None
+    #     if direction=='forward':
+    #         matches = ann['F']
+    #     elif direction=='reverse':
+    #         matches = ann['R']
+    #     for match in matches:
+    #             # New Product
+    #             new_product = None
+    #
+    #             # Overhang
+    #             overhang = None
+    #             try:
+    #                 overhang, anneal = primer.cut(len(primer) - match['len'])
+    #             except:
+    #                 pass
+    #
+    #             # Find binding position
+    #             pos = match['pos'] - match['len']
+    #             if direction=='forward':
+    #                 # If forward...
+    #                 new_product = template.cut(pos)[-1]
+    #                 # Fuse overhang
+    #                 if overhang is not None:
+    #                     overhang.fuse(new_product)
+    #             elif direction == 'reverse':
+    #                 # If reverse...
+    #                 new_product = copy(template).reverse_complement().cut(pos)[-1]
+    #                 # Fuse overhang
+    #                 if overhang is not None:
+    #                     overhang.fuse(new_product)
+    #                 new_product.reverse_complement()
+    #             products.append(new_product)
+    #     return products, matches
 
-                # Overhang
-                overhang = None
-                try:
-                    overhang, anneal = primer.cut(len(primer) - match['len'])
-                except:
-                    pass
-
-                # Find binding position
-                pos = match['pos'] - match['len']
-                if direction=='forward':
-                    # If forward...
-                    new_product = template.cut(pos)[-1]
-                    # Fuse overhang
-                    if overhang is not None:
-                        overhang.fuse(new_product)
-                elif direction == 'reverse':
-                    # If reverse...
-                    new_product = copy(template).reverse_complement().cut(pos)[-1]
-                    # Fuse overhang
-                    if overhang is not None:
-                        overhang.fuse(new_product)
-                    new_product.reverse_complement()
-                products.append(new_product)
-        return products, matches
-
-    @staticmethod
-    def _pcr(template, p1, p2, min_bases):
-        def _polymerase_helper(template, primers, direction='forward'):
-            x = []
-            y = []
-            for p in primers:
-                products, matches = Reaction.polymerase(template, p, min_bases, direction=direction)
-                x += products
-                y += matches
-            return zip(x, y)
-
-        products = []
-        matches = []
-        for fwd_product, fwd_match in _polymerase_helper(template, [p1, p2], direction='forward'):
-            for product, rev_match in _polymerase_helper(fwd_product, [p1, p2], direction='reverse'):
-                products.append(product)
-                matches.append((fwd_match, rev_match))
-        return products, matches
+    # @staticmethod
+    # def _pcr(template, p1, p2, min_bases):
+    #     def _polymerase_helper(template, primers, direction='forward'):
+    #         x = []
+    #         y = []
+    #         for p in primers:
+    #             products, matches = Reaction.polymerase(template, p, min_bases, direction=direction)
+    #             x += products
+    #             y += matches
+    #         return zip(x, y)
+    #
+    #     products = []
+    #     matches = []
+    #     for fwd_product, fwd_match in _polymerase_helper(template, [p1, p2], direction='forward'):
+    #         for product, rev_match in _polymerase_helper(fwd_product, [p1, p2], direction='reverse'):
+    #             products.append(product)
+    #             matches.append((fwd_match, rev_match))
+    #     return products, matches
 
     @staticmethod
     def pcr(template, p1, p2, min_bases=MIN_BASES):
@@ -931,6 +931,10 @@ class Reaction(object):
         #     ))
         #     p.description = report
         # return products
+
+    @staticmethod
+    def get_homology_graph(fragment_list, max_homology, min_homology):
+
 
     @staticmethod
     def assembly_cycles(fragment_list, max_homology, min_homology):
@@ -1010,9 +1014,11 @@ class Reaction(object):
             x1 = cy
             x2 = x1[1:] + x1[:1]
             pairs = zip(x1, x2)
-
             # Cut 5' ends of fragments according to homology
+            # overlap_info = []
+
             for right, left in pairs:
+
                 match = Reaction.anneal_threeprime(right, left)[0]
                 nt = right.get()[match[0]]
                 p = nt.cut_prev()
@@ -1035,6 +1041,8 @@ class Reaction(object):
                 for n1 in homology1.get():
                     for n2 in homology2.get():
                         n1.copy_features_from(n1)
+
+                # overlap_info = (0, len(left), len(homology1), Reaction.tm(homology1), left.name)
 
                 # fuse homology to left
                 left.fuse(homology1)
