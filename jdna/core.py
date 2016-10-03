@@ -934,15 +934,11 @@ class Reaction(object):
 
     @staticmethod
     def get_homology_graph(fragment_list, max_homology, min_homology):
-
-
-    @staticmethod
-    def assembly_cycles(fragment_list, max_homology, min_homology):
         def complete_match(m):
             return m[0][0] == m[0][1]
 
         def less_than_max_homology(m):
-            return m[0][0] < max_homology
+            return m[0][0] <= max_homology
 
         def one_match(m):
             return len(m) == 1
@@ -952,7 +948,10 @@ class Reaction(object):
                    and less_than_max_homology(m) \
                    and complete_match(m)
         fragments = fragment_list[:]
-        fragments += [copy(f).reverse_complement() for f in fragments[1:]]
+        for f in fragments[1:]:
+            reversed = copy(f).reverse_complement()
+            reversed.name = reversed.name + '(reversed)'
+            fragments.append(reversed)
         fragment_to_id = {}
         for i, f in enumerate(fragments):
             fragment_to_id[f] = i
@@ -964,6 +963,30 @@ class Reaction(object):
             if match and pass_conditions(match):
                 left, right = fragment_to_id[pair[0]], fragment_to_id[pair[1]]
                 graph[left].append(right)
+        key = fragments
+        return graph, key
+
+    @staticmethod
+    def evaluate_assembly(fragment_list, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
+        fragment_list = [copy(f) for f in fragment_list]
+        graph, fragments = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
+        cyclic_assemblies = Utilities.Graph.find_cycles(graph)
+        linear_assemblies = Utilities.Graph.find_linear(graph)
+        print 'Fragment list:'
+        for i, f in enumerate(fragments):
+            print '{} {} Length {}'.format(str(i), f.name, len(f))
+        if len(cyclic_assemblies) > 1:
+            print 'Cyclic assemblies found'
+            print cyclic_assemblies
+        else:
+            print 'No cyclic assemblies found'
+        if len(linear_assemblies) > 1:
+            print 'Linear assemblies found'
+            print linear_assemblies
+
+    @staticmethod
+    def assembly_cycles(fragment_list, max_homology, min_homology):
+        graph, fragments = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
         cycles = Utilities.Graph.find_cycles(graph)
         return [[fragments[x] for x in y] for y in cycles]
 
@@ -1084,12 +1107,36 @@ class Utilities:
 
             unique_cycles = []
             for g in graph:
-                cycles = Utilities.Graph.find_cyclic_paths(graph, [g])
+                cycles = Utilities.Graph.find_cyclic_paths(graph, [g], min_path_length=min_path_length)
                 for cy in cycles:
                     cy = Utilities.rotate_to_smallest(cy)
                     if cy not in unique_cycles:
                         unique_cycles.append(cy)
             return unique_cycles
+
+        @staticmethod
+        def find_linear(graph, min_path_length=2):
+            unique_paths = []
+            for g in graph:
+                c = True
+                for p in unique_paths:
+                    if g in p:
+                        c = False
+                        break
+                if c:
+                    unique_paths += Utilities.Graph.find_linear_paths(graph, [g], min_path_length=min_path_length)
+            return unique_paths
+
+        @staticmethod
+        def find_linear_paths(graph, path, min_path_length=2):
+            if path[-1] not in graph and len(path) >= min_path_length:
+                return [path]
+            paths = []
+            for node in graph[path[-1]]:
+                if node not in path:
+                    newpaths = Utilities.Graph.find_linear_paths(graph, path[:] + [node], min_path_length=min_path_length)
+                    paths += newpaths
+            return paths
 
         @staticmethod
         def find_cyclic_paths(graph, path, min_path_length=2):
@@ -1186,7 +1233,6 @@ class Convert:
         data['annotations'] = []
         data['bases'] = str(seq)
         data['description'] = seq.description
-
         def add_annotation(f):
             data['annotations'].append(f)
 

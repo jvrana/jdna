@@ -11,8 +11,9 @@ def test_long_gibson_assembly():
             bseq = json.load(f)
             dnas.append(Convert.from_benchling(bseq))
     dnas_copy = [copy(x) for x in dnas]
+    Reaction.evaluate_assembly(dnas)
     products = Reaction.cyclic_assembly(dnas)
-
+    Reaction.evaluate_assembly(dnas)
     # Verify original dnas did not change
     assert len(products) == 1
     assert len(products[0]) > 1000
