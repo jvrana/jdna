@@ -27,4 +27,6 @@ setup(
     long_description=readme(),
     keywords='dna biology cloning',
     tests_require=['pytest'],
+    package_dir={'jdna': 'jdna'},
+    package_data={'jdna': ['data/*.json']}
 )

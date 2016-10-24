@@ -9,15 +9,15 @@ import os
 from jdna.core import Convert, Sequence, Reaction
 import json
 from copy import copy
-
+# TODO: change jdna to get_sample_id since names can change...
 
 credentials = None
-with open('data/login.json', 'r') as f:
+login_location = os.path.join(os.path.dirname(__file__), 'data/login.json')
+with open(login_location, 'r') as f:
     credentials = json.load(f)
 
 aqapi = AquariumAPI(credentials['aqapi_url'], credentials['aqapi_login'], credentials['aqapi_key'])
 api = BenchlingAPI(credentials['benchling_api_key'])
-DNAdb_location = credentials['db_location']
 
 def login(url, login, password):
     br = mechanize.Browser()
@@ -81,7 +81,7 @@ def get_sample(sample):
 
 
 def db():
-    return shelve.open(os.path.join(DNAdb_location, 'DNA.db'), writeback=False)
+    return shelve.open(os.path.join(credentials['db_location'], 'DNA.db'), writeback=False)
 
 
 def db_get(key):
@@ -94,7 +94,7 @@ def db_get(key):
 def _save_to_fsa(item):
     item['id'] = str(item['id'])
     seqrec = benchling_to_seqrecord(item)
-    filename = os.path.join(DNAdb_location, '{id}_{name}.fsa'.format(id=item['id'], name=item['name']))
+    filename = os.path.join(credentials['db_location'], '{id}_{name}.fsa'.format(id=item['id'], name=item['name']))
     with open(filename, 'w') as handle:
         SeqIO.write(seqrec, handle, 'fasta')
 
@@ -183,7 +183,7 @@ def get_jdna_primer(primer_name):
     seq = Sequence(sequence=seq_str)
     seq.name = 'Primer {}_{}'.format(p['id'], p['name'])
     seq.description = p['description']
-    # seq.create_feature(seq.name, 'primer', 0, len(seq)-1)
+    seq.create_feature(seq.name, 'primer', 0, len(seq)-1)
     return seq
 
 

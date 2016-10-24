@@ -1,1 +1,1 @@
-include README.md, tests/test_data/*
+include README.md, tests/test_data/*, jdna/data/login.json

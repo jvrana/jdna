@@ -648,44 +648,6 @@ class Sequence(DoubleLinkedList):
             feature_info[feature] = [pos_ranges, feature_range]
         return feature_info
 
-    # def get_features(self):
-    #     features_to_nts = self._features_to_i()
-    #     feature_info = {}
-    #     nt_to_i = dict(zip(self.get(), range(len(self))))
-    #     for feature in features_to_nts:
-    #         nt_to_i_list = features_to_nts[feature]
-    #         nts, indices = zip(*nt_to_i_list)
-    #         first = nts[0].feature_rev(feature)[-1]
-    #         last = nts[0].feature_fwd(feature)[-1]
-    #         feature_pos = []
-    #         feature_span = []
-    #         for ntf in first.feature_fwd(feature):
-    #             feature_pos.append(nt_to_i[ntf])
-    #             feature_span.append(ntf.features[feature])
-    #
-    #         feature_pos = Utilities.rotate_to_smallest(feature_pos)
-    #         feature_span = Utilities.rotate_to_smallest(feature_span)
-    #
-    #         feature_pos_ranges = list(Utilities.group_ranges(feature_pos))
-    #         feature_span_ranges = list(Utilities.group_ranges(feature_span))
-    #
-    #         if len(feature_span_ranges) > 1:
-    #             raise Exception("Error occured with Feature {} at indices {}".format(feature, feature_span_ranges))
-    #
-    #         pos1 = feature_pos_ranges[0][0]
-    #         pos2 = feature_pos_ranges[0][-1]
-    #         span1 = feature_span_ranges[0][0]
-    #         span2 = feature_span_ranges[0][-1]
-    #         if len(feature_pos_ranges) == 2:
-    #             if self.is_cyclic():
-    #                 pos1 = feature_pos_ranges[1][0]
-    #                 pos2 = feature_pos_ranges[0][-1]
-    #             else:
-    #                 raise Exception(
-    #                     "Error occured is position of Feature {} at positions {}".format(feature, feature_pos_ranges))
-    #         feature_info[feature] = [(pos1, pos2), (span1, span2)]
-    #     return feature_info
-
     def print_features(self):
         raise NotImplementedError()
         # features = self.get_feature_pos()
@@ -910,27 +872,6 @@ class Reaction(object):
                 product.fuse(Sequence(first=o2))
             products.append(product)
         return products
-        # products, matches = Reaction._pcr(template, p1, p2, min_bases)
-        # # rename products
-        # for p, m in zip(products, matches):
-        #     p.name = '{} PCR[{}, {}]'.format(template.name, m[0]['pos'], len(template) - m[1]['pos'])
-        #     report = """*** PCR ***
-        #                 INPUTS:
-        #                 Template: {template}
-        #                 P1: {primer1} {match1}
-        #                 P2: {primer2} {match2}
-        #
-        #                 OUTPUS:
-        #                 Products: {numproducts}""".format(**dict(
-        #         template=template.name,
-        #         primer1=str(p1),
-        #         match1=str(m[0]),
-        #         primer2=str(p2),
-        #         match2=str(m[1]),
-        #         numproducts=len(products)
-        #     ))
-        #     p.description = report
-        # return products
 
     @staticmethod
     def get_homology_graph(fragment_list, max_homology, min_homology):
@@ -989,37 +930,6 @@ class Reaction(object):
         graph, fragments = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
         cycles = Utilities.Graph.find_cycles(graph)
         return [[fragments[x] for x in y] for y in cycles]
-
-    # @staticmethod
-    # def fast_assembly_cycles(fragments, max_homology, min_homology):
-    #
-    #     def matches(left, right):
-    #         left = left.lower()
-    #         right = right.lower()
-    #         if not left[-min_homology:] in right[:max_homology]:
-    #             return False
-    #         if not right[:min_homology] in left[-max_homology:]:
-    #             return False
-    #         if right[:max_homology+1] == left[-max_homology-1:]:
-    #             return False
-    #         return True
-    #
-    #     fragments += [copy(f).reverse_complement() for f in fragments[1:]]
-    #     fragment_to_id = {}
-    #     fragmentstr_to_id = {}
-    #     for i, f in enumerate(fragments):
-    #         fragment_to_id[f] = i
-    #         fragmentstr_to_id[str(f)] = i
-    #     fragment_strs = fragmentstr_to_id.keys()
-    #     pairs = itertools.product(fragment_strs, fragment_strs[:])  # itertools.permutations(fragments, 2)
-    #     graph = defaultdict(list)
-    #     for left, right in pairs:
-    #         if matches(left, right):
-    #             l, r = [fragmentstr_to_id[x] for x in [left, right]]
-    #             graph[l].append(r)
-    #     print graph
-    #     cycles = Utilities.Graph.find_cycles(graph)
-    #     return [[fragments[x] for x in y] for y in cycles]
 
     # TODO: make a linear assembly
     @staticmethod
