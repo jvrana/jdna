@@ -172,7 +172,7 @@ def get_jdna(sample_name):
     hseq.id = bseq['id']
     return hseq
 
-
+#TODO: have database read description for features
 def get_jdna_primer(primer_name):
     p = get_json_primer(primer_name)
     anneal = p['fields']['Anneal Sequence']
@@ -186,7 +186,7 @@ def get_jdna_primer(primer_name):
     seq.create_feature(seq.name, 'primer', 0, len(seq)-1)
     return seq
 
-
+#TODO: have database read description for features
 def update_primer(primer_name):
     p = get_sample(primer_name)
     register(p, savefsa=False)
