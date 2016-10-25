@@ -253,9 +253,11 @@ def assembly_gibson(task_id):
 
 def to_benchling(id, folder_name, overwrite=True):
     bseq = copy(retrieve(id))
+    sample = get_sample(id)
     del bseq['id']
     bseq['folder'] = api.find_folder(folder_name, regex=True)['id']
     bseq['overwrite'] = overwrite
+    bseq['name'] = sample['id'] + '_' + bseq['name']
     seq = api.create_sequence(**bseq)
     print str('www.benchling.com' + seq['editURL'])
 
