@@ -79,18 +79,18 @@ def get_sample(sample):
 
 ########################
 
-
+# returns the database
 def db():
     return shelve.open(os.path.join(credentials['db_location'], 'DNA.db'), writeback=False)
 
-
+# returns value from database
 def db_get(key):
     dnadb = db()
     value = dnadb[key]
     dnadb.close()
     return value
 
-
+# saves .fsa of
 def _save_to_fsa(item):
     item['id'] = str(item['id'])
     seqrec = benchling_to_seqrecord(item)
@@ -121,7 +121,7 @@ def register(item, savefsa=True):
         _save_to_fsa(item)
     print 'Item {} {} registered.'.format(item['id'], item['name'])
 
-
+# registers an item with a name and a sequence
 def register_jdna(jseq, savefsa=True):
     bseq = Convert.to_benchling_json(jseq)
     bseq['id'] = jseq.id
@@ -136,6 +136,7 @@ def get_seq_from_db(id):
 
 ###########
 
+# makes a json sequence from an aquarium entry
 def construct_sequence(sample_name):
     print 'getting sequence for', sample_name
     s = get_sample(sample_name)
@@ -146,7 +147,8 @@ def construct_sequence(sample_name):
     bseq['aliases'] = [s['name'], s['id']]
     return bseq
 
-
+# gets json for primer from database
+# updates from aquarium if it can't find it
 def get_json_primer(primer_name):
     pid = retrieve(primer_name)
     p = retrieve(pid)
@@ -154,7 +156,8 @@ def get_json_primer(primer_name):
         p = update_primer(primer_name)
     return p
 
-
+# gets json sequence from database
+# updates from aquarium if it can't find it
 def get_json_sequence(sample_name):
     sample_name = str(sample_name)
     bseq_id = retrieve(sample_name)
@@ -163,7 +166,7 @@ def get_json_sequence(sample_name):
         bseq = update_sequence(sample_name)
     return bseq
 
-
+# gets a jdna object from the database
 def get_jdna(sample_name):
     sample_name = str(sample_name)
     bseq = get_json_sequence(sample_name)
@@ -172,33 +175,54 @@ def get_jdna(sample_name):
     hseq.id = bseq['id']
     return hseq
 
-#TODO: have database read description for features
+# gets a jdna object from the database
 def get_jdna_primer(primer_name):
     p = get_json_primer(primer_name)
+    return parse_primer_json(p)
+
+# parses the primer json
+def parse_primer_json(json_primer):
+    p = json_primer
     anneal = p['fields']['Anneal Sequence']
     overhang = p['fields']['Overhang Sequence']
     if overhang is None or 'one' in overhang:
         overhang = ''
     seq_str = str(overhang).lower().strip() + str(anneal).lower().strip()
     seq = Sequence(sequence=seq_str)
-    seq.name = 'Primer {}_{}'.format(p['id'], p['name'])
+    seq.name = p['name']
     seq.description = p['description']
+    seq.aliases = [p['name'], p['id']]
     seq.create_feature(seq.name, 'primer', 0, len(seq)-1)
+    try:
+        primer_features = re.findall('(?P<name>[\w\d]+):\s(?P<sequence>\w+)\s\|', seq.description)
+        for f in primer_features:
+            name, f_seq = f
+            matched = seq.search_all(Sequence(sequence=f_seq))
+            matched = matched[0]
+            if not matched:
+                print warnings.warn('Primer feature {} mismatched to sequence'.format(f))
+                continue
+            start, nt = matched
+            end = start + len(f_seq)
+            seq.create_feature(name, 'misc', start, end - 1)
+    except:
+        print 'could not parse primer features'
     return seq
 
-#TODO: have database read description for features
+# updates the primer entry in the database from aquarium
 def update_primer(primer_name):
     p = get_sample(primer_name)
+    parse_primer_json(p)
     register(p, savefsa=False)
     return p
 
-
+# updates the sequence entry in the database from aquarium
 def update_sequence(sample_name):
     bseq = construct_sequence(sample_name)
     register(bseq)
     return bseq
 
-
+# updates the fragment entry in the database from aquarium
 def update_fragment_sequence(name_or_id):
     aqfragment = get_sample(name_or_id)
     fields = aqfragment['fields']
@@ -218,7 +242,8 @@ def update_fragment_sequence(name_or_id):
     register_jdna(product)
     return product
 
-
+# gets fragment sequence from database
+# if it doesn't exist, it constructs it
 def get_fragment_sequence(fragment_id):
     bfrag = retrieve(fragment_id)
     if bfrag is None:
@@ -251,14 +276,18 @@ def assembly_gibson(task_id):
     return result
 
 
+def sequence_json_to_benchling(bseq, folder_name, overwrite=True):
+    bseq['folder'] = api.find_folder(folder_name, regex=True)['id']
+    bseq['overwrite'] = overwrite
+    seq = api.create_sequence(**bseq)
+    return seq
+
 def to_benchling(id, folder_name, overwrite=True):
     bseq = copy(retrieve(id))
     sample = get_sample(id)
     del bseq['id']
-    bseq['folder'] = api.find_folder(folder_name, regex=True)['id']
-    bseq['overwrite'] = overwrite
-    bseq['name'] = sample['id'] + '_' + bseq['name']
-    seq = api.create_sequence(**bseq)
+    bseq['name'] = str(sample['id']) + '_' + bseq['name']
+    seq = sequence_json_to_benchling(bseq, folder_name, overwrite=overwrite)
     print str('www.benchling.com' + seq['editURL'])
 
 

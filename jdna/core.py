@@ -729,6 +729,19 @@ class Sequence(DoubleLinkedList):
 
 
 class Reaction(object):
+
+    @staticmethod
+    def combine_dnas(*parts):
+        for p in parts:
+            p.create_feature(p.name, 'misc', 0, len(p) - 1)
+        last = None
+        for p in parts:
+            if last is None:
+                last = p
+                continue
+            last = last + p
+        return last
+
     @staticmethod
     def _anneal(template, primer, min_bases=MIN_BASES, threeprime=True):
         t = template.get_first()
