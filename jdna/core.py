@@ -354,29 +354,24 @@ class DoubleLinkedList(object):
             self.reindex(1)
         return self
 
-    def slice(self, i, j, fwd=True):
-        links = self.get()
-        start = links[i]
-        stop = links[j]
-        method = start.fwd
-        if not fwd:
-            method = start.rev
-        sec_links = method(stop_link=stop)
-        if sec_links[-1] is stop:
-            return sec_links
-        else:
-            raise IndexError("Improper indices for linkedlist.")
+    # def slice(self, i, j, fwd=True):
+    #     links = self.get()
+    #     start = links[i]
+    #     stop = links[j]
+    #     method = start.fwd
+    #     if not fwd:
+    #         method = start.rev
+    #     sec_links = method(stop_link=stop)
+    #     if sec_links[-1] is stop:
+    #         return sec_links
+    #     else:
+    #         raise IndexError("Improper indices for linkedlist.")
 
 
     def __copy__(self):
         copied = type(self)(sequence='X')
         copied.__dict__.update(self.__dict__)
         copied.initialize(str(self))
-        # curr = copied.first
-        # for link in self.get()[1:]:
-        #     copied_link = copy(link)
-        #     curr.set_next(copied_link)
-        #     curr = copied_link
         if self.is_cyclic():
             copied.make_cyclic()
         return copied
@@ -912,6 +907,11 @@ class Reaction(object):
         pairs = itertools.product(fragments, fragments[:]) #itertools.permutations(fragments, 2)
         graph = defaultdict(list)
         for pair in pairs:
+            # TODO: add possibility of fragment to circularize on itself
+            if pair[0] == pair[1]:
+                s = str(pair[0])
+                if s[:min_homology] == s[-min_homology:]:
+                    raise Exception("Fragment self circularized.")
             x = pair
             match = Reaction.anneal_threeprime(*pair, min_bases=min_homology)
             if match and pass_conditions(match):
@@ -920,6 +920,7 @@ class Reaction(object):
         key = fragments
         return graph, key
 
+    # TODO: fix this method
     @staticmethod
     def evaluate_assembly(fragment_list, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
         fragment_list = [copy(f) for f in fragment_list]
@@ -938,6 +939,7 @@ class Reaction(object):
             print 'Linear assemblies found'
             print linear_assemblies
 
+    # TODO: find linear assemblies as well
     @staticmethod
     def assembly_cycles(fragment_list, max_homology, min_homology):
         graph, fragments = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
@@ -945,6 +947,9 @@ class Reaction(object):
         return [[fragments[x] for x in y] for y in cycles]
 
     # TODO: make a linear assembly
+    # TODO: make generic so it will either make cyclic or linear assembly
+    # TODO: call "end_homology" instead
+    # TODO: make a "try_cyclic_homology" method
     @staticmethod
     def cyclic_assembly(fragments, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
         fragments = [copy(f) for f in fragments]
@@ -964,13 +969,17 @@ class Reaction(object):
             # overlap_info = []
 
             for right, left in pairs:
-
+                print left, right
+                # Find homology region and cut
                 match = Reaction.anneal_threeprime(right, left)[0]
+                print match
                 nt = right.get()[match[0]]
                 p = nt.cut_prev()
+
+                # modify right fragment
                 right.first = nt
 
-                # Fixing homology features
+                # define homology sequences
                 homology1 = Sequence(first=p)
 
                 nt = left.get()[len(left) - match[0] - 1]
@@ -986,12 +995,13 @@ class Reaction(object):
                 # copy features while removing overlapping ones
                 for n1 in homology1.get():
                     for n2 in homology2.get():
-                        n1.copy_features_from(n1)
+                        n1.copy_features_from(n2)
 
                 # overlap_info = (0, len(left), len(homology1), Reaction.tm(homology1), left.name)
 
                 # fuse homology to left
                 left.fuse(homology1)
+
             # Fuse all fragments
             for p in pairs:
                 right, left = p
@@ -1005,11 +1015,79 @@ class Reaction(object):
             products.append(cyprod)
         return products
 
+
+    # def circularize_by_homology(self, seq, MAX_HOMOLOGY=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
+    #     seq_str = str(seq)
+    #     seq_copy = copy(seq).chop_off_threeprime(MAX_HOMOLOGY)
+    #     m = Reaction.anneal_threeprime(seq_copy, seq)
+    #     if len(m) == 0:
+    #         raise Exception("No homology found to circularize DNA.")
+    #     elif len(m) > 1:
+    #         raise Exception("More than one homology site found to circularize DNA.")
+    #     match = m[0]
+    #     if not match[0] == match[1]:
+    #         raise Exception("Homology site is not a complete match. Cannot circularize DNA.")
+    #     seq.chop_off_threeprime(len(seq) - match[0] - 1)
+    #     seq.make_cyclic()
+    #     if not str(seq) == seq_str:
+    #         raise Exception("Error occured while attempting circularization by homology. Sequences do not match.")
+    #     return seq
+
+    # TODO: finish overlap extension pcr
     @staticmethod
-    def end_homology(left, right):
+    def overlap_extension_pcr(fragment_list, primer1, primer2, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
+        fragment_list = [copy(f) for f in fragment_list]
+        graph, fragments = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
+        print type(graph)
+        print graph.keys()
+        print graph
+        linear_assemblies = Utilities.Graph.find_linear(graph)
+        print linear_assemblies
+
+    # TODO: add test modules for this
+    @staticmethod
+    def end_homology(left, right, copy=True):
+        if copy:
+            left = copy(left)
+            right = copy(right)
+
+        # Find homology region and cut
         match = Reaction.anneal_threeprime(right, left)[0]
         nt = right.get()[match[0]]
-        right.cut
+        p = nt.cut_prev()
+
+        # modify right fragment
+        right.first = nt
+
+        # define homology 1
+        homology1 = Sequence(first=p)
+
+        # define homology 2
+        nt = left.get()[len(left) - match[0] - 1]
+        n = nt.cut_next()
+        left.first = nt
+        homology2 = Sequence(first=n)
+
+        # add features for homology1
+        if homology1.first is not None:
+            if not len(homology1) == len(homology2):
+                raise Exception("Homologies for assembly are different lengths.")
+
+        # copy features while removing overlapping ones
+        for n1 in homology1.get():
+            for n2 in homology2.get():
+                n1.copy_features_from(n2)
+
+        # overlap_info = (0, len(left), len(homology1), Reaction.tm(homology1), left.name)
+
+        # fuse homology to left
+        left.fuse(homology1)
+        left.fuse(right)
+
+        left.get_first()
+        return left, homology2
+
+
 
     @staticmethod
     def tm(seq):
