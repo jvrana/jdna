@@ -1,4 +1,0 @@
-
-# Default values
-MIN_BASES = 13
-MAX_GIBSON_HOMOLOGY = 60
