@@ -945,12 +945,12 @@ class Reaction(object):
         h = hr['homology graph']
         ig = hr['interaction graph']
         print 'Cyclic Assemblies: {}'.format(len(c))
-        for i, a in enumerate(c):
+        for i, a in enumerate(c[::-1]):
             print '\tAssembly {}'.format(i)
             for n in a:
                 print '\t\t{} {}'.format(f[n].name, h[n])
         print 'Linear Assemblies: {}'.format(len(l))
-        for i, a in enumerate(l):
+        for i, a in enumerate(l[::-1]):
             print '\tAssembly {}'.format(i)
             for n in a:
                 print '\t\t{} {}'.format(f[n].name, h[n])

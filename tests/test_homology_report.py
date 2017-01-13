@@ -20,7 +20,8 @@ def test_long_gibson_assembly():
             bseq = json.load(f)
             dnas.append(Convert.from_benchling(bseq))
     dnas_copy = [copy(x) for x in dnas]
-    Reaction.homology_report(dnas)
+    h_report = Reaction.homology_report(dnas)
+    Reaction.print_homology_report(h_report)
     products = Reaction.homology_assembly(dnas, True)
     Reaction.homology_report(dnas)
 
