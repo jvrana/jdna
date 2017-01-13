@@ -906,58 +906,79 @@ class Reaction(object):
             fragment_to_id[f] = i
         pairs = itertools.product(fragments, fragments[:]) #itertools.permutations(fragments, 2)
         graph = defaultdict(list)
+        match_graph = defaultdict(list)
         for pair in pairs:
             # TODO: add possibility of fragment to circularize on itself
             if pair[0] == pair[1]:
                 s = str(pair[0])
                 if s[:min_homology] == s[-min_homology:]:
                     raise Exception("Fragment self circularized.")
-            x = pair
             match = Reaction.anneal_threeprime(*pair, min_bases=min_homology)
             if match and pass_conditions(match):
                 left, right = fragment_to_id[pair[0]], fragment_to_id[pair[1]]
                 graph[left].append(right)
+                match_graph[left].append(match)
         key = fragments
-        return graph, key
+        return graph, key, match_graph
 
     # TODO: fix this method
     @staticmethod
-    def evaluate_assembly(fragment_list, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
+    def homology_report(fragment_list, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
         fragment_list = [copy(f) for f in fragment_list]
-        graph, fragments = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
+        graph, fragments, match_graph = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
         cyclic_assemblies = Utilities.Graph.find_cycles(graph)
         linear_assemblies = Utilities.Graph.find_linear(graph)
-        print 'Fragment list:'
-        for i, f in enumerate(fragments):
-            print '{} {} Length {}'.format(str(i), f.name, len(f))
-        if len(cyclic_assemblies) > 1:
-            print 'Cyclic assemblies found'
-            print cyclic_assemblies
-        else:
-            print 'No cyclic assemblies found'
-        if len(linear_assemblies) > 1:
-            print 'Linear assemblies found'
-            print linear_assemblies
+        report = {
+            'fragments': fragments,
+            'interaction graph': graph,
+            'homology graph': match_graph,
+            'cyclic_paths': cyclic_assemblies,
+            'linear_paths': linear_assemblies,
+        }
+        return report
 
-    # TODO: find linear assemblies as well
     @staticmethod
-    def assembly_cycles(fragment_list, max_homology, min_homology):
-        graph, fragments = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
-        cycles = Utilities.Graph.find_cycles(graph)
-        return [[fragments[x] for x in y] for y in cycles]
+    def print_homology_report(hr):
+        c = hr['cyclic_paths']
+        l = hr['linear_paths']
+        f = hr['fragments']
+        h = hr['homology graph']
+        ig = hr['interaction graph']
+        print 'Cyclic Assemblies: {}'.format(len(c))
+        for i, a in enumerate(c):
+            print '\tAssembly {}'.format(i)
+            for n in a:
+                print '\t\t{} {}'.format(f[n].name, h[n])
+        print 'Linear Assemblies: {}'.format(len(l))
+        for i, a in enumerate(l):
+            print '\tAssembly {}'.format(i)
+            for n in a:
+                print '\t\t{} {}'.format(f[n].name, h[n])
 
-    # TODO: make a linear assembly
-    # TODO: make generic so it will either make cyclic or linear assembly
-    # TODO: call "end_homology" instead
-    # TODO: make a "try_cyclic_homology" method
     @staticmethod
     def cyclic_assembly(fragments, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
-        fragments = [copy(f) for f in fragments]
-        cycles = Reaction.assembly_cycles(fragments, max_homology=max_homology, min_homology=min_homology)
-        if len(cycles) > 1:
+        return Reaction.homology_assembly(fragments, True, max_homology=max_homology, min_homology=min_homology)
+
+    @staticmethod
+    def linear_assembly(fragments, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
+        return Reaction.homology_assembly(fragments, False, max_homology=max_homology, min_homology=min_homology)
+
+    @staticmethod
+    def homology_assembly(fragment_list, cyclic, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
+        fragment_list = [copy(f) for f in fragment_list]
+        h_report = Reaction.homology_report(fragment_list, max_homology=max_homology, min_homology=min_homology)
+        fragments = h_report['fragments']
+        paths = h_report['cyclic_paths']
+        if not cyclic:
+            paths = h_report['linear_paths']
+        assembly = [[fragments[x] for x in y] for y in paths]
+        if len(assembly) > 1:
             warnings.warn("More than one assembly found.")
+        elif len(assembly) == 0:
+            Reaction.print_homology_report(h_report)
+            Exception("Assembly failed.")
         products = []
-        for cyno, cy in enumerate(cycles):
+        for cyno, cy in enumerate(assembly):
             # Copy fragments in cycle
             cy = [copy(x) for x in cy]
 
@@ -969,10 +990,9 @@ class Reaction(object):
             # overlap_info = []
 
             for right, left in pairs:
-                print left, right
                 # Find homology region and cut
                 match = Reaction.anneal_threeprime(right, left)[0]
-                print match
+
                 nt = right.get()[match[0]]
                 p = nt.cut_prev()
 
@@ -1009,8 +1029,10 @@ class Reaction(object):
 
             # Annotate new product
             cyprod = x1[0]
-            cyprod.name = 'Cyclic Product {}'.format(cyno)
-
+            label = 'Cyclic: '
+            if not cyclic:
+                label = 'Linear'
+            cyprod.name = '{} Product: {}'.format(label, cyno)
 
             products.append(cyprod)
         return products
@@ -1037,7 +1059,7 @@ class Reaction(object):
     @staticmethod
     def overlap_extension_pcr(fragment_list, primer1, primer2, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
         fragment_list = [copy(f) for f in fragment_list]
-        graph, fragments = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
+        graph, fragments, match_graph = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
         print type(graph)
         print graph.keys()
         print graph

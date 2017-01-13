@@ -264,7 +264,7 @@ def assembly_gibson(task_id):
     print 'Fragments: {}'.format(fragments)
     print 'OUT >',
     hfrags = [get_fragment_sequence(f) for f in fragments]
-    products = Reaction.cyclic_assembly(hfrags, max_homology=61)
+    products = Reaction.homology_assembly(hfrags, max_homology=61)
     if len(products) > 1:
         raise Exception
     result = products[0]

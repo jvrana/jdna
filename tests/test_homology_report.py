@@ -1,12 +1,21 @@
-from jdna.core import Reaction, Convert
-from copy import copy
-import json
-import glob
+'''
+Project: jdna
+File: test_homology_report.py
+Author: Justin
+Date: 1/12/17
 
+Description: 
+
+'''
+
+import glob
+import json
+from jdna.core import Sequence, Reaction, Feature, Convert
+from copy import copy
 
 def test_long_gibson_assembly():
     dnas = []
-    for file in glob.glob('test_data/Fragment*json'):
+    for file in glob.glob('test_data/Frag*json'):
         with open(file, 'r') as f:
             bseq = json.load(f)
             dnas.append(Convert.from_benchling(bseq))
@@ -14,6 +23,7 @@ def test_long_gibson_assembly():
     Reaction.homology_report(dnas)
     products = Reaction.homology_assembly(dnas, True)
     Reaction.homology_report(dnas)
+
     # Verify original dnas did not change
     assert len(products) == 1
     assert len(products[0]) > 1000
@@ -23,3 +33,5 @@ def test_long_gibson_assembly():
         assert str(dnas[i]) == str(dnas_copy[i])
 
     assert len(dnas) == len(dnas_copy)
+
+test_long_gibson_assembly()

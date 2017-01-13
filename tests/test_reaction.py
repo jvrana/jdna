@@ -58,7 +58,7 @@ def test_gibson():
     frag3 = create_product(f3, oh3, oh4)
     frag4 = create_product(f4, oh4, oh1)
     fragments = [frag1, frag2, frag3, frag4]
-    products = Reaction.cyclic_assembly(fragments)
+    products = Reaction.homology_assembly(fragments, True)
     expected = ''.join([str(x) for x in [oh1, f1, oh2, f2, oh3, f3, oh4, f4]])
     assert len(products[0].search_all(Sequence(sequence=expected))) == 1
 
@@ -87,7 +87,7 @@ def test_gibson_fail():
     frag3 = create_product(f3, oh3, oh4)
     frag4 = create_product(f4, oh4, oh1)
     fragments = [frag1, frag2, frag3, frag4]
-    products = Reaction.cyclic_assembly(fragments)
+    products = Reaction.homology_assembly(fragments, True)
     assert len(products) == 0
 
 def test_gibsons_with_inversions():
@@ -117,7 +117,7 @@ def test_gibsons_with_inversions():
     feature2 = frag2.create_feature('feature', 'type', 0, 10)
     feature1 = frag1.create_feature('feature', 'type', len(frag2)-11, len(frag2)-1)
     fragments = [frag1, frag2.reverse_complement(), frag3, frag4]
-    products = Reaction.cyclic_assembly(fragments)
+    products = Reaction.homology_assembly(fragments, True)
     expected = ''.join([str(x) for x in [oh1, f1, oh2, f2, oh3, f3, oh4, f4]])
     assert len(products[0].search_all(Sequence(sequence=expected))) == 1
     features = products[0].get_features()
@@ -150,7 +150,7 @@ def test_gibsons_with_inversions():
     feature1 = frag3.create_feature('feature1', 'type', 0, 10)
     feature2 = frag4.create_feature('feature2', 'type', len(frag4)-10, len(frag4)-1)
     fragments = [frag1, frag2.reverse_complement(), frag3, frag4]
-    products = Reaction.cyclic_assembly(fragments)
+    products = Reaction.homology_assembly(fragments, True)
     expected = ''.join([str(x) for x in [oh1, f1, oh2, f2, oh3, f3, oh4, f4]])
     assert len(products) == 1
     assert len(products[0].search_all(Sequence(sequence=expected))) == 1
@@ -179,7 +179,7 @@ def test_gibson_feature_fusion():
     frag2 = Reaction.pcr(template, p3, p4)[0]
     print frag2
     fragments = [frag1, frag2]
-    products = Reaction.cyclic_assembly(fragments)
+    products = Reaction.homology_assembly(fragments, True)
     expected = str(template)
     print frag1.get_features()
     print frag2.get_features()
