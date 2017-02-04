@@ -2,14 +2,22 @@ LOCUS       hCas9-VPR              11319 bp ds-DNA     circular     04-OCT-2016
 DEFINITION  .
 KEYWORDS    "accession:addgene_68497_120555"                                   
 FEATURES             Location/Qualifiers
-     promoter        126..652
-                     /label="CMV promoter"
-                     /ApEinfo_revcolor=#84b0dc
-                     /ApEinfo_fwdcolor=#84b0dc
-     promoter        597..716
-                     /label="CMV2_promoter"
-                     /ApEinfo_revcolor=#d59687
-                     /ApEinfo_fwdcolor=#d59687
+     misc_feature    5092..5124
+                     /label="VP16"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     promoter        complement(9026..9055)
+                     /label="lac_promoter"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     misc_feature    7621..7698
+                     /label="SV40_origin"
+                     /ApEinfo_revcolor=#f8d3a9
+                     /ApEinfo_fwdcolor=#f8d3a9
+     terminator      8810..8929
+                     /label="SV40_PA_terminator"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
      misc_feature    complement(7436..7456)
                      /label="pBABE_3_primer"
                      /ApEinfo_revcolor=#85dae9
@@ -18,202 +26,82 @@ FEATURES             Location/Qualifiers
                      /label="Kan/neoR"
                      /ApEinfo_revcolor=#ffef86
                      /ApEinfo_fwdcolor=#ffef86
-     misc_feature    7683..7702
-                     /label="SV40pro_F_primer"
-                     /ApEinfo_revcolor=#b4abac
-                     /ApEinfo_fwdcolor=#b4abac
-     misc_feature    628..647
-                     /label="pCEP_fwd_primer"
-                     /ApEinfo_revcolor=#84b0dc
-                     /ApEinfo_fwdcolor=#84b0dc
-     misc_feature    8898..8917
-                     /label="EBV_rev_primer"
-                     /ApEinfo_revcolor=#85dae9
-                     /ApEinfo_fwdcolor=#85dae9
-     rep_origin      complement(9361..10043)
-                     /label="ColE1 origin"
-                     /ApEinfo_revcolor=#9eafd2
-                     /ApEinfo_fwdcolor=#9eafd2
-     misc_feature    4870..4884
-                     /label="NLS"
-                     /ApEinfo_revcolor=#ff9ccd
-                     /ApEinfo_fwdcolor=#ff9ccd
-     promoter        585..654
-                     /label="CMV_promoter"
-                     /ApEinfo_revcolor=#f8d3a9
-                     /ApEinfo_fwdcolor=#f8d3a9
-     misc_feature    7621..7698
-                     /label="SV40_origin"
-                     /ApEinfo_revcolor=#f8d3a9
-                     /ApEinfo_fwdcolor=#f8d3a9
-     misc_feature    6548..6572
-                     /label="attB2"
-                     /ApEinfo_revcolor=#84b0dc
-                     /ApEinfo_fwdcolor=#84b0dc
-     misc_feature    2443..2449
-                     /label="mutation"
-                     /ApEinfo_revcolor=#b4abac
-                     /ApEinfo_fwdcolor=#b4abac
-     misc_feature    775..777
-                     /label="Mutation"
-                     /ApEinfo_revcolor=#85dae9
-                     /ApEinfo_fwdcolor=#85dae9
-     misc_feature    complement(8990..9012)
-                     /label="M13_pUC_rev_primer"
-                     /ApEinfo_revcolor=#85dae9
-                     /ApEinfo_fwdcolor=#85dae9
-     misc_feature    5149..5172
-                     /label="SV40 NLS"
-                     /ApEinfo_revcolor=#9eafd2
-                     /ApEinfo_fwdcolor=#9eafd2
-     misc_feature    complement(9364..9983)
-                     /label="pBR322_origin"
-                     /ApEinfo_revcolor=#f58a5e
-                     /ApEinfo_fwdcolor=#f58a5e
-     misc_recomb     complement(6551..6571)
-                     /label="attB2"
-                     /ApEinfo_revcolor=#c7b0e3
-                     /ApEinfo_fwdcolor=#c7b0e3
-     misc_feature    742..747
-                     /label="Kozak"
-                     /ApEinfo_revcolor=#f8d3a9
-                     /ApEinfo_fwdcolor=#f8d3a9
-     promoter        51..627
-                     /label="CMV_immearly_promoter"
-                     /ApEinfo_revcolor=#ffef86
-                     /ApEinfo_fwdcolor=#ffef86
-     misc_feature    748..750
-                     /label="START"
-                     /ApEinfo_revcolor=#b1ff67
-                     /ApEinfo_fwdcolor=#b1ff67
-     promoter        complement(11040..11068)
-                     /label="AmpR_promoter"
-                     /ApEinfo_revcolor=#b1ff67
-                     /ApEinfo_fwdcolor=#b1ff67
-     misc_binding    complement(8999..9021)
-                     /label="LacO"
-                     /ApEinfo_revcolor=#84b0dc
-                     /ApEinfo_fwdcolor=#84b0dc
-     misc_feature    complement(6551..6571)
-                     /label="Gateway Recomb2"
-                     /ApEinfo_revcolor=#f58a5e
-                     /ApEinfo_fwdcolor=#f58a5e
-     misc_feature    4922..4942
-                     /label="Gateway recomb1"
-                     /ApEinfo_revcolor=#f58a5e
-                     /ApEinfo_fwdcolor=#f58a5e
-     misc_feature    3265..3267
-                     /label="Mutation"
-                     /ApEinfo_revcolor=#9eafd2
-                     /ApEinfo_fwdcolor=#9eafd2
-     misc_feature    4852..6543
-                     /label="VPR"
-                     /ApEinfo_revcolor=#c6c9d1
-                     /ApEinfo_fwdcolor=#c6c9d1
-     gene            7840..8628
-                     /label="NeoR/KanR"
-                     /ApEinfo_revcolor=#d6b295
-                     /ApEinfo_fwdcolor=#d6b295
-     promoter        430..633
-                     /label="CMV promoter"
-                     /ApEinfo_revcolor=#9eafd2
-                     /ApEinfo_fwdcolor=#9eafd2
-     misc_feature    130..417
-                     /label="CAG_enhancer"
-                     /ApEinfo_revcolor=#9eafd2
-                     /ApEinfo_fwdcolor=#9eafd2
-     misc_feature    complement(7442..7657)
-                     /label="SV40_enhancer"
-                     /ApEinfo_revcolor=#ff9ccd
-                     /ApEinfo_fwdcolor=#ff9ccd
      misc_feature    748..4851
                      /label="hCas9"
                      /ApEinfo_revcolor=#75c6a9
                      /ApEinfo_fwdcolor=#75c6a9
-     rep_origin      7016..7322
-                     /label="F1 ori"
-                     /ApEinfo_revcolor=#9eafd2
-                     /ApEinfo_fwdcolor=#9eafd2
-     promoter        7454..7722
-                     /label="SV40_promoter"
-                     /ApEinfo_revcolor=#84b0dc
-                     /ApEinfo_fwdcolor=#84b0dc
-     misc_feature    5014..5046
-                     /label="VP16"
-                     /ApEinfo_revcolor=#b1ff67
-                     /ApEinfo_fwdcolor=#b1ff67
-     primer_bind     complement(8973..8993)
-                     /label="M13-rev"
-                     /ApEinfo_revcolor=#85dae9
-                     /ApEinfo_fwdcolor=#85dae9
-     primer_bind     complement(6620..6639)
-                     /label="T3"
-                     /ApEinfo_revcolor=#85dae9
-                     /ApEinfo_fwdcolor=#85dae9
-     misc_feature    7016..7322
-                     /label="f1_origin"
-                     /ApEinfo_revcolor=#ffef86
-                     /ApEinfo_fwdcolor=#ffef86
-     promoter        126..429
-                     /label="CMV enhancer"
-                     /ApEinfo_revcolor=#c7b0e3
-                     /ApEinfo_fwdcolor=#c7b0e3
-     misc_feature    4864..4884
-                     /label="SV40 NLS"
-                     /ApEinfo_revcolor=#b1ff67
-                     /ApEinfo_fwdcolor=#b1ff67
-     misc_feature    2904..2908
-                     /label="mutation"
-                     /ApEinfo_revcolor=#d6b295
-                     /ApEinfo_fwdcolor=#d6b295
-     misc_feature    4975..5007
-                     /label="VP16"
-                     /ApEinfo_revcolor=#b1ff67
-                     /ApEinfo_fwdcolor=#b1ff67
      CDS             complement(10141..10800)
                      /label="AmpR"
                      /ApEinfo_revcolor=#ffef86
                      /ApEinfo_fwdcolor=#ffef86
-     misc_feature    5053..5085
+     misc_feature    complement(8990..9012)
+                     /label="M13_pUC_rev_primer"
+                     /ApEinfo_revcolor=#85dae9
+                     /ApEinfo_fwdcolor=#85dae9
+     misc_feature    5014..5046
                      /label="VP16"
                      /ApEinfo_revcolor=#b1ff67
                      /ApEinfo_fwdcolor=#b1ff67
-     misc_recomb     4922..4942
-                     /label="attB1"
-                     /ApEinfo_revcolor=#c7b0e3
-                     /ApEinfo_fwdcolor=#c7b0e3
-     promoter        complement(9026..9055)
-                     /label="lac_promoter"
-                     /ApEinfo_revcolor=#b1ff67
-                     /ApEinfo_fwdcolor=#b1ff67
-     misc_feature    5092..5124
-                     /label="VP16"
-                     /ApEinfo_revcolor=#b1ff67
-                     /ApEinfo_fwdcolor=#b1ff67
-     terminator      8810..8929
-                     /label="SV40_PA_terminator"
-                     /ApEinfo_revcolor=#b4abac
-                     /ApEinfo_fwdcolor=#b4abac
-     misc_feature    584..604
-                     /label="CMV_fwd_primer"
-                     /ApEinfo_revcolor=#f8d3a9
-                     /ApEinfo_fwdcolor=#f8d3a9
-     gene            complement(10138..10998)
-                     /label="Ampicillin"
-                     /ApEinfo_revcolor=#c6c9d1
-                     /ApEinfo_fwdcolor=#c6c9d1
+     misc_feature    628..647
+                     /label="pCEP_fwd_primer"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
      promoter        complement(9025..9055)
                      /label="lac promoter"
                      /ApEinfo_revcolor=#c7b0e3
                      /ApEinfo_fwdcolor=#c7b0e3
-     terminator      8810..8929
-                     /label="SV40_PA_terminator"
+     misc_recomb     complement(6551..6571)
+                     /label="attB2"
+                     /ApEinfo_revcolor=#c7b0e3
+                     /ApEinfo_fwdcolor=#c7b0e3
+     promoter        126..429
+                     /label="CMV enhancer"
+                     /ApEinfo_revcolor=#c7b0e3
+                     /ApEinfo_fwdcolor=#c7b0e3
+     promoter        585..654
+                     /label="CMV_promoter"
+                     /ApEinfo_revcolor=#f8d3a9
+                     /ApEinfo_fwdcolor=#f8d3a9
+     promoter        597..716
+                     /label="CMV2_promoter"
+                     /ApEinfo_revcolor=#d59687
+                     /ApEinfo_fwdcolor=#d59687
+     misc_feature    complement(6551..6571)
+                     /label="Gateway Recomb2"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+     misc_feature    6548..6572
+                     /label="attB2"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
+     promoter        complement(8973..8991)
+                     /label="M13_reverse_primer"
+                     /ApEinfo_revcolor=#c7b0e3
+                     /ApEinfo_fwdcolor=#c7b0e3
+     misc_binding    complement(8999..9021)
+                     /label="LacO"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
+     misc_feature    5053..5085
+                     /label="VP16"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     misc_feature    7016..7322
+                     /label="f1_origin"
                      /ApEinfo_revcolor=#ffef86
                      /ApEinfo_fwdcolor=#ffef86
-     misc_feature    630..654
-                     /label="LNCX_primer"
-                     /ApEinfo_revcolor=#b4abac
-                     /ApEinfo_fwdcolor=#b4abac
+     misc_feature    3265..3267
+                     /label="Mutation"
+                     /ApEinfo_revcolor=#9eafd2
+                     /ApEinfo_fwdcolor=#9eafd2
+     misc_feature    584..604
+                     /label="CMV_fwd_primer"
+                     /ApEinfo_revcolor=#f8d3a9
+                     /ApEinfo_fwdcolor=#f8d3a9
+     misc_feature    4864..4884
+                     /label="SV40 NLS"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
      terminator      6692..6962
                      /label="TK_PA_terminator"
                      /ApEinfo_revcolor=#84b0dc
@@ -222,10 +110,122 @@ FEATURES             Location/Qualifiers
                      /label="attB1"
                      /ApEinfo_revcolor=#c6c9d1
                      /ApEinfo_fwdcolor=#c6c9d1
-     promoter        complement(8973..8991)
-                     /label="M13_reverse_primer"
+     primer_bind     complement(6620..6639)
+                     /label="T3"
+                     /ApEinfo_revcolor=#85dae9
+                     /ApEinfo_fwdcolor=#85dae9
+     misc_feature    4870..4884
+                     /label="NLS"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
+     misc_feature    742..747
+                     /label="Kozak"
+                     /ApEinfo_revcolor=#f8d3a9
+                     /ApEinfo_fwdcolor=#f8d3a9
+     misc_feature    130..417
+                     /label="CAG_enhancer"
+                     /ApEinfo_revcolor=#9eafd2
+                     /ApEinfo_fwdcolor=#9eafd2
+     misc_feature    748..750
+                     /label="START"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     misc_feature    complement(9364..9983)
+                     /label="pBR322_origin"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+     misc_feature    8898..8917
+                     /label="EBV_rev_primer"
+                     /ApEinfo_revcolor=#85dae9
+                     /ApEinfo_fwdcolor=#85dae9
+     rep_origin      complement(9361..10043)
+                     /label="ColE1 origin"
+                     /ApEinfo_revcolor=#9eafd2
+                     /ApEinfo_fwdcolor=#9eafd2
+     gene            7840..8628
+                     /label="NeoR/KanR"
+                     /ApEinfo_revcolor=#d6b295
+                     /ApEinfo_fwdcolor=#d6b295
+     misc_feature    7683..7702
+                     /label="SV40pro_F_primer"
+                     /ApEinfo_revcolor=#b4abac
+                     /ApEinfo_fwdcolor=#b4abac
+     misc_feature    complement(7442..7657)
+                     /label="SV40_enhancer"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
+     misc_feature    2904..2908
+                     /label="mutation"
+                     /ApEinfo_revcolor=#d6b295
+                     /ApEinfo_fwdcolor=#d6b295
+     misc_feature    4922..4942
+                     /label="Gateway recomb1"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+     primer_bind     complement(8973..8993)
+                     /label="M13-rev"
+                     /ApEinfo_revcolor=#85dae9
+                     /ApEinfo_fwdcolor=#85dae9
+     promoter        complement(11040..11068)
+                     /label="AmpR_promoter"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     gene            complement(10138..10998)
+                     /label="Ampicillin"
+                     /ApEinfo_revcolor=#c6c9d1
+                     /ApEinfo_fwdcolor=#c6c9d1
+     promoter        51..627
+                     /label="CMV_immearly_promoter"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc_feature    4852..6543
+                     /label="VPR"
+                     /ApEinfo_revcolor=#c6c9d1
+                     /ApEinfo_fwdcolor=#c6c9d1
+     misc_feature    775..777
+                     /label="Mutation"
+                     /ApEinfo_revcolor=#85dae9
+                     /ApEinfo_fwdcolor=#85dae9
+     misc_feature    630..654
+                     /label="LNCX_primer"
+                     /ApEinfo_revcolor=#b4abac
+                     /ApEinfo_fwdcolor=#b4abac
+     misc_feature    5149..5172
+                     /label="SV40 NLS"
+                     /ApEinfo_revcolor=#9eafd2
+                     /ApEinfo_fwdcolor=#9eafd2
+     promoter        126..652
+                     /label="CMV promoter"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
+     misc_feature    2443..2449
+                     /label="mutation"
+                     /ApEinfo_revcolor=#b4abac
+                     /ApEinfo_fwdcolor=#b4abac
+     promoter        430..633
+                     /label="CMV promoter"
+                     /ApEinfo_revcolor=#9eafd2
+                     /ApEinfo_fwdcolor=#9eafd2
+     misc_recomb     4922..4942
+                     /label="attB1"
                      /ApEinfo_revcolor=#c7b0e3
                      /ApEinfo_fwdcolor=#c7b0e3
+     rep_origin      7016..7322
+                     /label="F1 ori"
+                     /ApEinfo_revcolor=#9eafd2
+                     /ApEinfo_fwdcolor=#9eafd2
+     terminator      8810..8929
+                     /label="SV40_PA_terminator"
+                     /ApEinfo_revcolor=#b4abac
+                     /ApEinfo_fwdcolor=#b4abac
+     misc_feature    4975..5007
+                     /label="VP16"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     promoter        7454..7722
+                     /label="SV40_promoter"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
 ORIGIN
         1 GTTAGGCGTT TTGCGCTGCT TCGCGATGTA CGGGCCAGAT ATACGCGTTG ACATTGATTA
        61 TTGACTAGTT ATTAATAGTA ATCAATTACG GGGTCATTAG TTCATAGCCC ATATATGGAG
