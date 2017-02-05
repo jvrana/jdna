@@ -2,19 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e04068ac-9f54-4fe2-81eb-d70a5184a738" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/DAS/database/db.fsa" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/DAS/database/db.nhr" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/DAS/database/db.nin" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/DAS/database/db.nsq" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/DAS/database/results.out" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DAS/alignment_viewer/data.json" afterPath="$PROJECT_DIR$/DAS/alignment_viewer/data.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DAS/allsequences.fasta" afterPath="$PROJECT_DIR$/DAS/allsequences.fasta" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DAS/blast.py" afterPath="$PROJECT_DIR$/DAS/blast.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DAS/designs/pmodkan-ho-pact1-z4-er-vpr.gb" afterPath="$PROJECT_DIR$/DAS/designs/pmodkan-ho-pact1-z4-er-vpr.gb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DAS/designs/pmodkan-ho-pact1-z4-er-vpr_doubled_temp.fsa" afterPath="$PROJECT_DIR$/DAS/designs/pmodkan-ho-pact1-z4-er-vpr_doubled_temp.fsa" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DAS/designs/pmodkan-ho-pact1-z4-er-vpr_doubled_temp.gb" afterPath="$PROJECT_DIR$/DAS/designs/pmodkan-ho-pact1-z4-er-vpr_doubled_temp.gb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DAS/templates/primer.gb" afterPath="$PROJECT_DIR$/DAS/templates/primer.gb" />
     </list>
     <ignored path="jdna.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -29,7 +19,7 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/jdna$test.coverage" NAME="test Coverage Results" MODIFIED="1474858008518" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/jdna$unittest_linkedset.coverage" NAME="unittest_linkedset Coverage Results" MODIFIED="1474667393322" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hydradna/tests" />
-    <SUITE FILE_PATH="coverage/jdna$blast.coverage" NAME="blast Coverage Results" MODIFIED="1486252680644" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DAS" />
+    <SUITE FILE_PATH="coverage/jdna$blast.coverage" NAME="blast Coverage Results" MODIFIED="1486276159647" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DAS" />
     <SUITE FILE_PATH="coverage/jdna$sequence.coverage" NAME="sequence Coverage Results" MODIFIED="1474648149647" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/hydradna/models" />
     <SUITE FILE_PATH="coverage/jdna$test_convert.coverage" NAME="test_convert Coverage Results" MODIFIED="1475118810614" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/jdna$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1475341183803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
@@ -50,8 +40,8 @@
       <file leaf-file-name="core.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jdna/core.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="359">
-              <caret line="184" column="21" selection-start-line="182" selection-start-column="4" selection-end-line="184" selection-end-column="21" />
+            <state relative-caret-position="1592">
+              <caret line="1238" column="36" selection-start-line="1238" selection-start-column="35" selection-end-line="1238" selection-end-column="36" />
               <folding />
             </state>
           </provider>
@@ -60,8 +50,8 @@
       <file leaf-file-name="blast.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DAS/blast.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="577">
-              <caret line="245" column="43" selection-start-line="245" selection-start-column="43" selection-end-line="245" selection-end-column="43" />
+            <state relative-caret-position="247">
+              <caret line="280" column="19" selection-start-line="280" selection-start-column="19" selection-end-line="280" selection-end-column="19" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -112,8 +102,8 @@
       <file leaf-file-name="data.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DAS/alignment_viewer/data.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-179">
-              <caret line="0" column="286" selection-start-line="0" selection-start-column="286" selection-end-line="0" selection-end-column="286" />
+            <state relative-caret-position="0">
+              <caret line="0" column="31782" selection-start-line="0" selection-start-column="31782" selection-end-line="0" selection-end-column="31782" />
               <folding />
             </state>
           </provider>
@@ -212,7 +202,7 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="8" />
+    <option name="x" value="7" />
     <option name="y" value="23" />
     <option name="width" value="1911" />
     <option name="height" value="959" />
@@ -300,78 +290,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="DAS" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jdna" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jdna" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DAS" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jdna" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jdna" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DAS" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="designs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jdna" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jdna" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DAS" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="database" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jdna" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jdna" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DAS" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="alignment_viewer" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -801,7 +719,7 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="8" y="23" width="1911" height="959" extended-state="0" />
+    <frame x="7" y="23" width="1911" height="959" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17425431" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -841,7 +759,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="34" />
+      <option name="time" value="35" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="tests">
@@ -1054,14 +972,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jdna/core.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="359">
-          <caret line="184" column="21" selection-start-line="182" selection-start-column="4" selection-end-line="184" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DAS/database/db.fsa">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
@@ -1094,26 +1004,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DAS/database/results.out">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="25" selection-start-line="9" selection-start-column="24" selection-end-line="9" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DAS/db.fsa.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DAS/alignment_viewer/data.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-179">
-          <caret line="0" column="286" selection-start-line="0" selection-start-column="286" selection-end-line="0" selection-end-column="286" />
           <folding />
         </state>
       </provider>
@@ -1126,10 +1020,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/DAS/alignment_viewer/data.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="31782" selection-start-line="0" selection-start-column="31782" selection-end-line="0" selection-end-column="31782" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DAS/database/results.out">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="25" selection-start-line="9" selection-start-column="24" selection-end-line="9" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jdna/core.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1592">
+          <caret line="1238" column="36" selection-start-line="1238" selection-start-column="35" selection-end-line="1238" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/DAS/blast.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="577">
-          <caret line="245" column="43" selection-start-line="245" selection-start-column="43" selection-end-line="245" selection-end-column="43" />
+        <state relative-caret-position="247">
+          <caret line="280" column="19" selection-start-line="280" selection-start-column="19" selection-end-line="280" selection-end-column="19" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>

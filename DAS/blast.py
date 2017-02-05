@@ -213,6 +213,7 @@ for a in p['alignments']:
 
 import itertools
 
+# fuse circular alignments
 meta = {}
 with open('database/db.json', 'rU') as handle:
     meta = json.load(handle)
@@ -234,6 +235,7 @@ for key in ga:
             if int(p1['q_end']) + 1 == int(p2['q_start']):
                 pairs_to_fuse.append((p1, p2))
 
+    alignments_to_remove = []
     if len(pairs_to_fuse) == 1:
         p1, p2 = pairs_to_fuse[0]
         p1['q_end'] = p2['q_end']
@@ -241,14 +243,56 @@ for key in ga:
         keys_to_sum = 'alignment_length, identical, gap_opens, gaps, identical, score'.split(', ')
         for k in keys_to_sum:
             p1[k] = p1[k] + p2[k]
-        p['alignments'].remove(p2)
-        # TODO: remove identical alignments if you are fusing
+
+        for a in p['alignments']:
+            if a['s_start'] == p2['s_start']:
+                alignments_to_remove.append(a)
+        for a in alignments_to_remove:
+            p['alignments'].remove(a)
+
         # TODO: remove redunent alignments?
+        # remove all p1 alignments
+        # remove all p2 alignments
 
         # print new_p
     elif len(pairs_to_fuse) > 1:
         raise Exception("There is more than one alignment pair to fuse. There must be overlapping alignments.")
 
+
+# TODO: add new alignments to p['alignments'], these cost much more (fragment_construction_cost)
+
+alignment_graph = defaultdict(list)
+x1 = 60
+x2 = 60
+
+alignments = p['alignments']
+for a in alignments:
+    for a2 in alignments:
+        if a == a2:
+            continue
+        x = a['q_end']
+        if x - 60 <= a2['q_start'] <= x + 60:
+            alignment_graph[a['q_start']].append(a2['q_start'])
+
+# Find Paths
+
+def recursive_dfs(graph, start, path=[]):
+  '''recursive depth first search from start'''
+  path=path+[start]
+  for node in graph[start]:
+    if not node in path:
+      path=recursive_dfs(graph, node, path)
+  return path
+
+print recursive_dfs(alignment_graph,alignments[0]['q_start'])
+
+# Compute costs
+
+# run j5
+
+# compute costs
+
+# display alignments
 
 # # Save results
 with open('alignment_viewer/data.json', 'w') as output_handle:
