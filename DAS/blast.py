@@ -7,6 +7,8 @@ import re
 import json
 from collections import defaultdict
 import coral
+import itertools
+from copy import copy
 
 locations = dict(
     database="database",
@@ -146,7 +148,7 @@ def runblast(db, query, out, output_format=7, output_views="qacc sacc score eval
         return handle.read()
 
 
-def parse_results(results):
+def parse_results(results, additional_metadata=None):
     g = re.search(
         '# (?P<blast_ver>.+)\n# Query: (?P<query>.+)\\n# Database: (?P<database>.+)\n# Fields: (?P<fields>.+)', results)
 
@@ -160,6 +162,7 @@ def parse_results(results):
             .replace(' ', '_') \
             .replace('%', 'perc')
     alignments = []
+    alignment_id = 0
     for m in matches:
         v = m.split('\t')
 
@@ -174,12 +177,96 @@ def parse_results(results):
             except ValueError as e:
                 pass
 
-
+        align_dict = dict(zip(meta['fields'], v))
+        alignment_id += 1
+        align_dict['align_id'] = alignment_id
+        align_dict['align_type'] = 'alignment'
         alignments.append(
-            dict(zip(meta['fields'],v))
+            align_dict
         )
+        if additional_metadata is not None:
+            if align_dict['subject_acc'] in additional_metadata:
+                align_dict.update(additional_metadata[align_dict['subject_acc']])
+    return {'meta': meta, 'alignments': sorted(alignments, key=lambda x: x['q_start'])}
 
-    return {'meta': meta, 'alignments': alignments}
+
+def fill_in_gaps(alignments):
+    pairs = itertools.permutations(alignments, 2)
+    gaps = []
+    align_id = alignments[-1]['align_id'] + 1
+    for l, r in pairs:
+        l_end = l['q_end']
+        r_start = r['q_start']
+        if l_end < r_start:
+            start = l_end + 1
+            end = r_start - 1
+            if start <= end:
+                g = {'q_start': start, 'q_end': end, 'align_type': 'gap', 'align_id': align_id}
+                align_id += 1
+                gaps.append(g)
+    alignments += gaps
+
+
+def alignment_condition(left, right):
+    r_5prime_threshold = 0
+    r_3prime_threshold = 60
+    l_pos = left['q_end']
+    r_pos = right['q_start']
+    return r_pos == l_pos + 1
+
+
+def create_alignment_graph(alignments):
+    alignment_graph = defaultdict(list)
+    # alignments = p['alignments']
+    pairs = itertools.permutations(alignments, 2)
+    for l, r in pairs:
+        if l == r:
+            continue
+        if alignment_condition(l, r):
+            alignment_graph[l['align_id']].append(r['align_id'])
+
+    return alignment_graph
+    # Find Paths
+
+
+def _recursive_dfs(graph, start, path=[]):
+    '''recursive depth first search from start'''
+    path = path + [start]
+    if start in graph:
+        for node in graph[start]:
+            if not node in path:
+                path = _recursive_dfs(graph, node, path)
+    return path
+
+
+def recursive_dfs(graph):
+    paths = []
+    for start in graph:
+        paths.append(_recursive_dfs(graph, start, []))
+    return paths
+
+
+def fuse_circular_fragments(alignments):
+    ga = defaultdict(list)
+
+    def fuse_condition(l, r):
+        return l['subject_acc'] == r['subject_acc'] and \
+               l['q_end'] + 1 == r['q_start'] and \
+               l['subject_length'] == l['s_end'] and \
+               l['circular'] and r['circular']
+
+    def fuse(l, r):
+        l['q_end'] = r['q_end']
+        l['s_end'] = r['s_end']
+        keys_to_sum = 'alignment_length, identical, gap_opens, gaps, identical, score'.split(', ')
+        for k in keys_to_sum:
+            l[k] += r[k]
+
+    pairs = itertools.permutations(alignments, 2)
+    for l, r in pairs:
+        if fuse_condition(l, r):
+            fuse(l, r)
+            alignments.remove(r)
 
 
 # Todo: Double all dnas to account for cyclic plasmids (if cyclic)
@@ -187,113 +274,157 @@ def parse_results(results):
 # TODO: find all primer positions
 # TODO: account for reversed alignments
 
-# Make database
-database = makedbfromdir(locations['templates'], os.path.join(locations['database'], 'db'))
+def make_primer_alignments():
+    seq = open_sequence('designs/pmodkan-ho-pact1-z4-er-vpr.gb')[0]
+    import numpy as np
+    min_size = 15
+    max_size = 60
+    num_primers = 10
+    rand_pos = np.random.randint(0, len(seq)-max_size, size=num_primers)
+    rand_size = np.random.randint(min_size, max_size, size=num_primers)
+    primers = []
+    for pos, size in zip(rand_pos, rand_size):
+        primer = seq[pos:pos+size]
+        primer.id = primer.id + '{}-{}'.format(pos, pos+size)
+
+        rc = np.random.choice(['rc', ''])
+        if rc == 'rc':
+            primer = primer.reverse_complement(id=primer.id+'_rc')
+        primers.append(primer)
+    save_sequence("primers/primers.fasta", primers)
+
+    # TODO: add new alignments to p['alignments'], these cost much more (fragment_construction_cost)
 
 
-# pseudo-circular
-seqs = open_sequence(os.path.join(locations['designs'], 'pmodkan-ho-pact1-z4-er-vpr.gb'))
-seq = seqs[0]
-save_sequence('designs/newseq.gb', seq+seq)
+    database = makedbfromdir('primers', os.path.join(locations['database'], 'primerdb'))
+
+    # Run blast
+    r = runblast(database,
+                 'designs/newseq.gb',
+                 os.path.join(locations['database'], 'primer_results.out'), word_size=15, evalue=1000)
+
+    p = parse_results(r)
+    with open('alignment_viewer/primer_data.json', 'w') as output_handle:
+        json.dump(p, output_handle)
+    return p
+
+def run_alignment():
+
+    # Make database
+    database = makedbfromdir(locations['templates'], os.path.join(locations['database'], 'db'))
+
+    # TODO: only if circular, then pseudo-circular
+    seqs = open_sequence(os.path.join(locations['designs'], 'pmodkan-ho-pact1-z4-er-vpr.gb'))
+    seq = seqs[0]
+    save_sequence('designs/newseq.gb', seq + seq)
+
+    # Run blast
+    r = runblast(database,
+                 'designs/newseq.gb',
+                 os.path.join(locations['database'], 'results.out'), evalue=10)
+
+    # fuse circular alignments
+
+    # open meta data
+    meta = {}
+    with open('database/db.json', 'rU') as handle:
+        meta = json.load(handle)
+
+    # parse results
+    p = parse_results(r, additional_metadata=meta)
 
 
-# Run blast
-r = runblast(database,
-             'designs/newseq.gb',
-             os.path.join(locations['database'], 'results.out'), evalue=10)
-p = parse_results(r)
 
 
 
-ga = defaultdict(list) # alignments grouped by subject_id
 
-for a in p['alignments']:
-    i = a['subject_acc']
-    ga[i].append(a)
+    # clean up alignments
+    fuse_circular_fragments(p['alignments'])
+    fill_in_gaps(p['alignments'])
 
-import itertools
+    primer_results = make_primer_alignments()
+    # TODO: filter out primers with imperfect binding
+    # TODO: filter out alignments with imperfect binding
 
-# fuse circular alignments
-meta = {}
-with open('database/db.json', 'rU') as handle:
-    meta = json.load(handle)
+    def primer_within_bounds(primer, alignment):
+        MIN_PRIMER = 15 # TODO: move MIN_PRIMER to design parameters
+        if primer['subject_strand'] == 'plus':
+            # print alignment['q_start'] + MIN_PRIMER, primer['q_end'], alignment['q_end'], alignment['q_start'] + MIN_PRIMER < primer['q_end'] < alignment['q_end']
+            return alignment['q_start'] + MIN_PRIMER < primer['q_end'] < alignment['q_end']
+        elif primer['subject_strand'] == 'minus':
+            return alignment['q_start'] < primer['q_start'] < alignment['q_end'] - MIN_PRIMER
+        return False
 
-for key in ga:
+    new_alignments = []
+    align_id = p['alignments'][-1]['align_id']
+    for a in p['alignments']:
+        primers = filter(lambda x: primer_within_bounds(x, a), primer_results['alignments'])
+        end_positions = [a['q_end']]
+        start_positions = [a['q_start']]
+        for primer in primers:
+            direction = primer['subject_strand']
+            if direction == 'plus':
+                start_positions.append(primer['q_start'])
+            elif direction == 'minus':
+                end_positions.append(primer['q_end'])
+        new_positions = list(itertools.product(start_positions, end_positions))
+        for s, e in new_positions:
+            if s >= e:
+                continue
+            new_a = copy(a)
+            print s, e, a['q_start'], a['q_end']
+            new_a['q_start'] = s
+            new_a['q_end'] = e
+            if 's_start' in new_a:
+                new_a['s_start'] = a['s_start'] + (s - a['q_start'])
+                new_a['s_end'] = a['s_end'] - (a['q_end'] - e)
+            new_a['alignment_length'] = e - s
+            new_a['align_id']
+            new_a['align_type'] = 'product'
+            new_alignments.append(new_a)
+            align_id += 1
+    p['alignments'] += new_alignments
+    '''
+    for a in alignments:
+        fwd_primer_positions = []
+        rev_primer_positions = []
+        def within_bounds(p):
+            return if_within_bounds
 
-    alignments = ga[key]
-    if not meta[key]['circular']:
-        continue
-    # get only perfect alignments
-    # remove duplicates (starting from back?)
-    # fuse alignments
-        # if subject is circular
-        # if subject_end == length and q_end and q_start are consecutive
-    pairs = itertools.permutations(alignments, 2)
-    pairs_to_fuse = []
-    for p1, p2 in pairs:
-        if int(p1['s_end']) == int(p1['subject_length']):
-            if int(p1['q_end']) + 1 == int(p2['q_start']):
-                pairs_to_fuse.append((p1, p2))
-
-    alignments_to_remove = []
-    if len(pairs_to_fuse) == 1:
-        p1, p2 = pairs_to_fuse[0]
-        p1['q_end'] = p2['q_end']
-        p1['s_end'] = p2['s_end']
-        keys_to_sum = 'alignment_length, identical, gap_opens, gaps, identical, score'.split(', ')
-        for k in keys_to_sum:
-            p1[k] = p1[k] + p2[k]
-
-        for a in p['alignments']:
-            if a['s_start'] == p2['s_start']:
-                alignments_to_remove.append(a)
-        for a in alignments_to_remove:
-            p['alignments'].remove(a)
-
-        # TODO: remove redunent alignments?
-        # remove all p1 alignments
-        # remove all p2 alignments
-
-        # print new_p
-    elif len(pairs_to_fuse) > 1:
-        raise Exception("There is more than one alignment pair to fuse. There must be overlapping alignments.")
+        start_positions = [q_start] + forward primer starts within bounds
+        end_positions = [q_end] + reverse primer starts within bounds
+        itertools.product(start_positions, end_positions) - [q_start, q_end]
+        align_type = 'potential pcr?'
+    '''
 
 
-# TODO: add new alignments to p['alignments'], these cost much more (fragment_construction_cost)
+    # Save results
+    with open('alignment_viewer/data.json', 'w') as output_handle:
+        json.dump(p, output_handle)
 
-alignment_graph = defaultdict(list)
-x1 = 60
-x2 = 60
+    return p
 
-alignments = p['alignments']
-for a in alignments:
-    for a2 in alignments:
-        if a == a2:
-            continue
-        x = a['q_end']
-        if x - 60 <= a2['q_start'] <= x + 60:
-            alignment_graph[a['q_start']].append(a2['q_start'])
 
-# Find Paths
+p = run_alignment()
 
-def recursive_dfs(graph, start, path=[]):
-  '''recursive depth first search from start'''
-  path=path+[start]
-  for node in graph[start]:
-    if not node in path:
-      path=recursive_dfs(graph, node, path)
-  return path
+# fill_in_gaps(p['alignments'])
 
-print recursive_dfs(alignment_graph,alignments[0]['q_start'])
 
+
+# Primers
+
+alignment_graph = create_alignment_graph(p['alignments'])
+paths = recursive_dfs(alignment_graph)
+print len(paths)
 # Compute costs
 
 # run j5
+# TODO: make sure reverse complements are handled correctly
 
 # compute costs
 
 # display alignments
 
 # # Save results
-with open('alignment_viewer/data.json', 'w') as output_handle:
-    json.dump(p, output_handle)
+
+

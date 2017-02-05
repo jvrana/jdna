@@ -1,5 +1,5 @@
 w = 960
-h = 500
+h = 5000
 
 svg = d3.select('body').append('svg')
   .attr('width', w)
@@ -60,15 +60,35 @@ d3.json('data.json', (data) ->
     .attr('y', (d,i) -> 120 + i * 10)
     .attr('width', (d) -> xScale(d.q_end) - xScale(d.q_start))
     .attr('height', 7)
-    .attr('fill', 'black')
+    .attr('fill', fill)
     .attr('opacity', 0.9)
     .on("mouseover", (d) ->
       tooltip.text(d.subject_acc + ' ' + d.q_start + ' (' + xScale(d.q_start) + ') ' + d.q_end + ' (' + xScale(d.q_end) + ') ')
       tooltip.style("visibility", "visible")
     )
     .on("mouseout", () -> tooltip.style("visibility", "hidden") )
+
+  d3.json('primer_data.json', (primerdata) ->
+      svg.selectAll('primer_rects')
+        .data(primerdata.alignments)
+        .enter()
+        .append('rect')
+        .attr('x', (d) -> xScale(d.q_start))
+        .attr('y', (d,i) -> 120 + i * 0.5)
+        .attr('width', (d) -> 1)
+        .attr('height', 5)
+        .attr('fill', "red")
+        .attr('opacity', 0.9)
+  )
 )
 
+
+
+fill = (d) ->
+  return 'black' if d.align_type == 'alignment'
+  return 'purple' if d.align_type == 'product'
+  return 'blue' if d.align_type == 'gap'
+  return 'yellow'
 
 
 #width = 200
