@@ -155,6 +155,8 @@ def runblast(db, query, out, output_format=7, output_views="qacc sacc score eval
 
 
 def parse_results(results, additional_metadata=None):
+    if results.strip() == '':
+        return {'alignments': []}
     g = re.search(
         '# (?P<blast_ver>.+)\n# Query: (?P<query>.+)\\n# Database: (?P<database>.+)\n# Fields: (?P<fields>.+)', results)
 
@@ -218,22 +220,68 @@ def alignment_condition(left, right):
     r_pos = right['q_start']
     # return r_pos == l_pos + 1 # if its consecutive
     return r_pos > l_pos - r_3prime_threshold and \
-            right['q_end'] > left['q_end']
+        right['q_end'] > left['q_end']
 
+# TODO: add pcr length cost
+# TODO: add cost calculation for each fragment
+# TODO: must be monotonically increasing
+# TODO: add cost if primer doesn't exist
+def compute_cost(path, alignments):
+    d = {a['align_id']: a for a in alignments}
+    if path[0] not in d:
+        path = path[1:]
+    if len(path) == 0:
+        return float("Inf")
+    first = d[path[0]]
 
+    cost = first['q_start']
+
+    pairs = zip(path[:-1], path[1:])
+    pairs = zip(path[:-1], path[1:])
+    L, R = -1, -1
+    for l, r in pairs:
+        L = d[l]
+        R = d[r]
+        if first['q_start'] - R['q_end'] > alignments[0]['query_length']/2.0:
+            continue
+        align_cost = R['q_start'] - L['q_end']
+        if align_cost < 0:
+            align_cost = 0
+        cost += align_cost
+    # cost += alignments[0]['query_length'] - R['q_end']
+    if cost < 0:
+        print path
+        print [(d[x]['q_start'], d[x]['q_end']) for x in path]
+        raise Exception("Cost was calculated to be less than zero.")
+    # cost += len(path)
+    return cost
 
 def create_alignment_graph(alignments):
-    alignment_graph = defaultdict(list)
+    alignment_graph = {}
+    d = {a['align_id']: a for a in alignments}
     # alignments = p['alignments']
     pairs = list(itertools.permutations(alignments, 2))
     print '{} pairs to search'.format(len(pairs))
     for l, r in pairs:
+        key = l['align_id']
+        val = r['align_id']
+
         if l == r:
             continue
         if alignment_condition(l, r):
-            alignment_graph[l['align_id']].append(r['align_id'])
 
-    return dict(alignment_graph)
+            if key not in alignment_graph:
+                alignment_graph[key] = []
+            alignment_graph[key].append(val)
+
+    # sort according to distance
+    print 'sorting alignments',
+
+    for k in alignment_graph.keys():
+        a_array = alignment_graph[k][:]
+        alignment_graph[k] = sorted(a_array, key=lambda x: compute_cost([k, x], alignments))
+    print 'done sorting'
+    return alignment_graph
     # Find Paths
 
 
@@ -287,7 +335,7 @@ def make_primer_alignments():
     import numpy as np
     min_size = 15
     max_size = 60
-    num_primers = 10
+    num_primers = 5
     rand_pos = np.random.randint(0, len(seq)-max_size, size=num_primers)
     rand_size = np.random.randint(min_size, max_size, size=num_primers)
     primers = []
@@ -316,6 +364,9 @@ def make_primer_alignments():
         json.dump(p, output_handle)
     return p
 
+# TODO: suggestions for splitting large pcr products
+# TODO: trim graph if path spans the query length
+# TODO: cost calculation for distance betweeen last contig and query_end?
 def run_alignment():
     print 'Running alignment against templates'
     # Make database
@@ -386,7 +437,8 @@ def run_alignment():
             new_a['alignment_length'] = e - s
             assign_id(new_a)
             new_a['align_type'] = 'product'
-            new_alignments.append(new_a)
+            if not (s == a['q_start'] and e == a['q_end']):
+                new_alignments.append(new_a)
 
     print 'sorting primer alignments'
     p['alignments'] += sorted(new_alignments, key=lambda x: x['q_start'])
@@ -431,39 +483,16 @@ p = run_alignment()
 
 # eliminate imperfect primer bindings
 
-# compute cost of path as graph is built
+#  cost of path as graph is built
 
 # collect all contigs, calculate cost of gap
 
 print 'creating alignment_graph'
 alignment_graph = create_alignment_graph(p['alignments'])
 
-
 d = {a['align_id']: a for a in p['alignments']}
 
 
-
-#
-def compute_cost(path, alignments):
-    d = {a['align_id']: a for a in alignments}
-    if path[0] not in d:
-        return float("Inf")
-    first = d[path[0]]
-
-    cost = first['q_start']
-
-    pairs = zip(path[:-1], path[1:])
-    L, R = -1, -1
-    for l, r in pairs:
-        L = d[l]
-        R = d[r]
-        if first['q_start'] - R['q_end'] > alignments[0]['query_length']/2.0:
-            continue
-        cost += R['q_start'] - L['q_end']
-    if R == -1:
-        return float("Inf")
-    # cost += alignments[0]['query_length'] - R['q_end']
-    return cost
 
 
 def dfs_iter(graph, root):
@@ -474,9 +503,13 @@ def dfs_iter(graph, root):
         best_costs.sort()
         path = stack.pop()
         cost = compute_cost(path, p['alignments'])
+        # Trimming conditions
         if cost > best_costs[-1]:
             # cost can only get worst, so trim this search
             continue
+
+        # if path > query_length
+
         n = path[-1]
         if n in graph:
             for node in graph[n]:
@@ -484,22 +517,30 @@ def dfs_iter(graph, root):
                 stack.append(new_path)
         else:
             if cost < best_costs[-1]:
+                print cost
                 best_costs[-1] = cost
             paths.append(path)
+    for path in paths:
+        path.remove('root')
     return paths
 
 # alignment_graph['root'] = [a['align_id'] for a in p['alignments']]
 paths = []
-for i, a in enumerate(p['alignments']):
-    print i, len(p['alignments'])
-    paths += dfs_iter(alignment_graph, a['align_id'])
+d = {a['align_id']: a for a in p['alignments']}
+alignment_graph['root'] = alignment_graph.keys()
+
+# exit()
+# for i, a in enumerate(p['alignments']):
+#     print i, len(p['alignments'])
+paths = dfs_iter(alignment_graph, 'root')
 
 paths = sorted(paths, key=lambda x: compute_cost(x, p['alignments']))
+
 print paths
 print len(paths)
 print [compute_cost(path, p['alignments']) for path in paths]
 best = paths[:5]
-d = {a['align_id']: a for a in p['alignments']}
+
 for path in best:
     print [(d[id]['q_start'], d[id]['q_end']) for id in path], compute_cost(path, p['alignments'])
 #
