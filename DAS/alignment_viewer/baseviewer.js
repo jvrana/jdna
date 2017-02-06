@@ -30,14 +30,22 @@
     }).on("mouseout", function() {
       return tooltip.style("visibility", "hidden");
     });
+    svg.selectAll('rects').data(data.alignments).enter().append('rect').attr('x', function(d) {
+      return xScale(d.q_start);
+    }).attr('y', function(d, i) {
+      return 100;
+    }).attr('width', 1).attr('height', h).attr('fill', 'black').attr('opacity', 0.1);
+    svg.selectAll('rects').data(data.alignments).enter().append('rect').attr('x', function(d) {
+      return xScale(d.q_end);
+    }).attr('y', function(d, i) {
+      return 100;
+    }).attr('width', 1).attr('height', h).attr('fill', 'blue').attr('opacity', 0.1);
     return d3.json('primer_data.json', function(primerdata) {
       return svg.selectAll('primer_rects').data(primerdata.alignments).enter().append('rect').attr('x', function(d) {
         return xScale(d.q_start);
       }).attr('y', function(d, i) {
-        return 120 + i * 0.5;
-      }).attr('width', function(d) {
-        return 1;
-      }).attr('height', 5).attr('fill', "red").attr('opacity', 0.9);
+        return 100;
+      }).attr('width', 1).attr('height', h).attr('fill', "red").attr('opacity', 0.35);
     });
   });
 

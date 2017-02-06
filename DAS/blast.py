@@ -21,6 +21,8 @@ locations = dict(
 "blastn -db db.fsa -query 9320_\ pLSL-[ADH1]-p35S\:mTURQ\:t35S-[ADH1]-R.fsa -out results.out"
 
 
+ALIGN_ID = 0
+
 def run_cmd(cmd_str, **kwargs):
     """
     Runs a subprocess command with kwargs arguments
@@ -55,6 +57,10 @@ def format_decorator(f):
 
     return wrapped
 
+def assign_id(alignment):
+    global ALIGN_ID
+    ALIGN_ID += 1
+    alignment['align_id'] = ALIGN_ID
 
 @format_decorator
 def open_sequence(filename, format=None, **fmt):
@@ -162,7 +168,6 @@ def parse_results(results, additional_metadata=None):
             .replace(' ', '_') \
             .replace('%', 'perc')
     alignments = []
-    alignment_id = 0
     for m in matches:
         v = m.split('\t')
 
@@ -178,8 +183,7 @@ def parse_results(results, additional_metadata=None):
                 pass
 
         align_dict = dict(zip(meta['fields'], v))
-        alignment_id += 1
-        align_dict['align_id'] = alignment_id
+        assign_id(align_dict)
         align_dict['align_type'] = 'alignment'
         alignments.append(
             align_dict
@@ -193,7 +197,6 @@ def parse_results(results, additional_metadata=None):
 def fill_in_gaps(alignments):
     pairs = itertools.permutations(alignments, 2)
     gaps = []
-    align_id = alignments[-1]['align_id'] + 1
     for l, r in pairs:
         l_end = l['q_end']
         r_start = r['q_start']
@@ -201,10 +204,11 @@ def fill_in_gaps(alignments):
             start = l_end + 1
             end = r_start - 1
             if start <= end:
-                g = {'q_start': start, 'q_end': end, 'align_type': 'gap', 'align_id': align_id}
-                align_id += 1
+                g = {'q_start': start, 'q_end': end, 'align_type': 'gap'}
+                assign_id(g)
                 gaps.append(g)
-    alignments += gaps
+    print '{} gaps'.format(len(gaps))
+    alignments += sorted(gaps, key=lambda x: x['q_start'])
 
 
 def alignment_condition(left, right):
@@ -212,20 +216,24 @@ def alignment_condition(left, right):
     r_3prime_threshold = 60
     l_pos = left['q_end']
     r_pos = right['q_start']
-    return r_pos == l_pos + 1
+    # return r_pos == l_pos + 1 # if its consecutive
+    return r_pos > l_pos - r_3prime_threshold and \
+            right['q_end'] > left['q_end']
+
 
 
 def create_alignment_graph(alignments):
     alignment_graph = defaultdict(list)
     # alignments = p['alignments']
-    pairs = itertools.permutations(alignments, 2)
+    pairs = list(itertools.permutations(alignments, 2))
+    print '{} pairs to search'.format(len(pairs))
     for l, r in pairs:
         if l == r:
             continue
         if alignment_condition(l, r):
             alignment_graph[l['align_id']].append(r['align_id'])
 
-    return alignment_graph
+    return dict(alignment_graph)
     # Find Paths
 
 
@@ -234,8 +242,8 @@ def _recursive_dfs(graph, start, path=[]):
     path = path + [start]
     if start in graph:
         for node in graph[start]:
-            if not node in path:
-                path = _recursive_dfs(graph, node, path)
+                if not node in path:
+                    path = _recursive_dfs(graph, node, path)
     return path
 
 
@@ -309,7 +317,7 @@ def make_primer_alignments():
     return p
 
 def run_alignment():
-
+    print 'Running alignment against templates'
     # Make database
     database = makedbfromdir(locations['templates'], os.path.join(locations['database'], 'db'))
 
@@ -340,7 +348,6 @@ def run_alignment():
 
     # clean up alignments
     fuse_circular_fragments(p['alignments'])
-    fill_in_gaps(p['alignments'])
 
     primer_results = make_primer_alignments()
     # TODO: filter out primers with imperfect binding
@@ -356,7 +363,6 @@ def run_alignment():
         return False
 
     new_alignments = []
-    align_id = p['alignments'][-1]['align_id']
     for a in p['alignments']:
         primers = filter(lambda x: primer_within_bounds(x, a), primer_results['alignments'])
         end_positions = [a['q_end']]
@@ -372,18 +378,21 @@ def run_alignment():
             if s >= e:
                 continue
             new_a = copy(a)
-            print s, e, a['q_start'], a['q_end']
             new_a['q_start'] = s
             new_a['q_end'] = e
             if 's_start' in new_a:
                 new_a['s_start'] = a['s_start'] + (s - a['q_start'])
                 new_a['s_end'] = a['s_end'] - (a['q_end'] - e)
             new_a['alignment_length'] = e - s
-            new_a['align_id']
+            assign_id(new_a)
             new_a['align_type'] = 'product'
             new_alignments.append(new_a)
-            align_id += 1
-    p['alignments'] += new_alignments
+
+    print 'sorting primer alignments'
+    p['alignments'] += sorted(new_alignments, key=lambda x: x['q_start'])
+
+    print 'filling in gaps'
+    # fill_in_gaps(p['alignments'])
     '''
     for a in alignments:
         fwd_primer_positions = []
@@ -397,8 +406,9 @@ def run_alignment():
         align_type = 'potential pcr?'
     '''
 
-
+    # p['alignments'] = sorted(p['alignments'], key=lambda x: x['q_start'])
     # Save results
+    print 'saving results ({})'.format(len(p['alignments']))
     with open('alignment_viewer/data.json', 'w') as output_handle:
         json.dump(p, output_handle)
 
@@ -413,9 +423,92 @@ p = run_alignment()
 
 # Primers
 
+# eliminate search space for filtering by gap size
+
+# eliminate redundent alignments
+
+# eliminate imperfect alignments
+
+# eliminate imperfect primer bindings
+
+# compute cost of path as graph is built
+
+# collect all contigs, calculate cost of gap
+
+print 'creating alignment_graph'
 alignment_graph = create_alignment_graph(p['alignments'])
-paths = recursive_dfs(alignment_graph)
+
+
+d = {a['align_id']: a for a in p['alignments']}
+
+
+
+#
+def compute_cost(path, alignments):
+    d = {a['align_id']: a for a in alignments}
+    if path[0] not in d:
+        return float("Inf")
+    first = d[path[0]]
+
+    cost = first['q_start']
+
+    pairs = zip(path[:-1], path[1:])
+    L, R = -1, -1
+    for l, r in pairs:
+        L = d[l]
+        R = d[r]
+        if first['q_start'] - R['q_end'] > alignments[0]['query_length']/2.0:
+            continue
+        cost += R['q_start'] - L['q_end']
+    if R == -1:
+        return float("Inf")
+    # cost += alignments[0]['query_length'] - R['q_end']
+    return cost
+
+
+def dfs_iter(graph, root):
+    paths = []
+    stack = [[root]]
+    best_costs = [float("Inf")]*5 # five best costs
+    while stack:
+        best_costs.sort()
+        path = stack.pop()
+        cost = compute_cost(path, p['alignments'])
+        if cost > best_costs[-1]:
+            # cost can only get worst, so trim this search
+            continue
+        n = path[-1]
+        if n in graph:
+            for node in graph[n]:
+                new_path = path[:] + [node]
+                stack.append(new_path)
+        else:
+            if cost < best_costs[-1]:
+                best_costs[-1] = cost
+            paths.append(path)
+    return paths
+
+# alignment_graph['root'] = [a['align_id'] for a in p['alignments']]
+paths = []
+for i, a in enumerate(p['alignments']):
+    print i, len(p['alignments'])
+    paths += dfs_iter(alignment_graph, a['align_id'])
+
+paths = sorted(paths, key=lambda x: compute_cost(x, p['alignments']))
+print paths
 print len(paths)
+print [compute_cost(path, p['alignments']) for path in paths]
+best = paths[:5]
+d = {a['align_id']: a for a in p['alignments']}
+for path in best:
+    print [(d[id]['q_start'], d[id]['q_end']) for id in path], compute_cost(path, p['alignments'])
+#
+d = {a['align_id']: a for a in p['alignments']}
+ids = [x['align_id'] for x in p['alignments']]
+path = paths[0]
+print
+assert len(ids) == len(set(ids))
+
 # Compute costs
 
 # run j5
