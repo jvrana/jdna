@@ -9,6 +9,7 @@ Description:
 '''
 
 from das_assembler import *
+from das_utilities import *
 
 locations = dict(
     database="database",
@@ -83,22 +84,25 @@ locations = dict(
 #
 #     return p
 
-b = BLAST('db', 'templates', 'designs/pmodkan-ho-pact1-z4-er-vpr.gb', 'database', 'database/results.out', evalue=10.0)
+design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
+
+b = BLAST('db', 'templates', design_path, 'database', 'database/results.out', evalue=10.0)
 b.makedbfromdir()
 b.runblast()
 contig_container = b.parse_results()
 contig_container.fuse_circular_fragments()
 
 
-p = BLAST('primerdb', 'primers', 'designs/pmodkan-ho-pact1-z4-er-vpr.gb', 'database', 'database/primerresults.out', evalue=1000.0, word_size=15)
+generate_random_primers(open_sequence(design_path)[0], 'primers/primers.fasta', num_primers=5)
+p = BLAST('primerdb', 'primers', design_path, 'database', 'database/primerresults.out', evalue=1000.0, word_size=15)
 p.makedbfromdir()
 p.runblast()
-primer_container = p.parse_results()
+primer_container = p.parse_results(contig_type='primer')
 
 
 
 contig_assembly(contig_container.contigs, primer_container.contigs)
-assembly_graph(contig_container)
-
+contig_container.sort_contigs()
 contig_container.dump('alignment_viewer/data.json')
 primer_container.dump('alignment_viewer/primer_data.json')
+# make_assembly_graph(contig_container)

@@ -61,7 +61,7 @@ d3.json('data.json', (data) ->
     .on("mouseover", (d) ->
       coordinates = d3.mouse(this)
       d3.select(this).style("fill", 'red')
-      tooltip.text(d.subject_acc + ' ' + d.q_start + ' (' + xScale(d.q_start) + ') ' + d.q_end + ' (' + xScale(d.q_end) + ') ')
+      tooltip.text(d.subject_acc + ' ' + d.q_start + ' (' + xScale(d.q_start) + ') ' + d.q_end + ' (' + xScale(d.q_end) + ') ' + d.contig_type)
         .style("visibility", "visible")
       tooltip.html
         .style("top", (d3.event.pageY + 16) + "px")
@@ -115,7 +115,7 @@ fill = (d) ->
   return 'black' if d.contig_type == 'contig'
   return 'purple' if d.contig_type == 'product'
   return 'blue' if d.contig_type == 'gap'
-  return 'yellow'
+  return 'orange'
 
 
 #width = 200

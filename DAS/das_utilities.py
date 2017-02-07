@@ -9,12 +9,9 @@ Description:
 '''
 
 from das_seqio import *
+import numpy as np
 
-def generate_random_primers(seq, out):
-    import numpy as np
-    min_size = 15
-    max_size = 60
-    num_primers = 5
+def generate_random_primers(seq, out, num_primers=5, min_size=15, max_size=60):
     rand_pos = np.random.randint(0, len(seq) - max_size, size=num_primers)
     rand_size = np.random.randint(min_size, max_size, size=num_primers)
     primers = []

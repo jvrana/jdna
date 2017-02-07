@@ -28,7 +28,7 @@
       var coordinates;
       coordinates = d3.mouse(this);
       d3.select(this).style("fill", 'red');
-      tooltip.text(d.subject_acc + ' ' + d.q_start + ' (' + xScale(d.q_start) + ') ' + d.q_end + ' (' + xScale(d.q_end) + ') ').style("visibility", "visible");
+      tooltip.text(d.subject_acc + ' ' + d.q_start + ' (' + xScale(d.q_start) + ') ' + d.q_end + ' (' + xScale(d.q_end) + ') ' + d.contig_type).style("visibility", "visible");
       return tooltip.html.style("top", (d3.event.pageY + 16) + "px").style("left", (d3.event.pageX + 16) + "px");
     }).on("mouseout", function(d) {
       d3.select(this).style('fill', fill);
@@ -63,7 +63,7 @@
     if (d.contig_type === 'gap') {
       return 'blue';
     }
-    return 'yellow';
+    return 'orange';
   };
 
 }).call(this);

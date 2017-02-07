@@ -279,15 +279,15 @@ p = run_alignment()
 # #     print i, len(p['alignments'])
 # paths = dfs_iter(alignment_graph, 'root')
 #
-# paths = sorted(paths, key=lambda x: compute_cost(x, p['alignments']))
+# paths = sorted(paths, key=lambda x: compute_assembly_cost(x, p['alignments']))
 #
 # print paths
 # print len(paths)
-# print [compute_cost(path, p['alignments']) for path in paths]
+# print [compute_assembly_cost(path, p['alignments']) for path in paths]
 # best = paths[:5]
 #
 # for path in best:
-#     print [(d[id]['q_start'], d[id]['q_end']) for id in path], compute_cost(path, p['alignments'])
+#     print [(d[id]['q_start'], d[id]['q_end']) for id in path], compute_assembly_cost(path, p['alignments'])
 # #
 # d = {a['align_id']: a for a in p['alignments']}
 # ids = [x['align_id'] for x in p['alignments']]

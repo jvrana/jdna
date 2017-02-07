@@ -21,18 +21,13 @@ class BLAST(object):
 
     def __init__(self, name, db_in_dir, query_path, db_out_dir, results_out, output_format=7, output_views="qacc sacc score evalue bitscore\
      length nident gapopen gaps qlen qstart qend slen sstart send sstrand qseq sseq", **additional_params):
-        prefix, suffix = query_path.split('.')
-
-        if suffix == 'gb':
-            print 'tur'
-            query_path = gb_to_fsa(query_path, prefix + '.fsa')
-        outfmt = '\"{} {}\"'.format(output_format, output_views)
-
+        self.query = query_path
+        self.pseudocircular()
+        self.save_query_as_fsa()
         self.db_in_dir = db_in_dir
         self.db = os.path.join(db_out_dir, name)
-        self.query = query_path
         self.original_query = query_path
-        self.outfmt = outfmt
+        self.outfmt = '\"{} {}\"'.format(output_format, output_views)
         self.name = name
         self.db_out_dir = db_out_dir
         self.out = results_out
@@ -40,16 +35,19 @@ class BLAST(object):
         self.db_input_metadata = {}
         params = additional_params
         self.params = params
-        self.pseudocircular()
+
+    def save_query_as_fsa(self):
+        prefix, suffix = self.query.split('.')
+
+        if suffix == 'gb':
+            self.query = gb_to_fsa(self.query, prefix + '.fsa')
 
     def pseudocircular(self):
-        print self.query
         circular = seq_is_circular(self.query)
         seq = open_sequence(self.query)[0]
         if circular:
             prefix, suffix = self.query.split('.')
             self.query = prefix + '_pseudocircular.' + suffix
-            print self.query, '****'
             save_sequence(self.query, seq + seq)
 
     def runblast(self):
@@ -86,7 +84,8 @@ class BLAST(object):
         return self.makedb(out)
 
 
-    def parse_results(self):
+    def parse_results(self, contig_type='contig'):
+
         contig_container = ContigContainer()
         results = self.results_raw
         if results.strip() == '':
@@ -118,7 +117,7 @@ class BLAST(object):
                     pass
 
             contig_dict = dict(zip(meta['fields'], v))
-            contig_dict['contig_type'] = 'contig'
+            contig_dict['contig_type'] = contig_type
             if self.db_input_metadata:
                 if contig_dict['subject_acc'] in self.db_input_metadata:
                     contig_dict.update(self.db_input_metadata[contig_dict['subject_acc']])
