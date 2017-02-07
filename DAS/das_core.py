@@ -8,8 +8,9 @@ Description:
 
 '''
 
-from das_assembler import *
+from contig import *
 from das_utilities import *
+from das_blast import *
 
 locations = dict(
     database="database",
