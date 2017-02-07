@@ -23,25 +23,21 @@ svg = d3.select('body').append('svg')
 xpadding = 50.0
 
 
-tooltip = d3.select("body")
-.append("div")
-.style("position", "absolute")
-.style("z-index", "10")
-.style("visibility", "hidden")
-.text("a simple tooltip")
-
+tooltip = d3.select("body").append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0)
 
 
 d3.json('data.json', (data) ->
 
-  query_len = data.alignments[0].query_length
+  query_len = data.contigs[0].query_length
 
   xScale = d3.scaleLinear()
     .domain([0, query_len])
     .range([0+xpadding, w-xpadding])
 
   yScale = d3.scaleLinear()
-    .domain([0, data.alignments.length])
+    .domain([0, data.contigs.length])
     .range([120, 500])
 
   svg.append('rect')
@@ -53,7 +49,7 @@ d3.json('data.json', (data) ->
     .attr('fill', 'blue')
 
   svg.selectAll('rects')
-    .data(data.alignments)
+    .data(data.contigs)
     .enter()
     .append('rect')
     .attr('x', (d) -> xScale(d.q_start))
@@ -63,13 +59,21 @@ d3.json('data.json', (data) ->
     .attr('fill', fill)
     .attr('opacity', 0.9)
     .on("mouseover", (d) ->
+      coordinates = d3.mouse(this)
+      d3.select(this).style("fill", 'red')
       tooltip.text(d.subject_acc + ' ' + d.q_start + ' (' + xScale(d.q_start) + ') ' + d.q_end + ' (' + xScale(d.q_end) + ') ')
-      tooltip.style("visibility", "visible")
-    )
-    .on("mouseout", () -> tooltip.style("visibility", "hidden") )
+        .style("visibility", "visible")
+      tooltip.html
+        .style("top", (d3.event.pageY + 16) + "px")
+        .style("left", (d3.event.pageX + 16) + "px")
+      )
+    .on("mouseout", (d) ->
+      d3.select(this).style('fill', fill)
+      tooltip.style("visibility", "hidden")
+  )
 
   svg.selectAll('rects')
-    .data(data.alignments)
+    .data(data.contigs)
     .enter()
     .append('rect')
     .attr('x', (d) -> xScale(d.q_start))
@@ -80,7 +84,7 @@ d3.json('data.json', (data) ->
     .attr('opacity', 0.1)
 
   svg.selectAll('rects')
-    .data(data.alignments)
+    .data(data.contigs)
     .enter()
     .append('rect')
     .attr('x', (d) -> xScale(d.q_end))
@@ -92,7 +96,7 @@ d3.json('data.json', (data) ->
 
   d3.json('primer_data.json', (primerdata) ->
       svg.selectAll('primer_rects')
-        .data(primerdata.alignments)
+        .data(primerdata.contigs)
         .enter()
         .append('rect')
         .attr('x', (d) -> xScale(d.q_start))
@@ -108,9 +112,9 @@ d3.json('data.json', (data) ->
 
 
 fill = (d) ->
-  return 'black' if d.align_type == 'alignment'
-  return 'purple' if d.align_type == 'product'
-  return 'blue' if d.align_type == 'gap'
+  return 'black' if d.contig_type == 'contig'
+  return 'purple' if d.contig_type == 'product'
+  return 'blue' if d.contig_type == 'gap'
   return 'yellow'
 
 

@@ -10,38 +10,42 @@
 
   xpadding = 50.0;
 
-  tooltip = d3.select("body").append("div").style("position", "absolute").style("z-index", "10").style("visibility", "hidden").text("a simple tooltip");
+  tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
 
   d3.json('data.json', function(data) {
     var query_len, xScale, yScale;
-    query_len = data.alignments[0].query_length;
+    query_len = data.contigs[0].query_length;
     xScale = d3.scaleLinear().domain([0, query_len]).range([0 + xpadding, w - xpadding]);
-    yScale = d3.scaleLinear().domain([0, data.alignments.length]).range([120, 500]);
+    yScale = d3.scaleLinear().domain([0, data.contigs.length]).range([120, 500]);
     svg.append('rect').attr('x', xScale(0)).attr('width', xScale(query_len)).attr('y', 100).attr('height', 10).attr('opacity', 0.5).attr('fill', 'blue');
-    svg.selectAll('rects').data(data.alignments).enter().append('rect').attr('x', function(d) {
+    svg.selectAll('rects').data(data.contigs).enter().append('rect').attr('x', function(d) {
       return xScale(d.q_start);
     }).attr('y', function(d, i) {
       return 120 + i * 10;
     }).attr('width', function(d) {
       return xScale(d.q_end) - xScale(d.q_start);
     }).attr('height', 7).attr('fill', fill).attr('opacity', 0.9).on("mouseover", function(d) {
-      tooltip.text(d.subject_acc + ' ' + d.q_start + ' (' + xScale(d.q_start) + ') ' + d.q_end + ' (' + xScale(d.q_end) + ') ');
-      return tooltip.style("visibility", "visible");
-    }).on("mouseout", function() {
+      var coordinates;
+      coordinates = d3.mouse(this);
+      d3.select(this).style("fill", 'red');
+      tooltip.text(d.subject_acc + ' ' + d.q_start + ' (' + xScale(d.q_start) + ') ' + d.q_end + ' (' + xScale(d.q_end) + ') ').style("visibility", "visible");
+      return tooltip.html.style("top", (d3.event.pageY + 16) + "px").style("left", (d3.event.pageX + 16) + "px");
+    }).on("mouseout", function(d) {
+      d3.select(this).style('fill', fill);
       return tooltip.style("visibility", "hidden");
     });
-    svg.selectAll('rects').data(data.alignments).enter().append('rect').attr('x', function(d) {
+    svg.selectAll('rects').data(data.contigs).enter().append('rect').attr('x', function(d) {
       return xScale(d.q_start);
     }).attr('y', function(d, i) {
       return 100;
     }).attr('width', 1).attr('height', h).attr('fill', 'black').attr('opacity', 0.1);
-    svg.selectAll('rects').data(data.alignments).enter().append('rect').attr('x', function(d) {
+    svg.selectAll('rects').data(data.contigs).enter().append('rect').attr('x', function(d) {
       return xScale(d.q_end);
     }).attr('y', function(d, i) {
       return 100;
     }).attr('width', 1).attr('height', h).attr('fill', 'blue').attr('opacity', 0.1);
     return d3.json('primer_data.json', function(primerdata) {
-      return svg.selectAll('primer_rects').data(primerdata.alignments).enter().append('rect').attr('x', function(d) {
+      return svg.selectAll('primer_rects').data(primerdata.contigs).enter().append('rect').attr('x', function(d) {
         return xScale(d.q_start);
       }).attr('y', function(d, i) {
         return 100;
@@ -50,13 +54,13 @@
   });
 
   fill = function(d) {
-    if (d.align_type === 'alignment') {
+    if (d.contig_type === 'contig') {
       return 'black';
     }
-    if (d.align_type === 'product') {
+    if (d.contig_type === 'product') {
       return 'purple';
     }
-    if (d.align_type === 'gap') {
+    if (d.contig_type === 'gap') {
       return 'blue';
     }
     return 'yellow';

@@ -1,0 +1,11 @@
+# BLASTN 2.5.0+
+# Query: pmodkan-ho-pact1-z4-er-vpr .
+# Database: database/primerdb
+# Fields: query acc., subject acc., score, evalue, bit score, alignment length, identical, gap opens, gaps, query length, q. start, q. end, subject length, s. start, s. end, subject strand, query seq, subject seq
+# 5 hits found
+pmodkan-ho-pact1-z4-er-vpr	pmodkan-ho-pact1-z4-er-vpr971-1014_rc	43	5.78e-19	80.5	43	43	0	0	9417	972	1014	43	43	1	minus	CGCTGCAGACCTGCGAGCAGGGAAACGCTCCCCTCACAGACGC	CGCTGCAGACCTGCGAGCAGGGAAACGCTCCCCTCACAGACGC
+pmodkan-ho-pact1-z4-er-vpr	pmodkan-ho-pact1-z4-er-vpr6578-6618_rc	40	2.69e-17	75.0	40	40	0	0	9417	6579	6618	40	40	1	minus	ACGGTCGTTTTATGATTCATTTATTGCCTATAATGGTAAA	ACGGTCGTTTTATGATTCATTTATTGCCTATAATGGTAAA
+pmodkan-ho-pact1-z4-er-vpr	pmodkan-ho-pact1-z4-er-vpr7541-7574_rc	33	2.09e-13	62.1	33	33	0	0	9417	7542	7574	33	33	1	minus	TGAGCAAAAGGCCAGCAAAAGGCCAGGAACCGT	TGAGCAAAAGGCCAGCAAAAGGCCAGGAACCGT
+pmodkan-ho-pact1-z4-er-vpr	pmodkan-ho-pact1-z4-er-vpr921-949	28	1.26e-10	52.8	28	28	0	0	9417	922	949	28	1	28	plus	ATCCATACATTTTGATGGCCGCACGGCG	ATCCATACATTTTGATGGCCGCACGGCG
+pmodkan-ho-pact1-z4-er-vpr	pmodkan-ho-pact1-z4-er-vpr3021-3049_rc	28	1.26e-10	52.8	28	28	0	0	9417	3022	3049	28	28	1	minus	CGCATCCATACCGGTCAGAAGCCCTTCC	CGCATCCATACCGGTCAGAAGCCCTTCC
+# BLAST processed 1 queries
