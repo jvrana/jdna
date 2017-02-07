@@ -25,7 +25,6 @@ xpadding = 50.0
 
 tooltip = d3.select("body").append("div")
   .attr("class", "tooltip")
-  .style("opacity", 0)
 
 
 d3.json('data.json', (data) ->
@@ -61,12 +60,11 @@ d3.json('data.json', (data) ->
     .on("mouseover", (d) ->
       coordinates = d3.mouse(this)
       d3.select(this).style("fill", 'red')
-      tooltip.text(d.subject_acc + ' ' + d.q_start + ' (' + xScale(d.q_start) + ') ' + d.q_end + ' (' + xScale(d.q_end) + ') ' + d.contig_type)
+      tooltip.text(d.subject_acc + '<br>' + d.q_start + ', ' + d.q_end + '<br>' + d.contig_type)
         .style("visibility", "visible")
-      tooltip.html
-        .style("top", (d3.event.pageY + 16) + "px")
-        .style("left", (d3.event.pageX + 16) + "px")
       )
+    .on("mousemove", () ->
+      tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px"))
     .on("mouseout", (d) ->
       d3.select(this).style('fill', fill)
       tooltip.style("visibility", "hidden")

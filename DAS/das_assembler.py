@@ -74,6 +74,9 @@ def pcr_products_of_contig(contig, primers, ignore_direction=True, include_conti
 
 # TODO: generate additional pcr products that could be homologous to existing primer
 # TODO: compute alignment_graph for each 'contig'
+
+
+
 def contig_assembly(contigs, primers):
     '''
     Calculates paths for contig assemblies
@@ -90,11 +93,33 @@ def contig_assembly(contigs, primers):
         all_alignments += new_alignments
     contigs += all_alignments
     a = Assembly(contigs=contigs)
-    a.get_all_assemblies()
-        # contig_graph = create_alignment_graph(new_alignments)
-        # contig_graph['root'] = [x['align_id'] for x in new_alignments]
-        # paths = dfs_iter(contig_graph, 'root', new_alignments)
-        # a['assemblies'] = paths
+    return a.get_all_assemblies()
+
+    # import numpy as np
+    # contig_container = Assembly(contigs=contigs)
+    #
+    # def func(x):
+    #     arr = [np.round(X) for X in x]
+    #     arr = list(np.nonzero(arr)[0])
+    #     d = {i: c for i, c in enumerate(contig_container.contigs)}
+    #     contigs = [d[x] for x in arr]
+    #     contigs = sorted(contigs, key=lambda x: x.q_start)
+    #     cost = contig_container.compute_assembly_cost(contigs)
+    #     print cost
+    #     return cost
+    # # contig_graph = create_alignment_graph(new_alignments)
+    # # contig_graph['root'] = [x['align_id'] for x in new_alignments]
+    # # paths = dfs_iter(contig_graph, 'root', new_alignments)
+    # # a['assemblies'] = paths
+    # from pyswarm import pso
+    # lb = [0] * len(contig_container.contigs)
+    # ub = [1] * len(contig_container.contigs)
+    # xopt, fopt = pso(func, lb, ub, swarmsize=100, maxiter=100)
+    # arr = [np.round(X) for X in xopt]
+    # arr = list(np.nonzero(arr)[0])
+    # d = {i: c for i, c in enumerate(contig_container.contigs)}
+    # contigs = [d[x] for x in arr]
+    # print [(c.q_start, c.q_end) for c in contigs]
 
         # TODO: suggestions for splitting large pcr products
         # TODO: trim graph if path spans the query length

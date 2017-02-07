@@ -22,6 +22,7 @@ class BLAST(object):
     def __init__(self, name, db_in_dir, query_path, db_out_dir, results_out, output_format=7, output_views="qacc sacc score evalue bitscore\
      length nident gapopen gaps qlen qstart qend slen sstart send sstrand qseq sseq", **additional_params):
         self.query = query_path
+        self.save_query_info()
         self.pseudocircular()
         self.save_query_as_fsa()
         self.db_in_dir = db_in_dir
@@ -44,11 +45,17 @@ class BLAST(object):
 
     def pseudocircular(self):
         circular = seq_is_circular(self.query)
-        seq = open_sequence(self.query)[0]
+        seq = self.query_seq
         if circular:
             prefix, suffix = self.query.split('.')
             self.query = prefix + '_pseudocircular.' + suffix
             save_sequence(self.query, seq + seq)
+            self.query_circular = True
+
+    def save_query_info(self):
+        self.query_circular = False
+        self.query_seq = open_sequence(self.query)[0]
+        self.query_length = len(self.query_seq)
 
     def runblast(self):
         cmd_str = "blastn -db {db} -query {query} -out {out} -outfmt {outfmt}"
@@ -122,5 +129,8 @@ class BLAST(object):
                 if contig_dict['subject_acc'] in self.db_input_metadata:
                     contig_dict.update(self.db_input_metadata[contig_dict['subject_acc']])
                     contig_container.add_contig(**contig_dict)
+        meta['query_circular'] = self.query_circular
+        meta['query_length'] = self.query_length
+        print meta.keys()
         contig_container.meta = ContigContainerMeta(**meta)
         return contig_container

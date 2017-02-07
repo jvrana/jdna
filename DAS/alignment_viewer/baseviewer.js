@@ -10,7 +10,7 @@
 
   xpadding = 50.0;
 
-  tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
+  tooltip = d3.select("body").append("div").attr("class", "tooltip");
 
   d3.json('data.json', function(data) {
     var query_len, xScale, yScale;
@@ -28,8 +28,9 @@
       var coordinates;
       coordinates = d3.mouse(this);
       d3.select(this).style("fill", 'red');
-      tooltip.text(d.subject_acc + ' ' + d.q_start + ' (' + xScale(d.q_start) + ') ' + d.q_end + ' (' + xScale(d.q_end) + ') ' + d.contig_type).style("visibility", "visible");
-      return tooltip.html.style("top", (d3.event.pageY + 16) + "px").style("left", (d3.event.pageX + 16) + "px");
+      return tooltip.text(d.subject_acc + '<br>' + d.q_start + ', ' + d.q_end + '<br>' + d.contig_type).style("visibility", "visible");
+    }).on("mousemove", function() {
+      return tooltip.style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
     }).on("mouseout", function(d) {
       d3.select(this).style('fill', fill);
       return tooltip.style("visibility", "hidden");
