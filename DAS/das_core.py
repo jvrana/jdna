@@ -26,6 +26,9 @@ contig_container = b.parse_results()
 contig_container.fuse_circular_fragments()
 contig_container.remove_redundant_contigs(include_contigs_contained_within=True, save_linear_contigs=True)
 
+contig_container.filter_imperfect_bindings()
+
+
 generate_random_primers(open_sequence(design_path)[0], 'primers/primers.fasta', num_primers=10)
 p = BLAST('primerdb', 'primers', design_path, 'database', 'database/primerresults.out', evalue=1000.0, word_size=15)
 p.makedbfromdir()
@@ -34,9 +37,11 @@ primer_container = p.parse_results(contig_type='primer')
 primer_container.dump('alignment_viewer/primer_data.json')
 #
 #
+primer_container.filter_imperfect_bindings()
 
 assembly = Assembly(contigs=contig_container.contigs, meta=contig_container.meta.__dict__)
 assembly.expand_contigs(primer_container.contigs)
+assembly.break_apart_long_contigs()
 # assembly.remove_redundant_contigs(include_contigs_contained_within=False)
 
 contig_container.dump('alignment_viewer/data.json')
