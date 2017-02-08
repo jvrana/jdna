@@ -132,6 +132,9 @@ class Contig(object):
         new_contig.alignment_length = q_end - q_start
         return new_contig
 
+    def is_perfect(self):
+        return self.alignment_length == self.identical and \
+                self.gaps == 0 and self.gap_opens == 0
 
 class ContigContainer(object):
     def __init__(self, meta=None, contigs=None):
@@ -192,7 +195,7 @@ class ContigContainer(object):
         def fuse(l, r):
             l.q_end = r.q_end
             l.s_end = r.s_end
-            keys_to_sum = 'alignment_length, identical, gap_opens, gaps, identical, score'.split(', ')
+            keys_to_sum = 'alignment_length, gap_opens, gaps, identical, score'.split(', ')
             for k in keys_to_sum:
                 l.__dict__[k] += r.__dict__[k]
 
@@ -212,6 +215,18 @@ class ContigContainer(object):
 
     def sort_contigs(self):
         self.contigs = sorted(self.contigs, key=lambda x: x.q_start)
+
+    def filter_perfect(self):
+        print len(self.contigs),
+        filtered_contigs = []
+        for contig in self.contigs:
+            if contig.is_perfect():
+                filtered_contigs.append(contig)
+            else:
+                print contig.__dict__
+        print len(self.contigs)
+
+    # TODO: handle ambiquoous NNNN dna in blast search by eliminating gap_opens, gaps if they are N's
 
 
 class Assembly(ContigContainer):
