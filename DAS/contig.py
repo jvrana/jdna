@@ -290,6 +290,7 @@ class Assembly(ContigContainer):
             gap_cost, span_cost, num_frags, frag_cost = CostModel.assembly_costs(contig_path, self.meta.query_length, circular=True)
             cost = CostModel.total_cost(contig_path, self.meta.query_length, circular=True)
             # Trimming conditions
+            # Gap and frag cost are monotonically increasing and so are used for trimming.
             if gap_cost + frag_cost > best_costs[-1] and not cost == float("Inf"):
                 # cost can only get worst, so trim this search
                 continue

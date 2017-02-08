@@ -77,17 +77,27 @@ class CostModel:
         return sum(non_zero_gaps)*CostModel.SYNTHESIS_COST
 
     @staticmethod
-    def get_span(contig_path, query_length):
+    def get_span_gap(contig_path, query_length):
+        '''
+        Get the span gap for the assembly.
+        :param contig_path:
+        :param query_length:
+        :return:
+        '''
         query_span = contig_path[-1].q_end - contig_path[0].q_start
         return query_length - query_span
 
     @staticmethod
     def get_span_cost(contig_path, query_length):
-        return CostModel.get_span(contig_path, query_length) * CostModel.SYNTHESIS_COST
+        return CostModel.get_span_gap(contig_path, query_length) * CostModel.SYNTHESIS_COST
 
     @staticmethod
     def pcr_cost(contig):
-
+        '''
+        Cost of a pcr
+        :param contig:
+        :return:
+        '''
         if not CostModel.MIN_PCR_SIZE < contig.q_end - contig.q_start < CostModel.MAX_PCR_SIZE:
             return float("Inf")
         if not contig.circular and contig.parent == 'query':
@@ -106,6 +116,14 @@ class CostModel:
 
     @staticmethod
     def assembly_costs(contig_path, query_length, circular=True):
+        '''
+        Calculate the assembly costs for the given assembly.
+
+        :param contig_path:
+        :param query_length:
+        :param circular:
+        :return:
+        '''
         if len(contig_path) == 0:
             return float("Inf")
 
@@ -117,7 +135,7 @@ class CostModel:
             span_cost = float("Inf")
         gaps = CostModel.get_gaps(contig_path)
         gap_cost = CostModel.get_gap_cost(gaps)
-        span = CostModel.get_span(contig_path, query_length)
+        span = CostModel.get_span_gap(contig_path, query_length)
         span_cost = span * CostModel.SYNTHESIS_COST
         num_synthesized_fragments = len(filter(lambda x: x > CostModel.SYNTHESIS_THRESHOLD, gaps))
         if circular:
@@ -130,6 +148,12 @@ class CostModel:
 
     @staticmethod
     def assembly_probability(num_frags):
+        '''
+        The probability of a successful GIBSON/SLIC assembly given
+        a number of fragments.
+        :param num_frags:
+        :return:
+        '''
         p = 1.0 - (1.0 / 8.0) * num_frags
         if p <= 0:
             p = 0.0001
@@ -137,12 +161,27 @@ class CostModel:
 
     @staticmethod
     def total_cost(contig_path, query_length, circular=True):
+        '''
+        Calculates total cost in dollars for a given assembly.
+        :param contig_path:
+        :param query_length:
+        :param circular:
+        :return:
+        '''
         gap_cost, span_cost, new_frags, fragment_cost = CostModel.assembly_costs(contig_path, query_length, circular=circular)
         probability = CostModel.assembly_probability(new_frags + len(contig_path))
         return 1 / probability * (gap_cost + span_cost + fragment_cost + CostModel.SYNTHESIS_MIN_COST * new_frags)
 
     @staticmethod
     def assembly_condition(left, right):
+        '''
+        Determines whether two contigs can be assembled either directly or
+        with newly syntheisized intermediates. Used loosely to assemble the contig
+        graph.
+        :param left:
+        :param right:
+        :return:
+        '''
         r_5prime_threshold = 0
         r_3prime_threshold = 60
         l_pos = left.q_end
