@@ -60,7 +60,7 @@ d3.json('data.json', (data) ->
     .on("mouseover", (d) ->
       coordinates = d3.mouse(this)
       d3.select(this).style("fill", 'red')
-      tooltip.text(d.subject_acc + '<br>' + d.q_start + ', ' + d.q_end + '<br>' + d.contig_type)
+      tooltip.text(d.subject_acc + '<br>' + d.q_start + ', ' + d.q_end + '<br>' + d.contig_type + ' ' + d.contig_id)
         .style("visibility", "visible")
       )
     .on("mousemove", () ->

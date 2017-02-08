@@ -28,7 +28,7 @@
       var coordinates;
       coordinates = d3.mouse(this);
       d3.select(this).style("fill", 'red');
-      return tooltip.text(d.subject_acc + '<br>' + d.q_start + ', ' + d.q_end + '<br>' + d.contig_type).style("visibility", "visible");
+      return tooltip.text(d.subject_acc + '<br>' + d.q_start + ', ' + d.q_end + '<br>' + d.contig_type + ' ' + d.contig_id).style("visibility", "visible");
     }).on("mousemove", function() {
       return tooltip.style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
     }).on("mouseout", function(d) {
