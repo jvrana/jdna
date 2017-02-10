@@ -28,20 +28,24 @@ class ContigContainerMeta(object):
         self.__dict__.update(kwargs)
 
 
-class GapContig(Contig):
+class QueryRegion(object):
 
-    def __init__(self, contig, q_start, q_end):
-        super(GapContig, self).__init__(**contig.__dict__)
+    def __init__(self, **kwargs):
+        self.query_acc = kwargs['query_acc']
+        self.q_start = kwargs['q_start']
+        self.q_end = kwargs['q_end']
+        self.query_length = kwargs['query_length']
 
+    def get_span(self):
+        return self.q_end - self.q_start
 
-
-class Contig(object):
+class Contig(QueryRegion):
     contig_id = 0
     NEW_PRIMER = "new_primer"
     DIRECT_END = "direct"
 
     def __init__(self, **kwargs):
-        self.query_acc = kwargs['query_acc']
+        super(Contig, self).__init__(**kwargs)
         self.subject_acc = kwargs['subject_acc']
         self.score = kwargs['score']
         self.evalue = kwargs['evalue']
@@ -50,9 +54,6 @@ class Contig(object):
         self.identical = kwargs['identical']
         self.gap_opens = kwargs['gap_opens']
         self.gaps = kwargs['gaps']
-        self.query_length = kwargs['query_length']
-        self.q_start = kwargs['q_start']
-        self.q_end = kwargs['q_end']
         self.subject_length = kwargs['subject_length']
         self.s_start = kwargs['s_start']
         self.s_end = kwargs['s_end']
@@ -438,6 +439,17 @@ class Assembly(ContigContainer):
     def can_extend(self):
         return self.assembly_span() < self.meta.query_length
 
+    def fill_contig_gaps(self):
+        pairs = self.get_assembly_pairs()
+        new_contigs = []
+        for l, r in pairs:
+            new_contigs.append(l)
+            q = QueryRegion(query_acc=l.query_acc, query_length=l.query_length, q_start=l.q_end, q_end=r.q_start)
+            if q.get_span() > 0:
+                new_contigs.append(q)
+        new_contigs.append(pairs[-1][1]) # append last contig
+        self.contigs = new_contigs
+        
     @staticmethod
     def gap(left, right):
         '''

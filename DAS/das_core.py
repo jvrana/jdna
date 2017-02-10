@@ -48,8 +48,6 @@ assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_l
 
 contig_container.dump('alignment_viewer/data.json')
 
-
-
 paths = assembly.get_all_assemblies(place_holder_size=10)
 print len(paths)
 for p in paths[:5]:
@@ -63,6 +61,8 @@ for p in paths[:5]:
 
 a = paths[0]
 filenames = []
+
+# Parts
 for p in a.contigs:
     part = {
         "Part Name": p.contig_id,
@@ -76,6 +76,7 @@ for p in a.contigs:
     filenames.append(p.filename)
     print part
 
+# Sequences
 for f in list(set(filenames)):
     format = "Genbank"
     prefix, suffix = f.split('.')
@@ -87,21 +88,106 @@ for f in list(set(filenames)):
     }
     print sequence_file
 
-# print a.total_cost()
-# print a.contigs[0].start_label
-# print a.contigs[0].end_label
-# print a.contigs[1].start_label
-# print a.contigs[1].end_label
-# print d.keys()
-# for p in paths[:10]:
-#     contig_path = [d[x] for x in p]
-#     cost = Assembly.total_cost(contig_path, assembly.meta.query_length)
-#     print cost, Assembly.assembly_costs(contig_path, assembly.meta.query_length), [(c.q_start, c.q_end) for c in contig_path], [Assembly.pcr_cost(c) for c in contig_path]
-# contig_container.sort_contigs()
+# Sequences ZIP
+
+# Target Part Order
+
+# Eugene
+pass
+
+# Master Oligo
+
+# Master Plasmid
+
+# Master direct (aka fragments)
+
+# j5 Parameters
+import base64
 
 
+class J5INTERFACE(object):
+    def __init__(self):
+        self.master_plasmids = []
+        self.design_goal = None
+        self.master_primers = []
+        self.master_fragments = []
+        self.eugene = None
+        self.parts = None
+        self.order = None
+        self.parameters = None
 
-# print len(contig_container.contigs)
+    def from_assembly(self, assembly):
+        pass
+
+    def parts_from_contigs(self, contigs):
+        rows = [
+            'Part Source (Sequence Display ID),Part Name,Reverse Compliment?,Start (bp),End (bp),Five Prime Internal Preferred Overhangs?,Three Prime Internal Preferred Overhangs?']
+        for c in contigs:
+            values = [p.contig_id, coral.seqio.read_dna(p.filename).name, False, p.s_start, p.s_end, '', '']
+            values = [str(x) for x in values]
+            rows.append(','.join(values))
+        self.parts = '\n'.join(rows)
+        return self.parts
+
+    def seqs_from_contigs(self, contigs):
+        rows = ['Sequence File Name,Format']
+        for c in contigs:
+            format = "Genbank"
+            prefix, suffix = f.split('.')
+            if suffix == 'fsa' or suffix == 'fasta':
+                format = "Fasta"
+            rows.append(','.join(c.filename, format))
+        self.sequences = '\n'.join(rows)
+        return self.sequences
 
 
-# make_assembly_graph(contig_container)
+j5 = J5INTERFACE()
+j5.from_assembly(a)
+# def from_assembly(self, assembly):
+#     # Create encoded parts.csv
+#     for c in assembly.contigs:
+#         self.add_part(p.id, coral.seqio.read_dna(p.filename), False, p.s_start, p.s_end, '', '')
+#         self.add_sequence(p.filename)
+#
+# def get_target_part_order(self, assembly):
+#     for c in assembly.contigs:
+#         entry = {
+#             '(>Bin) or Part Name': '{}__{}({}-{})'.format(c.contig_id, c.subject_acc, c.s_start, c.s_end),
+#             'Direction': 'forward',
+#             'Forced Assembly Strategy?': '',
+#             'Forced Relative Overhang Position?': '',
+#             'Direct Synthesis Firewall?': '',
+#             "Extra 5' CPEC overlap bps": '',
+#             "Extra 3' CPEC overlap bps": ''
+#         }
+#         self.order.append(entry)
+#     return self.order
+#
+# def get_zipped_sequences(self):
+#     pass
+#
+# def add_sequence(self, filename):
+#     format = "Genbank"
+#     prefix, suffix = f.split('.')
+#     if suffix == 'fsa' or suffix == 'fasta':
+#         format = "Fasta"
+#     sequence_file = {
+#         "Sequence File": f,
+#         "Format": format
+#     }
+#     self.sequences = sequence_file
+#
+# def add_part(self, name, source, rc, start, end, five_int, three_int):
+#     rc = str(rc).upper()
+#     name, source, rc, start, end, five_int, three_int
+#     part = part = {
+#         "Part Name": name,
+#         "Part Source (Sequence Display ID)": source,
+#         "Reverse Complement?": rc,
+#         "Start (bp)": start,
+#         "End (bp)": end,
+#         "Five Prime Internal Preferred Overhangs?": five_int,
+#         "Three Prime Internal Preferred Overhangs?": three_int
+#      }
+#     self.parts.append(part)
+#     return part
