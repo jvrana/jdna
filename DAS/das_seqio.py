@@ -109,10 +109,5 @@ def gb_to_fsa(input_path, output_path):
     return output_path
 
 def seq_is_circular(path):
-    prefix, suffix = path.split('.')
-    if suffix == 'gb':
-        from Bio.GenBank import RecordParser
-        parser = RecordParser()
-        gb_rec = parser.parse(open(path))
-        return 'ircular' in gb_rec.residue_type
-    return False
+    d = coral.seqio.read_dna(path)
+    return d.circular

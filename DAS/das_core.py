@@ -11,7 +11,6 @@ Description:
 from das_contig import *
 from das_utilities import *
 from das_blast import *
-from das_cost_model import *
 
 locations = dict(
     database="database",
@@ -52,8 +51,47 @@ contig_container.dump('alignment_viewer/data.json')
 
 
 paths = assembly.get_all_assemblies(place_holder_size=10)
-#
-d = assembly.contig_dictionary
+print len(paths)
+for p in paths[:5]:
+    print [x.contig_id for x in p.contigs]
+    print p.total_cost()
+    p.print_contig_path()
+
+# TODO: fill in gaps
+# a.add_gapped_contigs
+
+
+a = paths[0]
+filenames = []
+for p in a.contigs:
+    part = {
+        "Part Name": p.contig_id,
+        "Part Source (Sequence Display ID)": coral.seqio.read_dna(p.filename).name,
+        "Reverse Complement?": "FALSE",
+        "Start (bp)": p.s_start,
+        "End (bp)": p.s_end,
+        "Five Prime Internal Preferred Overhangs?": '',
+        "Three Prime Internal Preferred Overhangs?": ''
+    }
+    filenames.append(p.filename)
+    print part
+
+for f in list(set(filenames)):
+    format = "Genbank"
+    prefix, suffix = f.split('.')
+    if suffix == 'fsa' or suffix == 'fasta':
+        format = "Fasta"
+    sequence_file = {
+        "Sequence File": f,
+        "Format": format
+    }
+    print sequence_file
+
+# print a.total_cost()
+# print a.contigs[0].start_label
+# print a.contigs[0].end_label
+# print a.contigs[1].start_label
+# print a.contigs[1].end_label
 # print d.keys()
 # for p in paths[:10]:
 #     contig_path = [d[x] for x in p]

@@ -51,6 +51,7 @@ class BLAST(object):
             self.query = prefix + '_pseudocircular.' + suffix
             save_sequence(self.query, seq + seq)
             self.query_circular = True
+        print "QUERY", self.query
 
     def save_query_info(self):
         self.query_circular = False
@@ -132,5 +133,6 @@ class BLAST(object):
         meta['query_circular'] = self.query_circular
         meta['query_length'] = self.query_length
         print meta.keys()
+        meta['query_filename'] = self.query
         contig_container.meta = ContigContainerMeta(**meta)
         return contig_container

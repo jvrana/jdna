@@ -28,6 +28,13 @@ class ContigContainerMeta(object):
         self.__dict__.update(kwargs)
 
 
+class GapContig(Contig):
+
+    def __init__(self, contig, q_start, q_end):
+        super(GapContig, self).__init__(**contig.__dict__)
+
+
+
 class Contig(object):
     contig_id = 0
     NEW_PRIMER = "new_primer"
@@ -316,6 +323,7 @@ class AssemblyGraph(ContigContainer):
     def get_all_assemblies(self, sort=True, place_holder_size=5):
         self.make_assembly_graph(sort=sort)
         self.assemblies = self.dfs_iter(place_holder_size=place_holder_size)
+        self.assemblies = sorted(self.assemblies, key=lambda x: x.total_cost())
         return self.assemblies
 
     def make_assembly_graph(self, sort=True):
@@ -349,7 +357,7 @@ class AssemblyGraph(ContigContainer):
         assemblies = []
         sorted_contigs = sorted(self.contigs, key=lambda x: x.q_end - x.q_start, reverse=True)
         stack = []
-        for c in [9]:  # sorted_contigs:
+        for c in sorted_contigs:
             a = Assembly([c], self, self.primers)
             stack.append(a)
         best_costs = [float("Inf")] * place_holder_size  # five best costs
@@ -381,22 +389,20 @@ class AssemblyGraph(ContigContainer):
                     has_children = True
                     for node in children:
                         assembly_copy = copy(assembly)
-                        assembly_copy.contigs = assembly_copy.contigs[:] + [self.get_contig(node)]
+                        assembly_copy.contigs = assembly.contigs[:] + [self.get_contig(node)]
                         new_paths.append(assembly_copy)
 
             for new_path in new_paths:
                 if new_path.can_extend():
                     can_extend = True
                     stack.append(new_path)
-
             if cost < best_costs[-1]:
                 best_costs[-1] = cost
-                print cost, best_costs
-                assemblies.append(assembly)
+            assemblies.append(assembly)
                     # end of path
         assemblies = sorted(assemblies,
                             key=lambda x: x.total_cost())
-        self.assemblies = assemblies
+        return assemblies
 
 
 class Assembly(ContigContainer):
@@ -405,7 +411,7 @@ class Assembly(ContigContainer):
     PRIMER_COST = 15.
     PCR_COST = 14.
     FIVEPRIME_EXT_REACH = 20.  # 'reachability' for a extended primer
-    SYNTHESIS_THRESHOLD = 60.  # min bp for synthesis
+    SYNTHESIS_THRESHOLD = 0.  # min bp for synthesis
     SYNTHESIS_COST = 0.11  # per bp
     SYNTHESIS_MIN_COST = 89.  # per synthesis
 
@@ -583,3 +589,9 @@ class Assembly(ContigContainer):
         # return r_pos == l_pos + 1 # if its consecutive
         return r_pos > l_pos - r_3prime_threshold and \
                right.q_end > left.q_end
+
+    def get_all_templates(self):
+        filenames = []
+        for c in self.contigs:
+            filenames.append(c.filename)
+        return list(set(filenames))
