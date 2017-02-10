@@ -8,7 +8,7 @@ Description:
 
 '''
 
-from contig import *
+from das_contig import *
 from das_utilities import *
 from das_blast import *
 from das_cost_model import *
@@ -40,8 +40,9 @@ primer_container.dump('alignment_viewer/primer_data.json')
 #
 # primer_container.filter_perfect()
 
-assembly = Assembly(contigs=contig_container.contigs, meta=contig_container.meta.__dict__)
+assembly = AssemblyContainer(contigs=contig_container.contigs, meta=contig_container.meta.__dict__)
 assembly.expand_contigs(primer_container.contigs)
+
 assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
 # assembly.break_apart_long_contigs()
 # assembly.remove_redundant_contigs(include_contigs_contained_within=False)
@@ -59,6 +60,8 @@ for p in paths[:10]:
     cost = CostModel.total_cost(contig_path, assembly.meta.query_length)
     print cost, CostModel.assembly_costs(contig_path, assembly.meta.query_length), [(c.q_start, c.q_end) for c in contig_path], [CostModel.pcr_cost(c) for c in contig_path]
 contig_container.sort_contigs()
+
+
 
 # print len(contig_container.contigs)
 

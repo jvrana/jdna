@@ -8,7 +8,7 @@ Description:
 
 '''
 from das_seqio import *
-from contig import Contig, ContigContainer, ContigContainerMeta
+from das_contig import Contig, ContigContainer, ContigContainerMeta
 import re
 from copy import copy
 

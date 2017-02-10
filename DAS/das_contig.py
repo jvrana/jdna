@@ -31,6 +31,8 @@ class ContigContainerMeta(object):
 
 class Contig(object):
     contig_id = 0
+    NEW_PRIMER = "new_primer"
+    DIRECT_END = "direct"
 
     def __init__(self, **kwargs):
         self.query_acc = kwargs['query_acc']
@@ -51,12 +53,12 @@ class Contig(object):
         self.subject_strand = kwargs['subject_strand']
         self.query_seq = kwargs['query_seq']
         self.subject_seq = kwargs['subject_seq']
-        self.assemblies = []
         self.contig_type = kwargs['contig_type']
         self.assign_id()
         self.parent = 'query'
-        self.end_label = 'query'
-        self.start_label = 'query'
+        self.end_label = Contig.NEW_PRIMER       # None, new_primer, or contig_id
+        self.start_label = Contig.NEW_PRIMER     # None, new_primer, or contig_id
+        self.quality = 1.0 # used for future machine learning / AI
         try:
             self.circular = kwargs['circular']
         except KeyError:
@@ -65,6 +67,9 @@ class Contig(object):
             self.filename = kwargs['filename']
         except KeyError:
             self.filename = None
+        if not self.circular:
+            self.start_label = Contig.DIRECT_END
+            self.end_label = Contig.DIRECT_END
         for k in kwargs:
             if k not in self.__dict__:
                 raise ValueError("Key {} not found in {} class definition".format(k, Contig.__class__.__name__))
@@ -78,10 +83,23 @@ class Contig(object):
         c.assign_id()
         return c
 
-    def divide_contig(self, startpoints, endpoints, include_contig=True, contig_type=None, circular=None, start_label='', end_label=''):
+    def divide_contig(self, startpoints, endpoints, include_contig=True, contig_type=None, circular=None):
+        '''
+
+        :param startpoints: list of (pos, label) tuples
+        :param endpoints: list of (pos, label) tuples
+        :param include_contig: whether to include the contig endpoints
+        :param contig_type: contig_label, used to determine the type of contig this is for the cost analysis
+        :param circular: used to determine the type of contig this is for the cost analysis
+        :return:
+        '''
         positions = list(itertools.product(startpoints, endpoints))
         contigs = []
-        for s, e in positions:
+        for start, end in positions:
+            if isinstance(start, int):
+                x = 1
+            s, start_label = start
+            e, end_label = end
             if not include_contig:
                 if s == self.q_start and e == self.q_end:
                     continue
@@ -92,11 +110,11 @@ class Contig(object):
                 if circular is not None:
                     new_contig.circular = circular
                 if new_contig.q_start == self.q_start:
-                    new_contig.start_label = 'contig'
+                    new_contig.start_label = Contig.NEW_PRIMER
                 else:
                     new_contig.start_label = start_label
                 if new_contig.q_end == self.q_end:
-                    new_contig.end_label = 'contig'
+                    new_contig.end_label = Contig.NEW_PRIMER
                 else:
                     new_contig.end_label = end_label
                 new_contig.parent = self.contig_id
@@ -230,12 +248,30 @@ class ContigContainer(object):
     # TODO: handle ambiquoous NNNN dna in blast search by eliminating gap_opens, gaps if they are N's
 
 
-class Assembly(ContigContainer):
+class Assembly():
+
+    def __init__(self, assembly_path, contig_container, primer_container):
+        self.assemblypath = self._convert_assembly_path(assembly_path, contig_container)
+        self.contig_container = contig_container
+        self.primer_continer = primer_container
+
+    def _convert_assembly_path(self, assembly_path, contig_container):
+        contig_container.make_dictionary()
+        for i, ap in enumerate(assembly_path):
+            if isinstance(ap, Contig):
+                pass
+            elif isinstance(ap, int):
+                assembly_path[i] = contig_container.get_contig(ap)
+        return assembly_path
+
+
+class AssemblyContainer(ContigContainer):
 
     def __init__(self, meta=None, contigs=[]):
-        super(Assembly, self).__init__(meta=meta, contigs=contigs)
+        super(AssemblyContainer, self).__init__(meta=meta, contigs=contigs)
         self.assembly_graph = {}
-        self.paths = []
+        self.assemblies = []
+        self.make_dictionary()
 
     def get_all_assemblies(self, sort=True, place_holder_size=5):
         self.make_assembly_graph(sort=sort)
@@ -282,13 +318,16 @@ class Assembly(ContigContainer):
         paths = []
         sorted_contigs = sorted(self.contigs, key=lambda x: x.q_end - x.q_start, reverse=True)
         stack = [[x.contig_id] for x in sorted_contigs]
+        stack = [[9]]
         best_costs = [float("Inf")] * place_holder_size  # five best costs
         while stack:
             best_costs.sort()
             path = stack.pop()
+
             contig_path = [self.get_contig(x) for x in path]
             gap_cost, span_cost, num_frags, frag_cost = CostModel.assembly_costs(contig_path, self.meta.query_length, circular=True)
             cost = CostModel.total_cost(contig_path, self.meta.query_length, circular=True)
+
             # Trimming conditions
             # Gap and frag cost are monotonically increasing and so are used for trimming.
             if gap_cost + frag_cost > best_costs[-1] and not cost == float("Inf"):
@@ -324,7 +363,7 @@ class Assembly(ContigContainer):
                     paths.append(path)
             # end of path
         paths = sorted(paths, key=lambda x: CostModel.total_cost([self.get_contig(c) for c in x], self.meta.query_length))
-        return paths
+        self.assemblies = paths
 
     def contigs_query_span(self, contig_list):
         contigs = []
@@ -361,30 +400,28 @@ class Assembly(ContigContainer):
         '''
 
         new_alignments = []
-        primers = Assembly.get_primers_within_bounds(contig, primers)
+        primers = AssemblyContainer.get_primers_within_bounds(contig, primers)
         rev_primer_pos = []
         fwd_primer_pos = []
-        new_fwd_primer_pos = []
-        new_rev_primer_pos = []
+        new_fwd_primer_pos = [(contig.q_start, "new_primer")]
+        new_rev_primer_pos = [(contig.q_end, "new_primer")]
         for primer in primers:
             direction = primer.subject_strand
             if direction == 'plus':
-                fwd_primer_pos.append(primer.q_start)
-                new_rev_primer_pos.append(primer.q_end)
+                fwd_primer_pos.append((primer.q_start, primer.contig_id))
+                new_rev_primer_pos.append((primer.q_end, "new_primer"))
             if direction == 'minus':
-                rev_primer_pos.append(primer.q_end)
-                new_fwd_primer_pos.append(primer.q_start)
+                rev_primer_pos.append((primer.q_end, primer.contig_id))
+                new_fwd_primer_pos.append((primer.q_start, "new_primer"))
         contigs = []
         contigs += contig.divide_contig(fwd_primer_pos, rev_primer_pos, include_contig=False,
-                                    contig_type='product', circular=False, start_label='primer', end_label='primer')
-        contigs += contig.divide_contig(fwd_primer_pos, new_rev_primer_pos + [contig.q_end], include_contig=False,
-                                        contig_type='product', circular=False, start_label='primer', end_label='new_primer')
-        contigs += contig.divide_contig(new_fwd_primer_pos + [contig.q_start], rev_primer_pos, include_contig=False,
-                                        contig_type='product', circular=False, start_label='new_primer',
-                                        end_label='primer')
-        contigs += contig.divide_contig(new_fwd_primer_pos + [contig.q_start], new_rev_primer_pos + [contig.q_end], include_contig=False,
-                                        contig_type='product', circular=False, start_label='new_primer',
-                                        end_label='new_primer')
+                                    contig_type='product', circular=False)
+        contigs += contig.divide_contig(fwd_primer_pos, new_rev_primer_pos, include_contig=False,
+                                        contig_type='product', circular=False)
+        contigs += contig.divide_contig(new_fwd_primer_pos, rev_primer_pos, include_contig=False,
+                                        contig_type='product', circular=False)
+        contigs += contig.divide_contig(new_fwd_primer_pos, new_rev_primer_pos, include_contig=False,
+                                        contig_type='product', circular=False)
         return contigs
 
 
@@ -394,6 +431,187 @@ class Assembly(ContigContainer):
     def expand_contigs(self, primers):
         all_alignments = []
         for contig in self.contigs:
-            new_alignments = Assembly.pcr_products_of_contig(contig, primers)
+            new_alignments = AssemblyContainer.pcr_products_of_contig(contig, primers)
             all_alignments += new_alignments
         self.contigs += all_alignments
+
+class CostModel:
+    MIN_PCR_SIZE = 250.
+    MAX_PCR_SIZE = 10000.
+    PRIMER_COST = 15.
+    PCR_COST = 14.
+    FIVEPRIME_EXT_REACH = 20. # 'reachability' for a extended primer
+    SYNTHESIS_THRESHOLD = 60. # min bp for synthesis
+    SYNTHESIS_COST = 0.11 # per bp
+    SYNTHESIS_MIN_COST = 89. # per synthesis
+
+    @staticmethod
+    def gap(left, right):
+        '''
+        Calculates the unreachable gap
+        :param left:
+        :param right:
+        :return:
+        '''
+        d = right.q_start - left.q_end
+        r = 0
+        if right.end_label == Contig.NEW_PRIMER or right.end_label is Contig.DIRECT_END:
+            r += CostModel.FIVEPRIME_EXT_REACH
+        if left.start_label == Contig.NEW_PRIMER or left.start_label is Contig.DIRECT_END:
+            r += CostModel.FIVEPRIME_EXT_REACH
+        gap = d - r
+        return gap
+
+    @staticmethod
+    def circular_gap(left, right, query_length):
+        '''
+        Calculates the gap for a circular contig path.
+        Note: non-increasing gap function; cannot be used for graph trimming
+        :param left:
+        :param right:
+        :param query_length:
+        :return:
+        '''
+        return query_length + CostModel.gap(right, left)
+
+    @staticmethod
+    def get_gaps(contig_path, circular=True):
+        '''
+        Calculates all non-circular gaps for a contig_path
+        :param contig_path:
+        :param circular:
+        :return:
+        '''
+        pairs = zip(contig_path[:-1], contig_path[1:])
+        gaps = []
+        for l, r in pairs:
+            if CostModel.assembly_condition(l, r):
+                gaps.append(CostModel.gap(l, r))
+            else:
+                gaps.append(float("Inf"))
+                return gaps
+        return gaps
+
+    @staticmethod
+    def get_gap_cost(gaps):
+        '''
+        A monotonically increasing gap cost function.
+        :param gaps:
+        :return:
+        '''
+        non_zero_gaps = filter(lambda x: x > 0, gaps)
+        return sum(non_zero_gaps)*CostModel.SYNTHESIS_COST
+
+    @staticmethod
+    def get_span_gap(contig_path, query_length):
+        '''
+        Get the span gap for the assembly.
+        :param contig_path:
+        :param query_length:
+        :return:
+        '''
+        query_span = contig_path[-1].q_end - contig_path[0].q_start
+        return query_length - query_span
+
+    @staticmethod
+    def get_span_cost(contig_path, query_length):
+        return CostModel.get_span_gap(contig_path, query_length) * CostModel.SYNTHESIS_COST
+
+    @staticmethod
+    def pcr_cost(contig):
+        '''
+        Cost of a pcr
+        :param contig:
+        :return:
+        '''
+
+        if not CostModel.MIN_PCR_SIZE < contig.q_end - contig.q_start < CostModel.MAX_PCR_SIZE:
+            return float("Inf")
+        if not contig.circular and contig.parent == 'query':
+            # direct_synthesis
+            return 0
+        cost = CostModel.PCR_COST
+        if contig.circular:
+            cost += 2 * CostModel.PRIMER_COST
+        else:
+            if contig.start_label == Contig.NEW_PRIMER or contig.start_label is Contig.DIRECT_END:
+                cost += CostModel.PRIMER_COST
+            if contig.end_label == Contig.NEW_PRIMER or contig.end_label is Contig.DIRECT_END:
+                cost += CostModel.PRIMER_COST
+        # print contig.circular, contig.parent, contig.start_label, contig.end_label, cost
+        return cost
+
+    @staticmethod
+    def assembly_costs(contig_path, query_length, circular=True):
+        '''
+        Calculate the assembly costs for the given assembly.
+
+        :param contig_path:
+        :param query_length:
+        :param circular:
+        :return:
+        '''
+        if len(contig_path) == 0:
+            return float("Inf")
+
+        pairs = zip(contig_path[:-1], contig_path[1:])
+
+        query_span = contig_path[-1].q_end - contig_path[0].q_start
+        span_cost = query_length - query_span
+        if span_cost < 0:
+            span_cost = float("Inf")
+        gaps = CostModel.get_gaps(contig_path)
+        gap_cost = CostModel.get_gap_cost(gaps)
+        span = CostModel.get_span_gap(contig_path, query_length)
+        span_cost = span * CostModel.SYNTHESIS_COST
+        num_synthesized_fragments = len(filter(lambda x: x > CostModel.SYNTHESIS_THRESHOLD, gaps))
+        if circular:
+            if span > CostModel.SYNTHESIS_THRESHOLD:
+                num_synthesized_fragments += 1
+            # non valid assembly
+        fragment_cost = sum([CostModel.pcr_cost(c) for c in contig_path])
+        return gap_cost, span_cost, num_synthesized_fragments, fragment_cost
+
+    @staticmethod
+    def assembly_probability(num_frags):
+        '''
+        The probability of a successful GIBSON/SLIC assembly given
+        a number of fragments.
+        :param num_frags:
+        :return:
+        '''
+        p = 1.0 - (1.0 / 8.0) * num_frags
+        if p <= 0:
+            p = 0.0001
+        return p
+
+    @staticmethod
+    def total_cost(contig_path, query_length, circular=True):
+        '''
+        Calculates total cost in dollars for a given assembly.
+        :param contig_path:
+        :param query_length:
+        :param circular:
+        :return:
+        '''
+        gap_cost, span_cost, new_frags, fragment_cost = CostModel.assembly_costs(contig_path, query_length, circular=circular)
+        probability = CostModel.assembly_probability(new_frags + len(contig_path))
+        return 1 / probability * (gap_cost + span_cost + fragment_cost + CostModel.SYNTHESIS_MIN_COST * new_frags)
+
+    @staticmethod
+    def assembly_condition(left, right):
+        '''
+        Determines whether two contigs can be assembled either directly or
+        with newly syntheisized intermediates. Used loosely to assemble the contig
+        graph.
+        :param left:
+        :param right:
+        :return:
+        '''
+        r_5prime_threshold = 0
+        r_3prime_threshold = 60
+        l_pos = left.q_end
+        r_pos = right.q_start
+        # return r_pos == l_pos + 1 # if its consecutive
+        return r_pos > l_pos - r_3prime_threshold and \
+               right.q_end > left.q_end

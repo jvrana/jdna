@@ -946,12 +946,12 @@ class Reaction(object):
         ig = hr['interaction graph']
         print 'Cyclic Assemblies: {}'.format(len(c))
         for i, a in enumerate(c[::-1]):
-            print '\tAssembly {}'.format(i)
+            print '\tAssemblyContainer {}'.format(i)
             for n in a:
                 print '\t\t{} {}'.format(f[n].name, h[n])
         print 'Linear Assemblies: {}'.format(len(l))
         for i, a in enumerate(l[::-1]):
-            print '\tAssembly {}'.format(i)
+            print '\tAssemblyContainer {}'.format(i)
             for n in a:
                 print '\t\t{} {}'.format(f[n].name, h[n])
 
@@ -976,7 +976,7 @@ class Reaction(object):
             warnings.warn("More than one assembly found.")
         elif len(assembly) == 0:
             Reaction.print_homology_report(h_report)
-            Exception("Assembly failed.")
+            Exception("AssemblyContainer failed.")
         products = []
         for cyno, cy in enumerate(assembly):
             # Copy fragments in cycle
