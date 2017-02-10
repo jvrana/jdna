@@ -14,7 +14,7 @@ class CostModel:
     MAX_PCR_SIZE = 10000.
     PRIMER_COST = 15.
     PCR_COST = 14.
-    FIVEPRIME_EXT_REACH = 20. # reachability for a extended primer
+    FIVEPRIME_EXT_REACH = 20. # 'reachability' for a extended primer
     SYNTHESIS_THRESHOLD = 60. # min bp for synthesis
     SYNTHESIS_COST = 0.11 # per bp
     SYNTHESIS_MIN_COST = 89. # per synthesis
