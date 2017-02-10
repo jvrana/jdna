@@ -11,8 +11,7 @@ Description:
 from collections import defaultdict
 import itertools
 import json
-from das_cost_model import *
-from copy import deepcopy
+from copy import deepcopy, copy
 
 
 class ContigError(Exception):
@@ -56,9 +55,9 @@ class Contig(object):
         self.contig_type = kwargs['contig_type']
         self.assign_id()
         self.parent = 'query'
-        self.end_label = Contig.NEW_PRIMER       # None, new_primer, or contig_id
-        self.start_label = Contig.NEW_PRIMER     # None, new_primer, or contig_id
-        self.quality = 1.0 # used for future machine learning / AI
+        self.end_label = Contig.NEW_PRIMER  # None, new_primer, or contig_id
+        self.start_label = Contig.NEW_PRIMER  # None, new_primer, or contig_id
+        self.quality = 1.0  # used for future machine learning / AI
         try:
             self.circular = kwargs['circular']
         except KeyError:
@@ -153,7 +152,57 @@ class Contig(object):
 
     def is_perfect(self):
         return self.alignment_length == self.identical and \
-                self.gaps == 0 and self.gap_opens == 0
+               self.gaps == 0 and self.gap_opens == 0
+
+    # TODO: add primer label names to start_label and end_label
+    def pcr_products_of_contig(self, primers):
+        '''
+        Produces all possible fragments from primer positions
+        :param contig:
+        :param primers:
+        :param ignore_direction:
+        :return:
+        '''
+        primers = self.get_primers_within_bounds(primers)
+
+        rev_primer_pos = []
+        fwd_primer_pos = []
+        new_fwd_primer_pos = [(self.q_start, "new_primer")]
+        new_rev_primer_pos = [(self.q_end, "new_primer")]
+        for primer in primers:
+            direction = primer.subject_strand
+            if direction == 'plus':
+                fwd_primer_pos.append((primer.q_start, primer.contig_id))
+                new_rev_primer_pos.append((primer.q_end, "new_primer"))
+            if direction == 'minus':
+                rev_primer_pos.append((primer.q_end, primer.contig_id))
+                new_fwd_primer_pos.append((primer.q_start, "new_primer"))
+        contigs = []
+        contigs += self.divide_contig(fwd_primer_pos, rev_primer_pos, include_contig=False,
+                                      contig_type='product', circular=False)
+        contigs += self.divide_contig(fwd_primer_pos, new_rev_primer_pos, include_contig=False,
+                                      contig_type='product', circular=False)
+        contigs += self.divide_contig(new_fwd_primer_pos, rev_primer_pos, include_contig=False,
+                                      contig_type='product', circular=False)
+        contigs += self.divide_contig(new_fwd_primer_pos, new_rev_primer_pos, include_contig=False,
+                                      contig_type='product', circular=False)
+        return contigs
+
+    def get_primers_within_bounds(self, primers, minimum_primer_anneal=15):
+
+        def primer_within_bounds(primer):
+            minimum_primer_anneal = 15  # TODO: move MIN_PRIMER to design parameters
+            if primer.subject_strand == 'plus':
+                return self.q_start + minimum_primer_anneal < primer.q_end < self.q_end
+            elif primer.subject_strand == 'minus':
+                return self.q_start < primer.q_start < self.q_end - minimum_primer_anneal
+            return False
+
+        return filter(lambda x: primer_within_bounds(x), primers)
+
+        # TODO: generate additional pcr products that could be homologous to existing primer
+        # TODO: compute alignment_graph for each 'contig'
+
 
 class ContigContainer(object):
     def __init__(self, meta=None, contigs=None):
@@ -245,48 +294,29 @@ class ContigContainer(object):
                 print contig.__dict__
         print len(self.contigs)
 
-    # TODO: handle ambiquoous NNNN dna in blast search by eliminating gap_opens, gaps if they are N's
+        # TODO: handle ambiquoous NNNN dna in blast search by eliminating gap_opens, gaps if they are N's
+
+    def expand_contigs(self, primers):
+        all_alignments = []
+        for contig in self.contigs:
+            new_alignments = contig.pcr_products_of_contig(primers)
+            all_alignments += new_alignments
+        self.contigs += all_alignments
 
 
-class Assembly():
-
-    def __init__(self, assembly_path, contig_container, primer_container):
-        self.assemblypath = self._convert_assembly_path(assembly_path, contig_container)
-        self.contig_container = contig_container
-        self.primer_continer = primer_container
-
-    def _convert_assembly_path(self, assembly_path, contig_container):
-        contig_container.make_dictionary()
-        for i, ap in enumerate(assembly_path):
-            if isinstance(ap, Contig):
-                pass
-            elif isinstance(ap, int):
-                assembly_path[i] = contig_container.get_contig(ap)
-        return assembly_path
-
-
-class AssemblyContainer(ContigContainer):
-
-    def __init__(self, meta=None, contigs=[]):
-        super(AssemblyContainer, self).__init__(meta=meta, contigs=contigs)
-        self.assembly_graph = {}
-        self.assemblies = []
+class AssemblyGraph(ContigContainer):
+    def __init__(self, primers=None, contigs=None):
+        super(AssemblyGraph, self).__init__(meta=contigs.meta.__dict__, contigs=contigs.contigs)
+        self.graph = {}
+        self.primers = primers
+        if primers is None:
+            self.primers = ContigContainer()
         self.make_dictionary()
 
     def get_all_assemblies(self, sort=True, place_holder_size=5):
         self.make_assembly_graph(sort=sort)
         self.assemblies = self.dfs_iter(place_holder_size=place_holder_size)
         return self.assemblies
-
-    def print_contig_path(self, contigs):
-        c_arr = []
-        for c in contigs:
-            if isinstance(c, int):
-                c = self.get_contig(c)
-            c_arr.append(c)
-
-        print [(c.q_start, c.q_end) for c in c_arr]
-
 
     def make_assembly_graph(self, sort=True):
         self.make_dictionary()
@@ -297,7 +327,7 @@ class AssemblyContainer(ContigContainer):
 
             if l == r:
                 continue
-            if CostModel.assembly_condition(l, r):
+            if Assembly.assembly_condition(l, r):
                 if l.contig_id not in graph:
                     graph[l.contig_id] = []
                 graph[l.contig_id].append(r.contig_id)
@@ -309,24 +339,28 @@ class AssemblyContainer(ContigContainer):
                 # graph[k] = sorted(a_array, key=lambda x: self.compute_assembly_cost(
                 #     [self.get_contig(k), self.get_contig(x)])[0])
 
-                graph[k] = sorted(a_array, key=lambda x: self.get_contig(x).q_end - self.get_contig(x).q_start, reverse=True)
-        self.assembly_graph = graph
+                graph[k] = sorted(a_array, key=lambda x: self.get_contig(x).q_end - self.get_contig(x).q_start,
+                                  reverse=True)
+        self.graph = graph
         # self.assembly_graph['root'] = [x.contig_id for x in self.contigs]
-        return self.assembly_graph
+        return self.graph
 
     def dfs_iter(self, place_holder_size=5):
-        paths = []
+        assemblies = []
         sorted_contigs = sorted(self.contigs, key=lambda x: x.q_end - x.q_start, reverse=True)
-        stack = [[x.contig_id] for x in sorted_contigs]
-        stack = [[9]]
+        stack = []
+        for c in [9]:  # sorted_contigs:
+            a = Assembly([c], self, self.primers)
+            stack.append(a)
         best_costs = [float("Inf")] * place_holder_size  # five best costs
         while stack:
             best_costs.sort()
-            path = stack.pop()
+            assembly = stack.pop()
 
-            contig_path = [self.get_contig(x) for x in path]
-            gap_cost, span_cost, num_frags, frag_cost = CostModel.assembly_costs(contig_path, self.meta.query_length, circular=True)
-            cost = CostModel.total_cost(contig_path, self.meta.query_length, circular=True)
+            gap_cost = assembly.get_gap_cost()
+            frag_cost = assembly.get_fragment_cost()
+
+            cost = assembly.total_cost()
 
             # Trimming conditions
             # Gap and frag cost are monotonically increasing and so are used for trimming.
@@ -336,114 +370,67 @@ class AssemblyContainer(ContigContainer):
             if cost == float("Inf"):
                 continue
 
-            # if path > query_length
-
-            n = path[-1]
             can_extend = False
             has_children = False
 
             new_paths = []
-            if n in self.assembly_graph:
-                children = self.assembly_graph[n]
+            n = assembly.last().contig_id
+            if n in self.graph:
+                children = self.graph[n]
                 if children:
                     has_children = True
                     for node in children:
-                        new_paths.append(path[:] + [node])
+                        assembly_copy = copy(assembly)
+                        assembly_copy.contigs = assembly_copy.contigs[:] + [self.get_contig(node)]
+                        new_paths.append(assembly_copy)
 
             for new_path in new_paths:
-                query_span = self.get_contig(new_path[-1]).q_end - self.get_contig(new_path[0]).q_start
-                if query_span < self.meta.query_length:
+                if new_path.can_extend():
                     can_extend = True
                     stack.append(new_path)
 
-            if not (has_children and can_extend) or 1==1:
-                if cost < best_costs[-1]:
-                    best_costs[-1] = cost
-                    print cost, best_costs
-                    paths.append(path)
-            # end of path
-        paths = sorted(paths, key=lambda x: CostModel.total_cost([self.get_contig(c) for c in x], self.meta.query_length))
-        self.assemblies = paths
-
-    def contigs_query_span(self, contig_list):
-        contigs = []
-        for c in contigs:
-            if isinstance(c, int):
-                c = self.get_contig(c)
-            contigs.append(c)
-
-        sort_by_start = sorted(contigs, key=lambda x: x.q_start)
-        sort_by_end = sorted(contigs, key=lambda x: x.q_end)
-        return sort_by_end[-1].q_end - sort_by_start[0].q_start
-
-    @staticmethod
-    def get_primers_within_bounds(contig, primers, minimum_primer_anneal=15):
-        def primer_within_bounds(primer):
-            minimum_primer_anneal = 15  # TODO: move MIN_PRIMER to design parameters
-            if primer.subject_strand == 'plus':
-                return contig.q_start + minimum_primer_anneal < primer.q_end < contig.q_end
-            elif primer.subject_strand == 'minus':
-                return contig.q_start < primer.q_start < contig.q_end - minimum_primer_anneal
-            return False
-
-        return filter(lambda x: primer_within_bounds(x), primers)
-
-    # TODO: add primer label names to start_label and end_label
-    @staticmethod
-    def pcr_products_of_contig(contig, primers):
-        '''
-        Produces all possible fragments from primer positions
-        :param contig:
-        :param primers:
-        :param ignore_direction:
-        :return:
-        '''
-
-        new_alignments = []
-        primers = AssemblyContainer.get_primers_within_bounds(contig, primers)
-        rev_primer_pos = []
-        fwd_primer_pos = []
-        new_fwd_primer_pos = [(contig.q_start, "new_primer")]
-        new_rev_primer_pos = [(contig.q_end, "new_primer")]
-        for primer in primers:
-            direction = primer.subject_strand
-            if direction == 'plus':
-                fwd_primer_pos.append((primer.q_start, primer.contig_id))
-                new_rev_primer_pos.append((primer.q_end, "new_primer"))
-            if direction == 'minus':
-                rev_primer_pos.append((primer.q_end, primer.contig_id))
-                new_fwd_primer_pos.append((primer.q_start, "new_primer"))
-        contigs = []
-        contigs += contig.divide_contig(fwd_primer_pos, rev_primer_pos, include_contig=False,
-                                    contig_type='product', circular=False)
-        contigs += contig.divide_contig(fwd_primer_pos, new_rev_primer_pos, include_contig=False,
-                                        contig_type='product', circular=False)
-        contigs += contig.divide_contig(new_fwd_primer_pos, rev_primer_pos, include_contig=False,
-                                        contig_type='product', circular=False)
-        contigs += contig.divide_contig(new_fwd_primer_pos, new_rev_primer_pos, include_contig=False,
-                                        contig_type='product', circular=False)
-        return contigs
+            if cost < best_costs[-1]:
+                best_costs[-1] = cost
+                print cost, best_costs
+                assemblies.append(assembly)
+                    # end of path
+        assemblies = sorted(assemblies,
+                            key=lambda x: x.total_cost())
+        self.assemblies = assemblies
 
 
-    # TODO: generate additional pcr products that could be homologous to existing primer
-    # TODO: compute alignment_graph for each 'contig'
-
-    def expand_contigs(self, primers):
-        all_alignments = []
-        for contig in self.contigs:
-            new_alignments = AssemblyContainer.pcr_products_of_contig(contig, primers)
-            all_alignments += new_alignments
-        self.contigs += all_alignments
-
-class CostModel:
+class Assembly(ContigContainer):
     MIN_PCR_SIZE = 250.
     MAX_PCR_SIZE = 10000.
     PRIMER_COST = 15.
     PCR_COST = 14.
-    FIVEPRIME_EXT_REACH = 20. # 'reachability' for a extended primer
-    SYNTHESIS_THRESHOLD = 60. # min bp for synthesis
-    SYNTHESIS_COST = 0.11 # per bp
-    SYNTHESIS_MIN_COST = 89. # per synthesis
+    FIVEPRIME_EXT_REACH = 20.  # 'reachability' for a extended primer
+    SYNTHESIS_THRESHOLD = 60.  # min bp for synthesis
+    SYNTHESIS_COST = 0.11  # per bp
+    SYNTHESIS_MIN_COST = 89.  # per synthesis
+
+    def __init__(self, assembly_path, contig_container, primer_container, meta=None):
+        super(Assembly, self).__init__(meta=contig_container.meta.__dict__, contigs=None)
+        self.contigs = self._convert_assembly_path(assembly_path, contig_container)
+        self.primer_continer = primer_container
+
+    def _convert_assembly_path(self, assembly_path, contig_container):
+        contig_container.make_dictionary()
+        for i, ap in enumerate(assembly_path):
+            if isinstance(ap, Contig):
+                pass
+            elif isinstance(ap, int):
+                assembly_path[i] = contig_container.get_contig(ap)
+        return assembly_path
+
+    def first(self):
+        return self.contigs[0]
+
+    def last(self):
+        return self.contigs[-1]
+
+    def can_extend(self):
+        return self.assembly_span() < self.meta.query_length
 
     @staticmethod
     def gap(left, right):
@@ -456,9 +443,9 @@ class CostModel:
         d = right.q_start - left.q_end
         r = 0
         if right.end_label == Contig.NEW_PRIMER or right.end_label is Contig.DIRECT_END:
-            r += CostModel.FIVEPRIME_EXT_REACH
+            r += Assembly.FIVEPRIME_EXT_REACH
         if left.start_label == Contig.NEW_PRIMER or left.start_label is Contig.DIRECT_END:
-            r += CostModel.FIVEPRIME_EXT_REACH
+            r += Assembly.FIVEPRIME_EXT_REACH
         gap = d - r
         return gap
 
@@ -472,50 +459,45 @@ class CostModel:
         :param query_length:
         :return:
         '''
-        return query_length + CostModel.gap(right, left)
+        return query_length + Assembly.gap(right, left)
 
-    @staticmethod
-    def get_gaps(contig_path, circular=True):
+    def print_contig_path(self):
+        c_arr = []
+        for c in self.contigs:
+            if isinstance(c, int):
+                c = self.get_contig(c)
+            c_arr.append(c)
+
+        print [(c.q_start, c.q_end) for c in c_arr]
+
+    def get_assembly_pairs(self):
+        return zip(self.contigs[:-1], self.contigs[1:])
+
+    def get_gaps(self):
         '''
         Calculates all non-circular gaps for a contig_path
         :param contig_path:
         :param circular:
         :return:
         '''
-        pairs = zip(contig_path[:-1], contig_path[1:])
         gaps = []
-        for l, r in pairs:
-            if CostModel.assembly_condition(l, r):
-                gaps.append(CostModel.gap(l, r))
+        for l, r in self.get_assembly_pairs():
+            if Assembly.assembly_condition(l, r):
+                gaps.append(Assembly.gap(l, r))
             else:
                 gaps.append(float("Inf"))
                 return gaps
         return gaps
 
-    @staticmethod
-    def get_gap_cost(gaps):
+    def get_gap_cost(self):
         '''
         A monotonically increasing gap cost function.
         :param gaps:
         :return:
         '''
+        gaps = self.get_gaps()
         non_zero_gaps = filter(lambda x: x > 0, gaps)
-        return sum(non_zero_gaps)*CostModel.SYNTHESIS_COST
-
-    @staticmethod
-    def get_span_gap(contig_path, query_length):
-        '''
-        Get the span gap for the assembly.
-        :param contig_path:
-        :param query_length:
-        :return:
-        '''
-        query_span = contig_path[-1].q_end - contig_path[0].q_start
-        return query_length - query_span
-
-    @staticmethod
-    def get_span_cost(contig_path, query_length):
-        return CostModel.get_span_gap(contig_path, query_length) * CostModel.SYNTHESIS_COST
+        return sum(non_zero_gaps) * Assembly.SYNTHESIS_COST
 
     @staticmethod
     def pcr_cost(contig):
@@ -525,68 +507,56 @@ class CostModel:
         :return:
         '''
 
-        if not CostModel.MIN_PCR_SIZE < contig.q_end - contig.q_start < CostModel.MAX_PCR_SIZE:
+        if not Assembly.MIN_PCR_SIZE < contig.q_end - contig.q_start < Assembly.MAX_PCR_SIZE:
             return float("Inf")
         if not contig.circular and contig.parent == 'query':
             # direct_synthesis
             return 0
-        cost = CostModel.PCR_COST
+        cost = Assembly.PCR_COST
         if contig.circular:
-            cost += 2 * CostModel.PRIMER_COST
+            cost += 2 * Assembly.PRIMER_COST
         else:
             if contig.start_label == Contig.NEW_PRIMER or contig.start_label is Contig.DIRECT_END:
-                cost += CostModel.PRIMER_COST
+                cost += Assembly.PRIMER_COST
             if contig.end_label == Contig.NEW_PRIMER or contig.end_label is Contig.DIRECT_END:
-                cost += CostModel.PRIMER_COST
+                cost += Assembly.PRIMER_COST
         # print contig.circular, contig.parent, contig.start_label, contig.end_label, cost
         return cost
 
-    @staticmethod
-    def assembly_costs(contig_path, query_length, circular=True):
-        '''
-        Calculate the assembly costs for the given assembly.
+    def assembly_span(self):
+        return self.last().q_end - self.first().q_start
 
-        :param contig_path:
-        :param query_length:
-        :param circular:
-        :return:
-        '''
-        if len(contig_path) == 0:
-            return float("Inf")
+    def unassembled_span(self):
+        return self.meta.query_length - self.assembly_span()
 
-        pairs = zip(contig_path[:-1], contig_path[1:])
+    def unassembled_span_cost(self):
+        return self.unassembled_span() * Assembly.SYNTHESIS_COST
 
-        query_span = contig_path[-1].q_end - contig_path[0].q_start
-        span_cost = query_length - query_span
-        if span_cost < 0:
-            span_cost = float("Inf")
-        gaps = CostModel.get_gaps(contig_path)
-        gap_cost = CostModel.get_gap_cost(gaps)
-        span = CostModel.get_span_gap(contig_path, query_length)
-        span_cost = span * CostModel.SYNTHESIS_COST
-        num_synthesized_fragments = len(filter(lambda x: x > CostModel.SYNTHESIS_THRESHOLD, gaps))
-        if circular:
-            if span > CostModel.SYNTHESIS_THRESHOLD:
-                num_synthesized_fragments += 1
-            # non valid assembly
-        fragment_cost = sum([CostModel.pcr_cost(c) for c in contig_path])
-        return gap_cost, span_cost, num_synthesized_fragments, fragment_cost
+    def get_num_synthesis_fragments(self):
+        gaps = self.get_gaps()
+        gaps.append(self.unassembled_span())
+        return len(filter(lambda x: x > Assembly.SYNTHESIS_THRESHOLD, gaps))
 
-    @staticmethod
-    def assembly_probability(num_frags):
+    def new_synthesis_cost(self):
+        return self.get_num_synthesis_fragments() * Assembly.SYNTHESIS_MIN_COST + \
+               self.get_gap_cost() + self.unassembled_span_cost()
+
+    def get_fragment_cost(self):
+        return sum([Assembly.pcr_cost(c) for c in self.contigs])
+
+    def assembly_probability(self):
         '''
         The probability of a successful GIBSON/SLIC assembly given
         a number of fragments.
         :param num_frags:
         :return:
         '''
-        p = 1.0 - (1.0 / 8.0) * num_frags
+        p = 1.0 - (1.0 / 8.0) * len(self.contigs)
         if p <= 0:
             p = 0.0001
         return p
 
-    @staticmethod
-    def total_cost(contig_path, query_length, circular=True):
+    def total_cost(self):
         '''
         Calculates total cost in dollars for a given assembly.
         :param contig_path:
@@ -594,9 +564,7 @@ class CostModel:
         :param circular:
         :return:
         '''
-        gap_cost, span_cost, new_frags, fragment_cost = CostModel.assembly_costs(contig_path, query_length, circular=circular)
-        probability = CostModel.assembly_probability(new_frags + len(contig_path))
-        return 1 / probability * (gap_cost + span_cost + fragment_cost + CostModel.SYNTHESIS_MIN_COST * new_frags)
+        return (self.new_synthesis_cost() + self.get_fragment_cost()) / self.assembly_probability()
 
     @staticmethod
     def assembly_condition(left, right):

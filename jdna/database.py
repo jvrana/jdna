@@ -259,7 +259,7 @@ def assembly_gibson(task_id):
     specs = json.loads(specs)
     fragments = specs['fragments Fragment']
     plasmid = aqapi.find('sample', {'id': specs['plasmid Plasmid']})['rows'][0]
-    print 'Gibson AssemblyContainer: {} {}'.format(task_id, task['name'])
+    print 'Gibson AssemblyGraph: {} {}'.format(task_id, task['name'])
     print 'Plasmid: {} {}'.format(plasmid['id'], plasmid['name'])
     print 'Fragments: {}'.format(fragments)
     print 'OUT >',

@@ -40,7 +40,7 @@ primer_container.dump('alignment_viewer/primer_data.json')
 #
 # primer_container.filter_perfect()
 
-assembly = AssemblyContainer(contigs=contig_container.contigs, meta=contig_container.meta.__dict__)
+assembly = AssemblyGraph(primers=primer_container, contigs=contig_container)
 assembly.expand_contigs(primer_container.contigs)
 
 assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
@@ -54,12 +54,12 @@ contig_container.dump('alignment_viewer/data.json')
 paths = assembly.get_all_assemblies(place_holder_size=10)
 #
 d = assembly.contig_dictionary
-print d.keys()
-for p in paths[:10]:
-    contig_path = [d[x] for x in p]
-    cost = CostModel.total_cost(contig_path, assembly.meta.query_length)
-    print cost, CostModel.assembly_costs(contig_path, assembly.meta.query_length), [(c.q_start, c.q_end) for c in contig_path], [CostModel.pcr_cost(c) for c in contig_path]
-contig_container.sort_contigs()
+# print d.keys()
+# for p in paths[:10]:
+#     contig_path = [d[x] for x in p]
+#     cost = Assembly.total_cost(contig_path, assembly.meta.query_length)
+#     print cost, Assembly.assembly_costs(contig_path, assembly.meta.query_length), [(c.q_start, c.q_end) for c in contig_path], [Assembly.pcr_cost(c) for c in contig_path]
+# contig_container.sort_contigs()
 
 
 
