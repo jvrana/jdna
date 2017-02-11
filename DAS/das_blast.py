@@ -87,13 +87,21 @@ class BLAST(object):
         :return: output_path to blast database
         '''
         out = self.db + '.fsa'
-        fasta, seqs, metadata = concat_seqs(self.db_in_dir, out, savemeta=True)
+        fasta, seqs, metadata = concat_seqs(self.db_in_dir, out, savemeta=False)
         self.db_input_metadata = metadata
         return self.makedb(out)
 
 
-    def parse_results(self, contig_type='contig'):
-
+    def parse_results(self, contig_type=None, delimiter=','):
+        '''
+        This parses a tabulated blast result
+        Contig_Container metadata is defined here
+        Contig metadata is saved from the metadata from the seqio.concat_seqs method
+        :param contig_type:
+        :return:
+        '''
+        if contig_type is None:
+            raise Exception("You must define a contig_type!")
         contig_container = ContigContainer()
         results = self.results_raw
         if results.strip() == '':
@@ -104,7 +112,7 @@ class BLAST(object):
         meta = g.groupdict()
 
         matches = re.findall('\n([^#].*)', results)
-        meta['fields'] = re.split('\s*,\s*', meta['fields'])
+        meta['fields'] = re.split('\s*{}\s*'.format(delimiter), meta['fields'])
         # clean up fields
         for i, f in enumerate(meta['fields']):
             meta['fields'][i] = f.replace('.', '') \
@@ -132,7 +140,7 @@ class BLAST(object):
                     contig_container.add_contig(**contig_dict)
         meta['query_circular'] = self.query_circular
         meta['query_length'] = self.query_length
-        print meta.keys()
         meta['query_filename'] = self.query
+        meta['query_seq'] = self.query_seq
         contig_container.meta = ContigContainerMeta(**meta)
         return contig_container

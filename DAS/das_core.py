@@ -23,7 +23,7 @@ design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
 b = BLAST('db', 'templates', design_path, 'database', 'database/results.out', evalue=10.0)
 b.makedbfromdir()
 b.runblast()
-contig_container = b.parse_results()
+contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
 contig_container.fuse_circular_fragments()
 contig_container.remove_redundant_contigs(include_contigs_contained_within=True, save_linear_contigs=True)
 
@@ -33,14 +33,14 @@ contig_container.filter_perfect()
 p = BLAST('primerdb', 'primers', design_path, 'database', 'database/primerresults.out', evalue=1000.0, word_size=15)
 p.makedbfromdir()
 p.runblast()
-primer_container = p.parse_results(contig_type='primer')
+primer_container = p.parse_results(contig_type=Contig.TYPE_PRIMER)
 primer_container.dump('alignment_viewer/primer_data.json')
 #
 #
 # primer_container.filter_perfect()
 
 assembly = AssemblyGraph(primers=primer_container, contigs=contig_container)
-assembly.expand_contigs(primer_container.contigs)
+# assembly.expand_contigs(primer_container.contigs)
 
 assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
 # assembly.break_apart_long_contigs()
@@ -55,94 +55,14 @@ for p in paths[:5]:
     print p.total_cost()
     p.print_contig_path()
 
-# TODO: fill in gaps
-# a.add_gapped_contigs
-
-
-a = paths[0]
-filenames = []
+j5 = J5Assembly(paths[0])
+j5.parts()
+j5.sequences()
+j5.target()
 
 # Parts
-for p in a.contigs:
-    part = {
-        "Part Name": p.contig_id,
-        "Part Source (Sequence Display ID)": coral.seqio.read_dna(p.filename).name,
-        "Reverse Complement?": "FALSE",
-        "Start (bp)": p.s_start,
-        "End (bp)": p.s_end,
-        "Five Prime Internal Preferred Overhangs?": '',
-        "Three Prime Internal Preferred Overhangs?": ''
-    }
-    filenames.append(p.filename)
-    print part
-
-# Sequences
-for f in list(set(filenames)):
-    format = "Genbank"
-    prefix, suffix = f.split('.')
-    if suffix == 'fsa' or suffix == 'fasta':
-        format = "Fasta"
-    sequence_file = {
-        "Sequence File": f,
-        "Format": format
-    }
-    print sequence_file
-
-# Sequences ZIP
-
-# Target Part Order
-
-# Eugene
-pass
-
-# Master Oligo
-
-# Master Plasmid
-
-# Master direct (aka fragments)
-
-# j5 Parameters
-import base64
 
 
-class J5INTERFACE(object):
-    def __init__(self):
-        self.master_plasmids = []
-        self.design_goal = None
-        self.master_primers = []
-        self.master_fragments = []
-        self.eugene = None
-        self.parts = None
-        self.order = None
-        self.parameters = None
-
-    def from_assembly(self, assembly):
-        pass
-
-    def parts_from_contigs(self, contigs):
-        rows = [
-            'Part Source (Sequence Display ID),Part Name,Reverse Compliment?,Start (bp),End (bp),Five Prime Internal Preferred Overhangs?,Three Prime Internal Preferred Overhangs?']
-        for c in contigs:
-            values = [p.contig_id, coral.seqio.read_dna(p.filename).name, False, p.s_start, p.s_end, '', '']
-            values = [str(x) for x in values]
-            rows.append(','.join(values))
-        self.parts = '\n'.join(rows)
-        return self.parts
-
-    def seqs_from_contigs(self, contigs):
-        rows = ['Sequence File Name,Format']
-        for c in contigs:
-            format = "Genbank"
-            prefix, suffix = f.split('.')
-            if suffix == 'fsa' or suffix == 'fasta':
-                format = "Fasta"
-            rows.append(','.join(c.filename, format))
-        self.sequences = '\n'.join(rows)
-        return self.sequences
-
-
-j5 = J5INTERFACE()
-j5.from_assembly(a)
 # def from_assembly(self, assembly):
 #     # Create encoded parts.csv
 #     for c in assembly.contigs:

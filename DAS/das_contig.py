@@ -12,7 +12,10 @@ from collections import defaultdict
 import itertools
 import json
 from copy import deepcopy, copy
-
+import base64
+import tempfile
+import os
+import zipfile
 
 class ContigError(Exception):
     def __init__(self, message):
@@ -29,7 +32,6 @@ class ContigContainerMeta(object):
 
 
 class QueryRegion(object):
-
     def __init__(self, **kwargs):
         self.query_acc = kwargs['query_acc']
         self.q_start = kwargs['q_start']
@@ -39,10 +41,21 @@ class QueryRegion(object):
     def get_span(self):
         return self.q_end - self.q_start
 
+
+    def json(self):
+        return self.__dict__
+
 class Contig(QueryRegion):
     contig_id = 0
     NEW_PRIMER = "new_primer"
     DIRECT_END = "direct"
+
+    TYPE_BLAST = 'blast'
+    # TYPE_DIRECT = 'direct_synthesis'
+    TYPE_PRIMER = 'primer'
+    TYPE_PCR = 'product'
+    sequence_options = ['coral', 'seqrecord']
+    optional_args = ['circular', 'filename'] + sequence_options
 
     def __init__(self, **kwargs):
         super(Contig, self).__init__(**kwargs)
@@ -62,24 +75,27 @@ class Contig(QueryRegion):
         self.subject_seq = kwargs['subject_seq']
         self.contig_type = kwargs['contig_type']
         self.assign_id()
-        self.parent = 'query'
         self.end_label = Contig.NEW_PRIMER  # None, new_primer, or contig_id
         self.start_label = Contig.NEW_PRIMER  # None, new_primer, or contig_id
         self.quality = 1.0  # used for future machine learning / AI
-        try:
-            self.circular = kwargs['circular']
-        except KeyError:
-            self.circular = False
-        try:
-            self.filename = kwargs['filename']
-        except KeyError:
-            self.filename = None
+
+        for opt in Contig.optional_args:
+            try:
+                self.__dict__[opt] = kwargs[opt]
+            except KeyError:
+                self.__dict__[opt] = None
+
+
+        # TODO: this implies a direct synthesis
         if not self.circular:
             self.start_label = Contig.DIRECT_END
             self.end_label = Contig.DIRECT_END
         for k in kwargs:
             if k not in self.__dict__:
                 raise ValueError("Key {} not found in {} class definition".format(k, Contig.__class__.__name__))
+
+    def is_direct(self):
+        return self.start_label == Contig.DIRECT_END and self.end_label == Contig.DIRECT_END
 
     def assign_id(self):
         Contig.contig_id += 1
@@ -187,13 +203,13 @@ class Contig(QueryRegion):
                 new_fwd_primer_pos.append((primer.q_start, "new_primer"))
         contigs = []
         contigs += self.divide_contig(fwd_primer_pos, rev_primer_pos, include_contig=False,
-                                      contig_type='product', circular=False)
+                                      contig_type=Contig.TYPE_PCR, circular=False)
         contigs += self.divide_contig(fwd_primer_pos, new_rev_primer_pos, include_contig=False,
-                                      contig_type='product', circular=False)
+                                      contig_type=Contig.TYPE_PCR, circular=False)
         contigs += self.divide_contig(new_fwd_primer_pos, rev_primer_pos, include_contig=False,
-                                      contig_type='product', circular=False)
+                                      contig_type=Contig.TYPE_PCR, circular=False)
         contigs += self.divide_contig(new_fwd_primer_pos, new_rev_primer_pos, include_contig=False,
-                                      contig_type='product', circular=False)
+                                      contig_type=Contig.TYPE_PCR, circular=False)
         return contigs
 
     def get_primers_within_bounds(self, primers, minimum_primer_anneal=15):
@@ -210,6 +226,12 @@ class Contig(QueryRegion):
 
         # TODO: generate additional pcr products that could be homologous to existing primer
         # TODO: compute alignment_graph for each 'contig'
+
+    def json(self):
+        j = super(Contig, self).json()
+        for x in Contig.sequence_options:
+            del j[x]
+        return j
 
 
 class ContigContainer(object):
@@ -285,7 +307,8 @@ class ContigContainer(object):
         j = deepcopy(self.__dict__)
         del j['contig_dictionary']
         j['meta'] = j['meta'].__dict__
-        j['contigs'] = [x.__dict__ for x in j['contigs']]
+        j['contigs'] = [x.json() for x in j['contigs']]
+        del j['meta']['query_seq']
         with open(out, 'w') as output:
             json.dump(j, output)
 
@@ -293,14 +316,12 @@ class ContigContainer(object):
         self.contigs = sorted(self.contigs, key=lambda x: x.q_start)
 
     def filter_perfect(self):
-        print len(self.contigs),
         filtered_contigs = []
         for contig in self.contigs:
             if contig.is_perfect():
                 filtered_contigs.append(contig)
             else:
-                print contig.__dict__
-        print len(self.contigs)
+                pass
 
         # TODO: handle ambiquoous NNNN dna in blast search by eliminating gap_opens, gaps if they are N's
 
@@ -400,7 +421,7 @@ class AssemblyGraph(ContigContainer):
             if cost < best_costs[-1]:
                 best_costs[-1] = cost
             assemblies.append(assembly)
-                    # end of path
+            # end of path
         assemblies = sorted(assemblies,
                             key=lambda x: x.total_cost())
         return assemblies
@@ -418,17 +439,18 @@ class Assembly(ContigContainer):
 
     def __init__(self, assembly_path, contig_container, primer_container, meta=None):
         super(Assembly, self).__init__(meta=contig_container.meta.__dict__, contigs=None)
-        self.contigs = self._convert_assembly_path(assembly_path, contig_container)
+        self.contig_container = contig_container
         self.primer_continer = primer_container
+        self._convert_assembly_path(assembly_path)
 
-    def _convert_assembly_path(self, assembly_path, contig_container):
-        contig_container.make_dictionary()
+    def _convert_assembly_path(self, assembly_path):
+        self.contig_container.make_dictionary()
         for i, ap in enumerate(assembly_path):
             if isinstance(ap, Contig):
                 pass
             elif isinstance(ap, int):
-                assembly_path[i] = contig_container.get_contig(ap)
-        return assembly_path
+                assembly_path[i] = self.contig_container.get_contig(ap)
+        self.contigs = assembly_path
 
     def first(self):
         return self.contigs[0]
@@ -447,9 +469,9 @@ class Assembly(ContigContainer):
             q = QueryRegion(query_acc=l.query_acc, query_length=l.query_length, q_start=l.q_end, q_end=r.q_start)
             if q.get_span() > 0:
                 new_contigs.append(q)
-        new_contigs.append(pairs[-1][1]) # append last contig
+        new_contigs.append(pairs[-1][1])  # append last contig
         self.contigs = new_contigs
-        
+
     @staticmethod
     def gap(left, right):
         '''
@@ -527,7 +549,7 @@ class Assembly(ContigContainer):
 
         if not Assembly.MIN_PCR_SIZE < contig.q_end - contig.q_start < Assembly.MAX_PCR_SIZE:
             return float("Inf")
-        if not contig.circular and contig.parent == 'query':
+        if contig.is_direct():
             # direct_synthesis
             return 0
         cost = Assembly.PCR_COST
@@ -607,3 +629,94 @@ class Assembly(ContigContainer):
         for c in self.contigs:
             filenames.append(c.filename)
         return list(set(filenames))
+
+
+class J5Assembly(Assembly):
+    PARTLABELS = ['Part Source (Sequence Display ID)', 'Part Name', 'Reverse Compliment?', 'Start (bp)', 'End (bp)',
+                  'Five Prime Internal Preferred Overhangs?', 'Three Prime Internal Preferred Overhangs?']
+    SEQLISTLABELS = ['Sequence File Name', 'Format']
+    TARGETLABELS = ["(>Bin) or Part Name", "Direction", "Forced Assembly Strategy?",
+                    "Forced Relative Overhang Position?", "Direct Synthesis Firewall?", "Extra 5' CPEC overlap bps",
+                    "Extra 3' CPEC overlap bps"]
+    MASTEROLIGOSLABELS = ['Oligo Name', 'Length', "Tm", "Tm (3' only)", "Sequence"]
+    MASTERPLASMIDLABELS = ["Plasmid Name", "Alias", "Contents", "Length", "Sequence"]
+    MASTERDIRECTLABELS = ["Direct Synthesis Name", "Alias", "Contents", "length", "Sequence"]
+    ZIP = None
+    EUGENE = None
+    params = None
+
+    def __init__(self, assembly):
+        super(J5Assembly, self).__init__(assembly.contigs, assembly.contig_container, assembly.primer_continer)
+
+    def to_csv(self, labels, rows):
+        a = [labels] + rows
+        csv = '\n'.join([str(x) for x in a])
+        return csv
+
+    def encode64(self, filestring):
+        return base64.encodestring(filestring)
+
+    def target(self):
+        rows = []
+        for c in self.contigs:
+            row = [
+                c.contig_id,
+                'forward',
+                '',
+                '',
+                '',
+                '',
+                ''
+            ]
+            rows.append(row)
+        self.target = self.encode64(self.to_csv(J5Assembly.TARGETLABELS, rows))
+
+    def parts(self):
+        rows = []
+        for c in self.contigs:
+            row = [
+                c.contig_id,
+                c.seqrecord.id,
+                str(False).upper(),
+                c.s_start,
+                c.s_end,
+                '',
+                ''
+            ]
+            rows.append(row)
+        csv = self.to_csv(J5Assembly.PARTLABELS, rows)
+        self.parts = self.encode64(csv)
+
+    def direct(self):
+        self.direct = self.encode64(self.to_csv(J5Assembly.MASTERDIRECTLABELS, []))
+
+    def plasmids(self):
+        self.plasmids = self.encode64(self.to_csv(J5Assembly.MASTERPLASMIDLABELS, []))
+
+    def primers(self):
+        self.primers = self.encode64(self.to_csv(J5Assembly.MASTEROLIGOSLABELS, []))
+
+    def sequences(self):
+        sequences = []
+        for c in self.contigs:
+            if c.is_direct():
+                pass
+            sequences.append((c.seqrecord.id, c.filename))
+        rows = list(set(sequences))
+
+        # Save sequence_list
+        csv = self.to_csv(J5Assembly.SEQLISTLABELS, rows)
+        self.seq_list = self.encode64(csv)
+
+        # TODO: move zip stuff to seqio
+        # Save zipped sequence file
+        temp = tempfile.TemporaryFile() #open('/Users/Justin/Desktop/temporary.txt', 'w')#tempfile.TemporaryFile()
+        with zipfile.ZipFile(temp, 'w') as zf:
+
+            for s in sequences:
+                filename = s[1]
+                with open(filename, 'rU') as handle:
+                    zf.writestr(os.path.join('ZippedTemplates', os.path.basename(filename)), handle.read())
+        temp.seek(0)
+        self.encoded_zip = self.encode64(temp.read())
+        temp.close()

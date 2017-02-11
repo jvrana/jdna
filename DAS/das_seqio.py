@@ -86,11 +86,13 @@ def concat_seqs(idir, out, savemeta=False):
         sequences += seqs
 
         # TODO: this is really hacky, recode this
+        # TODO: this requires Coral, do we want another dependency?
         for s in seqs:
-            metadata[s.id] = {'filename': filename, 'circular': False}
+            metadata[s.id] = {'filename': filename, 'circular': False, 'seqrecord': s}
         if len(seqs) == 1:
             c = coral.seqio.read_dna(filename)
             metadata[seqs[0].id]['circular'] = c.circular
+            metadata[seqs[0].id]['coral'] = c
 
     with open(out, "w") as handle:
         SeqIO.write(sequences, handle, "fasta")
