@@ -89,6 +89,7 @@ class BLAST(object):
         out = self.db + '.fsa'
         fasta, seqs, metadata = concat_seqs(self.db_in_dir, out, savemeta=False)
         self.db_input_metadata = metadata
+        self.seqs = seqs
         return self.makedb(out)
 
 
@@ -142,5 +143,6 @@ class BLAST(object):
         meta['query_length'] = self.query_length
         meta['query_filename'] = self.query
         meta['query_seq'] = self.query_seq
+        meta['contig_seqs'] = self.seqs
         contig_container.meta = ContigContainerMeta(**meta)
         return contig_container

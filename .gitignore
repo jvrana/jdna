@@ -3,9 +3,10 @@
 ### Example user template
 
 # IntelliJ project files
-.idea
-.idea/workspace.xml
-.cache
+jdna/.idea
+jdna/.idea/workspace.xml
+jdna/.cache
+.chache
 *.iml
 out
 gen
@@ -22,4 +23,8 @@ gen
 
 login.json
 jdna/data/
-/DAS/j5_interface/j5_credentials.json
+<<<<<<< Updated upstream
+/DAS/j5_credentials.json
+=======
+jdna/__pycache__/
+>>>>>>> Stashed changes

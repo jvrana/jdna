@@ -16,6 +16,8 @@ import base64
 import tempfile
 import os
 import zipfile
+import xmlrpclib
+
 
 class ContigError(Exception):
     def __init__(self, message):
@@ -23,30 +25,44 @@ class ContigError(Exception):
 
 
 class ContigContainerMeta(object):
-    def __init__(self, source=None, blastver=None, query='untitled', query_length=0, query_circular=False, **kwargs):
+    def __init__(self, source=None, blastver=None, query='untitled', query_length=0, query_circular=False,
+                 query_seq=None, contig_seqs=None, **kwargs):
         self.source = source
         self.query = query
         self.query_length = query_length
         self.query_circular = query_circular
+        self.query_seq = query_seq
+        self.contig_seqs = contig_seqs
         self.__dict__.update(kwargs)
 
 
 class QueryRegion(object):
+    contig_id = 0
+
     def __init__(self, **kwargs):
         self.query_acc = kwargs['query_acc']
         self.q_start = kwargs['q_start']
         self.q_end = kwargs['q_end']
         self.query_length = kwargs['query_length']
+        self.assign_id()
 
     def get_span(self):
         return self.q_end - self.q_start
 
-
     def json(self):
         return self.__dict__
 
+    def assign_id(self):
+        Contig.contig_id += 1
+        self.contig_id = Contig.contig_id
+
+    def deepcopy(self):
+        c = deepcopy(self)
+        c.assign_id()
+        return c
+
+
 class Contig(QueryRegion):
-    contig_id = 0
     NEW_PRIMER = "new_primer"
     DIRECT_END = "direct"
 
@@ -84,7 +100,6 @@ class Contig(QueryRegion):
                 self.__dict__[opt] = kwargs[opt]
             except KeyError:
                 self.__dict__[opt] = None
-
 
         # TODO: this implies a direct synthesis
         if not self.circular:
@@ -166,7 +181,7 @@ class Contig(QueryRegion):
             raise ContigError("query_end {} cannot be less than contig end {}".format(q_start, self.q_start))
         if q_start > q_end:
             raise ContigError("query_start cannot be greater than query_end")
-        new_contig = self.copy()
+        new_contig = self.deepcopy()
         new_contig.q_start = q_start
         new_contig.q_end = q_end
         new_contig.s_start = self.s_start + (q_start - self.q_start)
@@ -309,6 +324,7 @@ class ContigContainer(object):
         j['meta'] = j['meta'].__dict__
         j['contigs'] = [x.json() for x in j['contigs']]
         del j['meta']['query_seq']
+        del j['meta']['contig_seqs']
         with open(out, 'w') as output:
             json.dump(j, output)
 
@@ -323,7 +339,7 @@ class ContigContainer(object):
             else:
                 pass
 
-        # TODO: handle ambiquoous NNNN dna in blast search by eliminating gap_opens, gaps if they are N's
+                # TODO: handle ambiquoous NNNN dna in blast search by eliminating gap_opens, gaps if they are N's
 
     def expand_contigs(self, primers):
         all_alignments = []
@@ -386,7 +402,7 @@ class AssemblyGraph(ContigContainer):
         while stack:
             best_costs.sort()
             assembly = stack.pop()
-
+            gap = assembly.get_gaps()
             gap_cost = assembly.get_gap_cost()
             frag_cost = assembly.get_fragment_cost()
 
@@ -436,12 +452,18 @@ class Assembly(ContigContainer):
     SYNTHESIS_THRESHOLD = 0.  # min bp for synthesis
     SYNTHESIS_COST = 0.11  # per bp
     SYNTHESIS_MIN_COST = 89.  # per synthesis
+    assembly_id = 0
 
     def __init__(self, assembly_path, contig_container, primer_container, meta=None):
         super(Assembly, self).__init__(meta=contig_container.meta.__dict__, contigs=None)
         self.contig_container = contig_container
         self.primer_continer = primer_container
         self._convert_assembly_path(assembly_path)
+        self.assign_id()
+
+    def assign_id(self):
+        self.id = Assembly.assembly_id
+        Assembly.assembly_id += 1
 
     def _convert_assembly_path(self, assembly_path):
         self.contig_container.make_dictionary()
@@ -468,6 +490,7 @@ class Assembly(ContigContainer):
             new_contigs.append(l)
             q = QueryRegion(query_acc=l.query_acc, query_length=l.query_length, q_start=l.q_end, q_end=r.q_start)
             if q.get_span() > 0:
+                print q
                 new_contigs.append(q)
         new_contigs.append(pairs[-1][1])  # append last contig
         self.contigs = new_contigs
@@ -511,7 +534,10 @@ class Assembly(ContigContainer):
         print [(c.q_start, c.q_end) for c in c_arr]
 
     def get_assembly_pairs(self):
-        return zip(self.contigs[:-1], self.contigs[1:])
+        if len(self.contigs) == 1:
+            return []
+        pairs = zip(self.contigs[:-1], self.contigs[1:])
+        return pairs
 
     def get_gaps(self):
         '''
@@ -572,6 +598,9 @@ class Assembly(ContigContainer):
     def unassembled_span_cost(self):
         return self.unassembled_span() * Assembly.SYNTHESIS_COST
 
+    # TODO: Change the unassmbled span to a circular_gap function
+    #
+    ERROROROOROOR
     def get_num_synthesis_fragments(self):
         gaps = self.get_gaps()
         gaps.append(self.unassembled_span())
@@ -630,6 +659,66 @@ class Assembly(ContigContainer):
             filenames.append(c.filename)
         return list(set(filenames))
 
+    def summary(self):
+        contigs = ''
+        for c in self.contigs:
+            contigs += '''
+        \tContig {id}
+        \t\tCost: {cost}
+        \t\tQuery Span: {start}-{end}
+        \t\tRel Loc: {rs}-{re}
+        \t\tSub Loc: {s_start}-{s_end}
+        \t\tSubject Acc: {subject}
+        \t\tPrimers: {fwd}, {rev}
+        '''.format(id=c.contig_id,
+                   cost=self.pcr_cost(c),
+                   start=c.q_start,
+                   end=c.q_end,
+                   rs=c.q_start - self.contigs[0].q_start,
+                   re=c.q_end - self.contigs[0].q_start,
+                   subject=c.subject_acc,
+                   fwd=c.start_label,
+                   rev=c.end_label,
+                   s_start=c.s_start,
+                   s_end=c.s_end
+                   )
+
+
+        summary_str = '''
+** Assembly Summary **
+ID: {id}
+Query: {query}
+Query Length: {querylength}
+Contig Breakdown
+\tNum Frags: {num}
+{contigs}
+Breakdown {totalcost}
+\tGap Cost: {gaps}, ${gapcost}
+\tAssembled Span: {span}
+\tUnassembled Span: {uspan}, ${uspancost}
+\tFragment Costs: ${fragcost}, {fragbreakdown}
+\tNew Synthesis Costs: ${newsynth}
+\t
+
+        '''.format(
+            id=self.id,
+            num=len(self.contigs),
+            totalcost=self.total_cost(),
+            gaps=self.get_gaps(),
+            gapcost=self.get_gap_cost(),
+            contigs=contigs,
+            span=self.assembly_span(),
+            uspan=self.unassembled_span(),
+            uspancost=self.unassembled_span_cost(),
+            fragcost=self.get_fragment_cost(),
+            fragbreakdown=[self.pcr_cost(c) for c in self.contigs],
+            query=self.meta.query,
+            querylength=self.meta.query_length,
+            newsynth=self.new_synthesis_cost()
+        )
+        return summary_str
+
+
 
 class J5Assembly(Assembly):
     PARTLABELS = ['Part Source (Sequence Display ID)', 'Part Name', 'Reverse Compliment?', 'Start (bp)', 'End (bp)',
@@ -641,9 +730,10 @@ class J5Assembly(Assembly):
     MASTEROLIGOSLABELS = ['Oligo Name', 'Length', "Tm", "Tm (3' only)", "Sequence"]
     MASTERPLASMIDLABELS = ["Plasmid Name", "Alias", "Contents", "Length", "Sequence"]
     MASTERDIRECTLABELS = ["Direct Synthesis Name", "Alias", "Contents", "length", "Sequence"]
-    ZIP = None
-    EUGENE = None
-    params = None
+
+    # ZIP = None
+    # EUGENE = None
+    # PARAMS = None
 
     def __init__(self, assembly):
         super(J5Assembly, self).__init__(assembly.contigs, assembly.contig_container, assembly.primer_continer)
@@ -655,6 +745,16 @@ class J5Assembly(Assembly):
 
     def encode64(self, filestring):
         return base64.encodestring(filestring)
+
+    def all(self):
+        self.parts()
+        self.target()
+        self.sequences()
+        self.plasmids()
+        self.primers()
+        self.direct()
+        # eugene
+        # parameters
 
     def target(self):
         rows = []
@@ -694,7 +794,18 @@ class J5Assembly(Assembly):
         self.plasmids = self.encode64(self.to_csv(J5Assembly.MASTERPLASMIDLABELS, []))
 
     def primers(self):
-        self.primers = self.encode64(self.to_csv(J5Assembly.MASTEROLIGOSLABELS, []))
+        # ['Oligo Name', 'Length', "Tm", "Tm (3' only)", "Sequence"]
+        rows = []
+        for p in self.primer_continer.contigss:
+            row = [
+                p.subject_acc,
+                len(p.subject_seq),
+                60,
+                60,
+                p.subject_seq
+            ]
+        rows.append(row)
+        self.primers = self.encode64(self.to_csv(J5Assembly.MASTEROLIGOSLABELS, rows))
 
     def sequences(self):
         sequences = []
@@ -710,7 +821,7 @@ class J5Assembly(Assembly):
 
         # TODO: move zip stuff to seqio
         # Save zipped sequence file
-        temp = tempfile.TemporaryFile() #open('/Users/Justin/Desktop/temporary.txt', 'w')#tempfile.TemporaryFile()
+        temp = tempfile.TemporaryFile()  # open('/Users/Justin/Desktop/temporary.txt', 'w')#tempfile.TemporaryFile()
         with zipfile.ZipFile(temp, 'w') as zf:
 
             for s in sequences:
@@ -720,3 +831,36 @@ class J5Assembly(Assembly):
         temp.seek(0)
         self.encoded_zip = self.encode64(temp.read())
         temp.close()
+
+    def to_dict(self):
+        d = {
+            'zipped_sequences': self.encoded_zip,
+            'master_oligos': self.primers,
+            'master_plasmids': self.plasmids,
+            'master_direct_syntheses': self.direct,
+            'parts_list': self.parts,
+            'j5_parameters': self.params,
+            'sequences_list': self.seq_list,
+            'eugene_rules': self.euegene,
+            'target_part_order_list': self.target,
+        }
+        params = {}
+        for k in d:
+            params['encoded_{}_file'.format(k)] = d[k]
+            params['reuse_{}_file'.format(k)] = d[k]
+        return params
+
+    def login(self, username, password):
+        self.proxy_home = 'https://j5.jbei.org/bin/j5_xml_rpc.pl'
+        self.proxy = xmlrpclib.ServerProxy('https://j5.jbei.org/bin/j5_xml_rpc.pl')
+        self.session = self.proxy.CreateNewSessionId({'username': username, 'password': password})
+        self.session_id = self.session['j5_session_id']
+
+    def run_assembly(self, assembly_method='SLIC/Gibson/CPEC'):
+        d = self.to_dict()
+        d['j5_session_id'] = self.session_id
+        d['assembly_method'] = assembly_method
+        return self.proxy.DesignAssembly(self.to_dict())
+
+        # params['encoded_{}_file'.format(filetype)] = self.encode(imply_file('*{}*'.format(filetype)))
+        #             params['reuse_{}_file'.format(filetype)] = False

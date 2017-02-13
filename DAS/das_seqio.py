@@ -110,6 +110,7 @@ def gb_to_fsa(input_path, output_path):
         SeqIO.write(sequences, handle, 'fasta')
     return output_path
 
+
 def seq_is_circular(path):
     d = coral.seqio.read_dna(path)
     return d.circular
