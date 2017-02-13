@@ -32,6 +32,7 @@ def run_cmd(cmd_str, **kwargs):
     print "CMD: {}".format(cmd_str)
     output = subprocess.Popen(args)
     output.wait()
+    return output
 
 
 def format_decorator(f):

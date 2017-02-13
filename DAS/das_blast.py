@@ -62,7 +62,7 @@ class BLAST(object):
         cmd_str = "blastn -db {db} -query {query} -out {out} -outfmt {outfmt}"
         for key in self.params:
             cmd_str += ' -{} {}'.format(key, self.params[key])
-        run_cmd(cmd_str, db=self.db, query=self.query, out=self.out, outfmt=self.outfmt)
+        r = run_cmd(cmd_str, db=self.db, query=self.query, out=self.out, outfmt=self.outfmt)
         with open(self.out, 'rU') as handle:
             self.results_raw = handle.read()
 
