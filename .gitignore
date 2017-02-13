@@ -23,8 +23,6 @@ gen
 
 login.json
 jdna/data/
-<<<<<<< Updated upstream
 /DAS/j5_credentials.json
-=======
 jdna/__pycache__/
->>>>>>> Stashed changes
+

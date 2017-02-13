@@ -51,15 +51,19 @@ def format_decorator(f):
 
     return wrapped
 
+@format_decorator
+def determine_format(filename, format=None):
+    return format
 
+# TODO: locus_ID gets truncated, fix this...
 @format_decorator
 def open_sequence(filename, format=None, **fmt):
     prefix, suffix = os.path.basename(filename).split('.')
     seqs = []
     with open(filename, 'rU') as handle:
         s = list(SeqIO.parse(handle, format))
-        if len(s) == 1:
-            s[0].id = prefix
+        # if len(s) == 1:
+        #     s[0].id = prefix
         seqs += s
     return seqs
 

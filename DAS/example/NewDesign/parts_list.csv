@@ -1,0 +1,4 @@
+Part Source (Sequence Display ID),Part Name,Reverse Compliment?,Start (bp),End (bp),Five Prime Internal Preferred Overhangs?,Three Prime Internal Preferred Overhangs?
+hCas9-VPR,VPR,FALSE,4852,6547,,
+pMODKan-HO-pACT1-ZEV4,backbone,FALSE,4423,4218,,
+pMODKan-HO-pACT1-Z4-ER-,stop-TP,FALSE,5920,5947,,

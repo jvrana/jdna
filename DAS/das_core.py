@@ -8,7 +8,7 @@ Description:
 
 '''
 
-from das_contig import *
+from das_assembly import *
 from das_blast import *
 
 locations = dict(
@@ -37,7 +37,8 @@ primer_container.dump('alignment_viewer/primer_data.json')
 primer_container.filter_perfect()
 
 assembly = AssemblyGraph(primers=primer_container, contigs=contig_container)
-# assembly.expand_contigs(primer_container.contigs)
+assembly.expand_contigs(primer_container.contigs)
+
 
 assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
 # assembly.break_apart_long_contigs()
@@ -54,7 +55,13 @@ j5 = J5Assembly(paths[0])
 credentials = None
 with open('j5_credentials.json') as handle:
     credentials = json.load(handle)
-j5.submit(**credentials)
+# j5.submit(**credentials)
+j5.all()
+j5.decode_all_to('assembly_parameters')
+r = j5.submit(**credentials)
+with open('assembly_parameters/results.zip', 'w') as handle:
+    handle.write(J5Assembly.decode64(r['encoded_output_file']))
 # Parse assembly
+
 
 # Update templates
