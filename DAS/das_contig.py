@@ -28,6 +28,7 @@ class ContigContainerMeta(object):
     def __init__(self, source=None, blastver=None, query='untitled', query_length=0, query_circular=False,
                  query_seq=None, contig_seqs=None, **kwargs):
         self.source = source
+        self.blastver = blastver
         self.query = query
         self.query_length = query_length
         self.query_circular = query_circular
@@ -122,20 +123,18 @@ class Contig(QueryRegion):
         return c
 
     def divide_contig(self, startpoints, endpoints, include_contig=True, contig_type=None, circular=None):
-        '''
-
+        """Divides contigs by start and end points
         :param startpoints: list of (pos, label) tuples
         :param endpoints: list of (pos, label) tuples
         :param include_contig: whether to include the contig endpoints
         :param contig_type: contig_label, used to determine the type of contig this is for the cost analysis
         :param circular: used to determine the type of contig this is for the cost analysis
         :return:
-        '''
+        """
+
         positions = list(itertools.product(startpoints, endpoints))
         contigs = []
         for start, end in positions:
-            if isinstance(start, int):
-                x = 1
             s, start_label = start
             e, end_label = end
             if not include_contig:
@@ -168,13 +167,13 @@ class Contig(QueryRegion):
         return self.q_start >= other.q_start and self.q_end <= other.q_end
 
     def break_contig(self, q_start, q_end):
-        '''
+        """
         Breaks a contig at query start and end; copies over information
         from self contig
         :param q_start:
         :param q_end:
         :return:
-        '''
+        """
         if q_start < self.q_start:
             raise ContigError("query_start {} cannot be less than contig start {}".format(q_start, self.q_start))
         if q_end > self.q_end:
@@ -195,13 +194,9 @@ class Contig(QueryRegion):
 
     # TODO: add primer label names to start_label and end_label
     def pcr_products_of_contig(self, primers):
-        '''
-        Produces all possible fragments from primer positions
-        :param contig:
-        :param primers:
-        :param ignore_direction:
-        :return:
-        '''
+        """
+
+        """
         primers = self.get_primers_within_bounds(primers)
 
         rev_primer_pos = []
@@ -230,7 +225,6 @@ class Contig(QueryRegion):
     def get_primers_within_bounds(self, primers, minimum_primer_anneal=15):
 
         def primer_within_bounds(primer):
-            minimum_primer_anneal = 15  # TODO: move MIN_PRIMER to design parameters
             if primer.subject_strand == 'plus':
                 return self.q_start + minimum_primer_anneal < primer.q_end < self.q_end
             elif primer.subject_strand == 'minus':
@@ -263,8 +257,8 @@ class ContigContainer(object):
     def make_dictionary(self):
         self.contig_dictionary = {x.contig_id: x for x in self.contigs}
 
-    def get_contig(self, id):
-        return self.contig_dictionary[id]
+    def get_contig(self, contig_id):
+        return self.contig_dictionary[contig_id]
 
     def add_contig(self, **kwargs):
         new_contig = Contig(**kwargs)
@@ -357,6 +351,7 @@ class AssemblyGraph(ContigContainer):
         if primers is None:
             self.primers = ContigContainer()
         self.make_dictionary()
+        self.assemblies = []
 
     def get_all_assemblies(self, sort=True, place_holder_size=5):
         self.make_assembly_graph(sort=sort)
@@ -454,16 +449,13 @@ class Assembly(ContigContainer):
     SYNTHESIS_MIN_COST = 89.  # per synthesis
     assembly_id = 0
 
-    def __init__(self, assembly_path, contig_container, primer_container, meta=None):
+    def __init__(self, assembly_path, contig_container, primer_container):
         super(Assembly, self).__init__(meta=contig_container.meta.__dict__, contigs=None)
+        self.id = Assembly.assembly_id
+        Assembly.assembly_id += 1
         self.contig_container = contig_container
         self.primer_continer = primer_container
         self._convert_assembly_path(assembly_path)
-        self.assign_id()
-
-    def assign_id(self):
-        self.id = Assembly.assembly_id
-        Assembly.assembly_id += 1
 
     def _convert_assembly_path(self, assembly_path):
         self.contig_container.make_dictionary()
@@ -497,12 +489,12 @@ class Assembly(ContigContainer):
 
     @staticmethod
     def gap(left, right):
-        '''
+        """
         Calculates the unreachable gap
         :param left:
         :param right:
         :return:
-        '''
+        """
         d = right.q_start - left.q_end
         r = 0
         if right.end_label == Contig.NEW_PRIMER or right.end_label is Contig.DIRECT_END:
@@ -512,17 +504,14 @@ class Assembly(ContigContainer):
         gap = d - r
         return gap
 
-    @staticmethod
-    def circular_gap(left, right, query_length):
-        '''
+    def circular_gap(self):
+        """
         Calculates the gap for a circular contig path.
         Note: non-increasing gap function; cannot be used for graph trimming
-        :param left:
-        :param right:
-        :param query_length:
-        :return:
-        '''
-        return query_length + Assembly.gap(right, left)
+        :return: calculated gap between the last and first contig for circularization
+        """
+
+        return self.meta.query_length + Assembly.gap(self.contigs[-1], self.contigs[0])
 
     def print_contig_path(self):
         c_arr = []
@@ -540,12 +529,10 @@ class Assembly(ContigContainer):
         return pairs
 
     def get_gaps(self):
-        '''
+        """
         Calculates all non-circular gaps for a contig_path
-        :param contig_path:
-        :param circular:
         :return:
-        '''
+        """
         gaps = []
         for l, r in self.get_assembly_pairs():
             if Assembly.assembly_condition(l, r):
@@ -556,22 +543,21 @@ class Assembly(ContigContainer):
         return gaps
 
     def get_gap_cost(self):
-        '''
+        """
         A monotonically increasing gap cost function.
-        :param gaps:
         :return:
-        '''
+        """
         gaps = self.get_gaps()
         non_zero_gaps = filter(lambda x: x > 0, gaps)
         return sum(non_zero_gaps) * Assembly.SYNTHESIS_COST
 
     @staticmethod
     def pcr_cost(contig):
-        '''
+        """
         Cost of a pcr
         :param contig:
         :return:
-        '''
+        """
 
         if not Assembly.MIN_PCR_SIZE < contig.q_end - contig.q_start < Assembly.MAX_PCR_SIZE:
             return float("Inf")
@@ -598,12 +584,9 @@ class Assembly(ContigContainer):
     def unassembled_span_cost(self):
         return self.unassembled_span() * Assembly.SYNTHESIS_COST
 
-    # TODO: Change the unassmbled span to a circular_gap function
-    #
-    ERROROROOROOR
     def get_num_synthesis_fragments(self):
         gaps = self.get_gaps()
-        gaps.append(self.unassembled_span())
+        gaps.append(self.circular_gap())
         return len(filter(lambda x: x > Assembly.SYNTHESIS_THRESHOLD, gaps))
 
     def new_synthesis_cost(self):
@@ -613,45 +596,41 @@ class Assembly(ContigContainer):
     def get_fragment_cost(self):
         return sum([Assembly.pcr_cost(c) for c in self.contigs])
 
+    @property
     def assembly_probability(self):
-        '''
+        """
         The probability of a successful GIBSON/SLIC assembly given
         a number of fragments.
-        :param num_frags:
-        :return:
-        '''
+        """
         p = 1.0 - (1.0 / 8.0) * len(self.contigs)
         if p <= 0:
             p = 0.0001
         return p
 
     def total_cost(self):
-        '''
+        """
         Calculates total cost in dollars for a given assembly.
-        :param contig_path:
-        :param query_length:
-        :param circular:
         :return:
-        '''
-        return (self.new_synthesis_cost() + self.get_fragment_cost()) / self.assembly_probability()
+        """
+        return (self.new_synthesis_cost() + self.get_fragment_cost()) / self.assembly_probability
 
     @staticmethod
     def assembly_condition(left, right):
-        '''
+        """
         Determines whether two contigs can be assembled either directly or
         with newly syntheisized intermediates. Used loosely to assemble the contig
         graph.
         :param left:
         :param right:
         :return:
-        '''
+        """
         r_5prime_threshold = 0
         r_3prime_threshold = 60
         l_pos = left.q_end
         r_pos = right.q_start
         # return r_pos == l_pos + 1 # if its consecutive
         return r_pos > l_pos - r_3prime_threshold and \
-               right.q_end > left.q_end
+            right.q_end > left.q_end
 
     def get_all_templates(self):
         filenames = []
@@ -682,7 +661,6 @@ class Assembly(ContigContainer):
                    s_start=c.s_start,
                    s_end=c.s_end
                    )
-
 
         summary_str = '''
 ** Assembly Summary **
@@ -719,7 +697,6 @@ Breakdown {totalcost}
         return summary_str
 
 
-
 class J5Assembly(Assembly):
     PARTLABELS = ['Part Source (Sequence Display ID)', 'Part Name', 'Reverse Compliment?', 'Start (bp)', 'End (bp)',
                   'Five Prime Internal Preferred Overhangs?', 'Three Prime Internal Preferred Overhangs?']
@@ -737,13 +714,19 @@ class J5Assembly(Assembly):
 
     def __init__(self, assembly):
         super(J5Assembly, self).__init__(assembly.contigs, assembly.contig_container, assembly.primer_continer)
+        self.params = None
+        self.proxy_home = 'https://j5.jbei.org/bin/j5_xml_rpc.pl'
+        self.proxy = xmlrpclib.ServerProxy('https://j5.jbei.org/bin/j5_xml_rpc.pl')
+        self.session = None
+        self.session_id = None
 
     def to_csv(self, labels, rows):
         a = [labels] + rows
         csv = '\n'.join([str(x) for x in a])
         return csv
 
-    def encode64(self, filestring):
+    @staticmethod
+    def encode64(filestring):
         return base64.encodestring(filestring)
 
     def all(self):
@@ -753,8 +736,12 @@ class J5Assembly(Assembly):
         self.plasmids()
         self.primers()
         self.direct()
-        # eugene
-        # parameters
+        self.eugene()
+        self.parameters()
+
+    def parameters(self):
+        with open('j5_parameters.csv') as params:
+            self.parameters = J5Assembly.encode64(params.read())
 
     def target(self):
         rows = []
@@ -769,7 +756,7 @@ class J5Assembly(Assembly):
                 ''
             ]
             rows.append(row)
-        self.target = self.encode64(self.to_csv(J5Assembly.TARGETLABELS, rows))
+        self.target = J5Assembly.encode64(self.to_csv(J5Assembly.TARGETLABELS, rows))
 
     def parts(self):
         rows = []
@@ -785,18 +772,18 @@ class J5Assembly(Assembly):
             ]
             rows.append(row)
         csv = self.to_csv(J5Assembly.PARTLABELS, rows)
-        self.parts = self.encode64(csv)
+        self.parts = J5Assembly.encode64(csv)
 
     def direct(self):
-        self.direct = self.encode64(self.to_csv(J5Assembly.MASTERDIRECTLABELS, []))
+        self.direct = J5Assembly.encode64(self.to_csv(J5Assembly.MASTERDIRECTLABELS, []))
 
     def plasmids(self):
-        self.plasmids = self.encode64(self.to_csv(J5Assembly.MASTERPLASMIDLABELS, []))
+        self.plasmids = J5Assembly.encode64(self.to_csv(J5Assembly.MASTERPLASMIDLABELS, []))
 
     def primers(self):
         # ['Oligo Name', 'Length', "Tm", "Tm (3' only)", "Sequence"]
         rows = []
-        for p in self.primer_continer.contigss:
+        for p in self.primer_continer.contigs:
             row = [
                 p.subject_acc,
                 len(p.subject_seq),
@@ -805,7 +792,7 @@ class J5Assembly(Assembly):
                 p.subject_seq
             ]
         rows.append(row)
-        self.primers = self.encode64(self.to_csv(J5Assembly.MASTEROLIGOSLABELS, rows))
+        self.primers = J5Assembly.encode64(self.to_csv(J5Assembly.MASTEROLIGOSLABELS, rows))
 
     def sequences(self):
         sequences = []
@@ -817,7 +804,7 @@ class J5Assembly(Assembly):
 
         # Save sequence_list
         csv = self.to_csv(J5Assembly.SEQLISTLABELS, rows)
-        self.seq_list = self.encode64(csv)
+        self.seq_list = J5Assembly.encode64(csv)
 
         # TODO: move zip stuff to seqio
         # Save zipped sequence file
@@ -829,8 +816,11 @@ class J5Assembly(Assembly):
                 with open(filename, 'rU') as handle:
                     zf.writestr(os.path.join('ZippedTemplates', os.path.basename(filename)), handle.read())
         temp.seek(0)
-        self.encoded_zip = self.encode64(temp.read())
+        self.encoded_zip = J5Assembly.encode64(temp.read())
         temp.close()
+
+    def eugene(self):
+        self.eugene = J5Assembly.encode64('')
 
     def to_dict(self):
         d = {
@@ -841,7 +831,7 @@ class J5Assembly(Assembly):
             'parts_list': self.parts,
             'j5_parameters': self.params,
             'sequences_list': self.seq_list,
-            'eugene_rules': self.euegene,
+            'eugene_rules': self.eugene,
             'target_part_order_list': self.target,
         }
         params = {}
@@ -851,15 +841,19 @@ class J5Assembly(Assembly):
         return params
 
     def login(self, username, password):
-        self.proxy_home = 'https://j5.jbei.org/bin/j5_xml_rpc.pl'
-        self.proxy = xmlrpclib.ServerProxy('https://j5.jbei.org/bin/j5_xml_rpc.pl')
         self.session = self.proxy.CreateNewSessionId({'username': username, 'password': password})
         self.session_id = self.session['j5_session_id']
+        return self.session_id
+    def submit(self, username, password):
+        self.all()
+        self.login(username, password)
+        self.run_assembly()
 
     def run_assembly(self, assembly_method='SLIC/Gibson/CPEC'):
         d = self.to_dict()
         d['j5_session_id'] = self.session_id
         d['assembly_method'] = assembly_method
+        print self.to_dict().keys()
         return self.proxy.DesignAssembly(self.to_dict())
 
         # params['encoded_{}_file'.format(filetype)] = self.encode(imply_file('*{}*'.format(filetype)))

@@ -1,4 +1,4 @@
-# BLASTN 2.4.0+
+# BLASTN 2.5.0+
 # Query: pmodkan-ho-pact1-z4-er-vpr_pseudocircular .
 # Database: database/primerdb
 # Fields: query acc., subject acc., score, evalue, bit score, alignment length, identical, gap opens, gaps, query length, q. start, q. end, subject length, s. start, s. end, subject strand, query seq, subject seq

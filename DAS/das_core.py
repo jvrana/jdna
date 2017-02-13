@@ -37,7 +37,7 @@ primer_container.dump('alignment_viewer/primer_data.json')
 primer_container.filter_perfect()
 
 assembly = AssemblyGraph(primers=primer_container, contigs=contig_container)
-assembly.expand_contigs(primer_container.contigs)
+# assembly.expand_contigs(primer_container.contigs)
 
 assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
 # assembly.break_apart_long_contigs()
@@ -46,14 +46,15 @@ contig_container.dump('alignment_viewer/data.json')
 
 paths = assembly.get_all_assemblies(place_holder_size=10)
 print paths[0].summary()
+print paths[0].circular_gap()
 # a.fill_contig_gaps()
 
 # print a.summary()
-# j5 = J5Assembly(paths[0])
-# credentials = json.load('j5_credentials.json')
-# j5.login(**credentials)
-# j5.run_assembly()
-
+j5 = J5Assembly(paths[0])
+credentials = None
+with open('j5_credentials.json') as handle:
+    credentials = json.load(handle)
+j5.submit(**credentials)
 # Parse assembly
 
 # Update templates
