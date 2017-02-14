@@ -65,12 +65,12 @@ class AssemblyGraph(ContigContainer):
         while stack:
             best_costs.sort()
             assembly = stack.pop()
+
             gap = assembly.get_gaps()
             gap_cost = assembly.get_gap_cost()
             frag_cost = assembly.get_fragment_cost()
 
             cost = assembly.total_cost()
-
             # Trimming conditions
             # Gap and frag cost are monotonically increasing and so are used for trimming.
             if gap_cost + frag_cost > best_costs[-1] and not cost == float("Inf"):
@@ -99,6 +99,7 @@ class AssemblyGraph(ContigContainer):
                     stack.append(new_path)
             if cost < best_costs[-1]:
                 best_costs[-1] = cost
+                print best_costs
             assemblies.append(assembly)
             # end of path
         assemblies = sorted(assemblies,
@@ -108,11 +109,12 @@ class AssemblyGraph(ContigContainer):
 # TODO: share parameters from a single file
 class Assembly(ContigContainer):
     MIN_PCR_SIZE = 250.
-    MAX_PCR_SIZE = 10000.
+    MAX_PCR_SIZE = 5000.
+    MAX_HOMOLOGY = 100.
     PRIMER_COST = 15.
     PCR_COST = 14.
     FIVEPRIME_EXT_REACH = 20.  # 'reachability' for a extended primer
-    SYNTHESIS_THRESHOLD = 0.  # min bp for synthesis
+    SYNTHESIS_THRESHOLD = 125.  # min bp for synthesis
     SYNTHESIS_COST = 0.11  # per bp
     SYNTHESIS_MIN_COST = 89.  # per synthesis
     assembly_id = 0
@@ -141,7 +143,7 @@ class Assembly(ContigContainer):
         return self.contigs[-1]
 
     def can_extend(self):
-        return self.assembly_span() < self.meta.query_length
+        return self.assembly_span() < self.meta.query_length + Assembly.MAX_HOMOLOGY
 
     def fill_contig_gaps(self):
         pairs = self.get_assembly_pairs()
@@ -150,7 +152,6 @@ class Assembly(ContigContainer):
             new_contigs.append(l)
             q = QueryRegion(query_acc=l.query_acc, query_length=l.query_length, q_start=l.q_end, q_end=r.q_start)
             if q.get_span() > 0:
-                print q
                 new_contigs.append(q)
         new_contigs.append(pairs[-1][1])  # append last contig
         self.contigs = new_contigs
@@ -241,6 +242,8 @@ class Assembly(ContigContainer):
             if contig.end_label == Contig.NEW_PRIMER or contig.end_label is Contig.DIRECT_END:
                 cost += Assembly.PRIMER_COST
         # print contig.circular, contig.parent, contig.start_label, contig.end_label, cost
+        if cost < 0:
+            cost = 0
         return cost
 
     def assembly_span(self):
@@ -250,7 +253,10 @@ class Assembly(ContigContainer):
         return self.meta.query_length - self.assembly_span()
 
     def unassembled_span_cost(self):
-        return self.unassembled_span() * Assembly.SYNTHESIS_COST
+        c = self.unassembled_span() * Assembly.SYNTHESIS_COST
+        if c < 0:
+            c = 0
+        return c
 
     def get_num_synthesis_fragments(self):
         gaps = self.get_gaps()
@@ -270,7 +276,8 @@ class Assembly(ContigContainer):
         The probability of a successful GIBSON/SLIC assembly given
         a number of fragments.
         """
-        p = 1.0 - (1.0 / 8.0) * len(self.contigs)
+
+        p = 1/(1+(len(self.contigs)/5.0)**3)
         if p <= 0:
             p = 0.0001
         return p
@@ -293,7 +300,7 @@ class Assembly(ContigContainer):
         :return:
         """
         r_5prime_threshold = 0
-        r_3prime_threshold = 60
+        r_3prime_threshold = Assembly.MAX_HOMOLOGY
         l_pos = left.q_end
         r_pos = right.q_start
         # return r_pos == l_pos + 1 # if its consecutive
@@ -344,7 +351,7 @@ Breakdown {totalcost}
 \tUnassembled Span: {uspan}, ${uspancost}
 \tFragment Costs: ${fragcost}, {fragbreakdown}
 \tNew Synthesis Costs: ${newsynth}
-\t
+\tProbability: {probability}
 
         '''.format(
             id=self.id,
@@ -360,7 +367,8 @@ Breakdown {totalcost}
             fragbreakdown=[self.pcr_cost(c) for c in self.contigs],
             query=self.meta.query,
             querylength=self.meta.query_length,
-            newsynth=self.new_synthesis_cost()
+            newsynth=self.new_synthesis_cost(),
+            probability=self.assembly_probability
         )
         return summary_str
 
@@ -482,7 +490,7 @@ class J5Assembly(Assembly):
                 60,
                 p.subject_seq
             ]
-        rows.append(row)
+            rows.append(row)
         self.primers = J5Assembly.encode64(self.to_csv(J5Assembly.MASTEROLIGOSLABELS, rows))
 
     # TODO: add direct fragments to directmasterlist
@@ -555,6 +563,7 @@ class J5Assembly(Assembly):
         print d
         d['j5_session_id'] = self.session_id
         d['assembly_method'] = assembly_method
+        print d
         print self.to_dict().keys()
         return self.proxy.DesignAssembly(d)
 

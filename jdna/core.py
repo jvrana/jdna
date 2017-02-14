@@ -333,6 +333,7 @@ class DoubleLinkedList(object):
             if n < 0 or n > mx:
                 raise IndexError("Index {} out of acceptable bounds ({}, {})".format(n, mn, mx))
 
+    # TODO: this finds queries on the end of linear dna
     def search_all(self, query):
         curr_link = self.get_first()
         q_link = query.get_first()

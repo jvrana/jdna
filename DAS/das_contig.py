@@ -188,6 +188,9 @@ class Contig(QueryRegion):
         new_contig.alignment_length = q_end - q_start
         return new_contig
 
+    def is_perfect_subject(self):
+        return self.alignment_length == self.subject_length and self.is_perfect()
+
     def is_perfect(self):
         return self.alignment_length == self.identical and \
                self.gaps == 0 and self.gap_opens == 0
@@ -325,6 +328,13 @@ class ContigContainer(object):
     def sort_contigs(self):
         self.contigs = sorted(self.contigs, key=lambda x: x.q_start)
 
+    def filter_perfect_subjects(self):
+        filtered_contigs = []
+        for contig in self.contigs:
+            if contig.is_perfect_subject():
+                filtered_contigs.append(contig)
+        self.contigs = filtered_contigs
+
     def filter_perfect(self):
         filtered_contigs = []
         for contig in self.contigs:
@@ -332,7 +342,7 @@ class ContigContainer(object):
                 filtered_contigs.append(contig)
             else:
                 pass
-
+        self.contigs = filtered_contigs
                 # TODO: handle ambiquoous NNNN dna in blast search by eliminating gap_opens, gaps if they are N's
 
     def expand_contigs(self, primers):
@@ -342,3 +352,15 @@ class ContigContainer(object):
             all_alignments += new_alignments
         self.contigs += all_alignments
 
+    def break_long_contigs(self):
+        new_contigs = []
+        for c1 in self.contigs:
+            for c2 in self.contigs:
+                if c1.q_start < c2.q_end < c1.q_end:
+                    n = c1.break_contig(c2.q_end, c1.q_end)
+                    new_contigs.append(n)
+                if c1.q_start < c2.q_start < c1.q_end:
+                    n = c1.break_contig(c1.q_start, c2.q_start)
+                    new_contigs.append(n)
+        print len(new_contigs)
+        self.contigs += new_contigs

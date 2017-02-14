@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+
+</head>
+<body>
+
+<div ng-controller="LoadPlasmids">
+        <!--<plasmid>-->
+        <!--<plasmidtrack trackstyle="fill:#ccc" width="5" radius="120"></plasmidtrack>-->
+        <!--<plasmidtrack trackstyle="fill:rgba(225,225,225,0.5)" radius="110">-->
+        <!--<tracklabel text="{{plasmid.name}}" labelstyle='font-size:20px;font-weight:400'></tracklabel>-->
+        <!--<tracklabel text="{{plasmid.length}} bp" labelstyle='font-size:10px' vadjust="20"></tracklabel>-->
+        <!--</plasmidtrack>-->
+        <!--<plasmidtrack radius='75' style='fill:#f0f0f0;stroke:#ccc'>-->
+        <!--<trackmarker ng-repeat='n in [50,90,130,200,350,400,450,600,735,900]' start='{{n}}' end='{{n+20}}' style='fill:#9cf;stroke:#036'></trackmarker>-->
+        <!--</plasmidtrack>-->
+
+        <!--</plasmid>-->
+            <plasmid ng-repeat="plasmid in plasmids" sequencelength="{{plasmid.length}}" plasmidwidth="{{plasmid.width}}" plasmidheight="{{plasmid.height}}">
+
+                <style>
+                    @import url("http://fonts.googleapis.com/css?family=Lato:300,400,700|Donegal+One|Source+Code+Pro:400");
+                    body {font-family: 'Lato';font-weight:400;}
+                    .boundary {stroke-dasharray:2,2;stroke-width:2px}
+                    .mdlabel {font-size:12px}
+                    .smlabel {font-size:8px}
+                    .white {fill:#fff}
+                    .red {fill:rgb(192,64,64)}
+                    .purple {fill:rgb(192,64,192)}
+                    .blue {fill:rgb(64,192,192)}
+                    .trblue {fill:rgba(64,192,192, 0.2)}
+                    .green {fill:rgb(64,192,64)}
+                    .gold {fill:rgb(192,128,64)}
+                    .marker {fill:rgba(0,0,0,0.4)}
+                    .markerlite {fill:rgba(0,0,0,0.1)}
+                    .labelline {stroke:#333;stroke-dasharray:2,2;stroke-width:2px;}
+                </style>
+                    <plasmidtrack trackstyle="fill:#ccc" width="5" radius="120"></plasmidtrack>
+                    <plasmidtrack trackstyle="fill:rgba(225,225,225,0.5)" radius="110">
+                        <tracklabel labelstyle="font-size:18px;font-weight:700" text="{{plasmid.name}}"></tracklabel>
+                        <tracklabel labelstyle="font-size:10px;font-weight:300" vadjust="20" text="{{plasmid.length}} bp"></tracklabel>
+
+
+                        <!--features-->
+                        <trackmarker ng-repeat="feature in plasmid.features"
+                                     start="{{feature.start}}" end="{{feature.stop}}" markerstyle="fill:rgba(50,0,85,0.9)" arrowendlength="4" arrowstartlength="-4">
+                            <!--feature label-->
+                            <!--<markerlabel type="path" class="mdlabel white" text="{{feature.name}}"></markerlabel>-->
+                            <!--<trackmarker start="{{feature.start}}" end="{{feature.stop}}" markerstyle="fill:rgba(255,221,238,0.6)" wadjust="-5" vadjust="25"></trackmarker>-->
+                            <!--<trackmarker start="{{feature.start}}" markerstyle="stroke:rgba(128,64,64,0.8)" class="boundary" wadjust="20">-->
+                                <!--<markerlabel class="smlabel red" text="{{feature.start}}" vadjust="30"></markerlabel>-->
+                            <!--</trackmarker>-->
+                            <!--<trackmarker start="{{feature.stop}}" markerstyle="stroke:rgba(128,64,64,0.8)" class="boundary" wadjust="20">-->
+                                <!--<markerlabel class="smlabel red" text="{{feature.stop}}" vadjust="30"></markerlabel>-->
+                            <!--</trackmarker>-->
+
+                        </trackmarker>
+                        <trackscale interval="500" style="stroke:#f00" direction="in" showlabels="1" labelstyle="fill:#999;stroke:none;text-anchor:middle;alignment-baseline:middle;font-size:10px"></trackscale
+                    </plasmidtrack>
+
+                <!--Outer Track-->
+                <plasmidtrack radius="200" class="markerlite">
+                    <!--Primers-->
+                    <trackmarker start="112" markerstyle="stroke:rgba(255,0,0,1);stroke-width:2px" vadjust="0" wadjust="5">
+                        <markerlabel text="New" class="mdlabel red" valign="outer" vadjust="20" showline="1" linevadjust="-5" lineclass="labelline"></markerlabel>
+                    </trackmarker>
+                    <trackmarker start="200" markerstyle="stroke:rgba(255,0,0,1);stroke-width:2px" vadjust="0" wadjust="5">
+                        <markerlabel text="New" class="mdlabel red" valign="outer" vadjust="20" showline="1" linevadjust="-5" lineclass="labelline"></markerlabel>
+                    </trackmarker>
+
+                    <!--Contigs-->
+                    <trackmarker start="100" end="5000" valign="inner" wadjust="-20" vadjust="0" class="marker markermedium"></trackmarker>
+                    <trackmarker start="4900" end="7000" valign="inner" wadjust="-20" vadjust="10" class="marker markermedium"></trackmarker>
+                    <trackmarker start="0" end="100" valign="inner" wadjust="-20" vadjust="20" class="marker markermedium"></trackmarker>
+
+
+                </plasmidtrack>
+
+
+            </plasmid>
+
+    </div>
+
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
+<script src="dist/angularplasmid.min.js"></script>
+<script src="js/loadplasmid.js"></script>
+</body>
+</html>
