@@ -21,9 +21,13 @@ class AssemblyGraph(ContigContainer):
         self.make_dictionary()
         self.assemblies = []
 
-    def get_all_assemblies(self, sort=True, place_holder_size=5):
+    def get_all_assemblies(self, sort=True, place_holder_size=5, save_history=False):
         self.make_assembly_graph(sort=sort)
-        self.assemblies = self.dfs_iter(place_holder_size=place_holder_size)
+        self.assemblies = None
+        if save_history:
+            self.assemblies, self.assembly_history = self.dfs_iter(place_holder_size=place_holder_size, data_plot=True)
+        else:
+            self.assemblies = self.dfs_iter(place_holder_size=place_holder_size, data_plot=False)
         self.assemblies = sorted(self.assemblies, key=lambda x: x.total_cost())
         return self.assemblies
 
@@ -32,6 +36,7 @@ class AssemblyGraph(ContigContainer):
         graph = {}
         pairs = list(itertools.permutations(self.contigs, 2))
         print '{} pairs to search'.format(len(pairs))
+        num_nodes = 0
         for l, r in pairs:
 
             if l == r:
@@ -40,7 +45,7 @@ class AssemblyGraph(ContigContainer):
                 if l.contig_id not in graph:
                     graph[l.contig_id] = []
                 graph[l.contig_id].append(r.contig_id)
-
+                num_nodes += 1
         if sort:
             for k in graph.keys():
                 a_array = graph[k][:]
@@ -51,11 +56,15 @@ class AssemblyGraph(ContigContainer):
                 graph[k] = sorted(a_array, key=lambda x: self.get_contig(x).q_end - self.get_contig(x).q_start,
                                   reverse=True)
         self.graph = graph
+        print 'Graph Size: {}'.format(num_nodes)
         # self.assembly_graph['root'] = [x.contig_id for x in self.contigs]
         return self.graph
 
-    def dfs_iter(self, place_holder_size=5):
+    def dfs_iter(self, place_holder_size=5, data_plot=False):
         assemblies = []
+        best_costs_array = []
+        steps = []
+        step = 0
         sorted_contigs = sorted(self.contigs, key=lambda x: x.q_end - x.q_start, reverse=True)
         stack = []
         for c in sorted_contigs:
@@ -63,6 +72,8 @@ class AssemblyGraph(ContigContainer):
             stack.append(a)
         best_costs = [float("Inf")] * place_holder_size  # five best costs
         while stack:
+            step += 1
+            steps.append(step)
             best_costs.sort()
             assembly = stack.pop()
 
@@ -99,11 +110,14 @@ class AssemblyGraph(ContigContainer):
                     stack.append(new_path)
             if cost < best_costs[-1]:
                 best_costs[-1] = cost
-                print best_costs
+                if data_plot:
+                    best_costs_array.append(best_costs[:])
             assemblies.append(assembly)
             # end of path
         assemblies = sorted(assemblies,
                             key=lambda x: x.total_cost())
+        if data_plot:
+            return assemblies, zip(steps, best_costs_array)
         return assemblies
 
 # TODO: share parameters from a single file
@@ -124,7 +138,7 @@ class Assembly(ContigContainer):
         self.id = Assembly.assembly_id
         Assembly.assembly_id += 1
         self.contig_container = contig_container
-        self.primer_continer = primer_container
+        self.primer_container = primer_container
         self._convert_assembly_path(assembly_path)
 
     def _convert_assembly_path(self, assembly_path):
@@ -221,7 +235,7 @@ class Assembly(ContigContainer):
         return sum(non_zero_gaps) * Assembly.SYNTHESIS_COST
 
     @staticmethod
-    def pcr_cost(contig):
+    def get_pcr_cost(contig):
         """
         Cost of a pcr
         :param contig:
@@ -268,7 +282,7 @@ class Assembly(ContigContainer):
                self.get_gap_cost() + self.unassembled_span_cost()
 
     def get_fragment_cost(self):
-        return sum([Assembly.pcr_cost(c) for c in self.contigs])
+        return sum([Assembly.get_pcr_cost(c) for c in self.contigs])
 
     @property
     def assembly_probability(self):
@@ -313,6 +327,18 @@ class Assembly(ContigContainer):
             filenames.append(c.filename)
         return list(set(filenames))
 
+    def dump(self, out):
+        j = deepcopy(self.__dict__)
+        del j['contig_dictionary']
+        j['meta'] = j['meta'].__dict__
+        j['contigs'] = [x.json() for x in j['contigs']]
+        del j['meta']['query_seq']
+        del j['meta']['contig_seqs']
+        del j['contig_container']
+        del j['primer_container']
+        with open(out, 'w') as output:
+            json.dump(j, output)
+
     def summary(self):
         contigs = ''
         for c in self.contigs:
@@ -325,7 +351,7 @@ class Assembly(ContigContainer):
         \t\tSubject Acc: {subject}
         \t\tPrimers: {fwd}, {rev}
         '''.format(id=c.contig_id,
-                   cost=self.pcr_cost(c),
+                   cost=self.get_pcr_cost(c),
                    start=c.q_start,
                    end=c.q_end,
                    rs=c.q_start - self.contigs[0].q_start,
@@ -364,7 +390,7 @@ Breakdown {totalcost}
             uspan=self.unassembled_span(),
             uspancost=self.unassembled_span_cost(),
             fragcost=self.get_fragment_cost(),
-            fragbreakdown=[self.pcr_cost(c) for c in self.contigs],
+            fragbreakdown=[self.get_pcr_cost(c) for c in self.contigs],
             query=self.meta.query,
             querylength=self.meta.query_length,
             newsynth=self.new_synthesis_cost(),
@@ -482,7 +508,7 @@ class J5Assembly(Assembly):
     def get_primers(self):
         # ['Oligo Name', 'Length', "Tm", "Tm (3' only)", "Sequence"]
         rows = []
-        for p in self.primer_continer.contigs:
+        for p in self.primer_container.contigs:
             row = [
                 p.subject_acc,
                 len(p.subject_seq),

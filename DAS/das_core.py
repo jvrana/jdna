@@ -10,6 +10,7 @@ Description:
 
 from das_assembly import *
 from das_blast import *
+from das_utilities import *
 
 locations = dict(
     database="database",
@@ -24,7 +25,6 @@ b = BLAST('db', 'templates', design_path, 'database', 'database/results.out', ev
 b.makedbfromdir()
 b.runblast()
 contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
-print contig_container
 contig_container.fuse_circular_fragments()
 contig_container.remove_redundant_contigs(include_contigs_contained_within=True, save_linear_contigs=True)
 
@@ -48,8 +48,33 @@ assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_l
 
 contig_container.dump('alignment_viewer/data.json')
 
-paths = assembly.get_all_assemblies(place_holder_size=10)
+dump_coral_to_json(design_path, 'plasmid_viewer/PlasmidViewer/js/plasmiddata.json', width=1000)
+
+paths = assembly.get_all_assemblies(place_holder_size=10, save_history=True)
+
+f = assembly.assembly_history
+
+# import pandas as pd
+# import numpy as np
+# import seaborn as sns
+# import pylab as plt
+# a = []
+# for i, row in enumerate(f):
+#     g = zip([i]*len(row), row)
+#     a += g
+# x, y = zip(*a)
+# x = [float(X) for X in x]
+# y = [float(Y) for Y in y]
+# d = pd.DataFrame({'step': x, 'score': y})
+# print d
+# sns.regplot(x='step', y='score', data=d)
+#
+# exit()
 print paths[0].summary()
+
+
+paths[0].dump('alignment_viewer/bestassembly.json')
+
 # a.fill_contig_gaps()
 # print a.summary()
 

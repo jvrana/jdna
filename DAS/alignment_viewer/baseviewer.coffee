@@ -21,13 +21,18 @@ svg = d3.select('body').append('svg')
 #  .style("fill", (d) ->  d.color )
 
 xpadding = 50.0
-
+y = 50
+spacer = 12
+query_height = 10
+contig_height = 7
 
 tooltip = d3.select("body").append("div")
   .attr("class", "tooltip")
 
 
 d3.json('data.json', (data) ->
+
+
 
   query_len = data.contigs[0].query_length
 
@@ -37,32 +42,55 @@ d3.json('data.json', (data) ->
 
   yScale = d3.scaleLinear()
     .domain([0, data.contigs.length])
-    .range([120, 500])
+    .range([y, data.contigs.length * spacer])
+
+  yend = yScale(data.contigs.length + 2)
+
+  svg.append('text')
+    .attr('x', xScale(query_len/2.0))
+    .attr('y', yScale(-2))
+    .attr("text-anchor", "middle")
+    .text( (d) -> data.meta.query + " (" + data.meta.query_length + " bp)")
 
   svg.append('rect')
     .attr('x', xScale(0))
     .attr('width', xScale(query_len))
-    .attr('y', 100)
-    .attr('height', 10)
+    .attr('y', yScale(0))
+    .attr('height', query_height)
     .attr('opacity', 0.5)
     .attr('fill', 'blue')
+
+  svg.append('line')
+    .attr('x1', xScale(query_len/2.0))
+    .attr('y1', yScale(0))
+    .attr('x2', xScale(query_len/2.0))
+    .attr('y2', yend)
+    .style("stroke-dasharray", ("3, 3"))
+    .style("stroke", 'black' )
+    .style("stroke-width", 1.5)
+
+
 
   svg.selectAll('rects')
     .data(data.contigs)
     .enter()
     .append('rect')
     .attr('x', (d) -> xScale(d.q_start))
-    .attr('y', (d,i) -> 120 + i * 10)
+    .attr('y', (d,i) -> yScale(i+2))
     .attr('width', (d) -> xScale(d.q_end) - xScale(d.q_start))
-    .attr('height', 7)
+    .attr('height', contig_height)
     .attr('fill', fill)
     .attr('opacity', 0.9)
     .on("mouseover", (d) ->
       coordinates = d3.mouse(this)
       d3.select(this).style("fill", 'red')
-      tooltip.text(d.subject_acc + '<br>' + d.q_start + ', ' + d.q_end + '<br>' + d.contig_type + ' ' + d.contig_id)
+      tooltip
+        .html('<b>Subject: </b>' + d.subject_acc + '<br>' +
+          '<b>Range:\t</b> ' + d.q_start + '-' + d.q_end + '<br>' +
+          '<b>Type:\t</b>' + d.contig_type + '<br>' +
+          '<b>Id:\t</b>' + d.contig_id)
         .style("visibility", "visible")
-      )
+  )
     .on("mousemove", () ->
       tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px"))
     .on("mouseout", (d) ->
@@ -75,9 +103,9 @@ d3.json('data.json', (data) ->
     .enter()
     .append('rect')
     .attr('x', (d) -> xScale(d.q_start))
-    .attr('y', (d,i) -> 100)
+    .attr('y', (d,i) -> yScale(1))
     .attr('width', 1)
-    .attr('height', h)
+    .attr('height', yend - yScale(1))
     .attr('fill', 'black')
     .attr('opacity', 0.1)
 
@@ -86,9 +114,9 @@ d3.json('data.json', (data) ->
     .enter()
     .append('rect')
     .attr('x', (d) -> xScale(d.q_end))
-    .attr('y', (d,i) -> 100)
+    .attr('y', (d,i) -> yScale(1))
     .attr('width', 1)
-    .attr('height', h)
+    .attr('height', yend - yScale(1))
     .attr('fill', 'blue')
     .attr('opacity', 0.1)
 
@@ -98,15 +126,25 @@ d3.json('data.json', (data) ->
         .enter()
         .append('rect')
         .attr('x', (d) -> xScale(d.q_start))
-        .attr('y', (d,i) -> 100)
-        .attr('width', 1)
-        .attr('height', h)
+        .attr('y', (d,i) -> yScale(0))
+        .attr('width', (d) -> xScale(d.q_end) - xScale(d.q_start))
+        .attr('height', query_height * 0.75)
         .attr('fill', "red")
-        .attr('opacity', 0.35)
+        .attr('opacity', 1.35)
   )
 
-)
+  d3.json('primer_data.json', (primerdata) ->
+      svg.selectAll('primer_text')
+        .data(primerdata.contigs)
+        .enter()
+        .append('text')
+        .append('text')
+        .attr('x', (d) -> xScale(d.q_start))
+        .attr('y', (d,i) -> yScale(-2))
+        .text('OK')
 
+)
+)
 
 
 fill = (d) ->
@@ -114,6 +152,7 @@ fill = (d) ->
   return 'purple' if d.contig_type == 'product'
   return 'blue' if d.contig_type == 'gap'
   return 'orange'
+
 
 
 #width = 200

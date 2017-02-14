@@ -352,15 +352,17 @@ class ContigContainer(object):
             all_alignments += new_alignments
         self.contigs += all_alignments
 
-    def break_long_contigs(self):
+    def break_long_contigs(self, contig_type='product'):
         new_contigs = []
         for c1 in self.contigs:
             for c2 in self.contigs:
                 if c1.q_start < c2.q_end < c1.q_end:
                     n = c1.break_contig(c2.q_end, c1.q_end)
+                    n.contig_type = contig_type
                     new_contigs.append(n)
                 if c1.q_start < c2.q_start < c1.q_end:
                     n = c1.break_contig(c1.q_start, c2.q_start)
+                    n.contig_type = contig_type
                     new_contigs.append(n)
         print len(new_contigs)
         self.contigs += new_contigs
