@@ -15,7 +15,7 @@ import os
 import json
 import coral
 from glob import glob
-
+import re
 
 def run_cmd(cmd_str, **kwargs):
     """
@@ -44,7 +44,9 @@ def format_decorator(f):
 
     def wrapped(*args, **kwargs):
         args = list(args)
-        prefix, suffix = args[0].split('.')
+        g = re.search('^(.+)\.(\w+)$', args[0])
+        prefix = g.group(1)
+        suffix = g.group(2)
         formats = {"gb": "genbank", "fsa": "fasta", "fasta": "fasta"}
         formats.update(kwargs)
         kwargs['format'] = formats[suffix]
@@ -59,7 +61,8 @@ def determine_format(filename, format=None):
 # TODO: locus_ID gets truncated, fix this...
 @format_decorator
 def open_sequence(filename, format=None, **fmt):
-    prefix, suffix = os.path.basename(filename).split('.')
+    g = re.search('^(.+)\.(\w+)$', filename)
+    prefix, suffix = g.group(1), g.group(2)
     seqs = []
     with open(filename, 'rU') as handle:
         s = list(SeqIO.parse(handle, format))
@@ -95,9 +98,12 @@ def concat_seqs(idir, out, savemeta=False):
         for s in seqs:
             metadata[s.id] = {'filename': filename, 'circular': False, 'seqrecord': s}
         if len(seqs) == 1:
-            c = coral.seqio.read_dna(filename)
-            metadata[seqs[0].id]['circular'] = c.circular
-            metadata[seqs[0].id]['coral'] = c
+            try:
+                c = coral.seqio.read_dna(filename)
+                metadata[seqs[0].id]['circular'] = c.circular
+                metadata[seqs[0].id]['coral'] = c
+            except:
+                pass
 
     with open(out, "w") as handle:
         SeqIO.write(sequences, handle, "fasta")

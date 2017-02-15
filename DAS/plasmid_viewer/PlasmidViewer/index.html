@@ -6,17 +6,8 @@
 <body>
 
 <div ng-controller="LoadPlasmids">
-    <!--<plasmid>-->
-    <!--<plasmidtrack trackstyle="fill:#ccc" width="5" radius="120"></plasmidtrack>-->
-    <!--<plasmidtrack trackstyle="fill:rgba(225,225,225,0.5)" radius="110">-->
-    <!--<tracklabel text="{{plasmid.name}}" labelstyle='font-size:20px;font-weight:400'></tracklabel>-->
-    <!--<tracklabel text="{{plasmid.length}} bp" labelstyle='font-size:10px' vadjust="20"></tracklabel>-->
-    <!--</plasmidtrack>-->
-    <!--<plasmidtrack radius='75' style='fill:#f0f0f0;stroke:#ccc'>-->
-    <!--<trackmarker ng-repeat='n in [50,90,130,200,350,400,450,600,735,900]' start='{{n}}' end='{{n+20}}' style='fill:#9cf;stroke:#036'></trackmarker>-->
-    <!--</plasmidtrack>-->
 
-    <!--</plasmid>-->
+    <!--</Assembly Viewer Plasmid>-->
     <plasmid ng-repeat="plasmid in plasmids" sequencelength="{{plasmid.length}}" plasmidwidth="1200"
              plasmidheight="1200">
 
@@ -74,7 +65,7 @@
             }
 
             .markerlite {
-                fill: rgba(0, 0, 0, 0.1)
+                fill: rgba(0, 0, 0, 0.0)
             }
 
             .labelline {
@@ -83,20 +74,25 @@
                 stroke-width: 2px;
             }
         </style>
-        <plasmidtrack trackstyle="fill:#ccc" width="5" radius="140"></plasmidtrack>
-        <plasmidtrack trackstyle="fill:rgba(225,225,225,0.5)" radius="120">
+        <plasmidtrack trackstyle="fill:#ccc" width="5" radius="{{size}}"></plasmidtrack>
+
+        <!--Plasmid Map-->
+        <plasmidtrack trackstyle="fill:rgba(225,225,225,0.5)" radius="{{size}}">
             <tracklabel labelstyle="font-size:18px;font-weight:700" text="{{plasmid.name}}"></tracklabel>
             <tracklabel labelstyle="font-size:10px;font-weight:300" vadjust="20"
                         text="{{plasmid.length}} bp"></tracklabel>
 
 
-            <!--features-->
+            <!--Plasmid Features-->
             <trackmarker ng-repeat="feature in plasmid.features"
                          start="{{feature.start}}" end="{{feature.stop}}"
-                         markerstyle="{{feature.color}}"
-                         arrowendlength="4" arrowstartlength="-4">
+                         markerstyle="fill:{{feature.qualifiers.ApEinfo_fwdcolor[0]}}"
+                         vadjust="{{feature.shell*30}}"
+                         wadjust="-10"
+                         arrowendlength="0"
+                         arrowendwidth="0">
                 <!--feature label-->
-                <!--<markerlabel type="path" class="mdlabel white" text="{{feature.name}}"></markerlabel>-->
+                <!--<markerlabel type="path" class="mdlabel black" text="{{feature.name}}"></markerlabel>-->
                 <!--<trackmarker start="{{feature.start}}" end="{{feature.stop}}" markerstyle="fill:rgba(255,221,238,0.6)" wadjust="-5" vadjust="25"></trackmarker>-->
                 <!--<trackmarker start="{{feature.start}}" markerstyle="stroke:rgba(128,64,64,0.8)" class="boundary" wadjust="20">-->
                 <!--<markerlabel class="smlabel red" text="{{feature.start}}" vadjust="30"></markerlabel>-->
@@ -110,70 +106,66 @@
                         labelstyle="fill:#999;stroke:none;text-anchor:middle;alignment-baseline:middle;font-size:10px"></trackscale
         </plasmidtrack>
 
-        <!--Outer Track-->
-        <plasmidtrack radius="200" class="markerlite">
-            <!--Primers-->
+        <!--&lt;!&ndash;Contig Track&ndash;&gt;-->
+        <!--<plasmidtrack radius="200" class="markerlite">-->
+            <!--&lt;!&ndash;Contigs&ndash;&gt;-->
+            <!--<trackmarker ng-repeat="contig in contigs.contigs"-->
+                         <!--start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"-->
+                         <!--end="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"-->
+                         <!--valign="inner" wadjust="-20" vadjust="{{7*$index}}"-->
+                         <!--class="{{ (contig.contig_type === 'product' ? 'purple' : 'gold' ) }}">-->
 
-            <!--Contigs-->
-            <trackmarker ng-repeat="contig in contigs.contigs"
-                         start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"
-                         end="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"
-                         valign="inner" wadjust="-20" vadjust="{{7*$index}}"
-                         class="{{ (contig.contig_type === 'product' ? 'purple' : 'gold' ) }}">
+            <!--</trackmarker>-->
 
-            </trackmarker>
+            <!--&lt;!&ndash;Primers&ndash;&gt;-->
+            <!--<trackmarker ng-repeat="primer in primers.contigs"-->
+                         <!--start="{{(primer.q_start > plasmid.length ? primer.q_start - plasmid.length : primer.q_start)}}"-->
+                         <!--end="{{(primer.q_end > plasmid.length ? primer.q_end - plasmid.length : primer.q_end)}}"-->
+                         <!--markerstyle="stroke:rgba(255,0,0,1);stroke-width:0px" vadjust="0" wadjust="5">-->
+                <!--<markerlabel text="{{primer.subject_acc}}" class="mdlabel red" valign="outer" vadjust="{{(45*7)}}"-->
+                             <!--showline="1" linevadjust="-5" lineclass="labelline"></markerlabel>-->
+            <!--</trackmarker>-->
+        <!--</plasmidtrack>-->
 
+        <!--&lt;!&ndash;Inner Assembly Track&ndash;&gt;-->
+        <!--<plasmidtrack radius="150" class="markerlite">-->
+            <!--&lt;!&ndash;Primers&ndash;&gt;-->
 
-            <trackmarker ng-repeat="primer in primers.contigs"
-                         start="{{(primer.q_start > plasmid.length ? primer.q_start - plasmid.length : primer.q_start)}}"
-                         end="{{(primer.q_end > plasmid.length ? primer.q_end - plasmid.length : primer.q_end)}}"
-                         markerstyle="stroke:rgba(255,0,0,1);stroke-width:0px" vadjust="0" wadjust="5">
-                <markerlabel text="{{primer.subject_acc}}" class="mdlabel red" valign="outer" vadjust="{{(45*7)}}"
-                             showline="1" linevadjust="-5" lineclass="labelline"></markerlabel>
-            </trackmarker>
+            <!--&lt;!&ndash;assembly&ndash;&gt;-->
+            <!--<trackmarker-->
+                    <!--ng-repeat="contig in assembly.contigs"-->
+                    <!--start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"-->
+                    <!--end="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"-->
+                    <!--markerstyle="fill:{{color()}}" wadjust="10" vadjust="0">-->
+                <!--&lt;!&ndash;region boundary&ndash;&gt;-->
+                <!--<trackmarker-->
+                        <!--start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"-->
+                        <!--markerstyle="stroke:rgba(128,64,64,0.8)"-->
+                        <!--class="boundary"-->
+                        <!--wadjust="20"-->
+                        <!--valign="inner">-->
+                    <!--<markerlabel class="smlabel red"-->
+                                 <!--text="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"-->
+                                 <!--vadjust="-75" valign="inner">-->
 
+                    <!--</markerlabel>-->
+                <!--</trackmarker>-->
+                <!--<trackmarker start="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"-->
+                             <!--markerstyle="stroke:rgba(128,64,64,0.8)"-->
+                             <!--class="boundary"-->
+                             <!--wadjust="-100"-->
+                             <!--valign="inner">-->
+                    <!--<markerlabel-->
+                            <!--class="smlabel red"-->
+                            <!--text="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"-->
+                            <!--vadjust="-75" valign="inner">-->
 
-        </plasmidtrack>
-
-        <!--Outer Track-->
-        <plasmidtrack radius="150" class="markerlite">
-            <!--Primers-->
-
-            <!--assembly-->
-            <trackmarker
-                    ng-repeat="contig in assembly.contigs"
-                    start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"
-                    end="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"
-                    markerstyle="fill:{{color()}}" wadjust="10" vadjust="0">
-                <!--region boundary-->
-                <trackmarker
-                        start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"
-                        markerstyle="stroke:rgba(128,64,64,0.8)"
-                        class="boundary"
-                        wadjust="20"
-                        valign="inner">
-                    <markerlabel class="smlabel red"
-                                 text="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"
-                                 vadjust="-75" valign="inner">
-
-                    </markerlabel>
-                </trackmarker>
-                <trackmarker start="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"
-                             markerstyle="stroke:rgba(128,64,64,0.8)"
-                             class="boundary"
-                             wadjust="-100"
-                valign="inner">
-                    <markerlabel
-                            class="smlabel red"
-                            text="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"
-                            vadjust="-75" valign="inner">
-
-                    </markerlabel>
-                </trackmarker>
-            </trackmarker>
+                    <!--</markerlabel>-->
+                <!--</trackmarker>-->
+            <!--</trackmarker>-->
 
 
-        </plasmidtrack>
+        <!--</plasmidtrack>-->
 
 
     </plasmid>
@@ -182,6 +174,6 @@
 
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
 <script src="dist/angularplasmid.min.js"></script>
-<script src="js/loadplasmid.js"></script>
+<script src="js/LoadPlasmidCoffee.js"></script>
 </body>
 </html>

@@ -19,7 +19,7 @@ locations = dict(
 )
 
 # design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
-# design_path = 'designs/sanitized.gb'
+# design_path = 'designs/hcas9-vpr(sanitized).gb'
 design_path = 'designs/pins-011-pef1a-hcsy4-t2a-dcas9-crpos0-crpos1.gb'
 b = BLAST('db', 'templates', design_path, 'database', 'database/results.out', evalue=10.0, ungapped='', penalty=-100, perc_identity=100)
 b.makedbfromdir()
@@ -28,19 +28,23 @@ contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
 contig_container.fuse_circular_fragments()
 contig_container.remove_redundant_contigs(include_contigs_contained_within=True, save_linear_contigs=True)
 
+
+
 # contig_container.filter_perfect()
 
 # generate_random_primers(open_sequence(design_path)[0], 'primers/primers.fasta', num_primers=2)
-p = BLAST('primerdb', 'primers', design_path, 'database', 'database/primerresults.out', evalue=1000.0, word_size=15, ungapped='', penalty=-100)
+p = BLAST('primerdb', 'primers', design_path, 'database', 'database/primerresults.out', evalue=1000.0, word_size=15) #, ungapped='', penalty=-100)
 p.makedbfromdir()
 p.runblast()
 primer_container = p.parse_results(contig_type=Contig.TYPE_PRIMER)
 primer_container.filter_perfect_subjects()
+
+# primer_container.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
 primer_container.dump('alignment_viewer/primer_data.json')
 
 
 assembly = AssemblyGraph(primers=primer_container, contigs=contig_container)
-assembly.expand_contigs(primer_container.contigs)
+# assembly.expand_contigs(primer_container.contigs)
 
 
 assembly.break_long_contigs()

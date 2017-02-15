@@ -287,8 +287,13 @@ class ContigContainer(object):
                     continue
                 if c1.equivalent_location(c2):
                     contig_for_removal.append(c2)
-                if include_contigs_contained_within and c2.is_within(c1):
-                    contig_for_removal.append(c2)
+                else:
+                    if include_contigs_contained_within and c2.is_within(c1):
+                        contig_for_removal.append(c2)
+                    if include_contigs_contained_within and c1.is_within(c2):
+                        contig_for_removal.append(c1)
+        contig_for_removal = list(set(contig_for_removal))
+        print 'removing {} contigs'.format(len(contig_for_removal))
         for c in contig_for_removal:
             self.contigs.remove(c)
         self.make_dictionary()
@@ -362,7 +367,19 @@ class ContigContainer(object):
                     new_contigs.append(n)
                 if c1.q_start < c2.q_start < c1.q_end:
                     n = c1.break_contig(c1.q_start, c2.q_start)
-                    n.contig_type = contig_type
+                    n.contig_type = contig_type + '(long contig broken)'
                     new_contigs.append(n)
         print len(new_contigs)
+
+        for c1 in self.contigs:
+            end = c1.q_start + self.meta.query_length
+            if end < c1.query_length:
+                for c2 in self.contigs:
+                    if c2.q_start < end < c2.q_end:
+                        n = c2.break_contig(c2.q_start, end)
+                        n.contig_type = 'product (broken for circularization)'
+                        new_contigs.append(n)
+
+
+
         self.contigs += new_contigs

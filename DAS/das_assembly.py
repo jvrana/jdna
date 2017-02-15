@@ -112,6 +112,8 @@ class AssemblyGraph(ContigContainer):
                 best_costs[-1] = cost
                 if data_plot:
                     best_costs_array.append(best_costs[:])
+                print best_costs
+            assembly.best_cost = assembly.total_cost()
             assemblies.append(assembly)
             # end of path
         assemblies = sorted(assemblies,
