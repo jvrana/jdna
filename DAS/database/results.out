@@ -1,4 +1,4 @@
-# BLASTN 2.5.0+
+# BLASTN 2.4.0+
 # Query: pINS-011-pEF1a-hcsy4-T .
 # Database: database/db
 # Fields: query acc., subject acc., score, evalue, bit score, alignment length, identical, gap opens, gaps, query length, q. start, q. end, subject length, s. start, s. end, subject strand, query seq, subject seq

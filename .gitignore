@@ -26,3 +26,4 @@ jdna/data/
 /DAS/j5_credentials.json
 jdna/__pycache__/
 
+.idea/inspectionProfiles/

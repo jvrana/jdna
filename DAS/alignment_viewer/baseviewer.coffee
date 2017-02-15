@@ -86,9 +86,10 @@ d3.json('data.json', (data) ->
       d3.select(this).style("fill", 'red')
       tooltip
         .html('<b>Subject: </b>' + d.subject_acc + '<br>' +
-          '<b>Range:\t</b> ' + d.q_start + '-' + d.q_end + '<br>' +
+          '<b>QRange:\t</b> ' + d.q_start + '-' + d.q_end + '<br>' +
           '<b>Type:\t</b>' + d.contig_type + '<br>' +
-          '<b>Id:\t</b>' + d.contig_id)
+          '<b>Id:\t</b>' + d.contig_id + '<br>' +
+          '<b>SRange:\t</b>' + d.s_start + '-' + d.q_end)
         .style("visibility", "visible")
   )
     .on("mousemove", () ->

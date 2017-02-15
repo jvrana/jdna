@@ -120,6 +120,17 @@ class AssemblyGraph(ContigContainer):
             return assemblies, zip(steps, best_costs_array)
         return assemblies
 
+    def dump(self, out):
+        j = deepcopy(self.__dict__)
+        del j['contig_dictionary']
+        j['meta'] = j['meta'].__dict__
+        j['contigs'] = [x.json() for x in j['contigs']]
+        del j['meta']['query_seq']
+        del j['meta']['contig_seqs']
+        del j['primers']
+        with open(out, 'w') as output:
+            json.dump(j, output)
+
 # TODO: share parameters from a single file
 class Assembly(ContigContainer):
     MIN_PCR_SIZE = 250.
@@ -415,7 +426,7 @@ class J5Assembly(Assembly):
     # PARAMS = None
 
     def __init__(self, assembly):
-        super(J5Assembly, self).__init__(assembly.contigs, assembly.contig_container, assembly.primer_continer)
+        super(J5Assembly, self).__init__(assembly.contigs, assembly.contig_container, assembly.primer_container)
         self.params = None
         self.proxy_home = 'https://j5.jbei.org/bin/j5_xml_rpc.pl'
         self.proxy = xmlrpclib.ServerProxy('https://j5.jbei.org/bin/j5_xml_rpc.pl')
@@ -592,6 +603,8 @@ class J5Assembly(Assembly):
         print d
         print self.to_dict().keys()
         return self.proxy.DesignAssembly(d)
+
+
 
         # params['encoded_{}_file'.format(filetype)] = self.encode(imply_file('*{}*'.format(filetype)))
         #             params['reuse_{}_file'.format(filetype)] = False

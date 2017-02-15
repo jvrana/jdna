@@ -45,8 +45,8 @@ assembly.expand_contigs(primer_container.contigs)
 
 assembly.break_long_contigs()
 assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
-
-contig_container.dump('alignment_viewer/data.json')
+assembly.sort_contigs()
+assembly.dump('alignment_viewer/data.json')
 
 dump_coral_to_json(design_path, 'plasmid_viewer/PlasmidViewer/js/plasmiddata.json', width=1000)
 
