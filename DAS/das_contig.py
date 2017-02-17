@@ -19,6 +19,7 @@ import zipfile
 import xmlrpclib
 from das_seqio import *
 
+
 class ContigError(Exception):
     def __init__(self, message):
         self.message = message
@@ -92,8 +93,16 @@ class Contig(QueryRegion):
         self.subject_seq = kwargs['subject_seq']
         self.contig_type = kwargs['contig_type']
         self.assign_id()
-        self.end_label = Contig.NEW_PRIMER  # None, new_primer, or contig_id
-        self.start_label = Contig.NEW_PRIMER  # None, new_primer, or contig_id
+        if 'end_label' not in kwargs:
+            self.end_label = Contig.NEW_PRIMER
+        else:
+            self.end_label = kwargs['end_label']
+
+        if 'start_label' not in kwargs:
+            self.start_label = Contig.NEW_PRIMER
+        else:
+            self.start_label = kwargs['start_label']
+
         self.quality = 1.0  # used for future machine learning / AI
 
         for opt in Contig.optional_args:
@@ -102,7 +111,7 @@ class Contig(QueryRegion):
             except KeyError:
                 self.__dict__[opt] = None
 
-        # TODO: this implies a direct synthesis
+        # TODO: this implies a direct synthesis, change this to add separate
         if not self.circular:
             self.start_label = Contig.DIRECT_END
             self.end_label = Contig.DIRECT_END
@@ -146,15 +155,9 @@ class Contig(QueryRegion):
                     new_contig.contig_type = contig_type
                 if circular is not None:
                     new_contig.circular = circular
-                if new_contig.q_start == self.q_start:
-                    new_contig.start_label = Contig.NEW_PRIMER
-                else:
-                    new_contig.start_label = start_label
-                if new_contig.q_end == self.q_end:
-                    new_contig.end_label = Contig.NEW_PRIMER
-                else:
-                    new_contig.end_label = end_label
-                new_contig.parent = self.contig_id
+                new_contig.start_label = start_label
+                new_contig.end_label = end_label
+                new_contig.parent_id = self.contig_id
                 contigs.append(new_contig)
             except ContigError:
                 pass
@@ -163,10 +166,23 @@ class Contig(QueryRegion):
     def equivalent_location(self, other):
         return other.q_start == self.q_start and other.q_end == self.q_end
 
-    def is_within(self, other):
-        return self.q_start >= other.q_start and self.q_end <= other.q_end
+    def q_pos_within(self, pos, inclusive=True):
+        if inclusive:
+            return self.q_start <= pos <= self.q_end
+        else:
+            return self.q_start < pos < self.q_end
 
-    def break_contig(self, q_start, q_end):
+    def overlaps(self, other, inclusive=True):
+        pass
+
+    def is_within(self, other, inclusive=True):
+        return other.q_pos_within(self.q_start, inclusive=inclusive) and \
+               other.q_pos_within(self.q_end, inclusive=inclusive)
+
+    # def is_within(self, other, inclusive=True):
+    #     return self.q_start >= other.q_start and self.q_end <= other.q_end
+
+    def break_contig(self, q_start, q_end, start_label=None, end_label=None):
         """
         Breaks a contig at query start and end; copies over information
         from self contig
@@ -174,24 +190,33 @@ class Contig(QueryRegion):
         :param q_end:
         :return:
         """
-        if q_start < self.q_start:
-            raise ContigError("query_start {} cannot be less than contig start {}".format(q_start, self.q_start))
-        if q_end > self.q_end:
-            raise ContigError("query_end {} cannot be less than contig end {}".format(q_start, self.q_start))
         if q_start > q_end:
             raise ContigError("query_start cannot be greater than query_end")
+        if not self.q_pos_within(q_start, inclusive=True):
+            raise ContigError("query_start {} cannot be less than contig start {}".format(q_start, self.q_start))
+        if not self.q_pos_within(q_end, inclusive=True):
+            raise ContigError("query_end {} cannot be less than contig end {}".format(q_start, self.q_start))
         new_contig = self.deepcopy()
         new_contig.q_start = q_start
         new_contig.q_end = q_end
         new_contig.s_start = self.s_start + (q_start - self.q_start)
         new_contig.s_end = self.s_end - (self.q_end - q_end)
         new_contig.alignment_length = q_end - q_start
+        new_contig.parent_id = self.contig_id
+        if start_label is not None:
+            new_contig.start_label = start_label
+        else:
+            new_contig.start_label = Contig.NEW_PRIMER
+        if end_label is not None:
+            new_contig.end_label = end_label
+        else:
+            new_contig.end_label = Contig.NEW_PRIMER
         return new_contig
 
     def is_perfect_subject(self):
-        return self.alignment_length == self.subject_length and self.is_perfect()
+        return self.alignment_length == self.subject_length and self.is_perfect_alignment()
 
-    def is_perfect(self):
+    def is_perfect_alignment(self):
         return self.alignment_length == self.identical and \
                self.gaps == 0 and self.gap_opens == 0
 
@@ -239,6 +264,10 @@ class Contig(QueryRegion):
         # TODO: generate additional pcr products that could be homologous to existing primer
         # TODO: compute alignment_graph for each 'contig'
 
+    def ends_equivalent(self, other):
+        return self.start_label == other.start_label and \
+                self.end_label == other.end_label
+
     def json(self):
         j = super(Contig, self).json()
         for x in Contig.sequence_options:
@@ -275,30 +304,47 @@ class ContigContainer(object):
         self.meta = ContigContainerMeta(**kwargs)
 
     # TODO: add alternative templates field to contig
-    def remove_redundant_contigs(self, include_contigs_contained_within=False, save_linear_contigs=False):
-        contig_for_removal = []
+    def remove_redundant_contigs(self, remove_equivalent=True, remove_within=False, no_removal_if_different_ends=True):
+        """
+        Selects contigs based on criteria
+        :param remove_equivalent:
+        :param remove_within:
+        :param no_removal_if_different_ends:
+        :return:
+        """
+
+        contigs_for_removal = []
         for c1 in self.contigs:
             for c2 in self.contigs:
                 if c1 == c2:
                     continue
-                if c1 in contig_for_removal or c2 in contig_for_removal:
+                if c1 in contigs_for_removal or c2 in contigs_for_removal:
                     continue
-                if not c2.circular and save_linear_contigs:
-                    continue
-                if c1.equivalent_location(c2):
-                    contig_for_removal.append(c2)
-                else:
-                    if include_contigs_contained_within and c2.is_within(c1):
-                        contig_for_removal.append(c2)
-                    if include_contigs_contained_within and c1.is_within(c2):
-                        contig_for_removal.append(c1)
-        contig_for_removal = list(set(contig_for_removal))
-        print 'removing {} contigs'.format(len(contig_for_removal))
-        for c in contig_for_removal:
+                #
+                if no_removal_if_different_ends:
+                    if not c1.ends_equivalent(c2):
+                        continue
+                if remove_equivalent and c1.equivalent_location(c2):
+                    contigs_for_removal.append(c2)
+                if remove_within:
+                    if c1.is_within(c2, inclusive=True):
+                        contigs_for_removal.append(c1)
+                    elif c2.is_within(c1, inclusive=True):
+                        contigs_for_removal.append(c2)
+        contigs_for_removal = list(set(contigs_for_removal))
+        for c in contigs_for_removal:
             self.contigs.remove(c)
         self.make_dictionary()
+                # TODO: prefer to remove contigs with new primers over contigs with existing primers
+
 
     def fuse_circular_fragments(self):
+        """
+        Fuses contigs that are circular and would
+        span the origin if the index of the blast query
+        had been different
+        :return: None
+        """
         ga = defaultdict(list)
 
         def fuse_condition(l, r):
@@ -321,6 +367,11 @@ class ContigContainer(object):
                 self.contigs.remove(r)
 
     def dump(self, out):
+        """
+        Dumps this container to a json
+        :param out:
+        :return:
+        """
         j = deepcopy(self.__dict__)
         del j['contig_dictionary']
         j['meta'] = j['meta'].__dict__
@@ -331,9 +382,19 @@ class ContigContainer(object):
             json.dump(j, output)
 
     def sort_contigs(self):
+        """
+        Sorts contigs according to their query start
+        :return:
+        """
         self.contigs = sorted(self.contigs, key=lambda x: x.q_start)
 
     def filter_perfect_subjects(self):
+        """
+        Selects only contigs with perfect subjects, or with
+        subjects that have 100% of their identity contained
+        in the contig (no partial subjects)
+        :return: None
+        """
         filtered_contigs = []
         for contig in self.contigs:
             if contig.is_perfect_subject():
@@ -341,27 +402,54 @@ class ContigContainer(object):
         self.contigs = filtered_contigs
 
     def filter_perfect(self):
+        """
+        Selects only contigs that have perfect alignment scores and are perfect subjects
+        i.e. no gaps, no mismatches, 100% of subjects
+        :return:
+        """
         filtered_contigs = []
         for contig in self.contigs:
-            if contig.is_perfect():
+            if contig.is_perfect_alignment():
                 filtered_contigs.append(contig)
             else:
                 pass
         self.contigs = filtered_contigs
-                # TODO: handle ambiquoous NNNN dna in blast search by eliminating gap_opens, gaps if they are N's
+        # TODO: handle ambiquoous NNNN dna in blast search by eliminating gap_opens, gaps if they are N's
 
     def expand_contigs(self, primers):
+        """
+        Creates PCR products for all contigs from a container of primers
+        e.g. with "P>" = Primer
+        Primer        P>   <P
+        OLD  |--------------------|
+        NEW           P|----------|   (new reverse primer)
+        NEW  |--------|               (two new primers)
+        NEW           P|----|P        (uses forward and reverse primers)
+        NEW  |--------------|P        (new forward primer)
+        :param primers: primer container
+        :return:
+        """
         all_alignments = []
         for contig in self.contigs:
             new_alignments = contig.pcr_products_of_contig(primers)
             all_alignments += new_alignments
         self.contigs += all_alignments
 
-    def break_long_contigs(self, contig_type='product'):
+    def break_long_contigs(self, contig_type=Contig.TYPE_PCR):
+        """
+        Breaks long contigs at endpoints of overlapping contigs
+        e.g. with "X"=break point & "|" = endpoint
+            OLD   |---------------X-------|
+            OLD                   |-----------------|
+            NEW   |---------------|
+            NEW                   |-------|
+        :param contig_type: type label of contig to assign newly created contigs
+        :return: None
+        """
         new_contigs = []
         for c1 in self.contigs:
             for c2 in self.contigs:
-                if c1.q_start < c2.q_end < c1.q_end:
+                if c1.q_start < c2.q_end < c1.q_end:  # if second contig overlaps with first contig
                     n = c1.break_contig(c2.q_end, c1.q_end)
                     n.contig_type = contig_type
                     new_contigs.append(n)
@@ -377,9 +465,7 @@ class ContigContainer(object):
                 for c2 in self.contigs:
                     if c2.q_start < end < c2.q_end:
                         n = c2.break_contig(c2.q_start, end)
-                        n.contig_type = 'product (broken for circularization)'
+                        n.contig_type = c2.contig_type + ' (broken for circularization)'
                         new_contigs.append(n)
-
-
 
         self.contigs += new_contigs

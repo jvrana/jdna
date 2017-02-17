@@ -18,16 +18,15 @@ locations = dict(
     templates="templates"
 )
 
-# design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
+design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
 # design_path = 'designs/hcas9-vpr(sanitized).gb'
-design_path = 'designs/pins-011-pef1a-hcsy4-t2a-dcas9-crpos0-crpos1.gb'
+# design_path = 'designs/pins-011-pef1a-hcsy4-t2a-dcas9-crpos0-crpos1.gb'
 b = BLAST('db', 'templates', design_path, 'database', 'database/results.out', evalue=10.0, ungapped='', penalty=-100, perc_identity=100)
 b.makedbfromdir()
 b.runblast()
 contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
 contig_container.fuse_circular_fragments()
-contig_container.remove_redundant_contigs(include_contigs_contained_within=True, save_linear_contigs=True)
-
+contig_container.remove_redundant_contigs(remove_equivalent=True, remove_within=True, no_removal_if_different_ends=True)
 
 
 # contig_container.filter_perfect()
@@ -44,11 +43,12 @@ primer_container.dump('alignment_viewer/primer_data.json')
 
 
 assembly = AssemblyGraph(primers=primer_container, contigs=contig_container)
-# assembly.expand_contigs(primer_container.contigs)
+assembly.expand_contigs(primer_container.contigs)
 
 
 assembly.break_long_contigs()
-assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
+# assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
+assembly.remove_redundant_contigs(remove_equivalent=True, remove_within=False, no_removal_if_different_ends=True)
 assembly.sort_contigs()
 assembly.dump('alignment_viewer/data.json')
 

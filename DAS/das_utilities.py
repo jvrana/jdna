@@ -44,6 +44,6 @@ def dump_coral_to_json(path, outpath, width=700):
         del d['top']
         del d['bottom']
         with open(outpath, 'w') as handle:
-            json.dump([d], handle)
+            json.dump(d, handle)
 
     to_json(seq, outpath)

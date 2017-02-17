@@ -70,7 +70,6 @@ d3.json('data.json', (data) ->
     .style("stroke-width", 1.5)
 
 
-
   svg.selectAll('rects')
     .data(data.contigs)
     .enter()
@@ -89,37 +88,47 @@ d3.json('data.json', (data) ->
           '<b>QRange:\t</b> ' + d.q_start + '-' + d.q_end + '<br>' +
           '<b>Type:\t</b>' + d.contig_type + '<br>' +
           '<b>Id:\t</b>' + d.contig_id + '<br>' +
-          '<b>SRange:\t</b>' + d.s_start + '-' + d.q_end)
-        .style("visibility", "visible")
-  )
+          '<b>SRange:\t</b>' + d.s_start + '-' + d.s_end + '<br>' +
+          '<b>Ends:\t</b>' + d.start_label + ' ' + d.end_label)
+        .style("visibility", "visible"))
     .on("mousemove", () ->
       tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px"))
     .on("mouseout", (d) ->
       d3.select(this).style('fill', fill)
       tooltip.style("visibility", "hidden")
-  )
+    )
 
-  svg.selectAll('rects')
+#  "Forward Primer"
+  svg.selectAll('forward_primers')
     .data(data.contigs)
     .enter()
     .append('rect')
     .attr('x', (d) -> xScale(d.q_start))
-    .attr('y', (d,i) -> yScale(1))
-    .attr('width', 1)
-    .attr('height', yend - yScale(1))
-    .attr('fill', 'black')
-    .attr('opacity', 0.1)
+    .attr('y', (d,i) -> yScale(i+2))
+    .attr('width', 2)
+    .attr('height', contig_height)
+    .attr('fill', (d) ->
+      c = 'black'
+      if d.start_label == 'new_primer'
+        c = 'red'
+      c)
 
-  svg.selectAll('rects')
+#  Reverse Primer
+  svg.selectAll('forward_primers')
     .data(data.contigs)
     .enter()
     .append('rect')
-    .attr('x', (d) -> xScale(d.q_end))
-    .attr('y', (d,i) -> yScale(1))
-    .attr('width', 1)
-    .attr('height', yend - yScale(1))
-    .attr('fill', 'blue')
-    .attr('opacity', 0.1)
+    .attr('x', (d) -> xScale(d.q_end - 2))
+    .attr('y', (d,i) -> yScale(i+2))
+    .attr('width', 2)
+    .attr('height', contig_height)
+    .attr('fill', (d) ->
+      c = 'black'
+      if d.end_label == 'new_primer'
+        c = 'red'
+      c)
+
+
 
   d3.json('primer_data.json', (primerdata) ->
       svg.selectAll('primer_rects')
@@ -146,12 +155,14 @@ d3.json('data.json', (data) ->
 
 )
 )
-
+primer_fill = (d) ->
+  c = 'black'
+  if d.start_label == 'new_primer'
+    c = 'red'
+  c
 
 fill = (d) ->
-  return 'black' if d.contig_type == 'contig'
-  return 'purple' if d.contig_type == 'product'
-  return 'blue' if d.contig_type == 'gap'
+  return 'purple' if d.contig_type == 'blast'
   return 'orange'
 
 

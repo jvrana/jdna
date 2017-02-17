@@ -304,7 +304,10 @@ class Assembly(ContigContainer):
         a number of fragments.
         """
 
-        p = 1/(1+(len(self.contigs)/5.0)**3)
+        K = 6.0
+        n = 3.0
+
+        p = 1/(1+(len(self.contigs)/K)**n)
         if p <= 0:
             p = 0.0001
         return p
@@ -314,7 +317,8 @@ class Assembly(ContigContainer):
         Calculates total cost in dollars for a given assembly.
         :return:
         """
-        return (self.new_synthesis_cost() + self.get_fragment_cost()) / self.assembly_probability
+        self.cost = (self.new_synthesis_cost() + self.get_fragment_cost()) / self.assembly_probability
+        return self.cost
 
     @staticmethod
     def assembly_condition(left, right):
@@ -605,6 +609,21 @@ class J5Assembly(Assembly):
         print d
         print self.to_dict().keys()
         return self.proxy.DesignAssembly(d)
+
+    ## Not implemented, this remove the possibility of finding a cheaper or more successful solution
+    # def remove_expensive_fragments(self):
+    #     contigs_for_removal = []
+    #     for c1 in self.contigs:
+    #         for c2 in self.contigs:
+    #             if c1 == c2:
+    #                 continue
+    #             if c1 in contigs_for_removal or c2 in contigs_for_removal:
+    #                 continue
+    #
+    #             if c1.equivalent_location(c2):
+    #                 c1_cost = self.get_pcr_cost(c1)
+    #                 c2_cost = self.get_pcr_cost(c2)
+    #                 if c1_cost > c2_cost
 
 
 

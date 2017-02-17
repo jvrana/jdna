@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="myApp">
 <head>
-
+<script src="https://d3js.org/d3.v4.min.js"></script>
 </head>
 <body>
 
 <div ng-controller="LoadPlasmids">
 
     <!--</Assembly Viewer Plasmid>-->
-    <plasmid ng-repeat="plasmid in plasmids" sequencelength="{{plasmid.length}}" plasmidwidth="1200"
+    <plasmid sequencelength="{{plasmid.length}}" plasmidwidth="1200"
              plasmidheight="1200">
 
         <style>
@@ -41,7 +41,7 @@
             }
 
             .purple {
-                fill: rgba(192, 64, 192, 0.75)
+                fill: rgba(192, 64, 192, 0.5)
             }
 
             .blue {
@@ -49,7 +49,7 @@
             }
 
             .trblue {
-                fill: rgba(64, 192, 192, 0.2)
+                fill: rgba(64, 192, 192, 0.5)
             }
 
             .green {
@@ -57,7 +57,7 @@
             }
 
             .gold {
-                fill: rgba(192, 128, 64, 0.75)
+                fill: rgba(192, 128, 64, 0.2)
             }
 
             .marker {
@@ -71,24 +71,24 @@
             .labelline {
                 stroke: #333;
                 stroke-dasharray: 2, 2;
-                stroke-width: 2px;
+                stroke-width: 1px;
             }
         </style>
-        <plasmidtrack trackstyle="fill:#ccc" width="5" radius="{{size}}"></plasmidtrack>
+        <plasmidtrack trackstyle="fill:#ccc" width="5" radius="{{plasmid_size}}"></plasmidtrack>
 
         <!--Plasmid Map-->
-        <plasmidtrack trackstyle="fill:rgba(225,225,225,0.5)" radius="{{size}}">
-            <tracklabel labelstyle="font-size:18px;font-weight:700" text="{{plasmid.name}}"></tracklabel>
-            <tracklabel labelstyle="font-size:10px;font-weight:300" vadjust="20"
+        <plasmidtrack trackstyle="fill:rgba(225,225,225,0.5)" radius="{{plasmid_size}}" width="{{feature_width}}">
+            <tracklabel labelstyle="font-size:18px;font-weight:700" text="{{plasmid.name}}" vadjust='{{-plasmid_size * 1.5}}'></tracklabel>
+            <tracklabel labelstyle="font-size:10px;font-weight:300" vadjust='{{-plasmid_size * 1.5+20}}'
                         text="{{plasmid.length}} bp"></tracklabel>
 
 
             <!--Plasmid Features-->
             <trackmarker ng-repeat="feature in plasmid.features"
-                         start="{{feature.start}}" end="{{feature.stop}}"
+                         start="{{feature.plasmid_start}}" end="{{feature.plasmid_end}}"
                          markerstyle="fill:{{feature.qualifiers.ApEinfo_fwdcolor[0]}}"
-                         vadjust="{{feature.shell*30}}"
-                         wadjust="-10"
+                         vadjust="{{(feature.shell*(feature_width + feature_padding))}}"
+                         wadjust="0"
                          arrowendlength="0"
                          arrowendwidth="0">
                 <!--feature label-->
@@ -106,13 +106,13 @@
                         labelstyle="fill:#999;stroke:none;text-anchor:middle;alignment-baseline:middle;font-size:10px"></trackscale
         </plasmidtrack>
 
-        <!--&lt;!&ndash;Contig Track&ndash;&gt;-->
-        <!--<plasmidtrack radius="200" class="markerlite">-->
+        <!--Contig Track-->
+        <plasmidtrack radius="{{plasmid.size}}" class="markerlite" width="20">
             <!--&lt;!&ndash;Contigs&ndash;&gt;-->
             <!--<trackmarker ng-repeat="contig in contigs.contigs"-->
-                         <!--start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"-->
-                         <!--end="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"-->
-                         <!--valign="inner" wadjust="-20" vadjust="{{7*$index}}"-->
+                         <!--start="{{contig.plasmid_start}}"-->
+                         <!--end="{{contig.plasmid_end}}"-->
+                         <!--valign="inner" wadjust="-15" vadjust="{{$index * 7 + contig_padding*contig.shell}}"-->
                          <!--class="{{ (contig.contig_type === 'product' ? 'purple' : 'gold' ) }}">-->
 
             <!--</trackmarker>-->
@@ -121,51 +121,57 @@
             <!--<trackmarker ng-repeat="primer in primers.contigs"-->
                          <!--start="{{(primer.q_start > plasmid.length ? primer.q_start - plasmid.length : primer.q_start)}}"-->
                          <!--end="{{(primer.q_end > plasmid.length ? primer.q_end - plasmid.length : primer.q_end)}}"-->
-                         <!--markerstyle="stroke:rgba(255,0,0,1);stroke-width:0px" vadjust="0" wadjust="5">-->
-                <!--<markerlabel text="{{primer.subject_acc}}" class="mdlabel red" valign="outer" vadjust="{{(45*7)}}"-->
+                         <!--markerstyle="stroke:rgba(255,0,0,0.5);stroke-width:0px" vadjust="0" wadjust="-9">-->
+                <!--<markerlabel text="{{primer.subject_acc}}" class="mdlabel red" valign="outer" vadjust="250"-->
                              <!--showline="1" linevadjust="-5" lineclass="labelline"></markerlabel>-->
             <!--</trackmarker>-->
-        <!--</plasmidtrack>-->
+        </plasmidtrack>
 
-        <!--&lt;!&ndash;Inner Assembly Track&ndash;&gt;-->
-        <!--<plasmidtrack radius="150" class="markerlite">-->
-            <!--&lt;!&ndash;Primers&ndash;&gt;-->
+        <!--Inner Assembly Track-->
+        <plasmidtrack radius="{{plasmid_size- 60}}" class="markerlite">
+            <tracklabel labelstyle="font-size:18px;font-weight:700" text="${{assembly.cost.toFixed(2)}}" vadjust="-20"></tracklabel>
+            <tracklabel labelstyle="font-size:10px;font-weight:300" vadjust="0" text="Assembly Probability: 75%"></tracklabel>
+            <tracklabel labelstyle="font-size:10px;font-weight:300" vadjust="10" text="New Synth Cost: 1%"></tracklabel>
+            <tracklabel labelstyle="font-size:10px;font-weight:300" vadjust="20" text="Primer Cost: 20%"></tracklabel>
+            <tracklabel labelstyle="font-size:10px;font-weight:300" vadjust="30" text="PCR Cost: 20%"></tracklabel>
+            <!--Primers-->
 
-            <!--&lt;!&ndash;assembly&ndash;&gt;-->
-            <!--<trackmarker-->
-                    <!--ng-repeat="contig in assembly.contigs"-->
-                    <!--start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"-->
-                    <!--end="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"-->
-                    <!--markerstyle="fill:{{color()}}" wadjust="10" vadjust="0">-->
-                <!--&lt;!&ndash;region boundary&ndash;&gt;-->
-                <!--<trackmarker-->
-                        <!--start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"-->
-                        <!--markerstyle="stroke:rgba(128,64,64,0.8)"-->
-                        <!--class="boundary"-->
-                        <!--wadjust="20"-->
-                        <!--valign="inner">-->
-                    <!--<markerlabel class="smlabel red"-->
-                                 <!--text="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"-->
-                                 <!--vadjust="-75" valign="inner">-->
+            <!--assembly-->
+            <trackmarker
+                    ng-repeat="contig in assembly.contigs"
+                    start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"
+                    end="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"
+                    markerstyle="fill:{{color()}}" wadjust="0" vadjust="0">
+                <markerlabel type="path" class="smlabel white" text="{{contig.subject_acc}}"></markerlabel>
+                <!--region boundary-->
+                <trackmarker
+                        start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"
+                        markerstyle="stroke:rgba(128,64,64,0.8)"
+                        class="boundary"
+                        wadjust="20"
+                        valign="inner">
+                    <markerlabel class="smlabel red"
+                                 text="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"
+                                 vadjust="-10" valign="inner">
 
-                    <!--</markerlabel>-->
-                <!--</trackmarker>-->
-                <!--<trackmarker start="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"-->
-                             <!--markerstyle="stroke:rgba(128,64,64,0.8)"-->
-                             <!--class="boundary"-->
-                             <!--wadjust="-100"-->
-                             <!--valign="inner">-->
-                    <!--<markerlabel-->
-                            <!--class="smlabel red"-->
-                            <!--text="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"-->
-                            <!--vadjust="-75" valign="inner">-->
+                    </markerlabel>
+                </trackmarker>
+                <trackmarker start="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"
+                             markerstyle="stroke:rgba(128,64,64,0.8)"
+                             class="boundary"
+                             wadjust="-0"
+                             valign="inner">
+                    <markerlabel
+                            class="smlabel red"
+                            text="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"
+                            vadjust="-25" valign="inner">
 
-                    <!--</markerlabel>-->
-                <!--</trackmarker>-->
-            <!--</trackmarker>-->
+                    </markerlabel>
+                </trackmarker>
+            </trackmarker>
 
 
-        <!--</plasmidtrack>-->
+        </plasmidtrack>
 
 
     </plasmid>
@@ -177,3 +183,4 @@
 <script src="js/LoadPlasmidCoffee.js"></script>
 </body>
 </html>
+<script src="js/PlasmidD3.js"></script>

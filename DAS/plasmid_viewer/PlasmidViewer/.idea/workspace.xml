@@ -2,36 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9894452f-3460-4f90-9b14-72b575fe8b3d" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/LoadPlasmidCoffee.coffee" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../../todo.md" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/example.html" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../assembly_parameters/results.zip" afterPath="$PROJECT_DIR$/../../assembly_parameters/results.zip" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../assembly_parameters/sequences.zip" afterPath="$PROJECT_DIR$/../../assembly_parameters/sequences.zip" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../database/db.nhr" afterPath="$PROJECT_DIR$/../../database/db.nhr" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../database/db.nin" afterPath="$PROJECT_DIR$/../../database/db.nin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../database/db.nsq" afterPath="$PROJECT_DIR$/../../database/db.nsq" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../database/primerdb.nin" afterPath="$PROJECT_DIR$/../../database/primerdb.nin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../../.idea/jdna.iml" afterPath="$PROJECT_DIR$/../../../.idea/jdna.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../../.idea/libraries/Generated_files.xml" afterPath="$PROJECT_DIR$/../../../.idea/libraries/Generated_files.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../../.idea/misc.xml" afterPath="$PROJECT_DIR$/../../../.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../alignment_viewer/baseviewer.js" afterPath="$PROJECT_DIR$/../../alignment_viewer/baseviewer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../alignment_viewer/bestassembly.json" afterPath="$PROJECT_DIR$/../../alignment_viewer/bestassembly.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../alignment_viewer/data.json" afterPath="$PROJECT_DIR$/../../alignment_viewer/data.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../alignment_viewer/primer_data.json" afterPath="$PROJECT_DIR$/../../alignment_viewer/primer_data.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../assembly_parameters/parts.csv" afterPath="$PROJECT_DIR$/../../assembly_parameters/parts.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../assembly_parameters/sequences.csv" afterPath="$PROJECT_DIR$/../../assembly_parameters/sequences.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../assembly_parameters/target.csv" afterPath="$PROJECT_DIR$/../../assembly_parameters/target.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../das_assembly.py" afterPath="$PROJECT_DIR$/../../das_assembly.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../das_contig.py" afterPath="$PROJECT_DIR$/../../das_contig.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../das_core.py" afterPath="$PROJECT_DIR$/../../das_core.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../das_seqio.py" afterPath="$PROJECT_DIR$/../../das_seqio.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../database/db.fsa" afterPath="$PROJECT_DIR$/../../database/db.fsa" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../database/primerresults.out" afterPath="$PROJECT_DIR$/../../database/primerresults.out" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../database/results.out" afterPath="$PROJECT_DIR$/../../database/results.out" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/loadplasmid.js" afterPath="$PROJECT_DIR$/js/loadplasmid.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/plasmiddata.json" afterPath="$PROJECT_DIR$/js/plasmiddata.json" />
     </list>
     <ignored path="PlasmidViewer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -303,16 +276,16 @@
       <updated>1487043138915</updated>
       <workItem from="1487043140176" duration="8660000" />
       <workItem from="1487053563667" duration="1256000" />
-      <workItem from="1487180005465" duration="2013000" />
+      <workItem from="1487180005465" duration="2034000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="11929000" />
+    <option name="totallyTimeSpent" value="11950000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="165" y="32" width="1400" height="966" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
