@@ -18,9 +18,14 @@ locations = dict(
     templates="templates"
 )
 
-design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
+# design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
 # design_path = 'designs/hcas9-vpr(sanitized).gb'
-# design_path = 'designs/pins-011-pef1a-hcsy4-t2a-dcas9-crpos0-crpos1.gb'
+design_path = 'designs/pins-011-pef1a-hcsy4-t2a-dcas9-crpos0-crpos1.gb'
+
+# Sanitize all filename
+sanitize_filenames('templates')
+sanitize_filenames('designs')
+
 b = BLAST('db', 'templates', design_path, 'database', 'database/results.out', evalue=10.0, ungapped='', penalty=-100, perc_identity=100)
 b.makedbfromdir()
 b.runblast()
@@ -90,6 +95,7 @@ with open('j5_credentials.json') as handle:
 j5.all()
 j5.decode_all_to('assembly_parameters')
 r = j5.submit(**credentials)
+print r
 with open('assembly_parameters/results.zip', 'w') as handle:
     handle.write(J5Assembly.decode64(r['encoded_output_file']))
 # Parse assembly

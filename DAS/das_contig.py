@@ -150,13 +150,11 @@ class Contig(QueryRegion):
                 if s == self.q_start and e == self.q_end:
                     continue
             try:
-                new_contig = self.break_contig(s, e)
+                new_contig = self.break_contig(s, e, start_label=start_label, end_label=end_label)
                 if contig_type is not None:
                     new_contig.contig_type = contig_type
                 if circular is not None:
                     new_contig.circular = circular
-                new_contig.start_label = start_label
-                new_contig.end_label = end_label
                 new_contig.parent_id = self.contig_id
                 contigs.append(new_contig)
             except ContigError:
@@ -173,7 +171,8 @@ class Contig(QueryRegion):
             return self.q_start < pos < self.q_end
 
     def overlaps(self, other, inclusive=True):
-        pass
+        return other.q_pos_within(self.q_start, inclusive=inclusive) or \
+               other.q_pos_within(self.q_end, inclusive=inclusive)
 
     def is_within(self, other, inclusive=True):
         return other.q_pos_within(self.q_start, inclusive=inclusive) and \
@@ -182,12 +181,15 @@ class Contig(QueryRegion):
     # def is_within(self, other, inclusive=True):
     #     return self.q_start >= other.q_start and self.q_end <= other.q_end
 
+    # TODO: fix subject start and end
     def break_contig(self, q_start, q_end, start_label=None, end_label=None):
         """
         Breaks a contig at query start and end; copies over information
         from self contig
         :param q_start:
         :param q_end:
+        :param start_label:
+        :param end_label:
         :return:
         """
         if q_start > q_end:
@@ -206,11 +208,17 @@ class Contig(QueryRegion):
         if start_label is not None:
             new_contig.start_label = start_label
         else:
-            new_contig.start_label = Contig.NEW_PRIMER
+            if new_contig.q_start == self.q_start:
+                new_contig.start_label = self.start_label
+            else:
+                new_contig.start_label = Contig.NEW_PRIMER
         if end_label is not None:
             new_contig.end_label = end_label
         else:
-            new_contig.end_label = Contig.NEW_PRIMER
+            if new_contig.q_end == self.q_end:
+                new_contig.end_label = self.end_label
+            else:
+                new_contig.end_label = Contig.NEW_PRIMER
         return new_contig
 
     def is_perfect_subject(self):
@@ -224,21 +232,23 @@ class Contig(QueryRegion):
     def pcr_products_of_contig(self, primers):
         """
 
+        :param primers:
+        :return:
         """
         primers = self.get_primers_within_bounds(primers)
 
         rev_primer_pos = []
         fwd_primer_pos = []
-        new_fwd_primer_pos = [(self.q_start, "new_primer")]
-        new_rev_primer_pos = [(self.q_end, "new_primer")]
+        new_fwd_primer_pos = [(self.q_start, None)]
+        new_rev_primer_pos = [(self.q_end, None)]
         for primer in primers:
             direction = primer.subject_strand
             if direction == 'plus':
                 fwd_primer_pos.append((primer.q_start, primer.contig_id))
-                new_rev_primer_pos.append((primer.q_end, "new_primer"))
+                new_rev_primer_pos.append((primer.q_end, None))
             if direction == 'minus':
                 rev_primer_pos.append((primer.q_end, primer.contig_id))
-                new_fwd_primer_pos.append((primer.q_start, "new_primer"))
+                new_fwd_primer_pos.append((primer.q_start, None))
         contigs = []
         contigs += self.divide_contig(fwd_primer_pos, rev_primer_pos, include_contig=False,
                                       contig_type=Contig.TYPE_PCR, circular=False)
@@ -449,15 +459,14 @@ class ContigContainer(object):
         new_contigs = []
         for c1 in self.contigs:
             for c2 in self.contigs:
-                if c1.q_start < c2.q_end < c1.q_end:  # if second contig overlaps with first contig
-                    n = c1.break_contig(c2.q_end, c1.q_end)
-                    n.contig_type = contig_type
-                    new_contigs.append(n)
-                if c1.q_start < c2.q_start < c1.q_end:
-                    n = c1.break_contig(c1.q_start, c2.q_start)
-                    n.contig_type = contig_type + '(long contig broken)'
-                    new_contigs.append(n)
-        print len(new_contigs)
+                if c1.q_pos_within(c2.q_end, inclusive=False): # if second contig overlaps with first contig
+                    new_contigs.append(c1.break_contig(c1.q_start, c2.q_end, start_label=None, end_label=None))
+                    new_contigs.append(c1.break_contig(c2.q_end, c1.q_end, start_label=None, end_label=None))
+                if c1.q_pos_within(c2.q_start, inclusive=False):
+                    new_contigs.append(c1.break_contig(c1.q_start, c2.q_start, start_label=None, end_label=None))
+                    new_contigs.append(c1.break_contig(c2.q_start, c1.q_end, start_label=None, end_label=None))
+        for n in new_contigs:
+            n.contig_type = contig_type + ' (broken long contig)'
 
         for c1 in self.contigs:
             end = c1.q_start + self.meta.query_length
@@ -465,7 +474,7 @@ class ContigContainer(object):
                 for c2 in self.contigs:
                     if c2.q_start < end < c2.q_end:
                         n = c2.break_contig(c2.q_start, end)
-                        n.contig_type = c2.contig_type + ' (broken for circularization)'
+                        n.contig_type = contig_type + ' (broken for circularization)'
                         new_contigs.append(n)
 
         self.contigs += new_contigs

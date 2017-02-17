@@ -149,6 +149,30 @@ def create_contigs(list_of_start_and_ends):
         contigs.append(c)
     return contigs
 
+def test_contig_overlaps():
+    contig1 = Contig(**contig_example)
+    contig2 = Contig(**contig_example)
+
+    contig1.q_start = 1000
+    contig1.q_end = 2000
+    contig2.q_start = 2001
+    contig2.q_end = 3000
+
+    assert not contig1.overlaps(contig2)
+    assert not contig2.overlaps(contig1)
+
+    contig2.q_start = contig1.q_end
+    assert not contig1.overlaps(contig2, inclusive=False)
+    assert not contig2.overlaps(contig1, inclusive=False)
+    assert contig1.overlaps(contig2, inclusive=True)
+    assert contig2.overlaps(contig1, inclusive=True)
+
+    contig2.q_start = 1999
+    assert contig1.overlaps(contig2, inclusive=True)
+    assert contig2.overlaps(contig1, inclusive=True)
+    assert contig1.overlaps(contig2, inclusive=False)
+    assert contig2.overlaps(contig1, inclusive=False)
+
 def test_contig_container():
     contigs = [
         [100, 200],
@@ -211,3 +235,16 @@ def test_contig_container():
     c.remove_redundant_contigs(remove_within=True, remove_equivalent=True, no_removal_if_different_ends=False)
     assert len(c.contigs) == l - 1
     assert not new_contig in c.contigs
+
+
+def test_divide_contig():
+    pass
+
+def test_break_long_contig():
+    pass
+
+def test_pcr_products():
+    pass
+
+def test_expand():
+    pass

@@ -58,6 +58,15 @@ def format_decorator(f):
 def determine_format(filename, format=None):
     return format
 
+def sanitize_filenames(dir):
+    replacements = [(' ', '_')]
+    for filename in glob(os.path.join(dir, '*')):
+        if os.path.isfile(filename):
+            print filename
+            for r in replacements:
+                new_filename = re.sub(r[0], r[1], filename)
+                os.rename(filename, new_filename)
+
 # TODO: locus_ID gets truncated, fix this...
 @format_decorator
 def open_sequence(filename, format=None, **fmt):
