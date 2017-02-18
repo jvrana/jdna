@@ -48,8 +48,8 @@ class QueryRegion(object):
         self.query_length = kwargs['query_length']
         self.assign_id()
 
-    def get_span(self):
-        return self.q_end - self.q_start
+    def get_length(self):
+        return self.q_end - self.q_start + 1
 
     def json(self):
         return self.__dict__
@@ -68,6 +68,7 @@ class Contig(QueryRegion):
     NEW_PRIMER = "new_primer"
     DIRECT_END = "direct"
 
+    START_INDEX = 1 # Convention is carried over from BLAST results, BE CAREFUL!
 
     DEFAULT_END = NEW_PRIMER
 
@@ -77,6 +78,35 @@ class Contig(QueryRegion):
     TYPE_PCR = 'product'
     sequence_options = ['coral', 'seqrecord']
     optional_args = ['circular', 'filename'] + sequence_options
+
+    @staticmethod
+    def create_default_contig():
+        return Contig(
+            q_start=Contig.START_INDEX,
+            q_end=Contig.START_INDEX,
+            s_end=Contig.START_INDEX,
+            s_start=Contig.START_INDEX,
+            identical=0,
+            query_acc='',
+            subject_acc='',
+            query_seq='',
+            contig_type='',
+            start_label=Contig.DEFAULT_END,
+            end_label=Contig.DEFAULT_END,
+            gaps=0,
+            bit_score=0,
+            quality=0,
+            subject_strand='',
+            evalue=0,
+            gap_opens=0,
+            filename='',
+            subject_seq='',
+            score=0,
+            subject_length=0,
+            query_length=0,
+            alignment_length=0,
+            circular=False
+        )
 
     def __init__(self, **kwargs):
         super(Contig, self).__init__(**kwargs)
@@ -199,7 +229,6 @@ class Contig(QueryRegion):
     # def is_within(self, other, inclusive=True):
     #     return self.q_start >= other.q_start and self.q_end <= other.q_end
 
-    # TODO: fix subject start and end
     def break_contig(self, q_start, q_end, start_label=None, end_label=None):
         """
         Breaks a contig at query start and end; copies over information
@@ -221,8 +250,8 @@ class Contig(QueryRegion):
 
 
 
-        new_contig.s_start = convert_circular_position(self.s_start + (q_start - self.q_start), self.subject_length)
-        new_contig.s_end = convert_circular_position(self.s_end - (self.q_end - q_end), self.subject_length)
+        new_contig.s_start = convert_circular_position(self.s_start + (q_start - self.q_start), self.subject_length, 1)
+        new_contig.s_end = convert_circular_position(self.s_end - (self.q_end - q_end), self.subject_length, 1)
 
 
 
@@ -295,8 +324,6 @@ class Contig(QueryRegion):
 
         return filter(lambda x: primer_within_bounds(x), primers)
 
-        # TODO: generate additional pcr products that could be homologous to existing primer
-        # TODO: compute alignment_graph for each 'contig'
 
     def ends_equivalent(self, other):
         return self.start_label == other.start_label and \
@@ -308,6 +335,32 @@ class Contig(QueryRegion):
             del j[x]
         return j
 
+
+class PerfectPrimerContig(Contig):
+    """
+    A perfect contig with no gaps (i.e. a perfect primer)
+    """
+    def __init__(self, query_acc, q_start, q_end, subject_acc, s_start, s_end, strand, filename):
+        super(PerfectPrimerContig, self).__init__(
+            query_acc=query_acc,
+            subject_acc=subject_acc,
+            q_start=q_start,
+            q_end=q_end,
+            s_start=s_start,
+            s_end=s_end,
+            identical=s_end-s_start+1,
+            contig_type="perfect_contig",
+            start_label=None,
+            end_label=None,
+            gaps=0,
+            bit_score=0.0,
+            quality=1.0,
+            subject_strand=strand,
+            evalue=0.0,
+            gap_opens=0,
+            filename=filename,
+            subject_seq=''
+        )
 
 class ContigContainer(object):
     def __init__(self, meta=None, contigs=None):
@@ -385,11 +438,14 @@ class ContigContainer(object):
             return l.subject_acc == r.subject_acc and \
                    l.q_end + 1 == r.q_start and \
                    l.subject_length == l.s_end and \
-                   l.circular and r.circular
+                   l.circular and r.circular and \
+                    l in self.contigs and \
+                    r in self.contigs
 
         def fuse(l, r):
             l.q_end = r.q_end
             l.s_end = r.s_end
+
             keys_to_sum = 'alignment_length, gap_opens, gaps, identical, score'.split(', ')
             for k in keys_to_sum:
                 l.__dict__[k] += r.__dict__[k]
@@ -469,7 +525,17 @@ class ContigContainer(object):
             all_alignments += new_alignments
         self.contigs += all_alignments
 
-    def break_long_contigs(self, contig_type=Contig.TYPE_PCR):
+    def break_long_contigs(self):
+        """
+        Breaks up contigs whose length is greater than the allowable subject length
+        :return:
+        """
+        new_contigs = []
+        for c in self.contigs:
+            if c.get_length
+
+
+    def break_contigs_at_endpoints(self, contig_type=Contig.TYPE_PCR):
         """
         Breaks long contigs at endpoints of overlapping contigs
         e.g. with "X"=break point & "|" = endpoint

@@ -11,6 +11,7 @@ Description:
 import shlex
 import subprocess
 from Bio import SeqIO
+from Bio.Seq import Seq
 import os
 import json
 import coral
@@ -134,3 +135,12 @@ def gb_to_fsa(input_path, output_path):
 def seq_is_circular(path):
     d = coral.seqio.read_dna(path)
     return d.circular
+
+
+def primers_json_to_fasta(json_file, output_path):
+    seqs = []
+    pjs = json.load(json_file)
+    for primer_json in pjs:
+        seq = primer_json['Overhang Sequence'] + primer_json['Anneal Sequence']
+        seqs.append(Seq())
+

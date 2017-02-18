@@ -1,6 +1,5 @@
 # TODO
 1. Use different parser, store all files as json files for communication
-1. (ALMOST) Update features on plasmid map viewer
 2. Update j5 Interface (correct the XMLRPCLIB errors
 4. Update BLAST so that temp databases are used instead
 5. Merge j5 parameter file with cost function file
@@ -9,11 +8,9 @@
 5. Deploy Django user interface
 6. Deploy JBEI integration
 7. Deploy JBEI on EC2 instance (or on Biofab AWS)
-8. !!!!!!! Fix subject start and end for products
 8. !!!!!!! Implement RC query searches as well if query is on opposite strand
 9. Add true circular subject search
 9. Fix remove redundant contigs ('except contig_type')
-10. Primer ends fix
 11. Separate out Fragments (used directly in a reaction) from plasmids
 (that must be pcr amplified)
 12. Find sequencing primers for junctions, account for that in the cost
@@ -23,3 +20,13 @@
 16. Speed improvments for high complexity (high Query, low length) assemblies
 17. Implement costs and part quality for backtracing
 18. Implement 'robustness' or assemblies that are robust against failings
+19. Direct sequences get internal preferred overhang in j5
+20. J5 Output Parser
+21. Check J5 and original goal have same sequence using jDNA
+22. Better formalization of cost structure
+23. Suggest long contig breaks
+24. Refactor CONTIG creation such that you add a query and subject and it calculates the length, start, ends, etc. with(json_dna1, json_dna2, position, direction))
+25. Fix condition in which origin overlaps fragmetns aren't used
+26. Project inputs and outpus should be JSON only, no more genbank files
+27. Create standardized JSON format for BenchlingAPI, JBEI API (mixture of TeseleaGen and Benchling JSON)
+28. Fix convention in which BLAST results start at index 1 but everything else starts at index 0

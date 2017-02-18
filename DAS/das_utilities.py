@@ -15,11 +15,11 @@ import json
 
 
 # TODO: add this to a new json dna class for subjects and queries
-def convert_circular_position(position, length):
-    if position >= length:
-        position = 0
-    if position < 0:
-        position = position + length
+def convert_circular_position(position, length, start_index):
+    if position >= length + start_index:
+        position = start_index
+    if position < start_index:
+        position = position + length + start_index
     return position
 
 
@@ -57,3 +57,18 @@ def dump_coral_to_json(path, outpath, width=700):
             json.dump(d, handle)
 
     to_json(seq, outpath)
+
+def dna_complement(sequence):
+    d1 = 'atgcn'
+    d2 = 'tacgn'
+    dic = dict(
+        zip(
+            list(d1.lower()) + list(d1.upper()),
+            list(d2.lower()) + list(d2.upper())
+        )
+    )
+    rc = ''.join([dic[x] for x in sequence])
+    return rc
+
+def dna_reverse_complement(sequence):
+    return dna_complement(sequence)[::-1]

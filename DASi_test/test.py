@@ -9,6 +9,8 @@ Description:
 '''
 
 from DAS.das_contig import *
+from DAS.das_utilities import *
+from DAS.das_blast import *
 import pytest
 import numpy as np
 
@@ -41,6 +43,31 @@ contig_example = {
         }
 
 
+
+def test_circular_pos():
+    pos = 4
+    length = 1000
+    start_index = 0
+    new = convert_circular_position(pos, length, start_index)
+    assert new == pos
+
+    pos = 4
+    length = 1000
+    start_index = 0
+    new = convert_circular_position(length + start_index, length, start_index)
+    assert new == start_index
+
+    pos = 4
+    length = 1000
+    start_index = 1
+    new = convert_circular_position(pos, length, start_index)
+    assert new == pos
+
+    pos = 4
+    length = 1000
+    start_index = 1
+    new = convert_circular_position(length + start_index, length, start_index)
+    assert new == start_index
 
 def test_contig_within():
 
@@ -172,6 +199,14 @@ def test_break_contig():
     n = contig1.break_contig(contig1.q_start + 100, contig1.q_end - 100, start_label=None, end_label="new2")
     assert n.start_label == Contig.DEFAULT_END
     assert n.end_label == "new2"
+
+def test_subject_break_contig():
+    contig1 = Contig(**contig_example)
+    contig1.q_start = 1000
+    contig1.q_end = 2000
+    contig1.s_start = 100
+    contig1.s_end = 2100
+    contig1.subject_length = 2000
 
 def create_contigs(list_of_start_and_ends):
     contigs = []
@@ -351,3 +386,51 @@ def test_pcr_products():
 
 def test_expand():
     pass
+
+def test_rc():
+    seq =   'agtcGaTcgaN'
+    c_seq = 'tcagCtAgctN'
+    rc_seq = c_seq[::-1]
+    assert c_seq == dna_complement(seq)
+    assert rc_seq == dna_reverse_complement(seq)
+
+def test_reindexed_templates():
+    b = BLAST('db', 'data/blast_test/reindexed_template', 'data/blast_test/reindexed_design/test.gb', 'data/blast_results', 'data/blast_results/results.out', evalue=10.0, ungapped='',
+              penalty=-100, perc_identity=100)
+    b.makedbfromdir()
+    b.runblast()
+    contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
+    assert len(contig_container.contigs) > 1
+
+    contig_container.fuse_circular_fragments()
+    contig_container.remove_redundant_contigs(remove_equivalent=True, remove_within=True,
+                                              no_removal_if_different_ends=True)
+    assert len(contig_container.contigs) == 1
+    c = contig_container.contigs[0]
+    assert c.q_start == 1
+    assert c.q_end == c.query_length
+    assert 1 <= c.s_start <= c.subject_length
+    assert 1 <= c.s_end <= c.subject_length
+
+
+
+def test_blast_same():
+    b = BLAST('db', 'data/blast_test/reindexed_template', 'data/blast_test/reindexed_design/test_reindexed.gb', 'data/blast_results', 'data/blast_results/results.out', evalue=10.0, ungapped='',
+              penalty=-100, perc_identity=100)
+    b.makedbfromdir()
+    b.runblast()
+    contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
+    contig_container.fuse_circular_fragments()
+    contig_container.remove_redundant_contigs(remove_within=True)
+
+    contigs = contig_container.contigs
+    for c in contigs:
+        print c.subject_acc, c.q_start, c.q_end, c.query_length, c.s_start, c.s_end, c.subject_length
+
+    assert len(contig_container.contigs) == 2 # because its circular
+
+
+def test_pseudo_blast():
+    design_path = 'data/blast_test/designs/pmodkan-ho-pact1-z4-er-vpr.gb'
+    p = BLAST('primerdb', 'data/blast_test/primers', design_path, '', 'database/primerresults.out')
+    p.perfect_matches()

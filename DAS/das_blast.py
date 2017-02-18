@@ -8,6 +8,7 @@ Description:
 
 '''
 from das_seqio import *
+from das_utilities import *
 from das_contig import Contig, ContigContainer, ContigContainerMeta
 import re
 from copy import copy
@@ -79,19 +80,59 @@ class BLAST(object):
         self.db_input_path = fasta
         return self.db
 
-
-    def makedbfromdir(self):
-        '''
-        Concatenates sequencing files from the db_in_dir directory and
-        makes a database from the resulting fasta file
-        :return: output_path to blast database
-        '''
+    def concate_db_to_fsa(self):
+        """
+        Concatenates sequences in self.db into a .fsa file while saving important metadata
+        :return:
+        """
         out = self.db + '.fsa'
         fasta, seqs, metadata = concat_seqs(self.db_in_dir, out, savemeta=False)
         self.db_input_metadata = metadata
         self.seqs = seqs
+        return out, seqs, metadata
+
+    def makedbfromdir(self):
+        """
+        Concatenates sequencing files from the db_in_dir directory and
+        makes a database from the resulting fasta file
+        :return: output_path to blast database
+        """
+        out, seqs, metadata = self.concate_db_to_fsa()
         return self.makedb(out)
 
+
+
+    def perfect_matches(self, rc=True):
+        """
+        Pseudo-blast for finding perfect sequence matches (i.e. primers)
+        :param rc:
+        :return:
+        """
+        out, seqs, metadata = self.concate_db_to_fsa()
+        query_seq = open_sequence(self.query)[0].seq
+        query_seq = re.sub('[nN]', '.', query_seq)
+
+        fwd_matches = []
+        rev_matches = []
+        for seq in seqs:
+            seq = seq.seq
+            try:
+                rc_seq = dna_reverse_complement(str(seq))
+            except KeyError as e:
+                print e
+                continue
+            seq = re.sub('[nN]', '.', seq)
+            rc_seq = re.sub('[nN]', '.', rc_seq)
+
+            for match in re.finditer(str(seq), str(query_seq)):
+                c = Contig.create_default_contig()
+                c.q_start = match.start()
+                c.q_end = match.end()
+                c.strand = 'plus'
+                c.subject_acc = ''
+            if rc:
+                for rev_match in re.finditer(str(rc_seq), str(query_seq)):
+                    pass
 
     def parse_results(self, contig_type=None, delimiter=','):
         '''

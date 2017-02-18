@@ -91,8 +91,8 @@
                          wadjust="0"
                          arrowendlength="0"
                          arrowendwidth="0">
-                <!--feature label-->
-                <!--<markerlabel type="path" class="mdlabel black" text="{{feature.name}}"></markerlabel>-->
+                feature label
+                <markerlabel type="path" class="smlabel black" text="{{feature.name}}"></markerlabel>
                 <!--<trackmarker start="{{feature.start}}" end="{{feature.stop}}" markerstyle="fill:rgba(255,221,238,0.6)" wadjust="-5" vadjust="25"></trackmarker>-->
                 <!--<trackmarker start="{{feature.start}}" markerstyle="stroke:rgba(128,64,64,0.8)" class="boundary" wadjust="20">-->
                 <!--<markerlabel class="smlabel red" text="{{feature.start}}" vadjust="30"></markerlabel>-->
@@ -117,14 +117,14 @@
 
             <!--</trackmarker>-->
 
-            <!--&lt;!&ndash;Primers&ndash;&gt;-->
-            <!--<trackmarker ng-repeat="primer in primers.contigs"-->
-                         <!--start="{{(primer.q_start > plasmid.length ? primer.q_start - plasmid.length : primer.q_start)}}"-->
-                         <!--end="{{(primer.q_end > plasmid.length ? primer.q_end - plasmid.length : primer.q_end)}}"-->
-                         <!--markerstyle="stroke:rgba(255,0,0,0.5);stroke-width:0px" vadjust="0" wadjust="-9">-->
-                <!--<markerlabel text="{{primer.subject_acc}}" class="mdlabel red" valign="outer" vadjust="250"-->
-                             <!--showline="1" linevadjust="-5" lineclass="labelline"></markerlabel>-->
-            <!--</trackmarker>-->
+            <!--Primers-->
+            <trackmarker ng-repeat="primer in primers.contigs"
+                         start="{{(primer.q_start > plasmid.length ? primer.q_start - plasmid.length : primer.q_start)}}"
+                         end="{{(primer.q_end > plasmid.length ? primer.q_end - plasmid.length : primer.q_end)}}"
+                         markerstyle="stroke:rgba(255,0,0,0.5);stroke-width:0px" vadjust="0" wadjust="-9">
+                <markerlabel text="{{primer.subject_acc}}" class="mdlabel red" valign="outer" vadjust="250"
+                             showline="1" linevadjust="-5" lineclass="labelline"></markerlabel>
+            </trackmarker>
         </plasmidtrack>
 
         <!--Inner Assembly Track-->

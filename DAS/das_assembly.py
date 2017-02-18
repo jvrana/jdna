@@ -172,17 +172,6 @@ class Assembly(ContigContainer):
     def can_extend(self):
         return self.assembly_span() < self.meta.query_length + Assembly.MAX_HOMOLOGY
 
-    def fill_contig_gaps(self):
-        pairs = self.get_assembly_pairs()
-        new_contigs = []
-        for l, r in pairs:
-            new_contigs.append(l)
-            q = QueryRegion(query_acc=l.query_acc, query_length=l.query_length, q_start=l.q_end, q_end=r.q_start)
-            if q.get_span() > 0:
-                new_contigs.append(q)
-        new_contigs.append(pairs[-1][1])  # append last contig
-        self.contigs = new_contigs
-
     @staticmethod
     def gap(left, right):
         """

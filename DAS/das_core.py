@@ -12,15 +12,18 @@ from das_assembly import *
 from das_blast import *
 from das_utilities import *
 
+
+
 locations = dict(
     database="database",
     designs="designs",
     templates="templates"
 )
 
-# design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
+design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
 # design_path = 'designs/hcas9-vpr(sanitized).gb'
-design_path = 'designs/pins-011-pef1a-hcsy4-t2a-dcas9-crpos0-crpos1.gb'
+# design_path = 'designs/pins-011-pef1a-hcsy4-t2a-dcas9-crpos0-crpos1.gb'
+
 
 # Sanitize all filename
 sanitize_filenames('templates')
@@ -34,10 +37,16 @@ contig_container.fuse_circular_fragments()
 contig_container.remove_redundant_contigs(remove_equivalent=True, remove_within=True, no_removal_if_different_ends=True)
 
 
+
 # contig_container.filter_perfect()
 
+# primers = open_sequence('primers/primers.fasta')
+# print str(primers[0])
+# exit()
+
+
 # generate_random_primers(open_sequence(design_path)[0], 'primers/primers.fasta', num_primers=2)
-p = BLAST('primerdb', 'primers', design_path, 'database', 'database/primerresults.out', evalue=1000.0, word_size=15) #, ungapped='', penalty=-100)
+p = BLAST('primerdb', 'primers', design_path, 'database', 'database/primerresults.out', evalue=1000.0, task='blastn-short') #, word_size=15, perc_identity=100, penalty=-100, ungapped='') #, ungapped='', penalty=-100)
 p.makedbfromdir()
 p.runblast()
 primer_container = p.parse_results(contig_type=Contig.TYPE_PRIMER)
@@ -51,7 +60,7 @@ assembly = AssemblyGraph(primers=primer_container, contigs=contig_container)
 assembly.expand_contigs(primer_container.contigs)
 
 
-assembly.break_long_contigs()
+assembly.break_contigs_at_endpoints()
 # assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
 assembly.remove_redundant_contigs(remove_equivalent=True, remove_within=False, no_removal_if_different_ends=True)
 assembly.sort_contigs()
