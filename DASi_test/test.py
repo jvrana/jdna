@@ -120,12 +120,14 @@ def test_break_contig():
     with pytest.raises(ContigError) as e:
         contig1.break_contig(999, 1500)
 
+    contig1.break_contig(contig1.q_start, contig1.q_start+1)
+    contig1.break_contig(contig1.q_end-1, contig1.q_end)
     x = np.random.randint(contig1.q_start, contig1.q_end, size=20)
     y = np.random.randint(contig1.q_start, contig1.q_end, size=20)
 
     for s, e in zip(x, y):
         if s > e:
-            with pytest.raises(ContigError) as e:
+            with pytest.raises(ContigError):
                 contig1.break_contig(s, e)
         else:
             n = contig1.break_contig(s,e)
@@ -133,12 +135,43 @@ def test_break_contig():
             assert n.q_end == e
             assert n.contig_id > contig1.contig_id
             assert n.parent_id == contig1.contig_id
+            assert n.subject_length == contig1.subject_length
+            assert 0 <= n.s_start <= n.subject_length
+            assert 0 <= n.s_end <= n.subject_length
 
     with pytest.raises(ContigError) as e:
         contig1.break_contig(contig1.q_start - 1, contig1.q_end)
 
     with pytest.raises(ContigError) as e:
         contig1.break_contig(contig1.q_start, contig1.q_end + 1)
+
+    n = contig1.break_contig(1010, 1010)
+    assert n.q_start == 1010
+    assert n.q_end == 1010
+
+    with pytest.raises(ContigError):
+        contig1.break_contig(contig1.q_start+1, contig1.q_start-1)
+
+    with pytest.raises(ContigError):
+        contig1.break_contig(contig1.q_start+10, contig1.q_start+9)
+
+    with pytest.raises(ContigError):
+        contig1.break_contig(contig1.q_start-10, contig1.q_start-1)
+
+    with pytest.raises(ContigError):
+        contig1.break_contig(contig1.q_start-10, contig1.q_start+1)
+
+    n = contig1.break_contig(contig1.q_start + 100, contig1.q_end - 100, start_label="new", end_label="new2")
+    assert n.start_label == "new"
+    assert n.end_label == "new2"
+
+    n = contig1.break_contig(contig1.q_start + 100, contig1.q_end - 100, start_label="new", end_label=None)
+    assert n.start_label == "new"
+    assert n.end_label == Contig.DEFAULT_END
+
+    n = contig1.break_contig(contig1.q_start + 100, contig1.q_end - 100, start_label=None, end_label="new2")
+    assert n.start_label == Contig.DEFAULT_END
+    assert n.end_label == "new2"
 
 def create_contigs(list_of_start_and_ends):
     contigs = []
@@ -238,7 +271,77 @@ def test_contig_container():
 
 
 def test_divide_contig():
-    pass
+    contig1 = Contig(**contig_example)
+
+    contig1.q_start = 1000
+    contig1.q_end = 5000
+
+    start_points = [
+        (1001, 514),
+    ]
+    end_points = [
+        (1200, 516)
+    ]
+
+    new_contigs = contig1.divide_contig(startpoints=start_points, endpoints=end_points, )
+    assert len(new_contigs) == len(start_points)
+
+    end_points.append((5001, 5))
+    new_contigs = contig1.divide_contig(startpoints=start_points, endpoints=end_points, )
+    assert len(new_contigs) == 1
+
+    end_points.append((contig1.q_start-1, 5))
+    new_contigs = contig1.divide_contig(startpoints=start_points, endpoints=end_points, )
+    assert len(new_contigs) == 1
+
+    end_points.append((contig1.q_end-100, 500))
+    new_contigs = contig1.divide_contig(startpoints=start_points, endpoints=end_points, )
+    assert len(new_contigs) == 2
+
+    start_points.append((contig1.q_start+100, 501))
+    new_contigs = contig1.divide_contig(startpoints=start_points, endpoints=end_points, )
+    assert len(new_contigs) == 4
+
+    # 3x starts + 2x end
+    start_points.append((contig1.q_start + 101, 501))
+    new_contigs = contig1.divide_contig(startpoints=start_points, endpoints=end_points, )
+    assert len(new_contigs) == 6
+
+    start_points = [
+        (1001, 514),
+        (contig1.q_start, 100)
+    ]
+    end_points = [
+        (1200, 516),
+        (contig1.q_end, None)
+    ]
+    new_contigs = contig1.divide_contig(start_points, end_points, )
+    assert len(new_contigs) == 4
+    new_contigs = contig1.divide_contig(start_points, end_points, include_contig=False)
+    assert len(new_contigs) == 3
+
+    start_points = [
+        (1001, 514),
+        (1002, None)
+    ]
+    end_points = [
+        (1200, 516),
+        (1300, None)
+    ]
+    new_contigs = contig1.divide_contig(start_points, end_points, include_contig=False)
+    pairs = itertools.product(start_points, end_points)
+    for contig, pair in zip(new_contigs, pairs):
+        start, start_label = pair[0]
+        end, end_label = pair[1]
+        if start_label == None:
+            start_label = Contig.DEFAULT_END
+        if end_label == None:
+            end_label = Contig.DEFAULT_END
+        assert contig.q_start == start
+        assert contig.q_end == end
+        assert contig.start_label == start_label
+        assert contig.end_label == end_label
+
 
 def test_break_long_contig():
     pass

@@ -18,11 +18,11 @@ import os
 import zipfile
 import xmlrpclib
 from das_seqio import *
-
+from das_utilities import *
 
 class ContigError(Exception):
-    def __init__(self, message):
-        self.message = message
+    def __init__(self, msg):
+        self.msg = msg
 
 
 class ContigContainerMeta(object):
@@ -68,6 +68,9 @@ class Contig(QueryRegion):
     NEW_PRIMER = "new_primer"
     DIRECT_END = "direct"
 
+
+    DEFAULT_END = NEW_PRIMER
+
     TYPE_BLAST = 'blast'
     # TYPE_DIRECT = 'direct_synthesis'
     TYPE_PRIMER = 'primer'
@@ -94,12 +97,12 @@ class Contig(QueryRegion):
         self.contig_type = kwargs['contig_type']
         self.assign_id()
         if 'end_label' not in kwargs:
-            self.end_label = Contig.NEW_PRIMER
+            self.end_label = Contig.DEFAULT_END
         else:
             self.end_label = kwargs['end_label']
 
         if 'start_label' not in kwargs:
-            self.start_label = Contig.NEW_PRIMER
+            self.start_label = Contig.DEFAULT_END
         else:
             self.start_label = kwargs['start_label']
 
@@ -132,7 +135,21 @@ class Contig(QueryRegion):
         return c
 
     def divide_contig(self, startpoints, endpoints, include_contig=True, contig_type=None, circular=None):
-        """Divides contigs by start and end points
+        """Divides contigs by start and end points. Contigs inherit end_labels. If end labels are None,
+        default value of Contig.NEW_PRIMER is used. Ignores positions outside of bounds.
+
+        e.g.
+        OLD                |--------------------------------|
+        Points                (x)>      <   >
+                           |-----|
+                              (x)|------|
+                                        |---|
+                                            |----------------|
+                                        |--------------------|
+                              (x)|---------------------------|
+                           |---------------------------------|     <<< if include_contig == True
+                              (x)|----------|
+                           |------------|
         :param startpoints: list of (pos, label) tuples
         :param endpoints: list of (pos, label) tuples
         :param include_contig: whether to include the contig endpoints
@@ -143,6 +160,7 @@ class Contig(QueryRegion):
 
         positions = list(itertools.product(startpoints, endpoints))
         contigs = []
+
         for start, end in positions:
             s, start_label = start
             e, end_label = end
@@ -157,7 +175,7 @@ class Contig(QueryRegion):
                     new_contig.circular = circular
                 new_contig.parent_id = self.contig_id
                 contigs.append(new_contig)
-            except ContigError:
+            except ContigError as e:
                 pass
         return contigs
 
@@ -194,15 +212,20 @@ class Contig(QueryRegion):
         """
         if q_start > q_end:
             raise ContigError("query_start cannot be greater than query_end")
-        if not self.q_pos_within(q_start, inclusive=True):
-            raise ContigError("query_start {} cannot be less than contig start {}".format(q_start, self.q_start))
-        if not self.q_pos_within(q_end, inclusive=True):
-            raise ContigError("query_end {} cannot be less than contig end {}".format(q_start, self.q_start))
+        if not (self.q_pos_within(q_start, inclusive=True) and self.q_pos_within(q_end, inclusive=True)):
+            e = "break points [{}, {}] are outside bounds of contig bounds [{}, {}]".format(q_start, q_end, self.q_start, self.q_end)
+            raise ContigError('msg')
         new_contig = self.deepcopy()
         new_contig.q_start = q_start
         new_contig.q_end = q_end
-        new_contig.s_start = self.s_start + (q_start - self.q_start)
-        new_contig.s_end = self.s_end - (self.q_end - q_end)
+
+
+
+        new_contig.s_start = convert_circular_position(self.s_start + (q_start - self.q_start), self.subject_length)
+        new_contig.s_end = convert_circular_position(self.s_end - (self.q_end - q_end), self.subject_length)
+
+
+
         new_contig.alignment_length = q_end - q_start
         new_contig.parent_id = self.contig_id
         if start_label is not None:
@@ -211,14 +234,14 @@ class Contig(QueryRegion):
             if new_contig.q_start == self.q_start:
                 new_contig.start_label = self.start_label
             else:
-                new_contig.start_label = Contig.NEW_PRIMER
+                new_contig.start_label = Contig.DEFAULT_END
         if end_label is not None:
             new_contig.end_label = end_label
         else:
             if new_contig.q_end == self.q_end:
                 new_contig.end_label = self.end_label
             else:
-                new_contig.end_label = Contig.NEW_PRIMER
+                new_contig.end_label = Contig.DEFAULT_END
         return new_contig
 
     def is_perfect_subject(self):
@@ -228,7 +251,6 @@ class Contig(QueryRegion):
         return self.alignment_length == self.identical and \
                self.gaps == 0 and self.gap_opens == 0
 
-    # TODO: add primer label names to start_label and end_label
     def pcr_products_of_contig(self, primers):
         """
 
@@ -244,11 +266,13 @@ class Contig(QueryRegion):
         for primer in primers:
             direction = primer.subject_strand
             if direction == 'plus':
-                fwd_primer_pos.append((primer.q_start, primer.contig_id))
-                new_rev_primer_pos.append((primer.q_end, None))
+                if self.q_pos_within(primer.q_start):
+                    fwd_primer_pos.append((primer.q_start, primer.contig_id))
+                    new_rev_primer_pos.append((primer.q_end, None))
             if direction == 'minus':
-                rev_primer_pos.append((primer.q_end, primer.contig_id))
-                new_fwd_primer_pos.append((primer.q_start, None))
+                if self.q_pos_within(primer.q_end):
+                    rev_primer_pos.append((primer.q_end, primer.contig_id))
+                    new_fwd_primer_pos.append((primer.q_start, None))
         contigs = []
         contigs += self.divide_contig(fwd_primer_pos, rev_primer_pos, include_contig=False,
                                       contig_type=Contig.TYPE_PCR, circular=False)
@@ -351,7 +375,7 @@ class ContigContainer(object):
     def fuse_circular_fragments(self):
         """
         Fuses contigs that are circular and would
-        span the origin if the index of the blast query
+        span the origin if the index of the blast subject
         had been different
         :return: None
         """
@@ -460,11 +484,11 @@ class ContigContainer(object):
         for c1 in self.contigs:
             for c2 in self.contigs:
                 if c1.q_pos_within(c2.q_end, inclusive=False): # if second contig overlaps with first contig
-                    new_contigs.append(c1.break_contig(c1.q_start, c2.q_end, start_label=None, end_label=None))
+                    # new_contigs.append(c1.break_contig(c1.q_start, c2.q_end, start_label=None, end_label=None))
                     new_contigs.append(c1.break_contig(c2.q_end, c1.q_end, start_label=None, end_label=None))
                 if c1.q_pos_within(c2.q_start, inclusive=False):
                     new_contigs.append(c1.break_contig(c1.q_start, c2.q_start, start_label=None, end_label=None))
-                    new_contigs.append(c1.break_contig(c2.q_start, c1.q_end, start_label=None, end_label=None))
+                    # new_contigs.append(c1.break_contig(c2.q_start, c1.q_end, start_label=None, end_label=None))
         for n in new_contigs:
             n.contig_type = contig_type + ' (broken long contig)'
 

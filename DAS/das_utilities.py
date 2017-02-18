@@ -13,6 +13,16 @@ import numpy as np
 import coral
 import json
 
+
+# TODO: add this to a new json dna class for subjects and queries
+def convert_circular_position(position, length):
+    if position >= length:
+        position = 0
+    if position < 0:
+        position = position + length
+    return position
+
+
 def generate_random_primers(seq, out, num_primers=5, min_size=15, max_size=60):
     rand_pos = np.random.randint(0, len(seq) - max_size, size=num_primers)
     rand_size = np.random.randint(min_size, max_size, size=num_primers)

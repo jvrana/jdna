@@ -507,8 +507,8 @@ class J5Assembly(Assembly):
                 c.contig_id,
                 c.seqrecord.id,
                 str(False).upper(),
-                c.s_start,
-                c.s_end,
+                c.s_start+1,
+                c.s_end+1,
                 '',
                 ''
             ]

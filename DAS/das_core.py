@@ -95,7 +95,8 @@ with open('j5_credentials.json') as handle:
 j5.all()
 j5.decode_all_to('assembly_parameters')
 r = j5.submit(**credentials)
-print r
+if 'error_message' in r:
+    print r['error_message']
 with open('assembly_parameters/results.zip', 'w') as handle:
     handle.write(J5Assembly.decode64(r['encoded_output_file']))
 # Parse assembly
