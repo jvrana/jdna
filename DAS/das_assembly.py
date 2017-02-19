@@ -53,7 +53,7 @@ class AssemblyGraph(ContigContainer):
                 # graph[k] = sorted(a_array, key=lambda x: self.compute_assembly_cost(
                 #     [self.get_contig(k), self.get_contig(x)])[0])
 
-                graph[k] = sorted(a_array, key=lambda x: self.get_contig(x).q_end - self.get_contig(x).q_start,
+                graph[k] = sorted(a_array, key=lambda x: self.get_contig(x).query.end - self.get_contig(x).query.start,
                                   reverse=True)
         self.graph = graph
         print 'Graph Size: {}'.format(num_nodes)
@@ -65,7 +65,7 @@ class AssemblyGraph(ContigContainer):
         best_costs_array = []
         steps = []
         step = 0
-        sorted_contigs = sorted(self.contigs, key=lambda x: x.q_end - x.q_start, reverse=True)
+        sorted_contigs = sorted(self.contigs, key=lambda x: x.query.end - x.query.start, reverse=True)
         stack = []
         for c in sorted_contigs:
             a = Assembly([c], self, self.primers)
@@ -180,7 +180,7 @@ class Assembly(ContigContainer):
         :param right:
         :return:
         """
-        d = right.q_start - left.q_end
+        d = right.query.start - left.query.end
         r = 0
         if right.end_label == Contig.NEW_PRIMER or right.end_label is Contig.DIRECT_END:
             r += Assembly.FIVEPRIME_EXT_REACH
@@ -205,7 +205,7 @@ class Assembly(ContigContainer):
                 c = self.get_contig(c)
             c_arr.append(c)
 
-        print [(c.q_start, c.q_end) for c in c_arr]
+        print [(c.query.start, c.query.end) for c in c_arr]
 
     def get_assembly_pairs(self):
         if len(self.contigs) == 1:
@@ -244,7 +244,7 @@ class Assembly(ContigContainer):
         :return:
         """
 
-        if not Assembly.MIN_PCR_SIZE < contig.q_end - contig.q_start < Assembly.MAX_PCR_SIZE:
+        if not Assembly.MIN_PCR_SIZE < contig.query.end - contig.query.start < Assembly.MAX_PCR_SIZE:
             return float("Inf")
         if contig.is_direct():
             # direct_synthesis
@@ -263,7 +263,7 @@ class Assembly(ContigContainer):
         return cost
 
     def assembly_span(self):
-        return self.last().q_end - self.first().q_start
+        return self.last().query.end - self.first().query.start
 
     def unassembled_span(self):
         return self.meta.query_length - self.assembly_span()
@@ -321,11 +321,11 @@ class Assembly(ContigContainer):
         """
         r_5prime_threshold = 0
         r_3prime_threshold = Assembly.MAX_HOMOLOGY
-        l_pos = left.q_end
-        r_pos = right.q_start
+        l_pos = left.query.end
+        r_pos = right.query.start
         # return r_pos == l_pos + 1 # if its consecutive
         return r_pos > l_pos - r_3prime_threshold and \
-               right.q_end > left.q_end
+               right.query.end > left.query.end
 
     def get_all_templates(self):
         filenames = []
@@ -358,15 +358,15 @@ class Assembly(ContigContainer):
         \t\tPrimers: {fwd}, {rev}
         '''.format(id=c.contig_id,
                    cost=self.get_pcr_cost(c),
-                   start=c.q_start,
-                   end=c.q_end,
-                   rs=c.q_start - self.contigs[0].q_start,
-                   re=c.q_end - self.contigs[0].q_start,
-                   subject=c.subject_acc,
+                   start=c.query.start,
+                   end=c.query.end,
+                   rs=c.query.start - self.contigs[0].query.start,
+                   re=c.query.end - self.contigs[0].query.start,
+                   subject=c.subject.name,
                    fwd=c.start_label,
                    rev=c.end_label,
-                   s_start=c.s_start,
-                   s_end=c.s_end
+                   s_start=c.subject.start,
+                   s_end=c.subject.end
                    )
 
         summary_str = '''
@@ -496,8 +496,8 @@ class J5Assembly(Assembly):
                 c.contig_id,
                 c.seqrecord.id,
                 str(False).upper(),
-                c.s_start+1,
-                c.s_end+1,
+                c.subject.start,
+                c.subject.end,
                 '',
                 ''
             ]
@@ -516,7 +516,7 @@ class J5Assembly(Assembly):
         rows = []
         for p in self.primer_container.contigs:
             row = [
-                p.subject_acc,
+                p.subject.name,
                 len(p.subject_seq),
                 60,
                 60,

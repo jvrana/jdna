@@ -126,8 +126,8 @@ class BLAST(object):
 
             for match in re.finditer(str(seq), str(query_seq)):
                 c = Contig.create_default_contig()
-                c.q_start = match.start()
-                c.q_end = match.end()
+                c.query.start = match.start()
+                c.query.end = match.end()
                 c.strand = 'plus'
                 c.subject_acc = ''
             if rc:

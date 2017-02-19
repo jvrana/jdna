@@ -31,7 +31,7 @@ class ContigContainerMeta(object):
         self.source = source
         self.blastver = blastver
         self.query = query
-        self.query_length = query_length
+        self.query.length = query_length
         self.query_circular = query_circular
         self.query_seq = query_seq
         self.contig_seqs = contig_seqs
@@ -262,7 +262,7 @@ class Contig(object):
             s, start_label = start
             e, end_label = end
             if not include_contig:
-                if s == self.q_start and e == self.q_end:
+                if s == self.query.start and e == self.query.end:
                     continue
             try:
                 new_contig = self.break_contig(s, e, start_label=start_label, end_label=end_label)
@@ -277,24 +277,24 @@ class Contig(object):
         return contigs
 
     def equivalent_location(self, other):
-        return other.q_start == self.q_start and other.q_end == self.q_end
+        return other.query.start == self.query.start and other.query.end == self.query.end
 
     def q_pos_within(self, pos, inclusive=True):
         if inclusive:
-            return self.q_start <= pos <= self.q_end
+            return self.query.start <= pos <= self.query.end
         else:
-            return self.q_start < pos < self.q_end
+            return self.query.start < pos < self.query.end
 
     def overlaps(self, other, inclusive=True):
-        return other.q_pos_within(self.q_start, inclusive=inclusive) or \
-               other.q_pos_within(self.q_end, inclusive=inclusive)
+        return other.q_pos_within(self.query.start, inclusive=inclusive) or \
+               other.q_pos_within(self.query.end, inclusive=inclusive)
 
     def is_within(self, other, inclusive=True):
-        return other.q_pos_within(self.q_start, inclusive=inclusive) and \
-               other.q_pos_within(self.q_end, inclusive=inclusive)
+        return other.q_pos_within(self.query.start, inclusive=inclusive) and \
+               other.q_pos_within(self.query.end, inclusive=inclusive)
 
     # def is_within(self, other, inclusive=True):
-    #     return self.q_start >= other.q_start and self.q_end <= other.q_end
+    #     return self.query.start >= other.query.start and self.query.end <= other.query.end
 
     def break_contig(self, q_start, q_end, start_label=None, end_label=None):
         """
@@ -309,16 +309,16 @@ class Contig(object):
         if q_start > q_end:
             raise ContigError("query_start cannot be greater than query_end")
         if not (self.q_pos_within(q_start, inclusive=True) and self.q_pos_within(q_end, inclusive=True)):
-            e = "break points [{}, {}] are outside bounds of contig bounds [{}, {}]".format(q_start, q_end, self.q_start, self.q_end)
+            e = "break points [{}, {}] are outside bounds of contig bounds [{}, {}]".format(q_start, q_end, self.query.start, self.query.end)
             raise ContigError('msg')
         new_contig = self.deepcopy()
-        new_contig.q_start = q_start
-        new_contig.q_end = q_end
+        new_contig.query.start = q_start
+        new_contig.query.end = q_end
 
 
 
-        new_contig.s_start = convert_circular_position(self.s_start + (q_start - self.q_start), self.subject_length, 1)
-        new_contig.s_end = convert_circular_position(self.s_end - (self.q_end - q_end), self.subject_length, 1)
+        new_contig.subject.start = convert_circular_position(self.subject.start + (q_start - self.query.start), self.subject.length, 1)
+        new_contig.subject.end = convert_circular_position(self.subject.end - (self.query.end - q_end), self.subject.length, 1)
 
 
 
@@ -327,21 +327,21 @@ class Contig(object):
         if start_label is not None:
             new_contig.start_label = start_label
         else:
-            if new_contig.q_start == self.q_start:
+            if new_contig.query.start == self.query.start:
                 new_contig.start_label = self.start_label
             else:
                 new_contig.start_label = Contig.DEFAULT_END
         if end_label is not None:
             new_contig.end_label = end_label
         else:
-            if new_contig.q_end == self.q_end:
+            if new_contig.query.end == self.query.end:
                 new_contig.end_label = self.end_label
             else:
                 new_contig.end_label = Contig.DEFAULT_END
         return new_contig
 
     def is_perfect_subject(self):
-        return self.alignment_length == self.subject_length and self.is_perfect_alignment()
+        return self.alignment_length == self.subject.length and self.is_perfect_alignment()
 
     def is_perfect_alignment(self):
         return self.alignment_length == self.identical and \
@@ -357,18 +357,18 @@ class Contig(object):
 
         rev_primer_pos = []
         fwd_primer_pos = []
-        new_fwd_primer_pos = [(self.q_start, None)]
-        new_rev_primer_pos = [(self.q_end, None)]
+        new_fwd_primer_pos = [(self.query.start, None)]
+        new_rev_primer_pos = [(self.query.end, None)]
         for primer in primers:
             direction = primer.subject_strand
             if direction == 'plus':
-                if self.q_pos_within(primer.q_start):
-                    fwd_primer_pos.append((primer.q_start, primer.contig_id))
-                    new_rev_primer_pos.append((primer.q_end, None))
+                if self.q_pos_within(primer.query.start):
+                    fwd_primer_pos.append((primer.query.start, primer.contig_id))
+                    new_rev_primer_pos.append((primer.query.end, None))
             if direction == 'minus':
-                if self.q_pos_within(primer.q_end):
-                    rev_primer_pos.append((primer.q_end, primer.contig_id))
-                    new_fwd_primer_pos.append((primer.q_start, None))
+                if self.q_pos_within(primer.query.end):
+                    rev_primer_pos.append((primer.query.end, primer.contig_id))
+                    new_fwd_primer_pos.append((primer.query.start, None))
         contigs = []
         contigs += self.divide_contig(fwd_primer_pos, rev_primer_pos, include_contig=False,
                                       contig_type=Contig.TYPE_PCR, circular=False)
@@ -384,9 +384,9 @@ class Contig(object):
 
         def primer_within_bounds(primer):
             if primer.subject_strand == 'plus':
-                return self.q_start + minimum_primer_anneal < primer.q_end < self.q_end
+                return self.query.start + minimum_primer_anneal < primer.query.end < self.query.end
             elif primer.subject_strand == 'minus':
-                return self.q_start < primer.q_start < self.q_end - minimum_primer_anneal
+                return self.query.start < primer.query.start < self.query.end - minimum_primer_anneal
             return False
 
         return filter(lambda x: primer_within_bounds(x), primers)
@@ -502,16 +502,16 @@ class ContigContainer(object):
         ga = defaultdict(list)
 
         def fuse_condition(l, r):
-            return l.subject_acc == r.subject_acc and \
-                   l.q_end + 1 == r.q_start and \
-                   l.subject_length == l.s_end and \
+            return l.subject.name == r.subject.name and \
+                   l.query.end + 1 == r.query.start and \
+                   l.subject.length == l.subject.end and \
                    l.circular and r.circular and \
                     l in self.contigs and \
                     r in self.contigs
 
         def fuse(l, r):
-            l.q_end = r.q_end
-            l.s_end = r.s_end
+            l.query.end = r.query.end
+            l.subject.end = r.subject.end
 
             keys_to_sum = 'alignment_length, gap_opens, gaps, identical, score'.split(', ')
             for k in keys_to_sum:
@@ -543,7 +543,7 @@ class ContigContainer(object):
         Sorts contigs according to their query start
         :return:
         """
-        self.contigs = sorted(self.contigs, key=lambda x: x.q_start)
+        self.contigs = sorted(self.contigs, key=lambda x: x.query.start)
 
     def filter_perfect_subjects(self):
         """
@@ -616,21 +616,21 @@ class ContigContainer(object):
         new_contigs = []
         for c1 in self.contigs:
             for c2 in self.contigs:
-                if c1.q_pos_within(c2.q_end, inclusive=False): # if second contig overlaps with first contig
-                    # new_contigs.append(c1.break_contig(c1.q_start, c2.q_end, start_label=None, end_label=None))
-                    new_contigs.append(c1.break_contig(c2.q_end, c1.q_end, start_label=None, end_label=None))
-                if c1.q_pos_within(c2.q_start, inclusive=False):
-                    new_contigs.append(c1.break_contig(c1.q_start, c2.q_start, start_label=None, end_label=None))
-                    # new_contigs.append(c1.break_contig(c2.q_start, c1.q_end, start_label=None, end_label=None))
+                if c1.q_pos_within(c2.query.end, inclusive=False): # if second contig overlaps with first contig
+                    # new_contigs.append(c1.break_contig(c1.query.start, c2.query.end, start_label=None, end_label=None))
+                    new_contigs.append(c1.break_contig(c2.query.end, c1.query.end, start_label=None, end_label=None))
+                if c1.q_pos_within(c2.query.start, inclusive=False):
+                    new_contigs.append(c1.break_contig(c1.query.start, c2.query.start, start_label=None, end_label=None))
+                    # new_contigs.append(c1.break_contig(c2.query.start, c1.query.end, start_label=None, end_label=None))
         for n in new_contigs:
             n.contig_type = contig_type + ' (broken long contig)'
 
         for c1 in self.contigs:
-            end = c1.q_start + self.meta.query_length
-            if end < c1.query_length:
+            end = c1.query.start + self.meta.query.length
+            if end < c1.query.length:
                 for c2 in self.contigs:
-                    if c2.q_start < end < c2.q_end:
-                        n = c2.break_contig(c2.q_start, end)
+                    if c2.query.start < end < c2.query.end:
+                        n = c2.break_contig(c2.query.start, end)
                         n.contig_type = contig_type + ' (broken for circularization)'
                         new_contigs.append(n)
 
