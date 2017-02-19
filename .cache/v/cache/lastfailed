@@ -1,5 +1,3 @@
 {
-  "DASi_test/test.py::test_blast_same": true, 
-  "DASi_test/test.py::test_pseudo_blast": true, 
-  "DASi_test/test.py::test_reindexed_templates": true
+  "DASi_test/test.py::test_pseudo_blast": true
 }

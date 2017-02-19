@@ -538,10 +538,8 @@ def test_reindexed_templates():
                                               no_removal_if_different_ends=True)
     assert len(contig_container.contigs) == 1
     c = contig_container.contigs[0]
-    assert c.query.start == 1
-    assert c.query.end == c.query.length
-    assert 1 <= c.subject.start <= c.query.length
-    assert 1 <= c.subject.end <= c.query.length
+    assert c.subject.region_span == c.query.region_span
+    assert c.subject.region_span == c.query.length
 
 
 
@@ -551,18 +549,19 @@ def test_blast_same():
     b.makedbfromdir()
     b.runblast()
     contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
+
+    contig_container.fuse_circular_fragments()
+    contig_container.remove_redundant_contigs(remove_within=True)
     # contig_container.remove_redundant_contigs(remove_within=True)
 
     contigs = contig_container.contigs
     for c in contigs:
         print c.query.name, c.query.start, c.query.end, c.query.length, c.subject.start, c.subject.end, c.query.length
 
-    # One contig for each  in a pseudo circular query
-    assert len(contig_container.contigs) == 2 # because its circular
-
     # Fuse the fragments and there should only be one contig
-    contig_container.fuse_circular_fragments()
     assert len(contig_container.contigs) == 1
+
+
 def test_pseudo_blast():
     design_path = 'data/blast_test/designs/pmodkan-ho-pact1-z4-er-vpr.gb'
     p = BLAST('primerdb', 'data/blast_test/primers', design_path, '', 'database/primerresults.out')

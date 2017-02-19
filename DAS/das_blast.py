@@ -180,8 +180,8 @@ class BLAST(object):
                 if contig_dict['subject_acc'] in self.db_input_metadata:
                     contig_dict.update(self.db_input_metadata[contig_dict['subject_acc']])
                     contig_dict['subject_circular'] = contig_dict['circular']
-                    contig_dict['query_circular'] = False #self.query_circular
-                    # contig_dict['query_length'] = self.query_length
+                    contig_dict['query_circular'] = self.query_circular
+                    contig_dict['query_length'] = self.query_length
                     contig_container.add_contig(**contig_dict)
         meta['query_circular'] = self.query_circular
         meta['query_length'] = self.query_length
