@@ -69,12 +69,25 @@ class Region(object):
     E.g. Circular Region
         length: 9
         start_index: 1
-        start: 8
-        end: 2
-        region_span = 4
+        start: 7
+        end: 3
+        region_span = 6
         Context:  |-------|
         C_Index:  1.......9
-        Region:   .2     8.
+        Region:   ..3   7..
+
+    E.g. Reversed Region
+        length: 9
+        start_index: 1
+        start: 7
+        end: 3
+        region_span = 6
+        direction = reverse
+        Context:  |-------|
+        C_Index:  1.......9
+        Region:     3...7
+        NEW_START: 3 <<<< FOR CLEANER DEALINGS LATER
+        NEW_END: 7   <<<< FOR CLEANER DEALINGS LATER
     """
     START_INDEX = 1
     FORWARD = 1
@@ -102,6 +115,7 @@ class Region(object):
             raise RegionError("Direction {} not understood. Direction must be Region.FORWARD = {}, Region.REVERSE = {},\
              or Region.BOTH = {}".format(self.direction, Region.FORWARD, Region.BACKWARD, Region.BOTH))
         self.name = name
+        raise_error = False
         if not self.circular and self.start > self.end:
             raise RegionError("START cannot be greater than END for linear regions.")
 
@@ -254,6 +268,11 @@ class Region(object):
         else:
             raise RegionError("Sub region bounds [{}-{}] outside of Region bounds [{}-{}]".format(s, e, self.bounds_start, self.bounds_end))
 
+    def same_context(self, other):
+        return self.circular == other.circular and \
+                self.bounds_start == other.bounds_start and \
+                self.bounds_end == other.bounds_end
+
     def consecutive_with(self, other):
         after_self_pos = None
         before_other_pos = None
@@ -265,13 +284,45 @@ class Region(object):
             after_self_pos = self.translate_pos(self.end +1)
         except RegionError as e:
             return False
-        fusable = self.circular == other.circular and \
-                self.direction == other.direction and \
-                self.bounds_start == other.bounds_start and \
-                self.bounds_end == other.bounds_end and \
+        fusable = self.same_context(other) and \
                 other.start == after_self_pos and \
                 self.end == before_other_pos
         return fusable
+
+    def copy(self):
+        return Region(self.__start, self.__end, self.length, self.circular,
+                      direction=self.direction, name=self.name, start_index=self.bounds_start)
+
+    def get_overlap(self, other):
+        if self.end_overlaps_with(other):
+            r = self.copy()
+            print 'copy', r.start, r.end, self.end, other.start
+            r.start = other.start
+            r.end = self.end
+            return r
+        else:
+            raise RegionError("Ends do not overlap.")
+
+    def end_overlaps_with(self, other):
+        """
+        Whether this region overlaps the next region it this regions end
+            True
+                self   |------|
+                other      |-------|
+
+            False
+                self         |------|
+                other  |-------|
+
+            False
+                self   |------|
+                other    |----|
+        :param other:
+        :return:
+        """
+        return self.same_context(other) \
+               and self.within_region(other.start, inclusive=True) \
+               and not self.within_region(other, inclusive=True)
 
     def fuse(self, other):
         if self.consecutive_with(other):
@@ -304,6 +355,8 @@ class Contig(object):
             q_end=Contig.START_INDEX,
             s_end=Contig.START_INDEX,
             s_start=Contig.START_INDEX,
+            query_circular=False,
+            subject_circular=False,
             identical=0,
             query_acc='',
             subject_acc='',
@@ -482,16 +535,13 @@ class Contig(object):
         :param end_label:
         :return:
         """
-        if q_start > q_end:
-            raise ContigError("query_start cannot be greater than query_end")
         if not (self.query.within_region(q_start, inclusive=True) and self.query.within_region(q_end, inclusive=True)):
             e = "break points [{}, {}] are outside bounds of contig bounds [{}, {}]".format(q_start, q_end, self.query.start, self.query.end)
             raise ContigError('msg')
         new_contig = self.deepcopy()
 
         # Set query region
-        new_contig.query.start = q_start
-        new_contig.query.end = q_end
+        new_contig.query = self.query.sub_region(q_start, q_end)
 
         # Set subject region
         delta_start = q_start - self.query.start
@@ -524,13 +574,13 @@ class Contig(object):
         return self.alignment_length == self.identical and \
                self.gaps == 0 and self.gap_opens == 0
 
-    def pcr_products_of_contig(self, primers):
+    def pcr_products_of_contig(self, primers, min_primer_anneal=15):
         """
 
         :param primers:
         :return:
         """
-        primers = self.get_primers_within_bounds(primers)
+        primers = self.get_primers_within_bounds(primers, minimum_primer_anneal=min_primer_anneal)
 
         rev_primer_pos = []
         fwd_primer_pos = []
@@ -752,7 +802,7 @@ class ContigContainer(object):
         self.contigs = filtered_contigs
         # TODO: handle ambiquoous NNNN dna in blast search by eliminating gap_opens, gaps if they are N's
 
-    def expand_contigs(self, primers):
+    def expand_contigs(self, primers, min_primer_binding=15):
         """
         Creates PCR products for all contigs from a container of primers
         e.g. with "P>" = Primer
@@ -767,7 +817,7 @@ class ContigContainer(object):
         """
         all_alignments = []
         for contig in self.contigs:
-            new_alignments = contig.pcr_products_of_contig(primers)
+            new_alignments = contig.pcr_products_of_contig(primers, min_primer_anneal=min_primer_binding)
             all_alignments += new_alignments
         self.contigs += all_alignments
 

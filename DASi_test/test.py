@@ -9,6 +9,7 @@ Description:
 '''
 
 from DAS.das_contig import *
+from DAS.das_assembly import *
 from DAS.das_utilities import *
 from DAS.das_blast import *
 import pytest
@@ -44,9 +45,10 @@ contig_example = {
           "circular": True
         }
 
+# TODO: fix this reverse stuff...
 def test_reverse_region():
     s = 1
-    e = 2
+    e = 5
     l = 10
     start_index = 0
 
@@ -54,6 +56,9 @@ def test_reverse_region():
 
     r = Region(e, s, l, direction=Region.REVERSE, circular=False, start_index=start_index)
     r = Region(e, s, l, direction=Region.REVERSE, circular=True, start_index=start_index)
+    print r.start, r.end
+    assert r.start == s
+    assert r.end == e
 
 
 def test_region():
@@ -118,6 +123,12 @@ def test_set_region():
     r.set_region_by_start_and_span(900, 200)
     print r.start, r.end, r.region_span
 
+# TODO: Reverse regions are confusing, fix this
+def test_region_copy():
+    r = Region(50, 20, 1000, False, start_index=2, name='name', direction=Region.REVERSE)
+    r2 = r.copy()
+    assert r.same_context(r2)
+
 def test_region_span():
     # TODO: fix span calculation for circular spans
     def f(span, start, length, start_index):
@@ -131,6 +142,50 @@ def test_region_span():
     f(5, 98, 100, 0)
     f(5, 98, 100, 10)
     f(5, 104, 100, 5)
+
+def test_region_overlap():
+    r = Region(10, 50, 100, False, start_index=0)
+    r2 = Region(20, 90, 100, False, start_index=0)
+    assert r.end_overlaps_with(r2)
+    assert not r2.end_overlaps_with(r)
+
+    r = Region(10, 50, 100, False, start_index=0)
+    r2 = Region(20, 90, 100, True, start_index=0)
+    assert not r.end_overlaps_with(r2)
+    assert not r2.end_overlaps_with(r)
+
+    r = Region(10, 50, 100, False, start_index=0)
+    r2 = Region(20, 90, 100, False, start_index=1)
+    assert not r.end_overlaps_with(r2)
+    assert not r2.end_overlaps_with(r)
+
+    r = Region(90, 10, 100, True, start_index=2)
+    r2 = Region(5, 20, 100, True, start_index=2)
+    assert r.end_overlaps_with(r2)
+    assert not r2.end_overlaps_with(r)
+
+    r = Region(50, 10, 100, False, start_index=0, direction=Region.REVERSE)
+    r2 = Region(90, 20, 100, False, start_index=0, direction=Region.REVERSE)
+    assert r.end_overlaps_with(r2)
+    assert not r2.end_overlaps_with(r)
+
+    r = Region(10, 50, 100, False, start_index=0)
+    r2 = Region(20, 90, 100, False, start_index=0)
+    overlap = r.get_overlap(r2)
+    print overlap.start, overlap.end
+    assert overlap.same_context(r)
+    assert overlap.same_context(r2)
+    assert overlap.start == 20
+    assert overlap.end == 50
+    assert overlap.direction == r.direction
+    with pytest.raises(RegionError):
+        r2.get_overlap(r)
+
+    r = Region(90, 10, 100, True, start_index=2)
+    r2 = Region(95, 20, 100, True, start_index=2)
+    overlap = r.get_overlap(r2)
+    assert overlap.start == 95
+    assert overlap.end == 10
 
 def test_subregion():
     r = Region(20, 50, 100, False, start_index=0)
@@ -282,7 +337,7 @@ def test_break_contig():
 
     for s, e in zip(x, y):
         if s > e:
-            with pytest.raises(ContigError):
+            with pytest.raises(RegionError):
                 contig1.break_contig(s, e)
         else:
             n = contig1.break_contig(s,e)
@@ -307,7 +362,7 @@ def test_break_contig():
     with pytest.raises(ContigError):
         contig1.break_contig(contig1.query.start+1, contig1.query.start-1)
 
-    with pytest.raises(ContigError):
+    with pytest.raises(RegionError):
         contig1.break_contig(contig1.query.start+10, contig1.query.start+9)
 
     with pytest.raises(ContigError):
@@ -532,10 +587,10 @@ def test_reindexed_templates():
 
     contigs = contig_container.contigs
     contig_container.fuse_circular_fragments()
-    for c in contigs:
-        print c.query.name, c.query.start, c.query.end, c.query.length, c.subject.start, c.subject.end, c.query.length
     contig_container.remove_redundant_contigs(remove_equivalent=True, remove_within=True,
                                               no_removal_if_different_ends=True)
+    for c in contigs:
+        print c.query.name, c.query.start, c.query.end, c.query.length, c.subject.start, c.subject.end, c.query.length
     assert len(contig_container.contigs) == 1
     c = contig_container.contigs[0]
     assert c.subject.region_span == c.query.region_span
@@ -565,4 +620,22 @@ def test_blast_same():
 def test_pseudo_blast():
     design_path = 'data/blast_test/designs/pmodkan-ho-pact1-z4-er-vpr.gb'
     p = BLAST('primerdb', 'data/blast_test/primers', design_path, '', 'database/primerresults.out')
-    p.perfect_matches()
+    print p.perfect_matches()
+
+def test_primer_binding():
+    assert 1 == 2
+
+def test_assembly_graph():
+    contig1 = Contig(**contig_example)
+    contig2 = Contig(**contig_example)
+
+    contig1.query.__length = 10000
+    contig2.query.__length = contig1.query.length
+    contig1.query.start = 100
+    contig1.query.end = 200
+    contig2.query.start = 201
+    contig2.query.end = 300
+
+    print contig1.query.length, contig1.query.start, contig1.query.end
+
+    assert Assembly.assembly_condition(contig1, contig2)

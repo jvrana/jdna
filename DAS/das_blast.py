@@ -108,13 +108,13 @@ class BLAST(object):
         :return:
         """
         out, seqs, metadata = self.concate_db_to_fsa()
-        query_seq = open_sequence(self.query)[0].seq
+        query_seq = str(open_sequence(self.query)[0].seq)
         query_seq = re.sub('[nN]', '.', query_seq)
 
         fwd_matches = []
         rev_matches = []
         for seq in seqs:
-            seq = seq.seq
+            seq = str(seq.seq)
             try:
                 rc_seq = dna_reverse_complement(str(seq))
             except KeyError as e:
@@ -125,6 +125,7 @@ class BLAST(object):
 
             for match in re.finditer(str(seq), str(query_seq)):
                 c = Contig.create_default_contig()
+                c.query.__circular = True
                 c.query.start = match.start()
                 c.query.end = match.end()
                 c.strand = 'plus'

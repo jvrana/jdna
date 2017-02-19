@@ -8,7 +8,6 @@
 5. Deploy Django user interface
 6. Deploy JBEI integration
 7. Deploy JBEI on EC2 instance (or on Biofab AWS)
-8. !!!!!!! Implement RC query searches as well if query is on opposite strand
 9. Add true circular subject search
 9. Fix remove redundant contigs ('except contig_type')
 11. Separate out Fragments (used directly in a reaction) from plasmids
@@ -28,3 +27,4 @@
 26. Project inputs and outpus should be JSON only, no more genbank files
 27. Create standardized JSON format for BenchlingAPI, JBEI API (mixture of TeseleaGen and Benchling JSON)
 28. Handle reverse parts in J5 and BLAST
+29. Phylogenetic tree of possible assemblies
