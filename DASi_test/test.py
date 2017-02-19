@@ -107,69 +107,69 @@ def test_contig_within():
     contig1 = Contig(**contig_example)
     contig2 = Contig(**contig_example)
 
-    contig1.q_start = 1000
-    contig1.q_end = 2000
-    contig2.q_start = 1500
-    contig2.q_end = 3000
+    contig1.query.start = 1000
+    contig1.query.end = 2000
+    contig2.query.start = 1500
+    contig2.query.end = 3000
 
     assert False == contig1.is_within(contig2)
 
-    contig2.q_end = contig1.q_end
+    contig2.query.end = contig1.query.end
     assert contig2.is_within(contig1)
     assert not contig1.is_within(contig2)
     assert not contig2.is_within(contig1, inclusive=False)
 
 
-    contig2.q_end = 3000
-    contig2.q_start = contig1.q_end
+    contig2.query.end = 3000
+    contig2.query.start = contig1.query.end
     assert not contig2.is_within(contig1, inclusive=False)
     assert not contig2.is_within(contig1, inclusive=True)
     assert not contig1.is_within(contig2, inclusive=False)
     assert not contig1.is_within(contig2, inclusive=True)
 
-    contig2.q_start = contig1.q_start
-    contig2.q_end = 1900
+    contig2.query.start = contig1.query.start
+    contig2.query.end = 1900
     assert contig2.is_within(contig1)
 
 def test_is_equivalent():
     contig1 = Contig(**contig_example)
     contig2 = Contig(**contig_example)
 
-    contig1.q_start = 1000
-    contig1.q_end = 2000
-    contig2.q_start = 1500
-    contig2.q_end = 3000
+    contig1.query.start = 1000
+    contig1.query.end = 2000
+    contig2.query.start = 1500
+    contig2.query.end = 3000
     assert not contig1.equivalent_location(contig2)
     assert not contig2.equivalent_location(contig1)
 
-    contig1.q_start = contig2.q_start
+    contig1.query.start = contig2.query.start
     assert not contig1.equivalent_location(contig2)
     assert not contig2.equivalent_location(contig1)
 
-    contig1.q_end = contig2.q_end
+    contig1.query.end = contig2.query.end
     assert contig1.equivalent_location(contig2)
     assert contig2.equivalent_location(contig1)
 
 def test_pos_within():
     contig1 = Contig(**contig_example)
-    contig1.q_start = 1000
-    contig1.q_end = 2000
+    contig1.query.start = 1000
+    contig1.query.end = 2000
 
     pos = 1500
-    assert contig1.q_pos_within(pos)
+    assert contig1.query.pos_within(pos)
 
     pos = 2001
-    assert not contig1.q_pos_within(pos)
+    assert not contig1.query.pos_within(pos)
 
-    for pos in [contig1.q_start, contig1.q_end]:
-        assert not contig1.q_pos_within(pos, inclusive=False)
-    for pos in [contig1.q_start, contig1.q_end]:
-        assert contig1.q_pos_within(pos, inclusive=True)
+    for pos in [contig1.query.start, contig1.query.end]:
+        assert not contig1.query.pos_within(pos, inclusive=False)
+    for pos in [contig1.query.start, contig1.query.end]:
+        assert contig1.query.pos_within(pos, inclusive=True)
 
 def test_break_contig():
     contig1 = Contig(**contig_example)
-    contig1.q_start = 1000
-    contig1.q_end = 2000
+    contig1.query.start = 1000
+    contig1.query.end = 2000
 
     with pytest.raises(ContigError) as e:
         contig1.break_contig(3000, 4000)
@@ -180,10 +180,10 @@ def test_break_contig():
     with pytest.raises(ContigError) as e:
         contig1.break_contig(999, 1500)
 
-    contig1.break_contig(contig1.q_start, contig1.q_start+1)
-    contig1.break_contig(contig1.q_end-1, contig1.q_end)
-    x = np.random.randint(contig1.q_start, contig1.q_end, size=20)
-    y = np.random.randint(contig1.q_start, contig1.q_end, size=20)
+    contig1.break_contig(contig1.query.start, contig1.query.start+1)
+    contig1.break_contig(contig1.query.end-1, contig1.query.end)
+    x = np.random.randint(contig1.query.start, contig1.query.end, size=20)
+    y = np.random.randint(contig1.query.start, contig1.query.end, size=20)
 
     for s, e in zip(x, y):
         if s > e:
@@ -191,62 +191,62 @@ def test_break_contig():
                 contig1.break_contig(s, e)
         else:
             n = contig1.break_contig(s,e)
-            assert n.q_start == s
-            assert n.q_end == e
+            assert n.query.start == s
+            assert n.query.end == e
             assert n.contig_id > contig1.contig_id
             assert n.parent_id == contig1.contig_id
-            assert n.subject_length == contig1.subject_length
-            assert 0 <= n.s_start <= n.subject_length
-            assert 0 <= n.s_end <= n.subject_length
+            assert n.query.length == contig1.query.length
+            assert 0 <= n.subject.start <= n.query.length
+            assert 0 <= n.subject.end <= n.query.length
 
     with pytest.raises(ContigError) as e:
-        contig1.break_contig(contig1.q_start - 1, contig1.q_end)
+        contig1.break_contig(contig1.query.start - 1, contig1.query.end)
 
     with pytest.raises(ContigError) as e:
-        contig1.break_contig(contig1.q_start, contig1.q_end + 1)
+        contig1.break_contig(contig1.query.start, contig1.query.end + 1)
 
     n = contig1.break_contig(1010, 1010)
-    assert n.q_start == 1010
-    assert n.q_end == 1010
+    assert n.query.start == 1010
+    assert n.query.end == 1010
 
     with pytest.raises(ContigError):
-        contig1.break_contig(contig1.q_start+1, contig1.q_start-1)
+        contig1.break_contig(contig1.query.start+1, contig1.query.start-1)
 
     with pytest.raises(ContigError):
-        contig1.break_contig(contig1.q_start+10, contig1.q_start+9)
+        contig1.break_contig(contig1.query.start+10, contig1.query.start+9)
 
     with pytest.raises(ContigError):
-        contig1.break_contig(contig1.q_start-10, contig1.q_start-1)
+        contig1.break_contig(contig1.query.start-10, contig1.query.start-1)
 
     with pytest.raises(ContigError):
-        contig1.break_contig(contig1.q_start-10, contig1.q_start+1)
+        contig1.break_contig(contig1.query.start-10, contig1.query.start+1)
 
-    n = contig1.break_contig(contig1.q_start + 100, contig1.q_end - 100, start_label="new", end_label="new2")
+    n = contig1.break_contig(contig1.query.start + 100, contig1.query.end - 100, start_label="new", end_label="new2")
     assert n.start_label == "new"
     assert n.end_label == "new2"
 
-    n = contig1.break_contig(contig1.q_start + 100, contig1.q_end - 100, start_label="new", end_label=None)
+    n = contig1.break_contig(contig1.query.start + 100, contig1.query.end - 100, start_label="new", end_label=None)
     assert n.start_label == "new"
     assert n.end_label == Contig.DEFAULT_END
 
-    n = contig1.break_contig(contig1.q_start + 100, contig1.q_end - 100, start_label=None, end_label="new2")
+    n = contig1.break_contig(contig1.query.start + 100, contig1.query.end - 100, start_label=None, end_label="new2")
     assert n.start_label == Contig.DEFAULT_END
     assert n.end_label == "new2"
 
 def test_subject_break_contig():
     contig1 = Contig(**contig_example)
-    contig1.q_start = 1000
-    contig1.q_end = 2000
-    contig1.s_start = 100
-    contig1.s_end = 2100
-    contig1.subject_length = 2000
+    contig1.query.start = 1000
+    contig1.query.end = 2000
+    contig1.subject.start = 100
+    contig1.subject.end = 2100
+    contig1.query.length = 2000
 
 def create_contigs(list_of_start_and_ends):
     contigs = []
     for x, y in list_of_start_and_ends:
         c = Contig(**contig_example)
-        c.q_start = x
-        c.q_end = y
+        c.query.start = x
+        c.query.end = y
         contigs.append(c)
     return contigs
 
@@ -254,21 +254,21 @@ def test_contig_overlaps():
     contig1 = Contig(**contig_example)
     contig2 = Contig(**contig_example)
 
-    contig1.q_start = 1000
-    contig1.q_end = 2000
-    contig2.q_start = 2001
-    contig2.q_end = 3000
+    contig1.query.start = 1000
+    contig1.query.end = 2000
+    contig2.query.start = 2001
+    contig2.query.end = 3000
 
     assert not contig1.overlaps(contig2)
     assert not contig2.overlaps(contig1)
 
-    contig2.q_start = contig1.q_end
+    contig2.query.start = contig1.query.end
     assert not contig1.overlaps(contig2, inclusive=False)
     assert not contig2.overlaps(contig1, inclusive=False)
     assert contig1.overlaps(contig2, inclusive=True)
     assert contig2.overlaps(contig1, inclusive=True)
 
-    contig2.q_start = 1999
+    contig2.query.start = 1999
     assert contig1.overlaps(contig2, inclusive=True)
     assert contig2.overlaps(contig1, inclusive=True)
     assert contig1.overlaps(contig2, inclusive=False)
@@ -292,8 +292,8 @@ def test_contig_container():
 
     # Test within, equivalent
     new_contig = Contig(**contig_example)
-    new_contig.q_start = 50
-    new_contig.q_end = 190
+    new_contig.query.start = 50
+    new_contig.query.end = 190
     c.contigs.append(new_contig)
     l = len(c.contigs)
     c.remove_redundant_contigs(remove_within=True, remove_equivalent=False, no_removal_if_different_ends=True)
@@ -301,8 +301,8 @@ def test_contig_container():
 
     # Test equivalent
     new_contig = Contig(**contig_example)
-    new_contig.q_start = 50
-    new_contig.q_end = 190
+    new_contig.query.start = 50
+    new_contig.query.end = 190
     c.contigs.append(new_contig)
     l = len(c.contigs)
     c.remove_redundant_contigs(remove_within=False, remove_equivalent=True, no_removal_if_different_ends=False)
@@ -310,8 +310,8 @@ def test_contig_container():
 
     # Test within
     new_contig = Contig(**contig_example)
-    new_contig.q_start = 60
-    new_contig.q_end = 180
+    new_contig.query.start = 60
+    new_contig.query.end = 180
     c.contigs.append(new_contig)
     l = len(c.contigs)
     c.remove_redundant_contigs(remove_within=False, remove_equivalent=True, no_removal_if_different_ends=True)
@@ -322,8 +322,8 @@ def test_contig_container():
 
     # Test within
     new_contig = Contig(**contig_example)
-    new_contig.q_start = 60
-    new_contig.q_end = 180
+    new_contig.query.start = 60
+    new_contig.query.end = 180
     c.contigs.append(new_contig)
     l = len(c.contigs)
     new_contig.start_label = 912
@@ -341,8 +341,8 @@ def test_contig_container():
 def test_divide_contig():
     contig1 = Contig(**contig_example)
 
-    contig1.q_start = 1000
-    contig1.q_end = 5000
+    contig1.query.start = 1000
+    contig1.query.end = 5000
 
     start_points = [
         (1001, 514),
@@ -358,30 +358,30 @@ def test_divide_contig():
     new_contigs = contig1.divide_contig(startpoints=start_points, endpoints=end_points, )
     assert len(new_contigs) == 1
 
-    end_points.append((contig1.q_start-1, 5))
+    end_points.append((contig1.query.start-1, 5))
     new_contigs = contig1.divide_contig(startpoints=start_points, endpoints=end_points, )
     assert len(new_contigs) == 1
 
-    end_points.append((contig1.q_end-100, 500))
+    end_points.append((contig1.query.end-100, 500))
     new_contigs = contig1.divide_contig(startpoints=start_points, endpoints=end_points, )
     assert len(new_contigs) == 2
 
-    start_points.append((contig1.q_start+100, 501))
+    start_points.append((contig1.query.start+100, 501))
     new_contigs = contig1.divide_contig(startpoints=start_points, endpoints=end_points, )
     assert len(new_contigs) == 4
 
     # 3x starts + 2x end
-    start_points.append((contig1.q_start + 101, 501))
+    start_points.append((contig1.query.start + 101, 501))
     new_contigs = contig1.divide_contig(startpoints=start_points, endpoints=end_points, )
     assert len(new_contigs) == 6
 
     start_points = [
         (1001, 514),
-        (contig1.q_start, 100)
+        (contig1.query.start, 100)
     ]
     end_points = [
         (1200, 516),
-        (contig1.q_end, None)
+        (contig1.query.end, None)
     ]
     new_contigs = contig1.divide_contig(start_points, end_points, )
     assert len(new_contigs) == 4
@@ -405,8 +405,8 @@ def test_divide_contig():
             start_label = Contig.DEFAULT_END
         if end_label == None:
             end_label = Contig.DEFAULT_END
-        assert contig.q_start == start
-        assert contig.q_end == end
+        assert contig.query.start == start
+        assert contig.query.end == end
         assert contig.start_label == start_label
         assert contig.end_label == end_label
 
@@ -440,10 +440,10 @@ def test_reindexed_templates():
                                               no_removal_if_different_ends=True)
     assert len(contig_container.contigs) == 1
     c = contig_container.contigs[0]
-    assert c.q_start == 1
-    assert c.q_end == c.query_length
-    assert 1 <= c.s_start <= c.subject_length
-    assert 1 <= c.s_end <= c.subject_length
+    assert c.query.start == 1
+    assert c.query.end == c.query.length
+    assert 1 <= c.subject.start <= c.query.length
+    assert 1 <= c.subject.end <= c.query.length
 
 
 
@@ -458,7 +458,7 @@ def test_blast_same():
 
     contigs = contig_container.contigs
     for c in contigs:
-        print c.subject_acc, c.q_start, c.q_end, c.query_length, c.s_start, c.s_end, c.subject_length
+        print c.query.acc, c.query.start, c.query.end, c.query.length, c.subject.start, c.subject.end, c.query.length
 
     assert len(contig_container.contigs) == 2 # because its circular
 

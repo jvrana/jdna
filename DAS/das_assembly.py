@@ -517,10 +517,10 @@ class J5Assembly(Assembly):
         for p in self.primer_container.contigs:
             row = [
                 p.subject.name,
-                len(p.subject_seq),
+                len(p.subject.seq),
                 60,
                 60,
-                p.subject_seq
+                p.subject.seq
             ]
             rows.append(row)
         self.primers = J5Assembly.encode64(self.to_csv(J5Assembly.MASTEROLIGOSLABELS, rows))
