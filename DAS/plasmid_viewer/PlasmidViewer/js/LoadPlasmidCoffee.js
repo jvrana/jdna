@@ -140,10 +140,10 @@
       $scope.contigs = data;
       $scope.contig_padding = 10;
       start = function(x) {
-        return x.q_start;
+        return x.query.start;
       };
       end = function(x) {
-        return x.q_end;
+        return x.query.end;
       };
       sanitize_features(data.contigs, start, end, $scope.plasmid.length);
       data.contigs = sort_features(data.features, data.length);

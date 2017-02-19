@@ -1,4 +1,5 @@
 Part Name,Part Source (Sequence Display ID),Reverse Compliment?,Start (bp),End (bp),Five Prime Internal Preferred Overhangs?,Three Prime Internal Preferred Overhangs?
-2,pMODKan-HO-pACT1-ZEV4,FALSE,2,4220,,
-90,hCas9-VPR,FALSE,4853,6545,,
-1035,pMODKan-HO-pACT1-ZEV4,FALSE,4424,2,,
+20,PhiC31-Neo-ins-5xTetO-p,FALSE,1518,4023,,
+89,pEx1-pEF-H2B-mCherry-T,FALSE,14,1162,,
+2684,pINS-011-pEF1-Csy4-dCa,FALSE,1219,6064,,
+2689,pINS-0A1-pEF1a-citrine-,FALSE,5267,842,,

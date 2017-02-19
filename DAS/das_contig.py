@@ -24,6 +24,9 @@ class ContigError(Exception):
     def __init__(self, msg):
         self.msg = msg
 
+class RegionError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
 
 class ContigContainerMeta(object):
     def __init__(self, source=None, blastver=None, query='untitled', query_length=0, query_circular=False,
@@ -37,34 +40,217 @@ class ContigContainerMeta(object):
         self.contig_seqs = contig_seqs
         self.__dict__.update(kwargs)
 
+class Region(object):
+    """
+    Classifies a region of a sequence. A region is defined by the inclusive "start" and "end"
+    positions in context of an arbitrary sequence defined by the start_index and length.
 
-class QueryRegion(object):
+    Regions can be circular or linear. For circular regions, negative indicies and indicies greater
+    than the length are allowable and will be converted to appropriate indices.
+
+    Direction of the region can be FORWARD or REVERSE or BOTH. For reversed directions, start
+    and end positions should be flipped.
+
+    Alternative start_index can be used (DEFAULT: 1) to handle sequences that start at 0 or 1.
+
+    A new Region can be created either by defining the start and end positions or defining the
+    start position and region_span by Region.create(length, circular)
+
+    E.g. Linear Region
+        length: 9
+        start_index: 1
+        start: 2
+        end: 5
+        region_span = 5-2+1 = 4
+        Context:  |-------|
+        C_Index:  1.......9
+        Region:    2..4
+
+    E.g. Circular Region
+        length: 9
+        start_index: 1
+        start: 8
+        end: 2
+        region_span = 4
+        Context:  |-------|
+        C_Index:  1.......9
+        Region:   .2     8.
+    """
+    START_INDEX = 1
+    FORWARD = 1
+    REVERSE = -1
+    BOTH = 2
+
+
+    def __init__(self, start, end, length, circular, direction=FORWARD, name=None, start_index=START_INDEX):
+        """
+
+        :param start:
+        :param end:
+        :param length:
+        :param circular:
+        :param start_index:
+        """
+
+        self.__length = length # not allowed to reset length
+        self.__circular = circular # not allowed to reset length
+        self.__bounds_start = start_index # not allowed to reset length
+        self.__start = self.translate_pos(start)
+        self.__end = self.translate_pos(end)
+        self.__direction = direction #1 or -1
+        if self.direction not in [Region.FORWARD, Region.REVERSE, Region.BOTH]:
+            raise RegionError("Direction {} not understood. Direction must be Region.FORWARD = {}, Region.REVERSE = {},\
+             or Region.BOTH = {}".format(self.direction, Region.FORWARD, Region.BACKWARD, Region.BOTH))
+        self.name = name
+        if not self.circular and self.start > self.end:
+            raise RegionError("START cannot be greater than END for linear regions.")
+
+    @staticmethod
+    def create(length, circular, direction=FORWARD, name=None, start_index=START_INDEX):
+        r = Region(start_index, start_index+1, length, circular, direction=direction, name=name, start_index=start_index)
+        return r
+
+    @property
+    def length(self):
+        return self.__length
+
+    @property
+    def circular(self):
+        return self.__circular
+
+    @property
+    def bounds_start(self):
+        return self.__bounds_start
+
+    @property
+    def bounds_end(self):
+        return self.length + self.bounds_start - 1
+
+    @property
+    def start(self):
+        """
+        Gets the start position of the region. Internally
+        reverses the start and end positions if direction is
+        reversed.
+        :return:
+        """
+        if self.direction == Region.REVERSE:
+            return self.__end
+        else:
+            return self.__start
+
+    @start.setter
+    def start(self, x):
+        """
+        Sets the start position of the region. Internally
+        reverses the start and end positions if direction is
+        reversed.
+        :return:
+        """
+        if self.direction == Region.REVERSE:
+            self.__end = self.translate_pos(x)
+        else:
+            self.__start = self.translate_pos(x)
+
+    @property
+    def end(self):
+        """
+        Gets the end position of the region. Internally
+        reverses the start and end positions if direction is
+        reversed.
+        :return:
+        """
+        if self.direction == Region.REVERSE:
+            return self.__start
+        else:
+            return self.__end
+
+    @end.setter
+    def end(self, x):
+        """
+        Sets the end position of the region. Internally
+        reverses the start and end positions if direction is
+        reversed.
+        :return:
+        """
+        if self.direction == Region.REVERSE:
+            self.__start = self.translate_pos(x)
+        else:
+            self.__end = self.translate_pos(x)
+
+    @property
+    def direction(self):
+        return self.__direction
+
+    def set_region_by_start_and_span(self, x, span):
+        if span <= 0:
+            raise RegionError("Cannot have a span of less than or equal to zero.")
+        self.start = x
+        self.end = x + span - 1
+        return self
+
+    def set_region_by_delta_start_and_span(self, deltax, span):
+        self.set_region_by_start_and_span(deltax + self.bounds_start, span)
+        return self
+
+    def translate_pos(self, pos):
+        if self.circular:
+            cleared = False
+            while not cleared:
+                cleared = True
+                if pos >= self.length + self.bounds_start:
+                    pos = pos - self.length
+                    cleared = False
+                if pos < self.bounds_start:
+                    pos = pos + self.length
+                    cleared = False
+        else:
+            if not self.within_bounds(pos, inclusive=True):
+                raise RegionError("Position {} outside of bounds for linear region [{} {}].".format(pos, self.bounds_start, self.bounds_end))
+        return pos
+
+    @property
+    def region_span(self):
+        if self.end >= self.start:
+            return self.end - self.start + 1
+        else:
+            if self.circular:
+                left = self.bounds_end - self.start + 1
+                right = self.end - self.bounds_start + 1
+                return left + right
+            else:
+                raise RegionError("START is greater than END for linear region.")
+
+    def within_region(self, pos, inclusive=True):
+        s = self.start
+        e = self.end
+        if not (self.within_bounds(s, inclusive=True) and self.within_bounds(e, inclusive=True)):
+            return False
+        if s > e:
+            if self.circular:
+                if inclusive:
+                    return s <= pos <= self.bounds_end or \
+                            self.bounds_start <= pos <= e
+                else:
+                    return s < pos <= self.bounds_end or \
+                           self.bounds_start <= pos < e
+            else:
+                raise RegionError("Cannot have START greater than END for non-circular regions.")
+        if inclusive:
+            return s <= pos <= e
+        else:
+            return s < pos < e
+
+    def within_bounds(self, pos, inclusive=True):
+        if inclusive:
+            return self.bounds_start <= pos <= self.bounds_end
+        else:
+            return self.bounds_start < pos < self.bounds_end
+
+
+
+class Contig(object):
     contig_id = 0
-
-    def __init__(self, **kwargs):
-        self.query_acc = kwargs['query_acc']
-        self.q_start = kwargs['q_start']
-        self.q_end = kwargs['q_end']
-        self.query_length = kwargs['query_length']
-        self.assign_id()
-
-    def get_length(self):
-        return self.q_end - self.q_start + 1
-
-    def json(self):
-        return self.__dict__
-
-    def assign_id(self):
-        Contig.contig_id += 1
-        self.contig_id = Contig.contig_id
-
-    def deepcopy(self):
-        c = deepcopy(self)
-        c.assign_id()
-        return c
-
-
-class Contig(QueryRegion):
     NEW_PRIMER = "new_primer"
     DIRECT_END = "direct"
 
@@ -109,21 +295,43 @@ class Contig(QueryRegion):
         )
 
     def __init__(self, **kwargs):
-        super(Contig, self).__init__(**kwargs)
-        self.subject_acc = kwargs['subject_acc']
+        subject_direction = Region.FORWARD
+        if kwargs['subject_strand'] == 'minus':
+            subject_direction = Region.REVERSE
+        # Subject region information
+        self.subject = Region(
+            kwargs['s_start'],
+            kwargs['s_end'],
+            kwargs['subject_length'],
+            kwargs['subject_circular'],
+            direction=subject_direction,
+            name=kwargs['subject_acc'],
+            start_index=Contig.START_INDEX
+        )
+        self.subject.strand = kwargs['subject_strand']
+        self.subject.seq = kwargs['subject_seq']
+
+        # Query region information
+        self.query = Region(
+            kwargs['q_start'],
+            kwargs['q_end'],
+            kwargs['query_length'],
+            kwargs['query_circular'],
+            name=kwargs['query_acc'],
+            direction=Region.FORWARD,
+            start_index=Contig.START_INDEX
+        )
+        self.query.seq = kwargs['query_seq']
+
+        # Alignment Information
         self.score = kwargs['score']
         self.evalue = kwargs['evalue']
         self.bit_score = kwargs['bit_score']
-        self.alignment_length = kwargs['alignment_length']
+        self.alignment_length = kwargs['alignment_length'] # for comparison
         self.identical = kwargs['identical']
         self.gap_opens = kwargs['gap_opens']
         self.gaps = kwargs['gaps']
-        self.subject_length = kwargs['subject_length']
-        self.s_start = kwargs['s_start']
-        self.s_end = kwargs['s_end']
-        self.subject_strand = kwargs['subject_strand']
-        self.query_seq = kwargs['query_seq']
-        self.subject_seq = kwargs['subject_seq']
+
         self.contig_type = kwargs['contig_type']
         self.assign_id()
         if 'end_label' not in kwargs:
@@ -148,9 +356,18 @@ class Contig(QueryRegion):
         if not self.circular:
             self.start_label = Contig.DIRECT_END
             self.end_label = Contig.DIRECT_END
-        for k in kwargs:
-            if k not in self.__dict__:
-                raise ValueError("Key {} not found in {} class definition".format(k, Contig.__class__.__name__))
+        # for k in kwargs:
+        #     if k not in self.__dict__:
+        #         raise ValueError("Key {} not found in {} class definition".format(k, Contig.__class__.__name__))
+
+    def assign_id(self):
+        Contig.contig_id += 1
+        self.contig_id = Contig.contig_id
+
+    def deepcopy(self):
+        c = deepcopy(self)
+        c.assign_id()
+        return c
 
     def is_direct(self):
         return self.start_label == Contig.DIRECT_END and self.end_label == Contig.DIRECT_END
@@ -195,7 +412,7 @@ class Contig(QueryRegion):
             s, start_label = start
             e, end_label = end
             if not include_contig:
-                if s == self.q_start and e == self.q_end:
+                if s == self.query.start and e == self.query.end:
                     continue
             try:
                 new_contig = self.break_contig(s, e, start_label=start_label, end_label=end_label)
@@ -210,25 +427,19 @@ class Contig(QueryRegion):
         return contigs
 
     def equivalent_location(self, other):
-        return other.q_start == self.q_start and other.q_end == self.q_end
-
-    def q_pos_within(self, pos, inclusive=True):
-        if inclusive:
-            return self.q_start <= pos <= self.q_end
-        else:
-            return self.q_start < pos < self.q_end
+        return other.query.start == self.query.start and other.query.end == self.query.end
 
     def overlaps(self, other, inclusive=True):
-        return other.q_pos_within(self.q_start, inclusive=inclusive) or \
-               other.q_pos_within(self.q_end, inclusive=inclusive)
+        return other.query.within_region(self.query.start, inclusive=inclusive) or \
+               other.query.within_region(self.query.end, inclusive=inclusive)
 
     def is_within(self, other, inclusive=True):
-        return other.q_pos_within(self.q_start, inclusive=inclusive) and \
-               other.q_pos_within(self.q_end, inclusive=inclusive)
+        return other.query.within_region(self.query.start, inclusive=inclusive) and \
+               other.query.within_region(self.query.end, inclusive=inclusive)
 
     # def is_within(self, other, inclusive=True):
-    #     return self.q_start >= other.q_start and self.q_end <= other.q_end
-
+    #     return self.query.start >= other.query.start and self.query.end <= other.query.end
+    # TODO: Reevaluate subject start and subject end after breaking
     def break_contig(self, q_start, q_end, start_label=None, end_label=None):
         """
         Breaks a contig at query start and end; copies over information
@@ -241,40 +452,41 @@ class Contig(QueryRegion):
         """
         if q_start > q_end:
             raise ContigError("query_start cannot be greater than query_end")
-        if not (self.q_pos_within(q_start, inclusive=True) and self.q_pos_within(q_end, inclusive=True)):
-            e = "break points [{}, {}] are outside bounds of contig bounds [{}, {}]".format(q_start, q_end, self.q_start, self.q_end)
+        if not (self.query.within_region(q_start, inclusive=True) and self.query.within_region(q_end, inclusive=True)):
+            e = "break points [{}, {}] are outside bounds of contig bounds [{}, {}]".format(q_start, q_end, self.query.start, self.query.end)
             raise ContigError('msg')
         new_contig = self.deepcopy()
-        new_contig.q_start = q_start
-        new_contig.q_end = q_end
 
+        # Set query region
+        new_contig.query.start = q_start
+        new_contig.query.end = q_end
 
+        # Set subject region
+        delta_start = q_start - self.query.start
+        delta_end = q_end - self.query.end
+        new_contig.subject.start += delta_start
+        new_contig.subject.end += delta_end
 
-        new_contig.s_start = convert_circular_position(self.s_start + (q_start - self.q_start), self.subject_length, 1)
-        new_contig.s_end = convert_circular_position(self.s_end - (self.q_end - q_end), self.subject_length, 1)
-
-
-
-        new_contig.alignment_length = q_end - q_start
+        new_contig.alignment_length = new_contig.query.region_span
         new_contig.parent_id = self.contig_id
         if start_label is not None:
             new_contig.start_label = start_label
         else:
-            if new_contig.q_start == self.q_start:
+            if new_contig.query.start == self.query.start:
                 new_contig.start_label = self.start_label
             else:
                 new_contig.start_label = Contig.DEFAULT_END
         if end_label is not None:
             new_contig.end_label = end_label
         else:
-            if new_contig.q_end == self.q_end:
+            if new_contig.query.end == self.query.end:
                 new_contig.end_label = self.end_label
             else:
                 new_contig.end_label = Contig.DEFAULT_END
         return new_contig
 
     def is_perfect_subject(self):
-        return self.alignment_length == self.subject_length and self.is_perfect_alignment()
+        return self.alignment_length == self.subject.length and self.is_perfect_alignment()
 
     def is_perfect_alignment(self):
         return self.alignment_length == self.identical and \
@@ -290,18 +502,18 @@ class Contig(QueryRegion):
 
         rev_primer_pos = []
         fwd_primer_pos = []
-        new_fwd_primer_pos = [(self.q_start, None)]
-        new_rev_primer_pos = [(self.q_end, None)]
+        new_fwd_primer_pos = [(self.query.start, None)]
+        new_rev_primer_pos = [(self.query.end, None)]
         for primer in primers:
-            direction = primer.subject_strand
+            direction = primer.subject.strand
             if direction == 'plus':
-                if self.q_pos_within(primer.q_start):
-                    fwd_primer_pos.append((primer.q_start, primer.contig_id))
-                    new_rev_primer_pos.append((primer.q_end, None))
+                if self.query.within_region(primer.query.start):
+                    fwd_primer_pos.append((primer.query.start, primer.contig_id))
+                    new_rev_primer_pos.append((primer.query.end, None))
             if direction == 'minus':
-                if self.q_pos_within(primer.q_end):
-                    rev_primer_pos.append((primer.q_end, primer.contig_id))
-                    new_fwd_primer_pos.append((primer.q_start, None))
+                if self.query.within_region(primer.query.end):
+                    rev_primer_pos.append((primer.query.end, primer.contig_id))
+                    new_fwd_primer_pos.append((primer.query.start, None))
         contigs = []
         contigs += self.divide_contig(fwd_primer_pos, rev_primer_pos, include_contig=False,
                                       contig_type=Contig.TYPE_PCR, circular=False)
@@ -316,10 +528,10 @@ class Contig(QueryRegion):
     def get_primers_within_bounds(self, primers, minimum_primer_anneal=15):
 
         def primer_within_bounds(primer):
-            if primer.subject_strand == 'plus':
-                return self.q_start + minimum_primer_anneal < primer.q_end < self.q_end
-            elif primer.subject_strand == 'minus':
-                return self.q_start < primer.q_start < self.q_end - minimum_primer_anneal
+            if primer.subject.strand == 'plus':
+                return self.query.start + minimum_primer_anneal < primer.query.end < self.query.end
+            elif primer.subject.strand == 'minus':
+                return self.query.start < primer.query.start < self.query.end - minimum_primer_anneal
             return False
 
         return filter(lambda x: primer_within_bounds(x), primers)
@@ -330,9 +542,11 @@ class Contig(QueryRegion):
                 self.end_label == other.end_label
 
     def json(self):
-        j = super(Contig, self).json()
+        j = self.__dict__
         for x in Contig.sequence_options:
             del j[x]
+        j['query'] = self.query.__dict__
+        j['subject'] = self.subject.__dict__
         return j
 
 
@@ -435,16 +649,16 @@ class ContigContainer(object):
         ga = defaultdict(list)
 
         def fuse_condition(l, r):
-            return l.subject_acc == r.subject_acc and \
-                   l.q_end + 1 == r.q_start and \
-                   l.subject_length == l.s_end and \
+            return l.subject.name == r.subject.name and \
+                   l.query.end + 1 == r.query.start and \
+                   l.subject.length == l.subject.end and \
                    l.circular and r.circular and \
                     l in self.contigs and \
                     r in self.contigs
 
         def fuse(l, r):
-            l.q_end = r.q_end
-            l.s_end = r.s_end
+            l.query.end = r.query.end
+            l.subject.end = r.subject.end
 
             keys_to_sum = 'alignment_length, gap_opens, gaps, identical, score'.split(', ')
             for k in keys_to_sum:
@@ -468,6 +682,7 @@ class ContigContainer(object):
         j['contigs'] = [x.json() for x in j['contigs']]
         del j['meta']['query_seq']
         del j['meta']['contig_seqs']
+
         with open(out, 'w') as output:
             json.dump(j, output)
 
@@ -476,7 +691,7 @@ class ContigContainer(object):
         Sorts contigs according to their query start
         :return:
         """
-        self.contigs = sorted(self.contigs, key=lambda x: x.q_start)
+        self.contigs = sorted(self.contigs, key=lambda x: x.query.start)
 
     def filter_perfect_subjects(self):
         """
@@ -525,14 +740,14 @@ class ContigContainer(object):
             all_alignments += new_alignments
         self.contigs += all_alignments
 
-    def break_long_contigs(self):
-        """
-        Breaks up contigs whose length is greater than the allowable subject length
-        :return:
-        """
-        new_contigs = []
-        for c in self.contigs:
-            if c.get_length
+    # def break_long_contigs(self):
+    #     """
+    #     Breaks up contigs whose length is greater than the allowable subject length
+    #     :return:
+    #     """
+    #     new_contigs = []
+    #     for c in self.contigs:
+    #         if c.get_length
 
 
     def break_contigs_at_endpoints(self, contig_type=Contig.TYPE_PCR):
@@ -549,21 +764,21 @@ class ContigContainer(object):
         new_contigs = []
         for c1 in self.contigs:
             for c2 in self.contigs:
-                if c1.q_pos_within(c2.q_end, inclusive=False): # if second contig overlaps with first contig
-                    # new_contigs.append(c1.break_contig(c1.q_start, c2.q_end, start_label=None, end_label=None))
-                    new_contigs.append(c1.break_contig(c2.q_end, c1.q_end, start_label=None, end_label=None))
-                if c1.q_pos_within(c2.q_start, inclusive=False):
-                    new_contigs.append(c1.break_contig(c1.q_start, c2.q_start, start_label=None, end_label=None))
-                    # new_contigs.append(c1.break_contig(c2.q_start, c1.q_end, start_label=None, end_label=None))
+                if c1.query.within_region(c2.query.end, inclusive=False): # if second contig overlaps with first contig
+                    # new_contigs.append(c1.break_contig(c1.query.start, c2.query.end, start_label=None, end_label=None))
+                    new_contigs.append(c1.break_contig(c2.query.end, c1.query.end, start_label=None, end_label=None))
+                if c1.query.within_region(c2.query.start, inclusive=False):
+                    new_contigs.append(c1.break_contig(c1.query.start, c2.query.start, start_label=None, end_label=None))
+                    # new_contigs.append(c1.break_contig(c2.query.start, c1.query.end, start_label=None, end_label=None))
         for n in new_contigs:
             n.contig_type = contig_type + ' (broken long contig)'
 
         for c1 in self.contigs:
-            end = c1.q_start + self.meta.query_length
-            if end < c1.query_length:
+            end = c1.query.start + self.meta.query_length
+            if end < c1.query.length:
                 for c2 in self.contigs:
-                    if c2.q_start < end < c2.q_end:
-                        n = c2.break_contig(c2.q_start, end)
+                    if c2.query.start < end < c2.query.end:
+                        n = c2.break_contig(c2.query.start, end)
                         n.contig_type = contig_type + ' (broken for circularization)'
                         new_contigs.append(n)
 
