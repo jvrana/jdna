@@ -37,34 +37,70 @@ class ContigContainerMeta(object):
         self.contig_seqs = contig_seqs
         self.__dict__.update(kwargs)
 
+class Region(object):
+    """
+    Classifies a region of DNA; can be circular or linear
+    """
+    START_INDEX = 1
 
-class QueryRegion(object):
+
+
+    def __init__(self, start, end, length, circular, name=None, start_index=START_INDEX):
+        """
+
+        :param start:
+        :param end:
+        :param length:
+        :param circular:
+        :param start_index:
+        """
+        self.start = self.translate_pos(start)
+        self.end = self.translate_pos(end)
+        self.length = length
+        self.circular = circular
+        self._start_index = start_index
+        self.name = name
+        self.verify()
+
+
+    def verify(self):
+        assert self._start_index <= self.start <= self.length + self._start_index
+        assert self._start_index <= self.end <= self.length + self._start_index
+
+    def translate_pos(self, pos):
+        if self.circular:
+            cleared = False
+            while not cleared:
+                cleared = True
+                if pos >= self.length + self._start_index:
+                    pos = pos - self.length
+                    cleared = False
+                if pos < self._start_index:
+                    pos = pos + self.length
+                    cleared = False
+        else:
+            assert self.within(pos)
+        return pos
+
+    def within(self, pos, inclusive=True):
+        if inclusive:
+            return self.get_start() <= pos <= self.get_end()
+        else:
+            return self.get_start() < pos < self.get_end()
+
+    def get_span(self):
+        return self.end - self.start + 1
+
+    def get_start(self):
+        return self._start_index
+
+    def get_end(self):
+        return self.length + self.get_start() - 1
+
+
+
+class Contig(object):
     contig_id = 0
-
-    def __init__(self, **kwargs):
-        self.query_acc = kwargs['query_acc']
-        self.q_start = kwargs['q_start']
-        self.q_end = kwargs['q_end']
-        self.query_length = kwargs['query_length']
-        self.assign_id()
-
-    def get_length(self):
-        return self.q_end - self.q_start + 1
-
-    def json(self):
-        return self.__dict__
-
-    def assign_id(self):
-        Contig.contig_id += 1
-        self.contig_id = Contig.contig_id
-
-    def deepcopy(self):
-        c = deepcopy(self)
-        c.assign_id()
-        return c
-
-
-class Contig(QueryRegion):
     NEW_PRIMER = "new_primer"
     DIRECT_END = "direct"
 
@@ -110,20 +146,39 @@ class Contig(QueryRegion):
 
     def __init__(self, **kwargs):
         super(Contig, self).__init__(**kwargs)
-        self.subject_acc = kwargs['subject_acc']
+
+        # Subject region information
+        self.subject = Region(
+            kwargs['s_start'],
+            kwargs['s_end'],
+            kwargs['subject_length'],
+            kwargs['circular'],
+            name=kwargs['subject_acc'],
+            start_index=Contig.START_INDEX
+        )
+        self.subject.strand = kwargs['subject_strand']
+        self.subject.seq = kwargs['subject_seq']
+
+        # Query region information
+        self.query = Region(
+            kwargs['q_start'],
+            kwargs['q_end'],
+            kwargs['query_length'],
+            kwargs['circular'],
+            name=kwargs['query_acc'],
+            start_index=Contig.START_INDEX
+        )
+        self.query.seq = kwargs['query_seq']
+
+        # Alignment Information
         self.score = kwargs['score']
         self.evalue = kwargs['evalue']
         self.bit_score = kwargs['bit_score']
-        self.alignment_length = kwargs['alignment_length']
+        self.alignment_length = kwargs['alignment_length'] # for comparison
         self.identical = kwargs['identical']
         self.gap_opens = kwargs['gap_opens']
         self.gaps = kwargs['gaps']
-        self.subject_length = kwargs['subject_length']
-        self.s_start = kwargs['s_start']
-        self.s_end = kwargs['s_end']
-        self.subject_strand = kwargs['subject_strand']
-        self.query_seq = kwargs['query_seq']
-        self.subject_seq = kwargs['subject_seq']
+
         self.contig_type = kwargs['contig_type']
         self.assign_id()
         if 'end_label' not in kwargs:
@@ -151,6 +206,18 @@ class Contig(QueryRegion):
         for k in kwargs:
             if k not in self.__dict__:
                 raise ValueError("Key {} not found in {} class definition".format(k, Contig.__class__.__name__))
+
+    def json(self):
+        return self.__dict__
+
+    def assign_id(self):
+        Contig.contig_id += 1
+        self.contig_id = Contig.contig_id
+
+    def deepcopy(self):
+        c = deepcopy(self)
+        c.assign_id()
+        return c
 
     def is_direct(self):
         return self.start_label == Contig.DIRECT_END and self.end_label == Contig.DIRECT_END
@@ -525,14 +592,14 @@ class ContigContainer(object):
             all_alignments += new_alignments
         self.contigs += all_alignments
 
-    def break_long_contigs(self):
-        """
-        Breaks up contigs whose length is greater than the allowable subject length
-        :return:
-        """
-        new_contigs = []
-        for c in self.contigs:
-            if c.get_length
+    # def break_long_contigs(self):
+    #     """
+    #     Breaks up contigs whose length is greater than the allowable subject length
+    #     :return:
+    #     """
+    #     new_contigs = []
+    #     for c in self.contigs:
+    #         if c.get_length
 
 
     def break_contigs_at_endpoints(self, contig_type=Contig.TYPE_PCR):

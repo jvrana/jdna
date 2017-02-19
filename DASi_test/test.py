@@ -44,6 +44,39 @@ contig_example = {
 
 
 
+def test_region():
+    s = 1
+    e = 2
+    l = 10
+    start_index = 0
+    r = Region(s, e, l, circular=True, start_index=start_index)
+    indices = range(start_index-3, start_index + l - 1 + 3)
+    values = np.arange(start_index, l+start_index)
+    print values
+    assert len(values) == l
+    for x in range(start_index-3, start_index + l - 1):
+        assert r.translate_pos(x) == values[x - start_index]
+        for x in range(start_index + l - 1, start_index + l - 1 + 3):
+            assert r.translate_pos(x) == values[x - len(values)]
+
+
+
+
+    # assert r.translate_pos(-1) == -1 + l
+    # assert r.translate_pos(l + start_index - 1 + 2) == start_index + 2 - 1
+
+
+
+    # for start_index in range(-2, 2):
+    #     indices = np.array(range(start_index - 10, l + 10))
+    #     new_indices = indices + start_index
+    #     for i, pos in enumerate(indices):
+    #         start_index = 0
+    #         r = Region(s, e, l, circular=True, start_index=start_index)
+    #         x = r.translate_pos(pos)
+    #         assert x == new_indices[i]
+
+
 def test_circular_pos():
     pos = 4
     length = 1000
