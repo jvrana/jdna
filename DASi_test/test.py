@@ -156,15 +156,15 @@ def test_pos_within():
     contig1.query.end = 2000
 
     pos = 1500
-    assert contig1.query.pos_within(pos)
+    assert contig1.query.within_region(pos)
 
     pos = 2001
-    assert not contig1.query.pos_within(pos)
+    assert not contig1.query.within_region(pos)
 
     for pos in [contig1.query.start, contig1.query.end]:
-        assert not contig1.query.pos_within(pos, inclusive=False)
+        assert not contig1.query.within_region(pos, inclusive=False)
     for pos in [contig1.query.start, contig1.query.end]:
-        assert contig1.query.pos_within(pos, inclusive=True)
+        assert contig1.query.within_region(pos, inclusive=True)
 
 def test_break_contig():
     contig1 = Contig(**contig_example)

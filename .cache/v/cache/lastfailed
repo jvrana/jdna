@@ -1,14 +1,4 @@
 {
   "DASi_test/test.py::test_blast_same": true, 
-  "DASi_test/test.py::test_break_contig": true, 
-  "DASi_test/test.py::test_contig_container": true, 
-  "DASi_test/test.py::test_contig_overlaps": true, 
-  "DASi_test/test.py::test_contig_within": true, 
-  "DASi_test/test.py::test_divide_contig": true, 
-  "DASi_test/test.py::test_is_equivalent": true, 
-  "DASi_test/test.py::test_pos_within": true, 
-  "DASi_test/test.py::test_pseudo_blast": true, 
-  "DASi_test/test.py::test_region": true, 
-  "DASi_test/test.py::test_reindexed_templates": true, 
-  "DASi_test/test.py::test_subject_break_contig": true
+  "DASi_test/test.py::test_pseudo_blast": true
 }

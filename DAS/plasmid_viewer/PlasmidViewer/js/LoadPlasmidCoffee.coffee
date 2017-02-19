@@ -109,8 +109,8 @@ app.controller('LoadPlasmids', ($scope, $http) ->
   $http({method: 'POST', url: '../../alignment_viewer/data.json'}).success((data) ->
     $scope.contigs = data
     $scope.contig_padding = 10
-    start = (x) -> x.q_start
-    end = (x) -> x.q_end
+    start = (x) -> x.query.start
+    end = (x) -> x.query.end
     sanitize_features(data.contigs, start, end, $scope.plasmid.length)
     data.contigs = sort_features(data.features, data.length)
     $scope.max_contig_shell = assign_features(data.contigs, data.length)

@@ -119,8 +119,8 @@
 
             <!--Primers-->
             <trackmarker ng-repeat="primer in primers.contigs"
-                         start="{{(primer.q_start > plasmid.length ? primer.q_start - plasmid.length : primer.q_start)}}"
-                         end="{{(primer.q_end > plasmid.length ? primer.q_end - plasmid.length : primer.q_end)}}"
+                         start="{{(primer.query.start > plasmid.length ? primer.query.start - plasmid.length : primer.query.start)}}"
+                         end="{{(primer.query.end > plasmid.length ? primer.query.end - plasmid.length : primer.query.end)}}"
                          markerstyle="stroke:rgba(255,0,0,0.5);stroke-width:0px" vadjust="0" wadjust="-9">
                 <markerlabel text="{{primer.subject_acc}}" class="mdlabel red" valign="outer" vadjust="250"
                              showline="1" linevadjust="-5" lineclass="labelline"></markerlabel>
@@ -139,31 +139,31 @@
             <!--assembly-->
             <trackmarker
                     ng-repeat="contig in assembly.contigs"
-                    start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"
-                    end="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"
+                    start="{{(contig.query.start > plasmid.length ? contig.query.start - plasmid.length : contig.query.start)}}"
+                    end="{{(contig.query.end > plasmid.length ? contig.query.end - plasmid.length : contig.query.end)}}"
                     markerstyle="fill:{{color()}}" wadjust="0" vadjust="0">
-                <markerlabel type="path" class="smlabel white" text="{{contig.subject_acc}}"></markerlabel>
+                <markerlabel type="path" class="smlabel white" text="{{contig.subject.name}}"></markerlabel>
                 <!--region boundary-->
                 <trackmarker
-                        start="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"
+                        start="{{(contig.query.start > plasmid.length ? contig.query.start - plasmid.length : contig.query.start)}}"
                         markerstyle="stroke:rgba(128,64,64,0.8)"
                         class="boundary"
                         wadjust="20"
                         valign="inner">
                     <markerlabel class="smlabel red"
-                                 text="{{(contig.q_start > plasmid.length ? contig.q_start - plasmid.length : contig.q_start)}}"
+                                 text="{{(contig.query.start > plasmid.length ? contig.query.start - plasmid.length : contig.query.start)}}"
                                  vadjust="-10" valign="inner">
 
                     </markerlabel>
                 </trackmarker>
-                <trackmarker start="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"
+                <trackmarker start="{{(contig.query.end > plasmid.length ? contig.query.end - plasmid.length : contig.query.end)}}"
                              markerstyle="stroke:rgba(128,64,64,0.8)"
                              class="boundary"
                              wadjust="-0"
                              valign="inner">
                     <markerlabel
                             class="smlabel red"
-                            text="{{(contig.q_end > plasmid.length ? contig.q_end - plasmid.length : contig.q_end)}}"
+                            text="{{(contig.query.end > plasmid.length ? contig.query.end - plasmid.length : contig.query.end)}}"
                             vadjust="-25" valign="inner">
 
                     </markerlabel>

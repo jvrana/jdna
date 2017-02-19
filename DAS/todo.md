@@ -25,8 +25,5 @@
 21. Check J5 and original goal have same sequence using jDNA
 22. Better formalization of cost structure
 23. Suggest long contig breaks
-24. Refactor CONTIG creation such that you add a query and subject and it calculates the length, start, ends, etc. with(json_dna1, json_dna2, position, direction))
-25. Fix condition in which origin overlaps fragmetns aren't used
 26. Project inputs and outpus should be JSON only, no more genbank files
 27. Create standardized JSON format for BenchlingAPI, JBEI API (mixture of TeseleaGen and Benchling JSON)
-28. Fix convention in which BLAST results start at index 1 but everything else starts at index 0
