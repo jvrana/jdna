@@ -247,6 +247,38 @@ class Region(object):
         else:
             return self.bounds_start < pos < self.bounds_end
 
+    def sub_region(self, s, e):
+        if self.within_region(s, inclusive=True) and self.within_region(e, inclusive=True):
+            r = Region(s, e, self.length, self.circular, direction=self.direction, name=self.name, start_index=self.bounds_start)
+            return r
+        else:
+            raise RegionError("Sub region bounds [{}-{}] outside of Region bounds [{}-{}]".format(s, e, self.bounds_start, self.bounds_end))
+
+    def consecutive_with(self, other):
+        after_self_pos = None
+        before_other_pos = None
+        try:
+            before_other_pos = other.translate_pos(other.start - 1)
+        except RegionError as e:
+            return False
+        try:
+            after_self_pos = self.translate_pos(self.end +1)
+        except RegionError as e:
+            return False
+        fusable = self.circular == other.circular and \
+                self.direction == other.direction and \
+                self.bounds_start == other.bounds_start and \
+                self.bounds_end == other.bounds_end and \
+                other.start == after_self_pos and \
+                self.end == before_other_pos
+        return fusable
+
+    def fuse(self, other):
+        if self.consecutive_with(other):
+            self.end += other.region_span
+            return self
+        else:
+            raise RegionError("Cannot fuse regions [{}-{}] with [{}-{}].".format(self.start, self.end, other.start, other.end))
 
 
 class Contig(object):
@@ -649,16 +681,15 @@ class ContigContainer(object):
         ga = defaultdict(list)
 
         def fuse_condition(l, r):
-            return l.subject.name == r.subject.name and \
-                   l.query.end + 1 == r.query.start and \
-                   l.subject.length == l.subject.end and \
-                   l.circular and r.circular and \
+            return l.subject.consecutive_with(r.subject) and \
+                    l.query.consecutive_with(r.query) and \
+                    l.subject.name == r.subject.name and \
                     l in self.contigs and \
                     r in self.contigs
 
         def fuse(l, r):
-            l.query.end = r.query.end
-            l.subject.end = r.subject.end
+            l.query.fuse(r.query)
+            l.subject.fuse(r.subject)
 
             keys_to_sum = 'alignment_length, gap_opens, gaps, identical, score'.split(', ')
             for k in keys_to_sum:

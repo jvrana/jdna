@@ -125,12 +125,63 @@ def test_region_span():
         print r.start, r.end, r.bounds_start, r.bounds_end
         print r.region_span
         assert r.region_span == span
+        return r
 
     f(200, 200, 1000, 0)
     f(5, 98, 100, 0)
     f(5, 98, 100, 10)
     f(5, 104, 100, 5)
 
+def test_subregion():
+    r = Region(20, 50, 100, False, start_index=0)
+    r.sub_region(20, 30)
+    s = r.sub_region(30,50)
+    assert s.start == 30
+    assert s.end == 50
+    with pytest.raises(RegionError):
+        r.sub_region(19, 30)
+    with pytest.raises(RegionError):
+        r.sub_region(30, 51)
+
+    r = Region(90, 10, 100, True, start_index=0)
+    s = r.sub_region(95, 5)
+    s_compare = Region(95, 5, 100, True, start_index=0)
+    assert s.start == 95
+    assert s.end == 5
+    assert s_compare.region_span == s.region_span
+
+def test_region_fuse():
+
+    r = Region(20, 50, 100, False, start_index=0)
+    r2 = Region(51, 70, 100, False, start_index=0)
+    assert r.consecutive_with(r2)
+    assert not r2.consecutive_with(r)
+
+    r = Region(20, 50, 100, False, start_index=0)
+    r2 = Region(51, 70, 100, False, start_index=1)
+    assert not r.consecutive_with(r2)
+    assert not r2.consecutive_with(r)
+
+    r = Region(95, 99, 100, False, start_index=0)
+    r2 = Region(0, 70, 100, False, start_index=0)
+    assert not r.consecutive_with(r2)
+    assert not r2.consecutive_with(r)
+
+    r = Region(95, 99, 100, True, start_index=0)
+    r2 = Region(0, 70, 100, True, start_index=0)
+    assert r.consecutive_with(r2)
+    assert not r2.consecutive_with(r)
+
+    r = Region(95, 100, 100, True, start_index=1)
+    r2 = Region(1, 70, 100, True, start_index=1)
+    assert r.consecutive_with(r2)
+    assert not r2.consecutive_with(r)
+
+    r.fuse(r2)
+    assert r.start == 95
+    assert r.end == 70
+    assert r2.start == 1
+    assert r2.end == 70
 
     # assert r.translate_pos(-1) == -1 + l
     # assert r.translate_pos(l + start_index - 1 + 2) == start_index + 2 - 1
@@ -479,7 +530,10 @@ def test_reindexed_templates():
     contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
     assert len(contig_container.contigs) > 1
 
+    contigs = contig_container.contigs
     contig_container.fuse_circular_fragments()
+    for c in contigs:
+        print c.query.name, c.query.start, c.query.end, c.query.length, c.subject.start, c.subject.end, c.query.length
     contig_container.remove_redundant_contigs(remove_equivalent=True, remove_within=True,
                                               no_removal_if_different_ends=True)
     assert len(contig_container.contigs) == 1
@@ -497,7 +551,7 @@ def test_blast_same():
     b.makedbfromdir()
     b.runblast()
     contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
-    contig_container.remove_redundant_contigs(remove_within=True)
+    # contig_container.remove_redundant_contigs(remove_within=True)
 
     contigs = contig_container.contigs
     for c in contigs:
