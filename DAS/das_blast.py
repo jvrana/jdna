@@ -52,7 +52,6 @@ class BLAST(object):
             self.query = prefix + '_pseudocircular.' + suffix
             save_sequence(self.query, seq + seq)
             self.query_circular = True
-        print "QUERY", self.query
 
     def save_query_info(self):
         self.query_circular = False
@@ -134,6 +133,7 @@ class BLAST(object):
                 for rev_match in re.finditer(str(rc_seq), str(query_seq)):
                     pass
 
+    # TODO: Handle circular subject and queries more cleanly
     def parse_results(self, contig_type=None, delimiter=','):
         '''
         This parses a tabulated blast result
@@ -179,6 +179,8 @@ class BLAST(object):
             if self.db_input_metadata:
                 if contig_dict['subject_acc'] in self.db_input_metadata:
                     contig_dict.update(self.db_input_metadata[contig_dict['subject_acc']])
+                    contig_dict['subject_circular'] = contig_dict['circular']
+                    contig_dict['query_circular'] = False
                     contig_container.add_contig(**contig_dict)
         meta['query_circular'] = self.query_circular
         meta['query_length'] = self.query_length

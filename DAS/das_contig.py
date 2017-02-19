@@ -24,6 +24,9 @@ class ContigError(Exception):
     def __init__(self, msg):
         self.msg = msg
 
+class RegionError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
 
 class ContigContainerMeta(object):
     def __init__(self, source=None, blastver=None, query='untitled', query_length=0, query_circular=False,
@@ -39,13 +42,47 @@ class ContigContainerMeta(object):
 
 class Region(object):
     """
-    Classifies a region of DNA; can be circular or linear
+    Classifies a region of a sequence. A region is defined by the inclusive "start" and "end"
+    positions in context of an arbitrary sequence defined by the start_index and length.
+
+    Regions can be circular or linear. For circular regions, negative indicies and indicies greater
+    than the length are allowable and will be converted to appropriate indices.
+
+    Direction of the region can be FORWARD or REVERSE or BOTH. For reversed directions, start
+    and end positions should be flipped.
+
+    Alternative start_index can be used (DEFAULT: 1) to handle sequences that start at 0 or 1.
+
+    A new Region can be created either by defining the start and end positions or defining the
+    start position and region_span by Region.create(length, circular)
+
+    E.g. Linear Region
+        length: 9
+        start_index: 1
+        start: 2
+        end: 5
+        region_span = 5-2+1 = 4
+        Context:  |-------|
+        C_Index:  1.......9
+        Region:    2..4
+
+    E.g. Circular Region
+        length: 9
+        start_index: 1
+        start: 8
+        end: 2
+        region_span = 4
+        Context:  |-------|
+        C_Index:  1.......9
+        Region:   .2     8.
     """
     START_INDEX = 1
+    FORWARD = 1
+    REVERSE = -1
+    BOTH = 2
 
 
-
-    def __init__(self, start, end, length, circular, name=None, start_index=START_INDEX):
+    def __init__(self, start, end, length, circular, direction=FORWARD, name=None, start_index=START_INDEX):
         """
 
         :param start:
@@ -55,54 +92,160 @@ class Region(object):
         :param start_index:
         """
 
-        self.length = length
-        self.circular = circular
-        self._start_index = start_index
-        self.start = self.translate_pos(start)
-        self.end = self.translate_pos(end)
+        self.__length = length # not allowed to reset length
+        self.__circular = circular # not allowed to reset length
+        self.__bounds_start = start_index # not allowed to reset length
+        self.__start = self.translate_pos(start)
+        self.__end = self.translate_pos(end)
+        self.__direction = direction #1 or -1
+        if self.direction not in [Region.FORWARD, Region.REVERSE, Region.BOTH]:
+            raise RegionError("Direction {} not understood. Direction must be Region.FORWARD = {}, Region.REVERSE = {},\
+             or Region.BOTH = {}".format(self.direction, Region.FORWARD, Region.BACKWARD, Region.BOTH))
         self.name = name
-        self.verify()
+        if not self.circular and self.start > self.end:
+            raise RegionError("START cannot be greater than END for linear regions.")
 
+    @staticmethod
+    def create(length, circular, direction=FORWARD, name=None, start_index=START_INDEX):
+        r = Region(start_index, start_index+1, length, circular, direction=direction, name=name, start_index=start_index)
+        return r
 
-    def verify(self):
-        assert self._start_index <= self.start <= self.length + self._start_index
-        assert self._start_index <= self.end <= self.length + self._start_index
+    @property
+    def length(self):
+        return self.__length
+
+    @property
+    def circular(self):
+        return self.__circular
+
+    @property
+    def bounds_start(self):
+        return self.__bounds_start
+
+    @property
+    def bounds_end(self):
+        return self.length + self.bounds_start - 1
+
+    @property
+    def start(self):
+        """
+        Gets the start position of the region. Internally
+        reverses the start and end positions if direction is
+        reversed.
+        :return:
+        """
+        if self.direction == Region.REVERSE:
+            return self.__end
+        else:
+            return self.__start
+
+    @start.setter
+    def start(self, x):
+        """
+        Sets the start position of the region. Internally
+        reverses the start and end positions if direction is
+        reversed.
+        :return:
+        """
+        if self.direction == Region.REVERSE:
+            self.__end = self.translate_pos(x)
+        else:
+            self.__start = self.translate_pos(x)
+
+    @property
+    def end(self):
+        """
+        Gets the end position of the region. Internally
+        reverses the start and end positions if direction is
+        reversed.
+        :return:
+        """
+        if self.direction == Region.REVERSE:
+            return self.__start
+        else:
+            return self.__end
+
+    @end.setter
+    def end(self, x):
+        """
+        Sets the end position of the region. Internally
+        reverses the start and end positions if direction is
+        reversed.
+        :return:
+        """
+        if self.direction == Region.REVERSE:
+            self.__start = self.translate_pos(x)
+        else:
+            self.__end = self.translate_pos(x)
+
+    @property
+    def direction(self):
+        return self.__direction
+
+    def set_region_by_start_and_span(self, x, span):
+        if span <= 0:
+            raise RegionError("Cannot have a span of less than or equal to zero.")
+        self.start = x
+        self.end = x + span - 1
+        return self
+
+    def set_region_by_delta_start_and_span(self, deltax, span):
+        self.set_region_by_start_and_span(deltax + self.bounds_start, span)
+        return self
 
     def translate_pos(self, pos):
         if self.circular:
             cleared = False
             while not cleared:
                 cleared = True
-                if pos >= self.length + self._start_index:
+                if pos >= self.length + self.bounds_start:
                     pos = pos - self.length
                     cleared = False
-                if pos < self._start_index:
+                if pos < self.bounds_start:
                     pos = pos + self.length
                     cleared = False
         else:
-            assert self.within_bounds(pos)
+            if not self.within_bounds(pos, inclusive=True):
+                raise RegionError("Position {} outside of bounds for linear region [{} {}].".format(pos, self.bounds_start, self.bounds_end))
         return pos
 
-    def within_region(self, pos, inclusive=True):
-        if inclusive:
-            return self.start <= pos <= self.end
+    @property
+    def region_span(self):
+        if self.end >= self.start:
+            return self.end - self.start + 1
         else:
-            return self.start < pos < self.end
+            if self.circular:
+                left = self.bounds_end - self.start + 1
+                right = self.end - self.bounds_start + 1
+                return left + right
+            else:
+                raise RegionError("START is greater than END for linear region.")
+
+    def within_region(self, pos, inclusive=True):
+        s = self.start
+        e = self.end
+        if not (self.within_bounds(s, inclusive=True) and self.within_bounds(e, inclusive=True)):
+            return False
+        if s > e:
+            if self.circular:
+                if inclusive:
+                    return s <= pos <= self.bounds_end or \
+                            self.bounds_start <= pos <= e
+                else:
+                    return s < pos <= self.bounds_end or \
+                           self.bounds_start <= pos < e
+            else:
+                raise RegionError("Cannot have START greater than END for non-circular regions.")
+        if inclusive:
+            return s <= pos <= e
+        else:
+            return s < pos < e
 
     def within_bounds(self, pos, inclusive=True):
         if inclusive:
-            return self.get_bounds_start() <= pos <= self.get_bounds_end()
+            return self.bounds_start <= pos <= self.bounds_end
         else:
-            return self.get_bounds_start() < pos < self.get_bounds_end()
-
-    def get_span(self):
-        return self.end - self.start + 1
-
-    def get_bounds_start(self):
-        return self._start_index
-
-    def get_bounds_end(self):
-        return self.length + self.get_bounds_start() - 1
+            return self.bounds_start < pos < self.bounds_end
 
 
 
@@ -152,13 +295,16 @@ class Contig(object):
         )
 
     def __init__(self, **kwargs):
-
+        subject_direction = Region.FORWARD
+        if kwargs['subject_strand'] == 'minus':
+            subject_direction = Region.REVERSE
         # Subject region information
         self.subject = Region(
             kwargs['s_start'],
             kwargs['s_end'],
             kwargs['subject_length'],
-            kwargs['circular'],
+            kwargs['subject_circular'],
+            direction=subject_direction,
             name=kwargs['subject_acc'],
             start_index=Contig.START_INDEX
         )
@@ -170,8 +316,9 @@ class Contig(object):
             kwargs['q_start'],
             kwargs['q_end'],
             kwargs['query_length'],
-            kwargs['circular'],
+            kwargs['query_circular'],
             name=kwargs['query_acc'],
+            direction=Region.FORWARD,
             start_index=Contig.START_INDEX
         )
         self.query.seq = kwargs['query_seq']
@@ -309,48 +456,18 @@ class Contig(object):
             e = "break points [{}, {}] are outside bounds of contig bounds [{}, {}]".format(q_start, q_end, self.query.start, self.query.end)
             raise ContigError('msg')
         new_contig = self.deepcopy()
-        new_contig.query.start = q_start
-        new_contig.query.        """
-        Breaks a contig at query start and end; copies over information
-        from self contig
-        :param q_start:
-        :param q_end:
-        :param start_label:
-        :param end_label:
-        :return:
-        """
-        if q_start > q_end:
-            raise ContigError("query_start cannot be greater than query_end")
-        if not (self.query.within_region(q_start, inclusive=True) and self.query.within_region(q_end, inclusive=True)):
-            e = "break points [{}, {}] are outside bounds of contig bounds [{}, {}]".format(q_start, q_end, self.query.start, self.query.end)
-            raise ContigError('msg')
-        new_contig = self.deepcopy()
+
+        # Set query region
         new_contig.query.start = q_start
         new_contig.query.end = q_end
 
-    do some shit here
-        new_contig.subject.start = new_contig.subject.start + (self.query.start - q_start)
+        # Set subject region
+        delta_start = q_start - self.query.start
+        delta_end = q_end - self.query.end
+        new_contig.subject.start += delta_start
+        new_contig.subject.end += delta_end
 
-        new_contig.alignment_length = q_end - q_start
-        new_contig.parent_id = self.contig_id
-        if start_label is not None:
-            new_contig.start_label = start_label
-        else:
-            if new_contig.query.start == self.query.start:
-                new_contig.start_label = self.start_label
-            else:
-                new_contig.start_label = Contig.DEFAULT_END
-        if end_label is not None:
-            new_contig.end_label = end_label
-        else:
-            if new_contig.query.end == self.query.end:
-                new_contig.end_label = self.end_label
-            else:
-                new_contig.end_label = Contig.DEFAULT_END
-        return new_contig
-end = q_end
-
-        new_contig.alignment_length = q_end - q_start
+        new_contig.alignment_length = new_contig.query.region_span
         new_contig.parent_id = self.contig_id
         if start_label is not None:
             new_contig.start_label = start_label

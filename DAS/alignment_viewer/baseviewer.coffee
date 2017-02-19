@@ -34,7 +34,7 @@ d3.json('data.json', (data) ->
 
 
 
-  query_len = data.contigs[0].query_length
+  query_len = data.contigs[0].query._Region__length
 
   xScale = d3.scaleLinear()
     .domain([0, query_len])
@@ -74,9 +74,9 @@ d3.json('data.json', (data) ->
     .data(data.contigs)
     .enter()
     .append('rect')
-    .attr('x', (d) -> xScale(d.q_start))
+    .attr('x', (d) -> xScale(d.query._Region__start))
     .attr('y', (d,i) -> yScale(i+2))
-    .attr('width', (d) -> xScale(d.q_end) - xScale(d.q_start))
+    .attr('width', (d) -> xScale(d.query._Region__end) - xScale(d.query._Region__start))
     .attr('height', contig_height)
     .attr('fill', fill)
     .attr('opacity', 0.9)
@@ -84,11 +84,11 @@ d3.json('data.json', (data) ->
       coordinates = d3.mouse(this)
       d3.select(this).style("fill", 'red')
       tooltip
-        .html('<b>Subject: </b>' + d.subject_acc + '<br>' +
-          '<b>QRange:\t</b> ' + d.q_start + '-' + d.q_end + '<br>' +
+        .html('<b>Subject: </b>' + d.subject.name + '<br>' +
+          '<b>QRange:\t</b> ' + d.query._Region__start + '-' + d.query._Region__end + '<br>' +
           '<b>Type:\t</b>' + d.contig_type + '<br>' +
           '<b>Id:\t</b>' + d.contig_id + '<br>' +
-          '<b>SRange:\t</b>' + d.s_start + '-' + d.s_end + '<br>' +
+          '<b>SRange:\t</b>' + d.subject._Region__start + '-' + d.subject._Region__end + '<br>' +
           '<b>Ends:\t</b>' + d.start_label + ' ' + d.end_label)
         .style("visibility", "visible"))
     .on("mousemove", () ->
@@ -103,7 +103,7 @@ d3.json('data.json', (data) ->
     .data(data.contigs)
     .enter()
     .append('rect')
-    .attr('x', (d) -> xScale(d.q_start))
+    .attr('x', (d) -> xScale(d.query._Region__start))
     .attr('y', (d,i) -> yScale(i+2))
     .attr('width', 2)
     .attr('height', contig_height)
@@ -118,7 +118,7 @@ d3.json('data.json', (data) ->
     .data(data.contigs)
     .enter()
     .append('rect')
-    .attr('x', (d) -> xScale(d.q_end - 2))
+    .attr('x', (d) -> xScale(d.query._Region__end - 2))
     .attr('y', (d,i) -> yScale(i+2))
     .attr('width', 2)
     .attr('height', contig_height)
@@ -135,9 +135,9 @@ d3.json('data.json', (data) ->
         .data(primerdata.contigs)
         .enter()
         .append('rect')
-        .attr('x', (d) -> xScale(d.q_start))
+        .attr('x', (d) -> xScale(d.query._Region__start))
         .attr('y', (d,i) -> yScale(0))
-        .attr('width', (d) -> xScale(d.q_end) - xScale(d.q_start))
+        .attr('width', (d) -> xScale(d.query._Region__end) - xScale(d.query._Region__start))
         .attr('height', query_height * 0.75)
         .attr('fill', "red")
         .attr('opacity', 1.35)
@@ -149,7 +149,7 @@ d3.json('data.json', (data) ->
         .enter()
         .append('text')
         .append('text')
-        .attr('x', (d) -> xScale(d.q_start))
+        .attr('x', (d) -> xScale(d.query._Region__start))
         .attr('y', (d,i) -> yScale(-2))
         .text('OK')
 

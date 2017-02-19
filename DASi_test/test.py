@@ -27,6 +27,8 @@ contig_example = {
           "bit_score": 310,
           "quality": 1.0,
           "subject_strand": "minus",
+            "subject_circular": True,
+            "query_circular": False,
           "q_start": 1,
           "q_end": 155,
           "s_start": 911,
@@ -42,6 +44,16 @@ contig_example = {
           "circular": True
         }
 
+def test_reverse_region():
+    s = 1
+    e = 2
+    l = 10
+    start_index = 0
+
+    r = Region(s, e, l, direction=Region.FORWARD, circular=True, start_index=start_index)
+
+    r = Region(e, s, l, direction=Region.REVERSE, circular=False, start_index=start_index)
+    r = Region(e, s, l, direction=Region.REVERSE, circular=True, start_index=start_index)
 
 
 def test_region():
@@ -59,7 +71,65 @@ def test_region():
         for x in range(start_index + l - 1, start_index + l - 1 + 3):
             assert r.translate_pos(x) == values[x - len(values)]
 
+    with pytest.raises(RegionError):
+        Region(500, 100, 1000, circular=False)
 
+    start_index = 10
+    r = Region(100, 500, 1000, True, start_index=start_index)
+    assert r.bounds_start == start_index
+    assert r.bounds_end == start_index + r.length - 1
+
+
+def test_region_within():
+    r = Region(1000, 2000, 4000, circular=True, start_index=1)
+    assert r.within_region(1000, inclusive=True)
+    assert not r.within_region(1000, inclusive=False)
+    assert r.within_region(1500, inclusive=True)
+    assert r.within_region(2000, inclusive=True)
+    assert not r.within_region(2000, inclusive=False)
+    assert not r.within_region(2001, inclusive=True)
+    assert not r.within_region(999, inclusive=True)
+
+    r = Region(900, 100, 1000, circular=True, start_index=1)
+    assert r.within_region(1, inclusive=True)
+    assert r.within_region(10, inclusive=True)
+    assert r.within_region(901, inclusive=True)
+    assert not r.within_region(0, inclusive=True)
+    assert r.within_region(900, inclusive=True)
+    assert not r.within_region(900, inclusive=False)
+    assert not r.within_region(100, inclusive=False)
+    assert r.within_region(100, inclusive=True)
+
+
+
+def test_set_region():
+    r = Region(100, 900, 1000, circular=True, start_index=10)
+
+    start = 100
+    span = 50
+    r.set_region_by_start_and_span(start, span)
+    assert r.region_span == span
+    assert r.start == start
+    assert r.end == r.start + r.region_span - 1
+
+    with pytest.raises(RegionError):
+        r.set_region_by_start_and_span(100, 0)
+
+    r.set_region_by_start_and_span(900, 200)
+    print r.start, r.end, r.region_span
+
+def test_region_span():
+    # TODO: fix span calculation for circular spans
+    def f(span, start, length, start_index):
+        r = Region.create(length, True, start_index=start_index).set_region_by_start_and_span(start, span)
+        print r.start, r.end, r.bounds_start, r.bounds_end
+        print r.region_span
+        assert r.region_span == span
+
+    f(200, 200, 1000, 0)
+    f(5, 98, 100, 0)
+    f(5, 98, 100, 10)
+    f(5, 104, 100, 5)
 
 
     # assert r.translate_pos(-1) == -1 + l
@@ -75,32 +145,6 @@ def test_region():
     #         r = Region(s, e, l, circular=True, start_index=start_index)
     #         x = r.translate_pos(pos)
     #         assert x == new_indices[i]
-
-
-def test_circular_pos():
-    pos = 4
-    length = 1000
-    start_index = 0
-    new = convert_circular_position(pos, length, start_index)
-    assert new == pos
-
-    pos = 4
-    length = 1000
-    start_index = 0
-    new = convert_circular_position(length + start_index, length, start_index)
-    assert new == start_index
-
-    pos = 4
-    length = 1000
-    start_index = 1
-    new = convert_circular_position(pos, length, start_index)
-    assert new == pos
-
-    pos = 4
-    length = 1000
-    start_index = 1
-    new = convert_circular_position(length + start_index, length, start_index)
-    assert new == start_index
 
 def test_contig_within():
 
@@ -239,7 +283,7 @@ def test_subject_break_contig():
     contig1.query.end = 2000
     contig1.subject.start = 100
     contig1.subject.end = 2100
-    contig1.query.length = 2000
+    contig1.query.__length = 4000
 
 def create_contigs(list_of_start_and_ends):
     contigs = []
@@ -453,16 +497,18 @@ def test_blast_same():
     b.makedbfromdir()
     b.runblast()
     contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
-    contig_container.fuse_circular_fragments()
     contig_container.remove_redundant_contigs(remove_within=True)
 
     contigs = contig_container.contigs
     for c in contigs:
-        print c.query.acc, c.query.start, c.query.end, c.query.length, c.subject.start, c.subject.end, c.query.length
+        print c.query.name, c.query.start, c.query.end, c.query.length, c.subject.start, c.subject.end, c.query.length
 
+    # One contig for each  in a pseudo circular query
     assert len(contig_container.contigs) == 2 # because its circular
 
-
+    # Fuse the fragments and there should only be one contig
+    contig_container.fuse_circular_fragments()
+    assert len(contig_container.contigs) == 1
 def test_pseudo_blast():
     design_path = 'data/blast_test/designs/pmodkan-ho-pact1-z4-er-vpr.gb'
     p = BLAST('primerdb', 'data/blast_test/primers', design_path, '', 'database/primerresults.out')

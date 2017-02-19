@@ -27,3 +27,4 @@
 23. Suggest long contig breaks
 26. Project inputs and outpus should be JSON only, no more genbank files
 27. Create standardized JSON format for BenchlingAPI, JBEI API (mixture of TeseleaGen and Benchling JSON)
+28. Handle reverse parts in J5 and BLAST
