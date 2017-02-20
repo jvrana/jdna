@@ -404,7 +404,7 @@ Breakdown {totalcost}
         )
         return summary_str
 
-
+import xmlrpc.client
 class J5Assembly(Assembly):
     PARTLABELS = ['Part Name', 'Part Source (Sequence Display ID)', 'Reverse Compliment?', 'Start (bp)', 'End (bp)',
                   'Five Prime Internal Preferred Overhangs?', 'Three Prime Internal Preferred Overhangs?']
@@ -424,7 +424,7 @@ class J5Assembly(Assembly):
         super(J5Assembly, self).__init__(assembly.contigs, assembly.contig_container, assembly.primer_container)
         self.params = None
         self.proxy_home = 'https://j5.jbei.org/bin/j5_xml_rpc.pl'
-        self.proxy = xmlrpclib.ServerProxy('https://j5.jbei.org/bin/j5_xml_rpc.pl')
+        self.proxy = xmlrpc.client.ServerProxy('https://j5.jbei.org/bin/j5_xml_rpc.pl', verbose=True)
         self.session = None
         self.session_id = None
 
@@ -533,7 +533,7 @@ class J5Assembly(Assembly):
         for c in self.contigs:
             print '\tSEQ: {}  @  {}'.format(os.path.basename(c.filename), c.seqrecord.id)
             sequences.append((c.filename, c.seqrecord.id,))
-        rows = list(set(sequences))
+        sequences = list(set(sequences))
 
         # Save sequence_list
 

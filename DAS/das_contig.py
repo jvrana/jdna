@@ -16,7 +16,6 @@ import base64
 import tempfile
 import os
 import zipfile
-import xmlrpclib
 from das_seqio import *
 from das_utilities import *
 
@@ -353,7 +352,7 @@ class Contig(object):
                 self.__dict__[opt] = None
 
         # TODO: this implies a direct synthesis, change this to add separate
-        if not self.circular:
+        if not self.circular and self.is_perfect_subject():
             self.start_label = Contig.DIRECT_END
             self.end_label = Contig.DIRECT_END
         # for k in kwargs:
