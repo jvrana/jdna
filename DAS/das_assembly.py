@@ -10,7 +10,7 @@ Description:
 
 from das_contig import *
 
-
+# TODO: Assembly is speghetti code, utilize the Region class to fix using 'pseudocircular' queries
 class AssemblyGraph(ContigContainer):
     def __init__(self, primers=None, contigs=None):
         super(AssemblyGraph, self).__init__(meta=contigs.meta.__dict__, contigs=contigs.contigs)
@@ -325,14 +325,17 @@ class Assembly(ContigContainer):
         l_pos = left.query.end
         r_pos = right.query.start
 
-        homology = left.query.get_overlap(right.query)
-        gap = left.query.get_gap(right.query)
-        cons = left.query.consecutive_with(right.query)
-        print homology, gap, cons
-        if homology is not None:
-            print homology.region_span
-        if gap is not None:
-            print gap.region_span
+
+        # TODO: change assembly condition to use GAPS and OVERLAPS from the Region class
+        # homology = left.query.get_overlap(right.query)
+        # gap = left.query.get_gap(right.query)
+        # cons = left.query.consecutive_with(right.query)
+        # print homology, gap, cons
+        # if homology is not None:
+        #     print homology.region_span
+        # if gap is not None:
+        #     print gap.region_span
+        # return left.query.get_gap_degree(right.query) > -Assembly.MAX_HOMOLOGY
 
         # return r_pos == l_pos + 1 # if its consecutive
         return r_pos > l_pos - r_3prime_threshold and \
@@ -390,6 +393,7 @@ Contig Breakdown
 {contigs}
 Breakdown {totalcost}
 \tGap Cost: {gaps}, ${gapcost}
+\tSubject: {subjects}
 \tAssembled Span: {span}
 \tUnassembled Span: {uspan}, ${uspancost}
 \tFragment Costs: ${fragcost}, {fragbreakdown}
@@ -411,7 +415,8 @@ Breakdown {totalcost}
             query=self.meta.query,
             querylength=self.meta.query_length,
             newsynth=self.new_synthesis_cost(),
-            probability=self.assembly_probability
+            probability=self.assembly_probability,
+            subjects=[x.subject.name for x in self.contigs]
         )
         return summary_str
 
@@ -485,12 +490,14 @@ class J5Assembly(Assembly):
         with open('j5_parameters.csv') as params:
             self.parameters = J5Assembly.encode64(params.read())
 
+
     def get_target(self):
         rows = []
         for c in self.contigs:
+            direction = 'forward'
             row = [
                 c.contig_id,
-                'forward',
+                direction,
                 '',
                 '',
                 '',
@@ -506,7 +513,7 @@ class J5Assembly(Assembly):
             row = [
                 c.contig_id,
                 c.seqrecord.id,
-                str(False).upper(),
+                str(c.subject.direction == Region.FORWARD),
                 c.subject.start,
                 c.subject.end,
                 '',

@@ -236,6 +236,10 @@ class Region(object):
                 raise RegionError("START is greater than END for linear region.")
 
     def within_region(self, pos, inclusive=True):
+        try:
+            pos = self.translate_pos(pos)
+        except RegionError as e:
+            return False
         s = self.start
         e = self.end
         if not (self.within_bounds(s, inclusive=True) and self.within_bounds(e, inclusive=True)):
@@ -315,9 +319,17 @@ class Region(object):
             return None
         if self.no_overlap(other):
             r = self.copy()
-            r.start = self.end + 1
-            r.end = other.start - 1
-            return r
+            s = self.end + 1
+            e = other.start - 1
+            try:
+                s = self.translate_pos(s)
+                e = self.translate_pos(e)
+            except RegionError:
+                return None
+            if self.within_bounds(s) and self.within_bounds(e):
+                r.start = s
+                r.end = e
+                return r
         else:
             return None
 
@@ -348,14 +360,15 @@ class Region(object):
                and self.within_region(other.start, inclusive=True) \
                and other.within_region(self.end, inclusive=True)
 
+    # TODO: get_gap_degree(other) is never used
     def get_gap_degree(self, other):
         overlap = self.get_overlap(other)
-        gap = self.get_gap(other)
         cons = self.consecutive_with(other)
         if cons:
             return 0
         if overlap is not None:
             return -overlap.region_span
+        gap = self.get_gap(other)
         if gap is not None:
             return gap.region_span
 
@@ -473,7 +486,7 @@ class Contig(object):
                 self.__dict__[opt] = None
 
         # TODO: this implies a direct synthesis, change this to add separate
-        if not self.circular:
+        if not self.circular and self.is_perfect_subject():
             self.start_label = Contig.DIRECT_END
             self.end_label = Contig.DIRECT_END
         # for k in kwargs:
@@ -622,12 +635,12 @@ class Contig(object):
         new_fwd_primer_pos = [(self.query.start, None)]
         new_rev_primer_pos = [(self.query.end, None)]
         for primer in primers:
-            direction = primer.subject.strand
-            if direction == 'plus':
+            direction = primer.subject.direction
+            if direction == Region.FORWARD:
                 if self.query.within_region(primer.query.start):
                     fwd_primer_pos.append((primer.query.start, primer.contig_id))
                     new_rev_primer_pos.append((primer.query.end, None))
-            if direction == 'minus':
+            elif direction == Region.REVERSE:
                 if self.query.within_region(primer.query.end):
                     rev_primer_pos.append((primer.query.end, primer.contig_id))
                     new_fwd_primer_pos.append((primer.query.start, None))
@@ -866,6 +879,19 @@ class ContigContainer(object):
     #         if c.get_length
 
 
+    def break_contigs_for_circularization(self, contig_type=Contig.TYPE_PCR):
+        new_contigs = []
+        for c1 in self.contigs:
+            end = c1.query.start + self.meta.query_length
+            if end < c1.query.length:
+                for c2 in self.contigs:
+                    if c2.query.start < end < c2.query.end:
+                        n = c2.break_contig(c2.query.start, end)
+                        n.contig_type = contig_type + ' (broken for circularization)'
+                        new_contigs.append(n)
+
+        self.contigs += new_contigs
+
     def break_contigs_at_endpoints(self, contig_type=Contig.TYPE_PCR):
         """
         Breaks long contigs at endpoints of overlapping contigs
@@ -881,21 +907,12 @@ class ContigContainer(object):
         for c1 in self.contigs:
             for c2 in self.contigs:
                 if c1.query.within_region(c2.query.end, inclusive=False): # if second contig overlaps with first contig
-                    # new_contigs.append(c1.break_contig(c1.query.start, c2.query.end, start_label=None, end_label=None))
+                    new_contigs.append(c1.break_contig(c1.query.start, c2.query.end, start_label=None, end_label=None))
                     new_contigs.append(c1.break_contig(c2.query.end, c1.query.end, start_label=None, end_label=None))
                 if c1.query.within_region(c2.query.start, inclusive=False):
                     new_contigs.append(c1.break_contig(c1.query.start, c2.query.start, start_label=None, end_label=None))
-                    # new_contigs.append(c1.break_contig(c2.query.start, c1.query.end, start_label=None, end_label=None))
+                    new_contigs.append(c1.break_contig(c2.query.start, c1.query.end, start_label=None, end_label=None))
         for n in new_contigs:
             n.contig_type = contig_type + ' (broken long contig)'
-
-        for c1 in self.contigs:
-            end = c1.query.start + self.meta.query_length
-            if end < c1.query.length:
-                for c2 in self.contigs:
-                    if c2.query.start < end < c2.query.end:
-                        n = c2.break_contig(c2.query.start, end)
-                        n.contig_type = contig_type + ' (broken for circularization)'
-                        new_contigs.append(n)
 
         self.contigs += new_contigs

@@ -55,14 +55,22 @@ primer_container.filter_perfect_subjects()
 # primer_container.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
 primer_container.dump('alignment_viewer/primer_data.json')
 
-
+print "Making Assembly Graph"
 assembly = AssemblyGraph(primers=primer_container, contigs=contig_container)
+print "Expanding Contigs"
 assembly.expand_contigs(primer_container.contigs)
 
-
+print "Breaking Contigs"
+assembly.break_contigs_for_circularization()
 assembly.break_contigs_at_endpoints()
+assembly.break_contigs_for_circularization()
+assembly.break_contigs_at_endpoints()
+# assembly.break_contigs_at_endpoints()
+# assembly.break_contigs_at_endpoints()
 # assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
+print "Removing Redundant Contigs"
 assembly.remove_redundant_contigs(remove_equivalent=True, remove_within=False, no_removal_if_different_ends=True)
+print "Sorting Contigs"
 assembly.sort_contigs()
 assembly.dump('alignment_viewer/data.json')
 
@@ -106,6 +114,8 @@ j5.decode_all_to('assembly_parameters')
 r = j5.submit(**credentials)
 if 'error_message' in r:
     print r['error_message']
+else:
+    print "Successful!"
 with open('assembly_parameters/results.zip', 'w') as handle:
     handle.write(J5Assembly.decode64(r['encoded_output_file']))
 # Parse assembly

@@ -28,3 +28,6 @@
 27. Create standardized JSON format for BenchlingAPI, JBEI API (mixture of TeseleaGen and Benchling JSON)
 28. Handle reverse parts in J5 and BLAST
 29. Phylogenetic tree of possible assemblies
+30. Find negative gaps and set internal preferred overhang to those gaps for j5
+31. Write some j5 test cases
+32. J5 parser

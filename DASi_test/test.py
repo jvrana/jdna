@@ -99,7 +99,7 @@ def test_region_within():
     assert r.within_region(1, inclusive=True)
     assert r.within_region(10, inclusive=True)
     assert r.within_region(901, inclusive=True)
-    assert not r.within_region(0, inclusive=True)
+    assert r.within_region(0, inclusive=True)
     assert r.within_region(900, inclusive=True)
     assert not r.within_region(900, inclusive=False)
     assert not r.within_region(100, inclusive=False)
@@ -336,6 +336,7 @@ def test_break_contig():
     contig1 = Contig(**contig_example)
     contig1.query.start = 1000
     contig1.query.end = 2000
+    contig1.query._Region__circular = False
 
     with pytest.raises(ContigError) as e:
         contig1.break_contig(3000, 4000)
@@ -631,6 +632,21 @@ def test_blast_same():
 
     # Fuse the fragments and there should only be one contig
     assert len(contig_container.contigs) == 1
+
+def test_blast_reverse_complement():
+    b = BLAST('db', 'data/blast_test/rc_template', 'data/blast_test/rc_design/pnl1105_pgp8g2-ccdb.gb', 'data/blast_results', 'data/blast_results/results.out', evalue=10.0, ungapped='',
+              penalty=-100, perc_identity=100)
+    b.makedbfromdir()
+    b.runblast()
+    contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
+
+    contig_container.fuse_circular_fragments()
+    contig_container.remove_redundant_contigs(remove_within=True)
+
+    contigs = contig_container.contigs
+    for c in contigs:
+        print c.query.name, c.query.start, c.query.end, c.query.length, c.subject.start, c.subject.end, c.query.length, c.subject.direction
+
 
 
 def test_pseudo_blast():
