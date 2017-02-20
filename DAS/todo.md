@@ -1,0 +1,33 @@
+# TODO
+1. Use different parser, store all files as json files for communication
+2. Update j5 Interface (correct the XMLRPCLIB errors
+4. Update BLAST so that temp databases are used instead
+5. Merge j5 parameter file with cost function file
+5. Multithreading j5 submission
+5. Add suggested sequencing primers
+5. Deploy Django user interface
+6. Deploy JBEI integration
+7. Deploy JBEI on EC2 instance (or on Biofab AWS)
+9. Add true circular subject search
+9. Fix remove redundant contigs ('except contig_type')
+11. Separate out Fragments (used directly in a reaction) from plasmids
+(that must be pcr amplified)
+12. Find sequencing primers for junctions, account for that in the cost
+13. Use node.js for live update on assembly
+14. Heirarchical assemblies (primer layers, prc'ing off of gibsons)
+15. Fix disagreements between query start in blast and start index 0
+16. Speed improvments for high complexity (high Query, low length) assemblies
+17. Implement costs and part quality for backtracing
+18. Implement 'robustness' or assemblies that are robust against failings
+19. Direct sequences get internal preferred overhang in j5
+20. J5 Output Parser
+21. Check J5 and original goal have same sequence using jDNA
+22. Better formalization of cost structure
+23. Suggest long contig breaks
+26. Project inputs and outpus should be JSON only, no more genbank files
+27. Create standardized JSON format for BenchlingAPI, JBEI API (mixture of TeseleaGen and Benchling JSON)
+28. Handle reverse parts in J5 and BLAST
+29. Phylogenetic tree of possible assemblies
+30. Find negative gaps and set internal preferred overhang to those gaps for j5
+31. Write some j5 test cases
+32. J5 parser

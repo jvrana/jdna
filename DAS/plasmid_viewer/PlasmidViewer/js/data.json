@@ -1,0 +1,1003 @@
+[
+  {
+    "features": [
+      {
+        "locus_tag": [],
+        "name": "pGEX_3_primer",
+        "stop": 51,
+        "modified": false,
+        "start": 28,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#84b0dc"
+          ],
+          "ApEinfo_revcolor": [
+            "#84b0dc"
+          ],
+          "label": [
+            "pGEX_3_primer"
+          ]
+        },
+        "strand": 1,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "pMOD_t1pre",
+        "stop": 154,
+        "modified": false,
+        "start": 132,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#0064ff"
+          ],
+          "ApEinfo_revcolor": [
+            "#0064ff"
+          ],
+          "label": [
+            "pMOD_t1pre"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "PmeI",
+        "stop": 162,
+        "modified": false,
+        "start": 154,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#ff0000"
+          ],
+          "ApEinfo_revcolor": [
+            "#ff0000"
+          ],
+          "label": [
+            "PmeI"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "HO Targeting 1",
+        "stop": 725,
+        "modified": false,
+        "start": 162,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#85dae9"
+          ],
+          "ApEinfo_revcolor": [
+            "#85dae9"
+          ],
+          "label": [
+            "HO Targeting 1"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "pMOD_t1suf",
+        "stop": 755,
+        "modified": false,
+        "start": 725,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#0071ff"
+          ],
+          "ApEinfo_revcolor": [
+            "#0071ff"
+          ],
+          "label": [
+            "pMOD_t1suf"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "KANMX Wach et al 1994 (genome del. project)",
+        "stop": 1152,
+        "modified": false,
+        "start": 755,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#ffef86"
+          ],
+          "ApEinfo_revcolor": [
+            "#ffef86"
+          ],
+          "label": [
+            "KANMX Wach et al 1994 (genome del. project)"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "KAN CDS",
+        "stop": 1470,
+        "modified": false,
+        "start": 1152,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#84b0dc"
+          ],
+          "ApEinfo_revcolor": [
+            "#84b0dc"
+          ],
+          "label": [
+            "KAN CDS"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "KanMX CDS",
+        "stop": 1962,
+        "modified": false,
+        "start": 1152,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#9eafd2"
+          ],
+          "ApEinfo_revcolor": [
+            "#9eafd2"
+          ],
+          "label": [
+            "KanMX CDS"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "KanMX terminator",
+        "stop": 2200,
+        "modified": false,
+        "start": 1962,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#ffef86"
+          ],
+          "ApEinfo_revcolor": [
+            "#ffef86"
+          ],
+          "label": [
+            "KanMX terminator"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "M13 Forward (-47) primer",
+        "stop": 2224,
+        "modified": false,
+        "start": 2200,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#b1ff67"
+          ],
+          "ApEinfo_revcolor": [
+            "#b1ff67"
+          ],
+          "label": [
+            "M13 Forward (-47) primer"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "primer_bind"
+      },
+      {
+        "locus_tag": [],
+        "name": "pACT1",
+        "stop": 2885,
+        "modified": false,
+        "start": 2224,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#ffef86"
+          ],
+          "ApEinfo_revcolor": [
+            "#ffef86"
+          ],
+          "label": [
+            "pACT1"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "Primer 2047: pACT1 tail rev",
+        "stop": 2940,
+        "modified": false,
+        "start": 2911,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#f58a5e"
+          ],
+          "ApEinfo_revcolor": [
+            "#f58a5e"
+          ],
+          "label": [
+            "Primer 2047: pACT1 tail rev"
+          ]
+        },
+        "strand": 1,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "Extra sequence not found in Gottschling map",
+        "stop": 2932,
+        "modified": false,
+        "start": 2921,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#85dae9"
+          ],
+          "ApEinfo_revcolor": [
+            "#85dae9"
+          ],
+          "label": [
+            "Extra sequence not found in Gottschling map"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "Z4EV-DBD",
+        "stop": 3291,
+        "modified": false,
+        "start": 2940,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#85dae9"
+          ],
+          "ApEinfo_revcolor": [
+            "#85dae9"
+          ],
+          "label": [
+            "Z4EV-DBD"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "hER HBD",
+        "stop": 4218,
+        "modified": false,
+        "start": 3333,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#ffef86"
+          ],
+          "ApEinfo_revcolor": [
+            "#ffef86"
+          ],
+          "label": [
+            "hER HBD"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "GSG linker",
+        "stop": 4227,
+        "modified": false,
+        "start": 4218,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#b1ff67"
+          ],
+          "ApEinfo_revcolor": [
+            "#b1ff67"
+          ],
+          "label": [
+            "GSG linker"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "VPR",
+        "stop": 5919,
+        "modified": false,
+        "start": 4227,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#c6c9d1"
+          ],
+          "ApEinfo_revcolor": [
+            "#c6c9d1"
+          ],
+          "label": [
+            "VPR"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "SV40 NLS",
+        "stop": 4260,
+        "modified": false,
+        "start": 4239,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#b1ff67"
+          ],
+          "ApEinfo_revcolor": [
+            "#b1ff67"
+          ],
+          "label": [
+            "SV40 NLS"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "NLS",
+        "stop": 4260,
+        "modified": false,
+        "start": 4245,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#ff9ccd"
+          ],
+          "ApEinfo_revcolor": [
+            "#ff9ccd"
+          ],
+          "label": [
+            "NLS"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "attB1",
+        "stop": 4321,
+        "modified": false,
+        "start": 4296,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#c6c9d1"
+          ],
+          "ApEinfo_revcolor": [
+            "#c6c9d1"
+          ],
+          "label": [
+            "attB1"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "attB1",
+        "stop": 4318,
+        "modified": false,
+        "start": 4297,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#c7b0e3"
+          ],
+          "ApEinfo_revcolor": [
+            "#c7b0e3"
+          ],
+          "label": [
+            "attB1"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_recomb"
+      },
+      {
+        "locus_tag": [],
+        "name": "Gateway recomb1",
+        "stop": 4318,
+        "modified": false,
+        "start": 4297,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#f58a5e"
+          ],
+          "ApEinfo_revcolor": [
+            "#f58a5e"
+          ],
+          "label": [
+            "Gateway recomb1"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "VP16",
+        "stop": 4383,
+        "modified": false,
+        "start": 4350,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#b1ff67"
+          ],
+          "ApEinfo_revcolor": [
+            "#b1ff67"
+          ],
+          "label": [
+            "VP16"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "VP16",
+        "stop": 4422,
+        "modified": false,
+        "start": 4389,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#b1ff67"
+          ],
+          "ApEinfo_revcolor": [
+            "#b1ff67"
+          ],
+          "label": [
+            "VP16"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "VP16",
+        "stop": 4461,
+        "modified": false,
+        "start": 4428,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#b1ff67"
+          ],
+          "ApEinfo_revcolor": [
+            "#b1ff67"
+          ],
+          "label": [
+            "VP16"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "VP16",
+        "stop": 4500,
+        "modified": false,
+        "start": 4467,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#b1ff67"
+          ],
+          "ApEinfo_revcolor": [
+            "#b1ff67"
+          ],
+          "label": [
+            "VP16"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "SV40 NLS",
+        "stop": 4548,
+        "modified": false,
+        "start": 4524,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#9eafd2"
+          ],
+          "ApEinfo_revcolor": [
+            "#9eafd2"
+          ],
+          "label": [
+            "SV40 NLS"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "STOP",
+        "stop": 5925,
+        "modified": false,
+        "start": 5919,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#f58a5e"
+          ],
+          "ApEinfo_revcolor": [
+            "#f58a5e"
+          ],
+          "label": [
+            "STOP"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "tp [0,21,22]",
+        "stop": 5947,
+        "modified": false,
+        "start": 5925,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#f8d3a9"
+          ],
+          "ApEinfo_revcolor": [
+            "#f8d3a9"
+          ],
+          "label": [
+            "tp [0,21,22]"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "Stop",
+        "stop": 5950,
+        "modified": false,
+        "start": 5947,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#ff0909"
+          ],
+          "ApEinfo_revcolor": [
+            "#ff0909"
+          ],
+          "label": [
+            "Stop"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "L2",
+        "stop": 5980,
+        "modified": false,
+        "start": 5950,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#b1ff67"
+          ],
+          "ApEinfo_revcolor": [
+            "#b1ff67"
+          ],
+          "label": [
+            "L2"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "T + pBluescript KS linker",
+        "stop": 6002,
+        "modified": false,
+        "start": 5980,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#eb66ff"
+          ],
+          "ApEinfo_revcolor": [
+            "#eb66ff"
+          ],
+          "label": [
+            "T + pBluescript KS linker"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "CYC1",
+        "stop": 6246,
+        "modified": false,
+        "start": 6006,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#85dae9"
+          ],
+          "ApEinfo_revcolor": [
+            "#85dae9"
+          ],
+          "label": [
+            "CYC1"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "terminator"
+      },
+      {
+        "locus_tag": [],
+        "name": "pYESTrp_rev primer",
+        "stop": 6034,
+        "modified": false,
+        "start": 6015,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#85dae9"
+          ],
+          "ApEinfo_revcolor": [
+            "#85dae9"
+          ],
+          "label": [
+            "pYESTrp_rev primer"
+          ]
+        },
+        "strand": 1,
+        "feature_type": "primer_bind"
+      },
+      {
+        "locus_tag": [],
+        "name": "T7 EEV primer",
+        "stop": 6268,
+        "modified": false,
+        "start": 6246,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#85dae9"
+          ],
+          "ApEinfo_revcolor": [
+            "#85dae9"
+          ],
+          "label": [
+            "T7 EEV primer"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "primer_bind"
+      },
+      {
+        "locus_tag": [],
+        "name": "upstream HO targeting",
+        "stop": 7174,
+        "modified": false,
+        "start": 6268,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#85dae9"
+          ],
+          "ApEinfo_revcolor": [
+            "#85dae9"
+          ],
+          "label": [
+            "upstream HO targeting"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "PmeI site",
+        "stop": 7182,
+        "modified": false,
+        "start": 7174,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#ff0000"
+          ],
+          "ApEinfo_revcolor": [
+            "#ff0000"
+          ],
+          "label": [
+            "PmeI site"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "PmeI",
+        "stop": 7182,
+        "modified": false,
+        "start": 7174,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#84b0dc"
+          ],
+          "ApEinfo_revcolor": [
+            "#84b0dc"
+          ],
+          "label": [
+            "PmeI"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "M13R",
+        "stop": 7222,
+        "modified": false,
+        "start": 7182,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#b1ff67"
+          ],
+          "ApEinfo_revcolor": [
+            "#b1ff67"
+          ],
+          "label": [
+            "M13R"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "origin-extended",
+        "stop": 7492,
+        "modified": false,
+        "start": 7407,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#85dae9"
+          ],
+          "ApEinfo_revcolor": [
+            "#85dae9"
+          ],
+          "label": [
+            "origin-extended"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "ori",
+        "stop": 8347,
+        "modified": false,
+        "start": 7492,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#ffef86"
+          ],
+          "ApEinfo_revcolor": [
+            "#ffef86"
+          ],
+          "label": [
+            "ori"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "is a g in normal maps.",
+        "stop": 8030,
+        "modified": false,
+        "start": 8029,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#85dae9"
+          ],
+          "ApEinfo_revcolor": [
+            "#85dae9"
+          ],
+          "label": [
+            "is a g in normal maps."
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "bla",
+        "stop": 9208,
+        "modified": false,
+        "start": 8347,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#ff9ccd"
+          ],
+          "ApEinfo_revcolor": [
+            "#ff9ccd"
+          ],
+          "label": [
+            "bla"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "AmpR promoter",
+        "stop": 9287,
+        "modified": false,
+        "start": 9208,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#d59687"
+          ],
+          "ApEinfo_revcolor": [
+            "#d59687"
+          ],
+          "label": [
+            "AmpR promoter"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      },
+      {
+        "locus_tag": [],
+        "name": "New Feature",
+        "stop": 9307,
+        "modified": false,
+        "start": 9287,
+        "gaps": [],
+        "gene": [],
+        "qualifiers": {
+          "ApEinfo_fwdcolor": [
+            "#85dae9"
+          ],
+          "ApEinfo_revcolor": [
+            "#85dae9"
+          ],
+          "label": [
+            "New Feature"
+          ]
+        },
+        "strand": 0,
+        "feature_type": "misc_feature"
+      }
+    ],
+    "material": "dna",
+    "name": "pMODKan-HO-pACT1-Z4-",
+    "width": 700,
+    "length": 9408,
+    "height": 700,
+    "ds": true,
+    "circular": true
+  }
+]

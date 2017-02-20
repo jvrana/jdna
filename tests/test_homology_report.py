@@ -31,6 +31,7 @@ def test_long_gibson_assembly():
 
     assert [len(x) for x in dnas] == [len(x) for x in dnas_copy]
     for i in range(len(dnas)):
+    for i in range(len(dnas)):
         assert str(dnas[i]) == str(dnas_copy[i])
 
     assert len(dnas) == len(dnas_copy)

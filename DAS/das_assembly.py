@@ -10,7 +10,7 @@ Description:
 
 from das_contig import *
 
-
+# TODO: Assembly is speghetti code, utilize the Region class to fix using 'pseudocircular' queries
 class AssemblyGraph(ContigContainer):
     def __init__(self, primers=None, contigs=None):
         super(AssemblyGraph, self).__init__(meta=contigs.meta.__dict__, contigs=contigs.contigs)
@@ -21,9 +21,13 @@ class AssemblyGraph(ContigContainer):
         self.make_dictionary()
         self.assemblies = []
 
-    def get_all_assemblies(self, sort=True, place_holder_size=5):
+    def get_all_assemblies(self, sort=True, place_holder_size=5, save_history=False):
         self.make_assembly_graph(sort=sort)
-        self.assemblies = self.dfs_iter(place_holder_size=place_holder_size)
+        self.assemblies = None
+        if save_history:
+            self.assemblies, self.assembly_history = self.dfs_iter(place_holder_size=place_holder_size, data_plot=True)
+        else:
+            self.assemblies = self.dfs_iter(place_holder_size=place_holder_size, data_plot=False)
         self.assemblies = sorted(self.assemblies, key=lambda x: x.total_cost())
         return self.assemblies
 
@@ -32,6 +36,7 @@ class AssemblyGraph(ContigContainer):
         graph = {}
         pairs = list(itertools.permutations(self.contigs, 2))
         print '{} pairs to search'.format(len(pairs))
+        num_nodes = 0
         for l, r in pairs:
 
             if l == r:
@@ -40,7 +45,7 @@ class AssemblyGraph(ContigContainer):
                 if l.contig_id not in graph:
                     graph[l.contig_id] = []
                 graph[l.contig_id].append(r.contig_id)
-
+                num_nodes += 1
         if sort:
             for k in graph.keys():
                 a_array = graph[k][:]
@@ -48,29 +53,35 @@ class AssemblyGraph(ContigContainer):
                 # graph[k] = sorted(a_array, key=lambda x: self.compute_assembly_cost(
                 #     [self.get_contig(k), self.get_contig(x)])[0])
 
-                graph[k] = sorted(a_array, key=lambda x: self.get_contig(x).q_end - self.get_contig(x).q_start,
+                graph[k] = sorted(a_array, key=lambda x: self.get_contig(x).query.end - self.get_contig(x).query.start,
                                   reverse=True)
         self.graph = graph
+        print 'Graph Size: {}'.format(num_nodes)
         # self.assembly_graph['root'] = [x.contig_id for x in self.contigs]
         return self.graph
 
-    def dfs_iter(self, place_holder_size=5):
+    def dfs_iter(self, place_holder_size=5, data_plot=False):
         assemblies = []
-        sorted_contigs = sorted(self.contigs, key=lambda x: x.q_end - x.q_start, reverse=True)
+        best_costs_array = []
+        steps = []
+        step = 0
+        sorted_contigs = sorted(self.contigs, key=lambda x: x.query.end - x.query.start, reverse=True)
         stack = []
         for c in sorted_contigs:
             a = Assembly([c], self, self.primers)
             stack.append(a)
         best_costs = [float("Inf")] * place_holder_size  # five best costs
         while stack:
+            step += 1
+            steps.append(step)
             best_costs.sort()
             assembly = stack.pop()
+
             gap = assembly.get_gaps()
             gap_cost = assembly.get_gap_cost()
             frag_cost = assembly.get_fragment_cost()
 
             cost = assembly.total_cost()
-
             # Trimming conditions
             # Gap and frag cost are monotonically increasing and so are used for trimming.
             if gap_cost + frag_cost > best_costs[-1] and not cost == float("Inf"):
@@ -99,20 +110,38 @@ class AssemblyGraph(ContigContainer):
                     stack.append(new_path)
             if cost < best_costs[-1]:
                 best_costs[-1] = cost
+                if data_plot:
+                    best_costs_array.append(best_costs[:])
+                print best_costs
+            assembly.best_cost = assembly.total_cost()
             assemblies.append(assembly)
             # end of path
         assemblies = sorted(assemblies,
                             key=lambda x: x.total_cost())
+        if data_plot:
+            return assemblies, zip(steps, best_costs_array)
         return assemblies
+
+    def dump(self, out):
+        j = deepcopy(self.__dict__)
+        del j['contig_dictionary']
+        j['meta'] = j['meta'].__dict__
+        j['contigs'] = [x.json() for x in j['contigs']]
+        del j['meta']['query_seq']
+        del j['meta']['contig_seqs']
+        del j['primers']
+        with open(out, 'w') as output:
+            json.dump(j, output)
 
 # TODO: share parameters from a single file
 class Assembly(ContigContainer):
     MIN_PCR_SIZE = 250.
-    MAX_PCR_SIZE = 10000.
+    MAX_PCR_SIZE = 5000.
+    MAX_HOMOLOGY = 100.
     PRIMER_COST = 15.
     PCR_COST = 14.
     FIVEPRIME_EXT_REACH = 20.  # 'reachability' for a extended primer
-    SYNTHESIS_THRESHOLD = 0.  # min bp for synthesis
+    SYNTHESIS_THRESHOLD = 125.  # min bp for synthesis
     SYNTHESIS_COST = 0.11  # per bp
     SYNTHESIS_MIN_COST = 89.  # per synthesis
     assembly_id = 0
@@ -122,7 +151,7 @@ class Assembly(ContigContainer):
         self.id = Assembly.assembly_id
         Assembly.assembly_id += 1
         self.contig_container = contig_container
-        self.primer_continer = primer_container
+        self.primer_container = primer_container
         self._convert_assembly_path(assembly_path)
 
     def _convert_assembly_path(self, assembly_path):
@@ -141,19 +170,7 @@ class Assembly(ContigContainer):
         return self.contigs[-1]
 
     def can_extend(self):
-        return self.assembly_span() < self.meta.query_length
-
-    def fill_contig_gaps(self):
-        pairs = self.get_assembly_pairs()
-        new_contigs = []
-        for l, r in pairs:
-            new_contigs.append(l)
-            q = QueryRegion(query_acc=l.query_acc, query_length=l.query_length, q_start=l.q_end, q_end=r.q_start)
-            if q.get_span() > 0:
-                print q
-                new_contigs.append(q)
-        new_contigs.append(pairs[-1][1])  # append last contig
-        self.contigs = new_contigs
+        return self.assembly_span() < self.meta.query_length + Assembly.MAX_HOMOLOGY
 
     @staticmethod
     def gap(left, right):
@@ -163,7 +180,7 @@ class Assembly(ContigContainer):
         :param right:
         :return:
         """
-        d = right.q_start - left.q_end
+        d = right.query.start - left.query.end
         r = 0
         if right.end_label == Contig.NEW_PRIMER or right.end_label is Contig.DIRECT_END:
             r += Assembly.FIVEPRIME_EXT_REACH
@@ -188,7 +205,7 @@ class Assembly(ContigContainer):
                 c = self.get_contig(c)
             c_arr.append(c)
 
-        print [(c.q_start, c.q_end) for c in c_arr]
+        print [(c.query.start, c.query.end) for c in c_arr]
 
     def get_assembly_pairs(self):
         if len(self.contigs) == 1:
@@ -220,14 +237,14 @@ class Assembly(ContigContainer):
         return sum(non_zero_gaps) * Assembly.SYNTHESIS_COST
 
     @staticmethod
-    def pcr_cost(contig):
+    def get_pcr_cost(contig):
         """
         Cost of a pcr
         :param contig:
         :return:
         """
 
-        if not Assembly.MIN_PCR_SIZE < contig.q_end - contig.q_start < Assembly.MAX_PCR_SIZE:
+        if not Assembly.MIN_PCR_SIZE < contig.query.end - contig.query.start < Assembly.MAX_PCR_SIZE:
             return float("Inf")
         if contig.is_direct():
             # direct_synthesis
@@ -241,16 +258,21 @@ class Assembly(ContigContainer):
             if contig.end_label == Contig.NEW_PRIMER or contig.end_label is Contig.DIRECT_END:
                 cost += Assembly.PRIMER_COST
         # print contig.circular, contig.parent, contig.start_label, contig.end_label, cost
+        if cost < 0:
+            cost = 0
         return cost
 
     def assembly_span(self):
-        return self.last().q_end - self.first().q_start
+        return self.last().query.end - self.first().query.start
 
     def unassembled_span(self):
         return self.meta.query_length - self.assembly_span()
 
     def unassembled_span_cost(self):
-        return self.unassembled_span() * Assembly.SYNTHESIS_COST
+        c = self.unassembled_span() * Assembly.SYNTHESIS_COST
+        if c < 0:
+            c = 0
+        return c
 
     def get_num_synthesis_fragments(self):
         gaps = self.get_gaps()
@@ -262,7 +284,7 @@ class Assembly(ContigContainer):
                self.get_gap_cost() + self.unassembled_span_cost()
 
     def get_fragment_cost(self):
-        return sum([Assembly.pcr_cost(c) for c in self.contigs])
+        return sum([Assembly.get_pcr_cost(c) for c in self.contigs])
 
     @property
     def assembly_probability(self):
@@ -270,7 +292,11 @@ class Assembly(ContigContainer):
         The probability of a successful GIBSON/SLIC assembly given
         a number of fragments.
         """
-        p = 1.0 - (1.0 / 8.0) * len(self.contigs)
+
+        K = 6.0
+        n = 3.0
+
+        p = 1/(1+(len(self.contigs)/K)**n)
         if p <= 0:
             p = 0.0001
         return p
@@ -280,7 +306,8 @@ class Assembly(ContigContainer):
         Calculates total cost in dollars for a given assembly.
         :return:
         """
-        return (self.new_synthesis_cost() + self.get_fragment_cost()) / self.assembly_probability
+        self.cost = (self.new_synthesis_cost() + self.get_fragment_cost()) / self.assembly_probability
+        return self.cost
 
     @staticmethod
     def assembly_condition(left, right):
@@ -293,18 +320,42 @@ class Assembly(ContigContainer):
         :return:
         """
         r_5prime_threshold = 0
-        r_3prime_threshold = 60
-        l_pos = left.q_end
-        r_pos = right.q_start
+        r_3prime_threshold = Assembly.MAX_HOMOLOGY
+        l_pos = left.query.end
+        r_pos = right.query.start
+
+        # TODO: change assembly condition to use GAPS and OVERLAPS from the Region class
+        # homology = left.query.get_overlap(right.query)
+        # gap = left.query.get_gap(right.query)
+        # cons = left.query.consecutive_with(right.query)
+        # print homology, gap, cons
+        # if homology is not None:
+        #     print homology.region_span
+        # if gap is not None:
+        #     print gap.region_span
+        # return left.query.get_gap_degree(right.query) > -Assembly.MAX_HOMOLOGY
+
         # return r_pos == l_pos + 1 # if its consecutive
         return r_pos > l_pos - r_3prime_threshold and \
-               right.q_end > left.q_end
+               right.query.end > left.query.end
 
     def get_all_templates(self):
         filenames = []
         for c in self.contigs:
             filenames.append(c.filename)
         return list(set(filenames))
+
+    def dump(self, out):
+        j = deepcopy(self.__dict__)
+        del j['contig_dictionary']
+        j['meta'] = j['meta'].__dict__
+        j['contigs'] = [x.json() for x in j['contigs']]
+        del j['meta']['query_seq']
+        del j['meta']['contig_seqs']
+        del j['contig_container']
+        del j['primer_container']
+        with open(out, 'w') as output:
+            json.dump(j, output)
 
     def summary(self):
         contigs = ''
@@ -318,16 +369,16 @@ class Assembly(ContigContainer):
         \t\tSubject Acc: {subject}
         \t\tPrimers: {fwd}, {rev}
         '''.format(id=c.contig_id,
-                   cost=self.pcr_cost(c),
-                   start=c.q_start,
-                   end=c.q_end,
-                   rs=c.q_start - self.contigs[0].q_start,
-                   re=c.q_end - self.contigs[0].q_start,
-                   subject=c.subject_acc,
+                   cost=self.get_pcr_cost(c),
+                   start=c.query.start,
+                   end=c.query.end,
+                   rs=c.query.start - self.contigs[0].query.start,
+                   re=c.query.end - self.contigs[0].query.start,
+                   subject=c.subject.name,
                    fwd=c.start_label,
                    rev=c.end_label,
-                   s_start=c.s_start,
-                   s_end=c.s_end
+                   s_start=c.subject.start,
+                   s_end=c.subject.end
                    )
 
         summary_str = '''
@@ -340,11 +391,12 @@ Contig Breakdown
 {contigs}
 Breakdown {totalcost}
 \tGap Cost: {gaps}, ${gapcost}
+\tSubject: {subjects}
 \tAssembled Span: {span}
 \tUnassembled Span: {uspan}, ${uspancost}
 \tFragment Costs: ${fragcost}, {fragbreakdown}
 \tNew Synthesis Costs: ${newsynth}
-\t
+\tProbability: {probability}
 
         '''.format(
             id=self.id,
@@ -357,10 +409,12 @@ Breakdown {totalcost}
             uspan=self.unassembled_span(),
             uspancost=self.unassembled_span_cost(),
             fragcost=self.get_fragment_cost(),
-            fragbreakdown=[self.pcr_cost(c) for c in self.contigs],
+            fragbreakdown=[self.get_pcr_cost(c) for c in self.contigs],
             query=self.meta.query,
             querylength=self.meta.query_length,
-            newsynth=self.new_synthesis_cost()
+            newsynth=self.new_synthesis_cost(),
+            probability=self.assembly_probability,
+            subjects=[x.subject.name for x in self.contigs]
         )
         return summary_str
 
@@ -381,7 +435,7 @@ class J5Assembly(Assembly):
     # PARAMS = None
 
     def __init__(self, assembly):
-        super(J5Assembly, self).__init__(assembly.contigs, assembly.contig_container, assembly.primer_continer)
+        super(J5Assembly, self).__init__(assembly.contigs, assembly.contig_container, assembly.primer_container)
         self.params = None
         self.proxy_home = 'https://j5.jbei.org/bin/j5_xml_rpc.pl'
         self.proxy = xmlrpclib.ServerProxy('https://j5.jbei.org/bin/j5_xml_rpc.pl')
@@ -434,12 +488,14 @@ class J5Assembly(Assembly):
         with open('j5_parameters.csv') as params:
             self.parameters = J5Assembly.encode64(params.read())
 
+
     def get_target(self):
         rows = []
         for c in self.contigs:
+            direction = 'forward'
             row = [
                 c.contig_id,
-                'forward',
+                direction,
                 '',
                 '',
                 '',
@@ -455,9 +511,9 @@ class J5Assembly(Assembly):
             row = [
                 c.contig_id,
                 c.seqrecord.id,
-                str(False).upper(),
-                c.s_start,
-                c.s_end,
+                str(c.subject.direction == Region.FORWARD),
+                c.subject.start,
+                c.subject.end,
                 '',
                 ''
             ]
@@ -474,15 +530,15 @@ class J5Assembly(Assembly):
     def get_primers(self):
         # ['Oligo Name', 'Length', "Tm", "Tm (3' only)", "Sequence"]
         rows = []
-        for p in self.primer_continer.contigs:
+        for p in self.primer_container.contigs:
             row = [
-                p.subject_acc,
-                len(p.subject_seq),
+                p.subject.name,
+                len(p.subject.seq),
                 60,
                 60,
-                p.subject_seq
+                p.subject.seq
             ]
-        rows.append(row)
+            rows.append(row)
         self.primers = J5Assembly.encode64(self.to_csv(J5Assembly.MASTEROLIGOSLABELS, rows))
 
     # TODO: add direct fragments to directmasterlist
@@ -555,8 +611,26 @@ class J5Assembly(Assembly):
         print d
         d['j5_session_id'] = self.session_id
         d['assembly_method'] = assembly_method
+        print d
         print self.to_dict().keys()
         return self.proxy.DesignAssembly(d)
+
+    ## Not implemented, this remove the possibility of finding a cheaper or more successful solution
+    # def remove_expensive_fragments(self):
+    #     contigs_for_removal = []
+    #     for c1 in self.contigs:
+    #         for c2 in self.contigs:
+    #             if c1 == c2:
+    #                 continue
+    #             if c1 in contigs_for_removal or c2 in contigs_for_removal:
+    #                 continue
+    #
+    #             if c1.equivalent_location(c2):
+    #                 c1_cost = self.get_pcr_cost(c1)
+    #                 c2_cost = self.get_pcr_cost(c2)
+    #                 if c1_cost > c2_cost
+
+
 
         # params['encoded_{}_file'.format(filetype)] = self.encode(imply_file('*{}*'.format(filetype)))
         #             params['reuse_{}_file'.format(filetype)] = False

@@ -1,0 +1,35 @@
+LOCUS       GPD                      795 bp ds-DNA     linear       20-FEB-2017
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     primer_bind     131..169
+                     /label="oNL1872 GPDf"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     misc_feature    674..697
+                     /label="GPDPro_F_primer (2002)"
+                     /ApEinfo_revcolor=#9eafd2
+                     /ApEinfo_fwdcolor=#9eafd2
+     misc_feature    131..785
+                     /label="Actual GPD Promoter"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
+     primer_bind     complement(781..785)
+                     /label="j5_0068_(pGP8G2-start)_(Start-BsaIr)_reverse"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+ORIGIN
+        1 gcatcagaca tccagactaa tatagatcga tgatcgcgcg agctagctac gtagatcgat
+       61 aagtacgact aacgcaacac acatgcatcc agcatacgct acgatcagca tcagcatagt
+      121 accgtacgct agtttatcat tatcaatact cgccatttca aagaatacgt aaataattaa
+      181 tagtagtgat tttcctaact ttatttagtc aaaaaattag ccttttaatt ctgctgtaac
+      241 ccgtacatgc ccaaaatagg gggcgggtta cacagaatat ataacatcgt aggtgtctgg
+      301 gtgaacagtt tattcctggc atccactaaa tataatggag cccgcttttt aagctggcat
+      361 ccagaaaaaa aaagaatccc agcaccaaaa tattgttttc ttcaccaacc atcagttcat
+      421 aggtccattc tcttagcgca actacagaga acaggggcac aaacaggcaa aaaacgggca
+      481 caacctcaat ggagtgatgc aacctgcctg gagtaaatga tgacacaagg caattgaccc
+      541 acgcatgtat ctatctcatt ttcttacacc ttctattacc ttctgctctc tctgatttgg
+      601 aaaaagctga aaaaaaaggt tgaaaccagt tccctgaaat tattccccta cttgactaat
+      661 aagtatataa agacggtagg tattgattgt aattctgtaa atctatttct taaacttctt
+      721 aaattctact tttatagtta gtcttttttt tagttttaaa acaccagaac ttagtttcga
+      781 cggatccccc ccccc
+//

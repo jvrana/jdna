@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "PlasmidD3.js",
+  "sourceRoot": "",
+  "sources": [
+    "PlasmidD3.coffee"
+  ],
+  "names": [],
+  "mappings": ";AACA;AAAA,MAAA;;EAAA,GAAA,GAAM,EAAE,CAAC,MAAH,CAAU,MAAV,CAAiB,CAAC,MAAlB,CAAyB,KAAzB,CAA+B,CAAC,MAAhC,CAAuC,KAAvC,CACF,CAAC,IADC,CACI,OADJ,EACa,EADb;AAAN"
+}

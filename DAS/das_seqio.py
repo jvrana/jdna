@@ -11,11 +11,12 @@ Description:
 import shlex
 import subprocess
 from Bio import SeqIO
+from Bio.Seq import Seq
 import os
 import json
 import coral
 from glob import glob
-
+import re
 
 def run_cmd(cmd_str, **kwargs):
     """
@@ -44,7 +45,9 @@ def format_decorator(f):
 
     def wrapped(*args, **kwargs):
         args = list(args)
-        prefix, suffix = args[0].split('.')
+        g = re.search('^(.+)\.(\w+)$', args[0])
+        prefix = g.group(1)
+        suffix = g.group(2)
         formats = {"gb": "genbank", "fsa": "fasta", "fasta": "fasta"}
         formats.update(kwargs)
         kwargs['format'] = formats[suffix]
@@ -56,10 +59,20 @@ def format_decorator(f):
 def determine_format(filename, format=None):
     return format
 
+def sanitize_filenames(dir):
+    replacements = [(' ', '_')]
+    for filename in glob(os.path.join(dir, '*')):
+        if os.path.isfile(filename):
+            print filename
+            for r in replacements:
+                new_filename = re.sub(r[0], r[1], filename)
+                os.rename(filename, new_filename)
+
 # TODO: locus_ID gets truncated, fix this...
 @format_decorator
 def open_sequence(filename, format=None, **fmt):
-    prefix, suffix = os.path.basename(filename).split('.')
+    g = re.search('^(.+)\.(\w+)$', filename)
+    prefix, suffix = g.group(1), g.group(2)
     seqs = []
     with open(filename, 'rU') as handle:
         s = list(SeqIO.parse(handle, format))
@@ -95,9 +108,12 @@ def concat_seqs(idir, out, savemeta=False):
         for s in seqs:
             metadata[s.id] = {'filename': filename, 'circular': False, 'seqrecord': s}
         if len(seqs) == 1:
-            c = coral.seqio.read_dna(filename)
-            metadata[seqs[0].id]['circular'] = c.circular
-            metadata[seqs[0].id]['coral'] = c
+            try:
+                c = coral.seqio.read_dna(filename)
+                metadata[seqs[0].id]['circular'] = c.circular
+                metadata[seqs[0].id]['coral'] = c
+            except:
+                pass
 
     with open(out, "w") as handle:
         SeqIO.write(sequences, handle, "fasta")
@@ -119,3 +135,12 @@ def gb_to_fsa(input_path, output_path):
 def seq_is_circular(path):
     d = coral.seqio.read_dna(path)
     return d.circular
+
+
+def primers_json_to_fasta(json_file, output_path):
+    seqs = []
+    pjs = json.load(json_file)
+    for primer_json in pjs:
+        seq = primer_json['Overhang Sequence'] + primer_json['Anneal Sequence']
+        seqs.append(Seq())
+

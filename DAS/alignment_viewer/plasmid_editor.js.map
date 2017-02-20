@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "plasmid_editor.js",
+  "sourceRoot": "",
+  "sources": [
+    "plasmid_editor.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA;;EAAA,CAAA,GAAI;;EACJ,CAAA,GAAI;;EAEJ,GAAA,GAAM,EAAE,CAAC,MAAH,CAAU,MAAV,CAAiB,CAAC,MAAlB,CAAyB,KAAzB,CACJ,CAAC,IADG,CACE,OADF,EACW,CADX,CAEJ,CAAC,IAFG,CAEE,QAFF,EAEY,CAFZ;AAHN"
+}
