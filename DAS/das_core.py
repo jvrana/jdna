@@ -20,9 +20,9 @@ locations = dict(
     templates="templates"
 )
 
-# design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
+design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
 # design_path = 'designs/hcas9-vpr(sanitized).gb'
-design_path = 'designs/pins-011-pef1a-hcsy4-t2a-dcas9-crpos0-crpos1.gb'
+# design_path = 'designs/pins-011-pef1a-hcsy4-t2a-dcas9-crpos0-crpos1.gb'
 
 
 # Sanitize all filename

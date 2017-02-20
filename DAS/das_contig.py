@@ -297,17 +297,10 @@ class Region(object):
         return Region(self.__start, self.__end, self.length, self.circular,
                       direction=self.direction, name=self.name, start_index=self.bounds_start)
 
-    def get_gap(self, other):
-        raise RegionError("Not implemented")
-
     def get_overlap(self, other):
-        """
-        Convention is to return a reverse Region for homology
-        :param other:
-        :return:
-        """
         if self.end_overlaps_with(other):
             r = self.copy()
+            print 'copy', r.start, r.end, self.end, other.start
             r.start = other.start
             r.end = self.end
             return r
@@ -370,7 +363,8 @@ class Region(object):
             return -overlap.region_span
         gap = self.get_gap(other)
         if gap is not None:
-            return gap.region_span
+            return gap.region_span \
+               and not self.within_region(other, inclusive=True)
 
     def fuse(self, other):
         if self.consecutive_with(other):
@@ -907,11 +901,11 @@ class ContigContainer(object):
         for c1 in self.contigs:
             for c2 in self.contigs:
                 if c1.query.within_region(c2.query.end, inclusive=False): # if second contig overlaps with first contig
-                    new_contigs.append(c1.break_contig(c1.query.start, c2.query.end, start_label=None, end_label=None))
+                    # new_contigs.append(c1.break_contig(c1.query.start, c2.query.end, start_label=None, end_label=None))
                     new_contigs.append(c1.break_contig(c2.query.end, c1.query.end, start_label=None, end_label=None))
                 if c1.query.within_region(c2.query.start, inclusive=False):
                     new_contigs.append(c1.break_contig(c1.query.start, c2.query.start, start_label=None, end_label=None))
-                    new_contigs.append(c1.break_contig(c2.query.start, c1.query.end, start_label=None, end_label=None))
+                    # new_contigs.append(c1.break_contig(c2.query.start, c1.query.end, start_label=None, end_label=None))
         for n in new_contigs:
             n.contig_type = contig_type + ' (broken long contig)'
 

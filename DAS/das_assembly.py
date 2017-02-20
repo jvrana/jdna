@@ -309,7 +309,6 @@ class Assembly(ContigContainer):
         self.cost = (self.new_synthesis_cost() + self.get_fragment_cost()) / self.assembly_probability
         return self.cost
 
-    # TODO: Incorporate Region get homology and get gap
     @staticmethod
     def assembly_condition(left, right):
         """
@@ -324,7 +323,6 @@ class Assembly(ContigContainer):
         r_3prime_threshold = Assembly.MAX_HOMOLOGY
         l_pos = left.query.end
         r_pos = right.query.start
-
 
         # TODO: change assembly condition to use GAPS and OVERLAPS from the Region class
         # homology = left.query.get_overlap(right.query)

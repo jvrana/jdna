@@ -29,7 +29,7 @@ contig_example = {
           "quality": 1.0,
           "subject_strand": "minus",
             "subject_circular": True,
-            "query_circular": True,
+            "query_circular": False,
           "q_start": 1,
           "q_end": 155,
           "s_start": 911,
@@ -143,22 +143,56 @@ def test_region_span():
     f(5, 98, 100, 10)
     f(5, 104, 100, 5)
 
-def test_region_gap():
+def test_subregion():
     r = Region(20, 50, 100, False, start_index=0)
-    r2 = Region(60, 70, 100, False, start_index=0)
-    g = r.get_gap(r2)
-    assert g.start == 51
-    assert g.end == 59
+    r.sub_region(20, 30)
+    s = r.sub_region(30,50)
+    assert s.start == 30
+    assert s.end == 50
+    with pytest.raises(RegionError):
+        r.sub_region(19, 30)
+    with pytest.raises(RegionError):
+        r.sub_region(30, 51)
+
+    r = Region(90, 10, 100, True, start_index=0)
+    s = r.sub_region(95, 5)
+    s_compare = Region(95, 5, 100, True, start_index=0)
+    assert s.start == 95
+    assert s.end == 5
+    assert s_compare.region_span == s.region_span
+
+def test_region_fuse():
 
     r = Region(20, 50, 100, False, start_index=0)
     r2 = Region(51, 70, 100, False, start_index=0)
-    assert r.get_gap(r2) is None
+    assert r.consecutive_with(r2)
+    assert not r2.consecutive_with(r)
 
-    r = Region(90, 99, 100, False, start_index=1)
-    r2 = Region(2, 70, 100, False, start_index=1)
-    g = r.get_gap(r2)
-    assert g.start == 100
-    assert g.end == 1
+    r = Region(20, 50, 100, False, start_index=0)
+    r2 = Region(51, 70, 100, False, start_index=1)
+    assert not r.consecutive_with(r2)
+    assert not r2.consecutive_with(r)
+
+    r = Region(95, 99, 100, False, start_index=0)
+    r2 = Region(0, 70, 100, False, start_index=0)
+    assert not r.consecutive_with(r2)
+    assert not r2.consecutive_with(r)
+
+    r = Region(95, 99, 100, True, start_index=0)
+    r2 = Region(0, 70, 100, True, start_index=0)
+    assert r.consecutive_with(r2)
+    assert not r2.consecutive_with(r)
+
+    r = Region(95, 100, 100, True, start_index=1)
+    r2 = Region(1, 70, 100, True, start_index=1)
+    assert r.consecutive_with(r2)
+    assert not r2.consecutive_with(r)
+
+    r.fuse(r2)
+    assert r.start == 95
+    assert r.end == 70
+    assert r2.start == 1
+    assert r2.end == 70
 
 def test_region_overlap():
     r = Region(10, 50, 100, False, start_index=0)
@@ -195,7 +229,8 @@ def test_region_overlap():
     assert overlap.start == 20
     assert overlap.end == 50
     assert overlap.direction == r.direction
-    assert r2.get_overlap(r) is None
+    with pytest.raises(RegionError):
+        r2.get_overlap(r)
 
     r = Region(90, 10, 100, True, start_index=2)
     r2 = Region(95, 20, 100, True, start_index=2)
@@ -661,8 +696,8 @@ def test_assembly_graph():
     contig1 = Contig(**contig_example)
     contig2 = Contig(**contig_example)
 
-    contig1.query._Region__length = 10000
-    contig2.query._Region__length = contig1.query.length
+    contig1.query.__length = 10000
+    contig2.query.__length = contig1.query.length
     contig1.query.start = 100
     contig1.query.end = 200
     contig2.query.start = 201
@@ -671,36 +706,3 @@ def test_assembly_graph():
     print contig1.query.length, contig1.query.start, contig1.query.end
 
     assert Assembly.assembly_condition(contig1, contig2)
-
-    contig1.query._Region__length = 10000
-    contig2.query._Region__length = contig1.query.length
-    contig1.query.start = 100
-    contig1.query.end = 200
-    contig2.query.start = 190
-    contig2.query.end = 300
-
-    print contig1.query.length, contig1.query.start, contig1.query.end
-
-    assert Assembly.assembly_condition(contig1, contig2)
-
-    contig1.query._Region__length = 10000
-    contig2.query._Region__length = contig1.query.length
-    contig1.query.start = 100
-    contig1.query.end = 200
-    contig2.query.start = 240
-    contig2.query.end = 300
-
-    print contig1.query.length, contig1.query.start, contig1.query.end
-
-    assert Assembly.assembly_condition(contig1, contig2)
-
-    contig1.query._Region__length = 1000
-    contig2.query._Region__length = contig1.query.length
-    contig1.query.start = 900
-    contig1.query.end = 950
-    contig2.query.start = 10
-    contig2.query.end = 100
-
-    print contig1.query.length, contig1.query.start, contig1.query.end
-
-    assert not Assembly.assembly_condition(contig1, contig2)
