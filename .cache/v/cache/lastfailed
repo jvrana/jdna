@@ -1,4 +1,5 @@
 {
+  "DASi_test/test.py::test_break_contig": true, 
   "DASi_test/test.py::test_primer_binding": true, 
   "DASi_test/test.py::test_pseudo_blast": true
 }

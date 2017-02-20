@@ -309,6 +309,7 @@ class Assembly(ContigContainer):
         self.cost = (self.new_synthesis_cost() + self.get_fragment_cost()) / self.assembly_probability
         return self.cost
 
+    # TODO: Incorporate Region get homology and get gap
     @staticmethod
     def assembly_condition(left, right):
         """
@@ -323,6 +324,16 @@ class Assembly(ContigContainer):
         r_3prime_threshold = Assembly.MAX_HOMOLOGY
         l_pos = left.query.end
         r_pos = right.query.start
+
+        homology = left.query.get_overlap(right.query)
+        gap = left.query.get_gap(right.query)
+        cons = left.query.consecutive_with(right.query)
+        print homology, gap, cons
+        if homology is not None:
+            print homology.region_span
+        if gap is not None:
+            print gap.region_span
+
         # return r_pos == l_pos + 1 # if its consecutive
         return r_pos > l_pos - r_3prime_threshold and \
                right.query.end > left.query.end

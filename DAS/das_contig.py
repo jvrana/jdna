@@ -293,15 +293,39 @@ class Region(object):
         return Region(self.__start, self.__end, self.length, self.circular,
                       direction=self.direction, name=self.name, start_index=self.bounds_start)
 
+    def get_gap(self, other):
+        raise RegionError("Not implemented")
+
     def get_overlap(self, other):
+        """
+        Convention is to return a reverse Region for homology
+        :param other:
+        :return:
+        """
         if self.end_overlaps_with(other):
             r = self.copy()
-            print 'copy', r.start, r.end, self.end, other.start
             r.start = other.start
             r.end = self.end
             return r
         else:
-            raise RegionError("Ends do not overlap.")
+            return None
+
+    def get_gap(self, other):
+        if self.consecutive_with(other):
+            return None
+        if self.no_overlap(other):
+            r = self.copy()
+            r.start = self.end + 1
+            r.end = other.start - 1
+            return r
+        else:
+            return None
+
+    def no_overlap(self, other):
+        return self.same_context(other) \
+                and not self.within_region(other.start, inclusive=True) \
+                and not other.within_region(self.end, inclusive=True)
+
 
     def end_overlaps_with(self, other):
         """
@@ -322,7 +346,18 @@ class Region(object):
         """
         return self.same_context(other) \
                and self.within_region(other.start, inclusive=True) \
-               and not self.within_region(other, inclusive=True)
+               and other.within_region(self.end, inclusive=True)
+
+    def get_gap_degree(self, other):
+        overlap = self.get_overlap(other)
+        gap = self.get_gap(other)
+        cons = self.consecutive_with(other)
+        if cons:
+            return 0
+        if overlap is not None:
+            return -overlap.region_span
+        if gap is not None:
+            return gap.region_span
 
     def fuse(self, other):
         if self.consecutive_with(other):
