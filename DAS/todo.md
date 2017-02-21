@@ -38,4 +38,5 @@ Today:
 4. Implement pseudo-blast (exact searches)
 
 
-Re-evaluate cost model and display as image
+**Re-evaluate cost model and display as image**<br><br>
+**Get j5 to make gapped sequences using Coral, zip these sequences, add to sequences list, add to parts, add to target part order**
