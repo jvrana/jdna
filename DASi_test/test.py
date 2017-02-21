@@ -62,19 +62,24 @@ def test_reverse_region():
 
 
 def test_region():
+    r = Region(2, 2, 3, True, start_index=1)
+    assert r.bounds_end == 3
+
     s = 1
     e = 2
     l = 10
-    start_index = 0
+    start_index = 1
     r = Region(s, e, l, circular=True, start_index=start_index)
+    assert r.bounds_end == 10
+    assert r.bounds_start == start_index
     indices = range(start_index-3, start_index + l - 1 + 3)
     values = np.arange(start_index, l+start_index)
     print values
     assert len(values) == l
     for x in range(start_index-3, start_index + l - 1):
         assert r.translate_pos(x) == values[x - start_index]
-        for x in range(start_index + l - 1, start_index + l - 1 + 3):
-            assert r.translate_pos(x) == values[x - len(values)]
+    for x in range(start_index + l - 1, start_index + l - 1 + 3):
+        assert r.translate_pos(x) == values[x - start_index - len(values)]
 
     with pytest.raises(RegionError):
         Region(500, 100, 1000, circular=False)
@@ -83,6 +88,12 @@ def test_region():
     r = Region(100, 500, 1000, True, start_index=start_index)
     assert r.bounds_start == start_index
     assert r.bounds_end == start_index + r.length - 1
+    for x in range(-5, 300):
+        r = Region(100, x, 200, circular=True, start_index=30)
+        assert r.end <= r.bounds_end
+    for x in range(-5, 300):
+        r = Region(x, 100, 200, circular=True, start_index=30)
+        assert r.start >= r.bounds_start
 
 
 def test_region_within():

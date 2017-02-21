@@ -67,28 +67,17 @@ assembly.remove_redundant_contigs(remove_equivalent=True, remove_within=False, n
 assembly.sort_contigs()
 assembly.dump('alignment_viewer/data.json')
 
+
+
+
+
+
 dump_coral_to_json(design_path, 'plasmid_viewer/PlasmidViewer/js/plasmiddata.json', width=1000)
 
 paths = assembly.get_all_assemblies(place_holder_size=10, save_history=True)
 
 f = assembly.assembly_history
 
-# import pandas as pd
-# import numpy as np
-# import seaborn as sns
-# import pylab as plt
-# a = []
-# for i, row in enumerate(f):
-#     g = zip([i]*len(row), row)
-#     a += g
-# x, y = zip(*a)
-# x = [float(X) for X in x]
-# y = [float(Y) for Y in y]
-# d = pd.DataFrame({'step': x, 'score': y})
-# print d
-# sns.regplot(x='step', y='score', data=d)
-#
-# exit()
 print paths[0].summary()
 
 
@@ -97,7 +86,30 @@ paths[0].dump('alignment_viewer/bestassembly.json')
 # a.fill_contig_gaps()
 # print a.summary()
 
+
+
+
 j5 = J5Assembly(paths[0])
+contigs = j5.contigs
+pairs = zip(contigs[0:-1], contigs[1:])
+pairs.append((contigs[-1], contigs[0]))
+for l, r in pairs:
+    _l = Region(l.query.start, l.query.end, l.query.length/2.0, True,
+                direction=Region.FORWARD,
+                name=l.query.name,
+                start_index=pairs[0][0].query.start)
+    _r = Region(r.query.start, r.query.end, r.query.length / 2.0, True,
+                direction=Region.FORWARD,
+                name=r.query.name,
+                start_index=pairs[0][0].query.start)
+    print _l.length, _r.length
+    print 'span', l.query.region_span, _l.region_span, r.query.region_span, _r.region_span
+    print 'regions', _l.start, _l.end, _r.start, _r.end
+    print 'queries', l.query.start, l.query.end, r.query.start, r.query.end
+    print 'bounds', _l.bounds_start, _l.bounds_end, _r.bounds_start, _r.bounds_end
+    print 'gap', _l.get_gap_degree(_r)
+
+exit()
 credentials = None
 with open('j5_credentials.json') as handle:
     credentials = json.load(handle)
@@ -113,3 +125,6 @@ with open('assembly_parameters/results.zip', 'w') as handle:
 
 
 # Update templates
+
+# TODO convert direction fragments, into fragments with new primers
+print "DONT FORGET TO convert direction fragments, into fragments with new primers"

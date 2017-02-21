@@ -2,17 +2,19 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/DAS/alignment_viewer/plasmid_editor.js" />
         <item url="file://$PROJECT_DIR$/DAS/plasmid_viewer/PlasmidViewer/js/PlasmidD3.js" />
         <item url="file://$PROJECT_DIR$/DAS/alignment_viewer/baseviewer.js" />
         <item url="file://$PROJECT_DIR$/DAS/plasmid_viewer/PlasmidViewer/js/LoadPlasmidCoffee.js" />
+        <item url="file://$PROJECT_DIR$/DAS/alignment_viewer/cost_analysis.js" />
+        <item url="file://$PROJECT_DIR$/DAS/alignment_viewer/plasmid_editor.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/DAS/alignment_viewer/plasmid_editor.js" />
       <root url="file://$PROJECT_DIR$/DAS/plasmid_viewer/PlasmidViewer/js/PlasmidD3.js" />
       <root url="file://$PROJECT_DIR$/DAS/alignment_viewer/baseviewer.js" />
       <root url="file://$PROJECT_DIR$/DAS/plasmid_viewer/PlasmidViewer/js/LoadPlasmidCoffee.js" />
+      <root url="file://$PROJECT_DIR$/DAS/alignment_viewer/cost_analysis.js" />
+      <root url="file://$PROJECT_DIR$/DAS/alignment_viewer/plasmid_editor.js" />
     </CLASSES>
     <SOURCES />
   </library>

@@ -28,3 +28,14 @@
 26. Project inputs and outpus should be JSON only, no more genbank files
 27. Create standardized JSON format for BenchlingAPI, JBEI API (mixture of TeseleaGen and Benchling JSON)
 28. Handle reverse parts in J5 and BLAST
+29. Make decisions on how to split parts and what strategies to take based on number of queried (filter out by size, do not expand, etc.)
+
+
+Today:
+1. Implement JBEI database
+2. Convert DASi communications to JSON only
+3. Implement temporary databases for BLAST only
+4. Implement pseudo-blast (exact searches)
+
+
+Re-evaluate cost model and display as image

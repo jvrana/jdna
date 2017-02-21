@@ -99,6 +99,8 @@ class Region(object):
         self.__bounds_start = start_index  # not allowed to reset length
         self.__start = self.translate_pos(start)
         self.__end = self.translate_pos(end)
+        if direction == Region.REVERSE:
+            self.__start, self.__end = self.__end, self.__start
         self.__direction = direction  # 1 or -1
         if self.direction not in [Region.FORWARD, Region.REVERSE, Region.BOTH]:
             raise RegionError("Direction {} not understood. Direction must be Region.FORWARD = {}, Region.REVERSE = {},\
@@ -137,10 +139,7 @@ class Region(object):
         reversed.
         :return:
         """
-        if self.direction == Region.REVERSE:
-            return self.__end
-        else:
-            return self.__start
+        return self.__start
 
     @start.setter
     def start(self, x):
@@ -150,10 +149,7 @@ class Region(object):
         reversed.
         :return:
         """
-        if self.direction == Region.REVERSE:
-            self.__end = self.translate_pos(x)
-        else:
-            self.__start = self.translate_pos(x)
+        self.__start = self.translate_pos(x)
 
     @property
     def end(self):
@@ -163,10 +159,7 @@ class Region(object):
         reversed.
         :return:
         """
-        if self.direction == Region.REVERSE:
-            return self.__start
-        else:
-            return self.__end
+        return self.__end
 
     @end.setter
     def end(self, x):
@@ -176,10 +169,7 @@ class Region(object):
         reversed.
         :return:
         """
-        if self.direction == Region.REVERSE:
-            self.__start = self.translate_pos(x)
-        else:
-            self.__end = self.translate_pos(x)
+        self.__end = self.translate_pos(x)
 
     @property
     def direction(self):
@@ -201,7 +191,7 @@ class Region(object):
             cleared = False
             while not cleared:
                 cleared = True
-                if pos >= self.length + self.bounds_start:
+                if pos > self.bounds_end:
                     pos = pos - self.length
                     cleared = False
                 if pos < self.bounds_start:
@@ -268,15 +258,16 @@ class Region(object):
                self.bounds_end == other.bounds_end
 
     def copy(self):
-        return Region(self.__start, self.__end, self.length, self.circular,
+        s, e = self.start, self.end
+        if self.direction is Region.REVERSE:
+            s, e = self.end, self.start
+        return Region(s, e, self.length, self.circular,
                       direction=self.direction, name=self.name, start_index=self.bounds_start)
 
     def get_overlap(self, other):
 
         if self.end_overlaps_with(other):
             r = self.copy()
-
-            print 'copy', r.start, r.end, self.end, other.start
             r.start = other.start
             r.end = self.end
 

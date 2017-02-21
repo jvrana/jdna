@@ -138,6 +138,7 @@ class Assembly(ContigContainer):
     MIN_PCR_SIZE = 250.
     MAX_PCR_SIZE = 5000.
     MAX_HOMOLOGY = 100.
+    MIN_ASSEMBLY_HOMOLOGY = 20.0 # TODO: implement this parameter
     PRIMER_COST = 15.
     PCR_COST = 14.
     FIVEPRIME_EXT_REACH = 20.  # 'reachability' for a extended primer
@@ -182,9 +183,9 @@ class Assembly(ContigContainer):
         """
         d = right.query.start - left.query.end
         r = 0
-        if right.end_label == Contig.NEW_PRIMER or right.end_label is Contig.DIRECT_END:
+        if right.end_label == Contig.NEW_PRIMER:
             r += Assembly.FIVEPRIME_EXT_REACH
-        if left.start_label == Contig.NEW_PRIMER or left.start_label is Contig.DIRECT_END:
+        if left.start_label == Contig.NEW_PRIMER:
             r += Assembly.FIVEPRIME_EXT_REACH
         gap = d - r
         return gap
@@ -227,14 +228,19 @@ class Assembly(ContigContainer):
                 return gaps
         return gaps
 
+    def _gap_cost(self, gap):
+        if gap <= -Assembly.MIN_ASSEMBLY_HOMOLOGY:
+            return 0
+        else:
+            return (gap + Assembly.MIN_ASSEMBLY_HOMOLOGY) * Assembly.SYNTHESIS_COST
+
     def get_gap_cost(self):
         """
         A monotonically increasing gap cost function.
         :return:
         """
         gaps = self.get_gaps()
-        non_zero_gaps = filter(lambda x: x > 0, gaps)
-        return sum(non_zero_gaps) * Assembly.SYNTHESIS_COST
+        return sum([self._gap_cost(g) for g in gaps])
 
     @staticmethod
     def get_pcr_cost(contig):
@@ -269,10 +275,7 @@ class Assembly(ContigContainer):
         return self.meta.query_length - self.assembly_span()
 
     def unassembled_span_cost(self):
-        c = self.unassembled_span() * Assembly.SYNTHESIS_COST
-        if c < 0:
-            c = 0
-        return c
+        return self._gap_cost(self.circular_gap())
 
     def get_num_synthesis_fragments(self):
         gaps = self.get_gaps()
@@ -393,7 +396,7 @@ Breakdown {totalcost}
             gapcost=self.get_gap_cost(),
             contigs=contigs,
             span=self.assembly_span(),
-            uspan=self.unassembled_span(),
+            uspan=self.circular_gap(),
             uspancost=self.unassembled_span_cost(),
             fragcost=self.get_fragment_cost(),
             fragbreakdown=[self.get_pcr_cost(c) for c in self.contigs],
@@ -495,7 +498,7 @@ class J5Assembly(Assembly):
             row = [
                 c.contig_id,
                 c.seqrecord.id,
-                str(False).upper(),
+                str(c.direction != Region.FORWARD),
                 c.subject.start,
                 c.subject.end,
                 '',
