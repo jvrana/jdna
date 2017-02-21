@@ -11,16 +11,16 @@ Description:
 from das_assembly import *
 from das_blast import *
 from das_utilities import *
-
+from das_j5 import *
 
 
 locations = dict(
     database="database",
-    designs="designs",
-    templates="templates"
+    designs="data/designs",
+    templates="data/templates"
 )
 
-design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
+design_path = os.path.join(locations['designs'], 'pmodkan-ho-pact1-z4-er-vpr.gb')
 # design_path = 'designs/hcas9-vpr(sanitized).gb'
 # design_path = 'designs/pins-011-pef1a-hcsy4-t2a-dcas9-crpos0-crpos1.gb'
 
@@ -29,7 +29,7 @@ design_path = 'designs/pmodkan-ho-pact1-z4-er-vpr.gb'
 sanitize_filenames('templates')
 sanitize_filenames('designs')
 
-b = BLAST('db', 'templates', design_path, 'database', 'database/results.out', evalue=10.0, ungapped='', penalty=-100, perc_identity=100)
+b = BLAST('db', locations['templates'], design_path, 'database', 'database/results.out', evalue=10.0, ungapped='', penalty=-100, perc_identity=100)
 b.makedbfromdir()
 b.runblast()
 contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
@@ -40,20 +40,20 @@ contig_container.remove_redundant_contigs(remove_equivalent=True, remove_within=
 
 # contig_container.filter_perfect()
 
-# primers = open_sequence('primers/primers.fasta')
+# primers = open_sequence("data/primers/primers.fasta')
 # print str(primers[0])
 # exit()
 
 
-# generate_random_primers(open_sequence(design_path)[0], 'primers/primers.fasta', num_primers=2)
-p = BLAST('primerdb', 'primers', design_path, 'database', 'database/primerresults.out', evalue=1000.0, task='blastn-short') #, word_size=15, perc_identity=100, penalty=-100, ungapped='') #, ungapped='', penalty=-100)
+# generate_random_primers(open_sequence(design_path)[0], "data/primers/primers.fasta', num_primers=2)
+p = BLAST('primerdb', "data/primers", design_path, 'database', 'database/primerresults.out', evalue=1000.0, task='blastn-short') #, word_size=15, perc_identity=100, penalty=-100, ungapped='') #, ungapped='', penalty=-100)
 p.makedbfromdir()
 p.runblast()
 primer_container = p.parse_results(contig_type=Contig.TYPE_PRIMER)
 primer_container.filter_perfect_subjects()
 
 # primer_container.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
-primer_container.dump('alignment_viewer/primer_data.json')
+primer_container.dump('views/alignment_viewer/primer_data.json')
 
 
 assembly = AssemblyGraph(primers=primer_container, contigs=contig_container)
@@ -65,14 +65,14 @@ assembly.break_contigs_at_endpoints()
 # assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_linear_contigs=False)
 assembly.remove_redundant_contigs(remove_equivalent=True, remove_within=False, no_removal_if_different_ends=True)
 assembly.sort_contigs()
-assembly.dump('alignment_viewer/data.json')
+assembly.dump('views/alignment_viewer/data.json')
 
 
 
 
 
 
-dump_coral_to_json(design_path, 'plasmid_viewer/PlasmidViewer/js/plasmiddata.json', width=1000)
+dump_coral_to_json(design_path, 'views/plasmid_viewer/PlasmidViewer/js/plasmiddata.json', width=1000)
 
 paths = assembly.get_all_assemblies(place_holder_size=10, save_history=True)
 
@@ -81,7 +81,7 @@ f = assembly.assembly_history
 print paths[0].summary()
 
 
-paths[0].dump('alignment_viewer/bestassembly.json')
+paths[0].dump('views/alignment_viewer/bestassembly.json')
 
 # a.fill_contig_gaps()
 # print a.summary()
@@ -109,7 +109,7 @@ for l, r in pairs:
     print 'bounds', _l.bounds_start, _l.bounds_end, _r.bounds_start, _r.bounds_end
     print 'gap', _l.get_gap_degree(_r)
 
-exit()
+# exit()
 credentials = None
 with open('j5_credentials.json') as handle:
     credentials = json.load(handle)
