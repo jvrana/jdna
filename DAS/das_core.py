@@ -29,7 +29,7 @@ design_path = os.path.join(locations['designs'], 'pmodkan-ho-pact1-z4-er-vpr.gb'
 sanitize_filenames('templates')
 sanitize_filenames('designs')
 
-b = BLAST('db', locations['templates'], design_path, 'database', 'database/results.out', evalue=10.0, ungapped='', penalty=-100, perc_identity=100)
+b = Aligner('db', locations['templates'], design_path, evalue=10.0, ungapped='', penalty=-100, perc_identity=100)
 b.makedbfromdir()
 b.runblast()
 contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
@@ -46,7 +46,7 @@ contig_container.remove_redundant_contigs(remove_equivalent=True, remove_within=
 
 
 # generate_random_primers(open_sequence(design_path)[0], "data/primers/primers.fasta', num_primers=2)
-p = BLAST('primerdb', "data/primers", design_path, 'database', 'database/primerresults.out', evalue=1000.0, task='blastn-short') #, word_size=15, perc_identity=100, penalty=-100, ungapped='') #, ungapped='', penalty=-100)
+p = Aligner('primerdb', 'data/primers', design_path, evalue=1000.0, task='blastn-short')
 p.makedbfromdir()
 p.runblast()
 primer_container = p.parse_results(contig_type=Contig.TYPE_PRIMER)
@@ -114,6 +114,8 @@ credentials = None
 with open('j5_credentials.json') as handle:
     credentials = json.load(handle)
 # j5.submit(**credentials)
+j5.process_assembly()
+
 j5.all()
 j5.decode_all_to('assembly_parameters')
 r = j5.submit(**credentials)
@@ -127,4 +129,7 @@ with open('assembly_parameters/results.zip', 'w') as handle:
 # Update templates
 
 # TODO convert direction fragments, into fragments with new primers
+print
+print "*"*100
 print "DONT FORGET TO convert direction fragments, into fragments with new primers"
+

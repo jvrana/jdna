@@ -10,6 +10,25 @@ Description:
 from das_assembly import *
 
 import xmlrpc.client
+
+class J5Part(Region):
+
+    def __init__(self, name, source, five_internal, three_internal, region):
+        super(J5Part, self).__init__(
+            region.start,
+            region.end,
+            region.length,
+            region.circular,
+            direction=region.direction,
+            start_index=region.bounds_start)
+        self.name = name
+        self.source = source
+        self.rc = self.direction != Region.FORWARD
+        self.five_internal = five_internal
+        self.three_internal = three_internal
+
+
+
 class J5Assembly(Assembly):
     PARTLABELS = ['Part Name', 'Part Source (Sequence Display ID)', 'Reverse Compliment?', 'Start (bp)', 'End (bp)',
                   'Five Prime Internal Preferred Overhangs?', 'Three Prime Internal Preferred Overhangs?']
@@ -48,8 +67,9 @@ class J5Assembly(Assembly):
         return base64.decodestring(string)
 
     def all(self):
-        self.get_parts()
+        self.process_assembly()
         self.get_target()
+        self.get_parts()
         self.get_sequences()
         self.get_plasmids()
         self.get_primers()
@@ -60,7 +80,7 @@ class J5Assembly(Assembly):
     def decode_all_to(self, destination):
         self.all()
         names = [
-            'parts',
+            'parts_csv',
             'target',
             'sequences',
             'plasmids',
@@ -79,11 +99,44 @@ class J5Assembly(Assembly):
         with open('j5_parameters.csv') as params:
             self.parameters = J5Assembly.encode64(params.read())
 
+    def process_assembly(self):
+
+        # Process Parts
+        parts = []
+        sequences = []
+
+        pairs = zip(self.contigs[0:-1], self.contigs[1:])
+        pairs.append((self.contigs[-1], self.contigs[0]))
+        for l, r in pairs:
+            _l = Region(l.query.start, l.query.end, l.query.length / 2.0, True,
+                        direction=l.query.direction,
+                        name=l.subject.name,
+                        start_index=pairs[0][0].query.start)
+            _r = Region(r.query.start, r.query.end, r.query.length / 2.0, True,
+                        direction=l.query.direction,
+                        name=r.subject.name,
+                        start_index=pairs[0][0].query.start)
+            part = J5Part(l.contig_id, l.filename,
+                          '', '', _l)
+            parts.append(part)
+            d = _l.get_gap_degree(_r)
+            if d > 0:
+                gap_part = J5Part('{}_{}_gap'.format(_l.name, _r.name),
+                                  self.meta.query_filename,
+                                  '',
+                                  '',
+                                  _l.get_gap(_r))
+                parts.append(gap_part)
+        self.parts = parts
+
+        # Process sequences
+
+
     def get_target(self):
         rows = []
-        for c in self.contigs:
+        for p in self.parts:
             row = [
-                c.contig_id,
+                p.name,
                 'forward',
                 '',
                 '',
@@ -96,19 +149,19 @@ class J5Assembly(Assembly):
 
     def get_parts(self):
         rows = []
-        for c in self.contigs:
+        for p in self.parts:
             row = [
-                c.contig_id,
-                c.seqrecord.id,
-                str(c.subject.direction != Region.FORWARD),
-                c.subject.start,
-                c.subject.end,
+                p.name,
+                os.path.basename(p.source),
+                str(p.direction != Region.FORWARD),
+                p.start,
+                p.end,
                 '',
                 ''
             ]
             rows.append(row)
         csv = self.to_csv(J5Assembly.PARTLABELS, rows)
-        self.parts = J5Assembly.encode64(csv)
+        self.parts_csv = J5Assembly.encode64(csv)
 
     def get_direct(self):
         self.direct = J5Assembly.encode64(self.to_csv(J5Assembly.MASTERDIRECTLABELS, []))
@@ -135,9 +188,9 @@ class J5Assembly(Assembly):
     def get_sequences(self):
         print 'SEQUENCE LIST'
         sequences = []
-        for c in self.contigs:
-            print '\tSEQ: {}  @  {}'.format(os.path.basename(c.filename), c.seqrecord.id)
-            sequences.append((c.filename, c.seqrecord.id,))
+        for p in self.parts:
+            print '\tSEQ: {}  @  {}'.format(os.path.basename(p.source), p.name)
+            sequences.append((p.source, p.name,))
         sequences = list(set(sequences))
 
         # Save sequence_list
@@ -173,7 +226,7 @@ class J5Assembly(Assembly):
             'master_oligos': self.primers,
             'master_plasmids': self.plasmids,
             'master_direct_syntheses': self.direct,
-            'parts_list': self.parts,
+            'parts_list': self.parts_csv,
             'j5_parameters': self.parameters,
             'sequences_list': self.sequences,
             'eugene_rules': self.eugene,
@@ -192,7 +245,7 @@ class J5Assembly(Assembly):
 
     def submit(self, username, password):
         self.all()
-        self.login(username, password)
+        self.login = self.login(username, password)
         return self.run_assembly()
 
     def run_assembly(self, assembly_method='SLIC/Gibson/CPEC'):

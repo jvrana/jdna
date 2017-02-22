@@ -1,0 +1,6 @@
+Part Name,Part Source (Sequence Display ID),Reverse Compliment?,Start (bp),End (bp),Five Prime Internal Preferred Overhangs?,Three Prime Internal Preferred Overhangs?
+45,hcas9-vpr.gb,False,4228,5920,,
+hCas9-VPR_pMODKan-HO-pACT1-ZEV4_gap,pmodkan-ho-pact1-z4-er-vpr_pseudocircular.fsa,False,5921,5947,,
+2340,pmodkan-ho-pact1-zev4.gb,False,5948,10135,,
+2333,pmodkan-ho-pact1-zev4.gb,False,10135,13627,,
+pMODKan-HO-pACT1-ZEV4_hCas9-VPR_gap,pmodkan-ho-pact1-z4-er-vpr_pseudocircular.fsa,False,13628,13635.0,,

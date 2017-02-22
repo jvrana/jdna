@@ -12,6 +12,7 @@ from das_utilities import *
 from das_contig import Contig, ContigContainer, ContigContainerMeta
 import re
 from copy import copy
+import tempfile
 
 class BLAST(object):
 
@@ -22,6 +23,17 @@ class BLAST(object):
 
     def __init__(self, name, db_in_dir, query_path, db_out_dir, results_out, output_format=7, output_views="qacc sacc score evalue bitscore\
      length nident gapopen gaps qlen qstart qend slen sstart send sstrand qseq sseq", **additional_params):
+        """
+
+        :param name:
+        :param db_in_dir: templates_directory
+        :param query_path: design_goal
+        :param db_out_dir: this will become temporary
+        :param results_out: this will also become temporary
+        :param output_format: don't ever change this
+        :param output_views:
+        :param additional_params:
+        """
         self.query = query_path
         self.save_query_info()
         self.pseudocircular()
@@ -189,3 +201,31 @@ class BLAST(object):
         meta['contig_seqs'] = self.seqs
         contig_container.meta = ContigContainerMeta(**meta)
         return contig_container
+
+
+class Aligner(BLAST):
+    """
+    Wrapper for running BLAST. Creates temporary databases and parses results
+    """
+
+    def __init__(self, name, templates, design, **additional_params):
+
+        db_out_dir = tempfile.mkdtemp()
+        results_out = tempfile.mktemp(dir=db_out_dir)
+
+        super(Aligner, self).__init__(
+            name,
+            templates,
+            design,
+            db_out_dir,
+            results_out,
+            **additional_params
+        )
+
+    def run(self, contig_type):
+        self.makedbfromdir()
+        self.runblast()
+        self.contig_container = self.parse_results(contig_type=contig_type)
+        return self.contig_container
+
+
