@@ -9,13 +9,13 @@ Description:
 '''
 from das_seqio import *
 from das_utilities import *
-from das_contig import Contig, ContigContainer, ContigContainerMeta
+from das_contig import Contig, ContigContainer, ContigContainerMeta, ContigRegion
 import re
 from copy import copy
 import tempfile
 
-class BLAST(object):
 
+class BLAST(object):
     # in_dir: templates
     # name: db
     # our_dir: database
@@ -35,7 +35,9 @@ class BLAST(object):
         :param additional_params:
         """
         self.query = query_path
-        self.save_query_info()
+        self.query_circular = False
+        self.query_seq = open_sequence(self.query)[0]
+        self.query_length = len(self.query_seq)
         self.pseudocircular()
         self.save_query_as_fsa()
         self.db_in_dir = db_in_dir
@@ -64,11 +66,6 @@ class BLAST(object):
             self.query = prefix + '_pseudocircular.' + suffix
             save_sequence(self.query, seq + seq)
             self.query_circular = True
-
-    def save_query_info(self):
-        self.query_circular = False
-        self.query_seq = open_sequence(self.query)[0]
-        self.query_length = len(self.query_seq)
 
     def runblast(self):
         cmd_str = "blastn -db {db} -query {query} -out {out} -outfmt {outfmt}"
@@ -111,8 +108,6 @@ class BLAST(object):
         out, seqs, metadata = self.concate_db_to_fsa()
         return self.makedb(out)
 
-
-
     def perfect_matches(self, rc=True):
         """
         Pseudo-blast for finding perfect sequence matches (i.e. primers)
@@ -152,7 +147,7 @@ class BLAST(object):
                 pass
 
     # TODO: Handle circular subject and queries more cleanly
-    def parse_results(self, contig_type=None, delimiter=','):
+    def parse_results(self, contig_type, delimiter=','):
         '''
         This parses a tabulated blast result
         Contig_Container metadata is defined here
@@ -160,14 +155,14 @@ class BLAST(object):
         :param contig_type:
         :return:
         '''
-        if contig_type is None:
-            raise Exception("You must define a contig_type!")
+
         contig_container = ContigContainer()
         results = self.results_raw
         if results.strip() == '':
             return {'contigs': []}
         g = re.search(
-            '# (?P<blast_ver>.+)\n# Query: (?P<query>.+)\\n# Database: (?P<database>.+)\n# Fields: (?P<fields>.+)', results)
+            '# (?P<blast_ver>.+)\n# Query: (?P<query>.+)\\n# Database: (?P<database>.+)\n# Fields: (?P<fields>.+)',
+            results)
 
         meta = g.groupdict()
 
@@ -193,13 +188,37 @@ class BLAST(object):
                     pass
 
             contig_dict = dict(zip(meta['fields'], v))
-            contig_dict['contig_type'] = contig_type
-            if self.db_input_metadata:
-                if contig_dict['subject_acc'] in self.db_input_metadata:
-                    contig_dict.update(self.db_input_metadata[contig_dict['subject_acc']])
-                    contig_dict['subject_circular'] = contig_dict['circular']
-                    contig_dict['query_circular'] = False
-                    contig_container.add_contig(**contig_dict)
+
+            subject = ContigRegion(
+                contig_dict['subject_acc'],
+                contig_dict['s_start'],
+                contig_dict['s_end'],
+                contig_dict['subject_length'],
+                self.db_input_metadata[contig_dict['subject_acc']]['circular'],
+                forward=contig_dict['subject_strand'] != 'minus',
+                filename=self.db_input_metadata[contig_dict['subject_acc']],
+            )
+
+            query = ContigRegion(
+                contig_dict['query_acc'],
+                contig_dict['q_start'],
+                contig_dict['q_end'],
+                contig_dict['query_length'],
+                False,
+                forward=True,
+                filename=self.query,
+            )
+            new_contig = Contig(query, subject, contig_type,
+                                score=contig_dict['score'],
+                                evalue=contig_dict['evalue'],
+                                bit_score=contig_dict['bit_score'],
+                                alignment_length=contig_dict['alignment_length'],
+                                identical=contig_dict['identical'],
+                                gap_opens=contig_dict['gap_opens'],
+                                gaps=contig_dict['gaps']
+                                )
+            contig_container.contigs.append(new_contig)
+
         meta['query_circular'] = self.query_circular
         meta['query_length'] = self.query_length
         meta['query_filename'] = self.query
@@ -215,7 +234,6 @@ class Aligner(BLAST):
     """
 
     def __init__(self, name, templates, design, **additional_params):
-
         db_out_dir = tempfile.mkdtemp()
         results_out = tempfile.mktemp(dir=db_out_dir)
 
@@ -233,5 +251,3 @@ class Aligner(BLAST):
         self.runblast()
         self.contig_container = self.parse_results(contig_type=contig_type)
         return self.contig_container
-
-

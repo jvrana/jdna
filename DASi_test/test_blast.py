@@ -38,7 +38,7 @@ def test_blast_same():
     contig_container = b.parse_results(contig_type=Contig.TYPE_BLAST)
 
     contig_container.fuse_circular_fragments()
-    contig_container.remove_redundant_contigs(remove_within=True)
+    contig_container.remove_redundant_contigs(remove_equivalent=True, remove_within=True, no_removal_if_different_ends=False)
     # contig_container.remove_redundant_contigs(remove_within=True)
 
     contigs = contig_container.contigs

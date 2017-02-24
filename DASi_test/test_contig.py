@@ -12,14 +12,70 @@ import itertools
 import numpy as np
 import pytest
 
-from DAS.das_contig import Contig, ContigContainer, ContigError
-from DASi_test.test_assembly import contig_example
+from DAS.das_contig import Contig, ContigContainer, ContigError, ContigRegion
+from copy import copy, deepcopy
+
+
+contig_example = {
+          "s_end": 757,
+          "identical": 155,
+          "query_acc": "pINS-011-pEF1a-hcsy4-T",
+          "subject_acc": "pRIAS_(CC#15)",
+          "query_seq": "CAGATTTATCAGCAATAAACCAGCCAGCCGGAAGGGCCGAGCGCAGAAGTGGTCCTGCAACTTTATCCGCCTCCATCCAGTCTATTAATTGTTGCCGGGAAGCTAGAGTAAGTAGTTCGCCAGTTAATAGTTTGCGCAACGTTGTTGCCATTGCT",
+          "contig_type": "blast",
+          "start_label": "new_primer",
+          "gaps": 0,
+          "end_label": "new_primer",
+          "bit_score": 310,
+          "quality": 1.0,
+          "subject_strand": "minus",
+            "subject_circular": True,
+            "query_circular": True,
+          "q_start": 1,
+          "q_end": 155,
+          "s_start": 911,
+          "evalue": 2.95e-84,
+          "gap_opens": 0,
+          "filename": "templates/pRIAS (CC15).gb",
+          "subject_seq": "CAGATTTATCAGCAATAAACCAGCCAGCCGGAAGGGCCGAGCGCAGAAGTGGTCCTGCAACTTTATCCGCCTCCATCCAGTCTATTAATTGTTGCCGGGAAGCTAGAGTAAGTAGTTCGCCAGTTAATAGTTTGCGCAACGTTGTTGCCATTGCT",
+          "score": 155,
+          "contig_id": 268,
+          "subject_length": 9795,
+          "query_length": 22240,
+          "alignment_length": 155,
+          "circular": True
+        }
+c = contig_example
+
+subject = ContigRegion(
+    "pRIAS_(CC#15)",
+    911,
+    757,
+    9795,
+    True,
+    False,
+    sequence="CAGATTTATCAGCAATAAACCAGCCAGCCGGAAGGGCCGAGCGCAGAAGTGGTCCTGCAACTTTATCCGCCTCCATCCAGTCTATTAATTGTTGCCGGGAAGCTAGAGTAAGTAGTTCGCCAGTTAATAGTTTGCGCAACGTTGTTGCCATTGCT",
+    filename="templates/pRIAS (CC15).gb"
+)
+
+query = ContigRegion(
+    "pRIAS_(CC#15)",
+    1,
+    155,
+    22240,
+    True,
+    True,
+    sequence="CAGATTTATCAGCAATAAACCAGCCAGCCGGAAGGGCCGAGCGCAGAAGTGGTCCTGCAACTTTATCCGCCTCCATCCAGTCTATTAATTGTTGCCGGGAAGCTAGAGTAAGTAGTTCGCCAGTTAATAGTTTGCGCAACGTTGTTGCCATTGCT",
+    filename="templates/pfsfsfRIAS (CC15).gb"
+)
+
+contig_example = Contig(copy(query), copy(subject), Contig.TYPE_BLAST)
 
 
 def create_contigs(list_of_start_and_ends):
     contigs = []
     for x, y in list_of_start_and_ends:
-        c = Contig(**contig_example)
+        c = contig_example.copy()
         c.query.start = x
         c.query.end = y
         contigs.append(c)
@@ -27,8 +83,8 @@ def create_contigs(list_of_start_and_ends):
 
 
 def test_contig_overlaps():
-    contig1 = Contig(**contig_example)
-    contig2 = Contig(**contig_example)
+    contig1 = contig_example.copy()
+    contig2 = contig_example.copy()
 
     contig1.query.start = 1000
     contig1.query.end = 2000
@@ -64,11 +120,12 @@ def test_contig_container():
     contigs = create_contigs(contigs)
     c = ContigContainer(contigs=contigs)
     l = len(c.contigs)
+    assert len(c.contigs) == l
     c.remove_redundant_contigs(remove_within=True, remove_equivalent=True, no_removal_if_different_ends=True)
     assert len(c.contigs) == l
 
     # Test within, equivalent
-    new_contig = Contig(**contig_example)
+    new_contig = contig_example.copy()
     new_contig.query.start = 50
     new_contig.query.end = 190
     c.contigs.append(new_contig)
@@ -77,7 +134,7 @@ def test_contig_container():
     assert len(c.contigs) == l - 1
 
     # Test equivalent
-    new_contig = Contig(**contig_example)
+    new_contig = contig_example.copy()
     new_contig.query.start = 50
     new_contig.query.end = 190
     c.contigs.append(new_contig)
@@ -86,7 +143,7 @@ def test_contig_container():
     assert len(c.contigs) == l - 1
 
     # Test within
-    new_contig = Contig(**contig_example)
+    new_contig = contig_example.copy()
     new_contig.query.start = 60
     new_contig.query.end = 180
     c.contigs.append(new_contig)
@@ -98,7 +155,7 @@ def test_contig_container():
     assert not new_contig in c.contigs
 
     # Test within
-    new_contig = Contig(**contig_example)
+    new_contig = contig_example.copy()
     new_contig.query.start = 60
     new_contig.query.end = 180
     c.contigs.append(new_contig)
@@ -115,8 +172,38 @@ def test_contig_container():
     assert not new_contig in c.contigs
 
 
+def test_remove_redundant():
+    bounds = [
+        [1, 1000],
+        [10, 500],
+        [10, 1000],
+        [10, 500],
+        [1, 999],
+        [1, 1000]
+    ]
+    contigs = create_contigs(bounds)
+    c = ContigContainer(contigs=contigs)
+    assert len(c.contigs) == len(bounds)
+    c_copy = deepcopy(c)
+    c_copy.remove_redundant_contigs(remove_equivalent=True, remove_within=True, no_removal_if_different_ends=False)
+    assert len(c_copy.contigs) == 1
+
+    # Remove the equivalent bound
+    c_copy = deepcopy(c)
+    c_copy.remove_redundant_contigs(remove_equivalent=True, remove_within=False, no_removal_if_different_ends=False)
+    x = 1
+    assert len(c_copy.contigs) == len(bounds) - 2
+
+    c_copy = deepcopy(c)
+    c_copy.remove_redundant_contigs(remove_equivalent=False, remove_within=True, no_removal_if_different_ends=False)
+    assert len(c_copy.contigs) == 1
+
+    c_copy = deepcopy(c)
+    c_copy.remove_redundant_contigs(remove_equivalent=False, remove_within=False, no_removal_if_different_ends=False)
+    assert len(c_copy.contigs) == len(bounds)
+
 def test_divide_contig():
-    contig1 = Contig(**contig_example)
+    contig1 = contig_example.copy()
 
     contig1.query.start = 1000
     contig1.query.end = 5000
@@ -194,8 +281,8 @@ def test_break_long_contig():
 
 def test_contig_within():
 
-    contig1 = Contig(**contig_example)
-    contig2 = Contig(**contig_example)
+    contig1 = contig_example.copy()
+    contig2 = contig_example.copy()
 
     contig1.query.start = 1000
     contig1.query.end = 2000
@@ -223,8 +310,8 @@ def test_contig_within():
 
 
 def test_is_equivalent():
-    contig1 = Contig(**contig_example)
-    contig2 = Contig(**contig_example)
+    contig1 = contig_example.copy()
+    contig2 = contig_example.copy()
 
     contig1.query.start = 1000
     contig1.query.end = 2000
@@ -243,7 +330,7 @@ def test_is_equivalent():
 
 
 def test_pos_within():
-    contig1 = Contig(**contig_example)
+    contig1 = contig_example.copy()
     contig1.query.start = 1000
     contig1.query.end = 2000
 
@@ -260,7 +347,7 @@ def test_pos_within():
 
 
 def test_break_contig():
-    contig1 = Contig(**contig_example)
+    contig1 = contig_example.copy()
     contig1.query.start = 1000
     contig1.query.end = 2000
 
@@ -328,11 +415,9 @@ def test_break_contig():
 
 
 def test_subject_break_contig():
-    contig1 = Contig(**contig_example)
+    contig1 = contig_example.copy()
     contig1.query.start = 1000
     contig1.query.end = 2000
     contig1.subject.start = 100
     contig1.subject.end = 2100
     contig1.query.__length = 4000
-
-def test_default_contig():

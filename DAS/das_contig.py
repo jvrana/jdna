@@ -38,32 +38,47 @@ class ContigContainerMeta(object):
         self.contig_seqs = contig_seqs
         self.__dict__.update(kwargs)
 
-# class ContigRegion(Region):
-#     START_INDEX = 1 # Convention is carried over from BLAST results, BE CAREFUL!
-#     NEW_PRIMER = "new_primer"
-#     DIRECT_END = "direct"
-#     DEFAULT_END = NEW_PRIMER
-#
-#     def __init__(self, start, end, length, circular, direction, name, type, start_label=None, end_label=None):
-#         super(ContigRegion, self).__init__(
-#             start=start,
-#             end=end,
-#             length=length,
-#             circular=circular,
-#             direction=direction,
-#             name=name,
-#             start_index=ContigRegion.START_INDEX
-#         )
-#         self.type = type
-#         if start_label is None:
-#             start_label = ContigRegion.DEFAULT_END
-#         if end_label is None:
-#             end_label = ContigRegion.DEFAULT_END
+class ContigRegion(Region):
+    START_INDEX = 1 # Convention is carried over from BLAST results, BE CAREFUL!
+    NEW_PRIMER = "new_primer"
+    DIRECT_END = "direct"
+    DEFAULT_END = NEW_PRIMER
+
+
+
+    def __init__(self, name, start, end, length, circular, forward=True, sequence=None, filename=None):
+        direction = Region.FORWARD
+        if not forward:
+            direction = Region.REVERSE
+        super(ContigRegion, self).__init__(
+            start,
+            end,
+            length,
+            circular,
+            direction=direction,
+            name=name,
+            start_index=ContigRegion.START_INDEX
+        )
+        self.sequence = sequence
+        self.filename = filename
+
+    @staticmethod
+    def create_from_dictionary(**kwargs):
+        new = ContigRegion(
+            kwargs['s_start'],
+            kwargs['s_end'],
+            kwargs['subject_length'],
+            kwargs['subject_circular'],
+            forward=kwargs['subject_strand'] == 'plus',
+            name=kwargs['subject_acc'],
+            sequence=kwargs['subject_seq']
+        )
+        return new
 
 class Contig(object):
     contig_id = 0
 
-    START_INDEX = 1 # Convention is carried over from BLAST results, BE CAREFUL!
+    # START_INDEX = 1 # Convention is carried over from BLAST results, BE CAREFUL!
     NEW_PRIMER = "new_primer"
     DIRECT_END = "direct"
     DEFAULT_END = NEW_PRIMER
@@ -72,110 +87,42 @@ class Contig(object):
     # TYPE_DIRECT = 'direct_synthesis'
     TYPE_PRIMER = 'primer'
     TYPE_PCR = 'product'
-    sequence_options = ['coral', 'seqrecord']
-    optional_args = ['circular', 'filename'] + sequence_options
 
-    @staticmethod
-    def create_default_contig():
-        return Contig(
-            q_start=Contig.START_INDEX,
-            q_end=Contig.START_INDEX,
-            s_end=Contig.START_INDEX,
-            s_start=Contig.START_INDEX,
-            identical=0,
-            query_acc='',
-            subject_acc='',
-            query_seq='',
-            contig_type='',
-            start_label=Contig.DEFAULT_END,
-            end_label=Contig.DEFAULT_END,
-            subject_circular=False,
-            gaps=0,
-            bit_score=0,
-            quality=0,
-            subject_strand='',
-            evalue=0,
-            gap_opens=0,
-            filename='',
-            subject_seq='',
-            score=0,
-            subject_length=0,
-            query_length=0,
-            alignment_length=0,
-            circular=False
-        )
-
-    @staticmethod
-    def create_contig_from_region(query_region, subject_region):
-        new_contig = Contig
-        self.query = query_region
-        self.subject = subject_region
-
-    def __init__(self, **kwargs):
-        subject_direction = Region.FORWARD
-        if kwargs['subject_strand'] == 'minus':
-            subject_direction = Region.REVERSE
-        # Subject region information
-        self.subject = Region(
-            kwargs['s_start'],
-            kwargs['s_end'],
-            kwargs['subject_length'],
-            kwargs['subject_circular'],
-            direction=subject_direction,
-            name=kwargs['subject_acc'],
-            start_index=Contig.START_INDEX
-        )
-        self.subject.strand = kwargs['subject_strand']
-        self.subject.seq = kwargs['subject_seq']
-
-        # Query region information
-        self.query = Region(
-            kwargs['q_start'],
-            kwargs['q_end'],
-            kwargs['query_length'],
-            kwargs['query_circular'],
-            name=kwargs['query_acc'],
-            direction=Region.FORWARD,
-            start_index=Contig.START_INDEX
-        )
-        self.query.seq = kwargs['query_seq']
-
-        # Alignment Information
-        self.score = kwargs['score']
-        self.evalue = kwargs['evalue']
-        self.bit_score = kwargs['bit_score']
-        self.alignment_length = kwargs['alignment_length']  # for comparison
-        self.identical = kwargs['identical']
-        self.gap_opens = kwargs['gap_opens']
-        self.gaps = kwargs['gaps']
-
-        self.contig_type = kwargs['contig_type']
+    # TODO: assert that length of region in query and subject are equivalent
+    # TODO: make query and subject immutable
+    def __init__(self, query, subject, type, start_label=None, end_label=None, score=0, evalue=10000, bit_score=1,
+                 alignment_length=None, identical=1, gap_opens=0, gaps=0):
+        self.subject = subject
+        self.query = query
+        if start_label is None:
+            start_label = Contig.DEFAULT_END
+        if end_label is None:
+            end_label = Contig.DEFAULT_END
+        self.start_label = start_label
+        self.end_label = end_label
+        self.score = score
+        self.evalue = evalue
+        self.bit_score = bit_score
+        self.recorded_alignment_length = alignment_length
+        self.identical = identical
+        self.gap_opens = gap_opens
+        self.gaps = gaps
         self.assign_id()
-        if 'end_label' not in kwargs:
-            self.end_label = Contig.DEFAULT_END
-        else:
-            self.end_label = kwargs['end_label']
-
-        if 'start_label' not in kwargs:
-            self.start_label = Contig.DEFAULT_END
-        else:
-            self.start_label = kwargs['start_label']
-
+        self.type = type
         self.quality = 1.0  # used for future machine learning / AI
 
-        for opt in Contig.optional_args:
-            try:
-                self.__dict__[opt] = kwargs[opt]
-            except KeyError:
-                self.__dict__[opt] = None
-
         # TODO: this implies a direct synthesis, change this to add separate
-        if not self.circular and self.is_perfect_subject():
+        if not self.query.circular and self.is_perfect_subject():
             self.start_label = Contig.DIRECT_END
             self.end_label = Contig.DIRECT_END
             # for k in kwargs:
             #     if k not in self.__dict__:
             #         raise ValueError("Key {} not found in {} class definition".format(k, Contig.__class__.__name__))
+
+    @property
+    def alignment_length(self):
+        assert self.query.region_span == self.subject.region_span
+        return self.query.region_span
 
     def assign_id(self):
         Contig.contig_id += 1
@@ -287,7 +234,6 @@ class Contig(object):
         new_contig.subject.start += delta_start
         new_contig.subject.end += delta_end
 
-        new_contig.alignment_length = new_contig.query.region_span
         new_contig.parent_id = self.contig_id
         if start_label is not None:
             new_contig.start_label = start_label
@@ -417,9 +363,10 @@ class ContigContainer(object):
                 if no_removal_if_different_ends:
                     if not c1.ends_equivalent(c2):
                         continue
+                x = (c1.query.start, c1.query.end, c2.query.start, c2.query.end)
                 if remove_equivalent and c1.equivalent_location(c2):
                     contigs_for_removal.append(c2)
-                if remove_within:
+                elif remove_within:
                     if c1.is_within(c2, inclusive=True):
                         contigs_for_removal.append(c1)
                     elif c2.is_within(c1, inclusive=True):
@@ -450,7 +397,7 @@ class ContigContainer(object):
             l.query.fuse(r.query)
             l.subject.fuse(r.subject)
 
-            keys_to_sum = 'alignment_length, gap_opens, gaps, identical, score'.split(', ')
+            keys_to_sum = 'gap_opens, gaps, identical, score'.split(', ')
             for k in keys_to_sum:
                 l.__dict__[k] += r.__dict__[k]
 

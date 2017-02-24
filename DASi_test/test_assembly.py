@@ -10,36 +10,7 @@ Description:
 
 from DAS.das_assembly import *
 from DAS.das_blast import *
-
-contig_example = {
-          "s_end": 757,
-          "identical": 155,
-          "query_acc": "pINS-011-pEF1a-hcsy4-T",
-          "subject_acc": "pRIAS_(CC#15)",
-          "query_seq": "CAGATTTATCAGCAATAAACCAGCCAGCCGGAAGGGCCGAGCGCAGAAGTGGTCCTGCAACTTTATCCGCCTCCATCCAGTCTATTAATTGTTGCCGGGAAGCTAGAGTAAGTAGTTCGCCAGTTAATAGTTTGCGCAACGTTGTTGCCATTGCT",
-          "contig_type": "blast",
-          "start_label": "new_primer",
-          "gaps": 0,
-          "end_label": "new_primer",
-          "bit_score": 310,
-          "quality": 1.0,
-          "subject_strand": "minus",
-            "subject_circular": True,
-            "query_circular": True,
-          "q_start": 1,
-          "q_end": 155,
-          "s_start": 911,
-          "evalue": 2.95e-84,
-          "gap_opens": 0,
-          "filename": "templates/pRIAS (CC15).gb",
-          "subject_seq": "CAGATTTATCAGCAATAAACCAGCCAGCCGGAAGGGCCGAGCGCAGAAGTGGTCCTGCAACTTTATCCGCCTCCATCCAGTCTATTAATTGTTGCCGGGAAGCTAGAGTAAGTAGTTCGCCAGTTAATAGTTTGCGCAACGTTGTTGCCATTGCT",
-          "score": 155,
-          "contig_id": 268,
-          "subject_length": 9795,
-          "query_length": 22240,
-          "alignment_length": 155,
-          "circular": True
-        }
+from test_contig import contig_example
 
 # TODO: fix this reverse stuff...
 
@@ -62,8 +33,8 @@ def test_rc():
     assert rc_seq == dna_reverse_complement(seq)
 
 def test_assembly_graph():
-    contig1 = Contig(**contig_example)
-    contig2 = Contig(**contig_example)
+    contig1 = contig_example.copy()
+    contig2 = contig_example.copy()
 
     contig1.query._Region__length = 10000
     contig2.query._Region__length = contig1.query.length
