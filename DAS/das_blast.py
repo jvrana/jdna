@@ -119,31 +119,37 @@ class BLAST(object):
         :param rc:
         :return:
         """
+        # Get primer sequences (defined in db)
         out, seqs, metadata = self.concate_db_to_fsa()
+
+        sequence_to_primer = {}
+
+        # Get the query sequence
         query_seq = open_sequence(self.query)[0].seq
-        query_seq = re.sub('[nN]', '.', query_seq)
+        query_seq_str = str(query_seq)
+        query_seq_str = re.sub('[nN]', '.', query_seq_str).lower()
 
         fwd_matches = []
         rev_matches = []
         for seq in seqs:
-            seq = seq.seq
+            seq_str = str(seq.seq)
             try:
-                rc_seq = dna_reverse_complement(str(seq))
-            except KeyError as e:
-                print e
+                rc_seq_str = dna_reverse_complement(seq_str)
+            except KeyError:
                 continue
-            seq = re.sub('[nN]', '.', seq)
-            rc_seq = re.sub('[nN]', '.', rc_seq)
+            seq_str = re.sub('[nN]', '.', seq_str).lower()
+            rc_seq_str = re.sub('[nN]', '.', rc_seq_str).lower()
 
-            for match in re.finditer(str(seq), str(query_seq)):
+            for match in re.finditer(seq_str, query_seq_str):
                 c = Contig.create_default_contig()
-                c.query.start = match.start()
-                c.query.end = match.end()
+                # TODO: add positions to regions that according to delta x
+                c.query.start = match.start() + c.query.bounds_start
+                c.query.end = match.end() + c.query.bounds_start
                 c.strand = 'plus'
                 c.subject_acc = ''
+                print c.query.start
             if rc:
-                for rev_match in re.finditer(str(rc_seq), str(query_seq)):
-                    pass
+                pass
 
     # TODO: Handle circular subject and queries more cleanly
     def parse_results(self, contig_type=None, delimiter=','):

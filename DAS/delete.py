@@ -1,10 +1,20 @@
 '''
 Project: jdna
+File: delete
+Author: Justin
+Date: 2/23/17
+
+Description: 
+
+'''
+
+'''
+Project: jdna
 File: contig
 Author: Justin
 Date: 2/6/17
 
-Description: 
+Description:
 
 '''
 
@@ -38,34 +48,18 @@ class ContigContainerMeta(object):
         self.contig_seqs = contig_seqs
         self.__dict__.update(kwargs)
 
-# class ContigRegion(Region):
-#     START_INDEX = 1 # Convention is carried over from BLAST results, BE CAREFUL!
-#     NEW_PRIMER = "new_primer"
-#     DIRECT_END = "direct"
-#     DEFAULT_END = NEW_PRIMER
-#
-#     def __init__(self, start, end, length, circular, direction, name, type, start_label=None, end_label=None):
-#         super(ContigRegion, self).__init__(
-#             start=start,
-#             end=end,
-#             length=length,
-#             circular=circular,
-#             direction=direction,
-#             name=name,
-#             start_index=ContigRegion.START_INDEX
-#         )
-#         self.type = type
-#         if start_label is None:
-#             start_label = ContigRegion.DEFAULT_END
-#         if end_label is None:
-#             end_label = ContigRegion.DEFAULT_END
+
+class ContigRegion(Region):
+    def __init__(self, ):
+
 
 class Contig(object):
     contig_id = 0
-
-    START_INDEX = 1 # Convention is carried over from BLAST results, BE CAREFUL!
     NEW_PRIMER = "new_primer"
     DIRECT_END = "direct"
+
+    START_INDEX = 1  # Convention is carried over from BLAST results, BE CAREFUL!
+
     DEFAULT_END = NEW_PRIMER
 
     TYPE_BLAST = 'blast'
@@ -367,6 +361,7 @@ class Contig(object):
         j['query'] = self.query.__dict__
         j['subject'] = self.subject.__dict__
         return j
+
 
 class ContigContainer(object):
     def __init__(self, meta=None, contigs=None):
