@@ -944,16 +944,16 @@ class Reaction(object):
         f = hr['fragments']
         h = hr['homology graph']
         ig = hr['interaction graph']
-        print 'Cyclic Assemblies: {}'.format(len(c))
+        print('Cyclic Assemblies: {}'.format(len(c)))
         for i, a in enumerate(c[::-1]):
-            print '\tAssemblyGraph {}'.format(i)
+            print('\tAssemblyGraph {}'.format(i))
             for n in a:
-                print '\t\t{} {}'.format(f[n].name, h[n])
-        print 'Linear Assemblies: {}'.format(len(l))
+                print('\t\t{} {}'.format(f[n].name, h[n]))
+        print('Linear Assemblies: {}'.format(len(l)))
         for i, a in enumerate(l[::-1]):
-            print '\tAssemblyGraph {}'.format(i)
+            print('\tAssemblyGraph {}'.format(i))
             for n in a:
-                print '\t\t{} {}'.format(f[n].name, h[n])
+                print('\t\t{} {}'.format(f[n].name, h[n]))
 
     @staticmethod
     def cyclic_assembly(fragments, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
@@ -1060,11 +1060,11 @@ class Reaction(object):
     def overlap_extension_pcr(fragment_list, primer1, primer2, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
         fragment_list = [copy(f) for f in fragment_list]
         graph, fragments, match_graph = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
-        print type(graph)
-        print graph.keys()
-        print graph
+        print(type(graph))
+        print(graph.keys())
+        print(graph)
         linear_assemblies = Utilities.Graph.find_linear(graph)
-        print linear_assemblies
+        print(linear_assemblies)
 
     # TODO: add test modules for this
     @staticmethod
