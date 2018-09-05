@@ -265,11 +265,11 @@ def test_feature_cutting():
     c = 5
     fragments = seq.cut(c)
     assert f not in fragments[0].get_features()
-    feature = fragments[0].get_features().keys()[0]
+    feature = list(fragments[0].get_features().keys())[0]
     assert fragments[0].get_features() == {feature: [(s, c-1), (0, c-s-1)]}
     assert feature.length == 11
     assert f not in fragments[1].get_features()
-    feature = fragments[1].get_features().keys()[0]
+    feature = list(fragments[1].get_features().keys())[0]
     assert fragments[1].get_features() == {feature: [(0, e-c), (c-s, e)]}
     assert feature.length == 11
 
@@ -291,7 +291,7 @@ def test_feature_fusion():
                 fragments = seq_copy.cut(cut)
                 fused = fragments[0].insert(fragments[1], len(fragments[0]))
                 assert len(fused.get_features()) == 1
-                feature = fused.get_features().keys()[0]
+                feature = list(fused.get_features().keys())[0]
                 assert fused.get_features()[feature] == [(start, end), (0, end - start)]
 
 def test_add_and_get_features():
@@ -318,7 +318,7 @@ def test_copying_features():
     f = Feature(name='alfjl', type='lkdjflkj')
     seq.add_feature(0, 5, f)
     seq_copy = copy(seq)
-    assert f not in seq_copy.get_features().keys()
+    assert f not in list(seq_copy.get_features().keys())
     assert len(seq_copy.get_features()) == 1
     assert f in seq.get_features()
 

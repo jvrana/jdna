@@ -29,7 +29,7 @@ def run_cmd(cmd_str, **kwargs):
     """
     cmd_str = cmd_str.format(**kwargs)
     args = shlex.split(cmd_str)
-    print "CMD: {}".format(cmd_str)
+    print(("CMD: {}".format(cmd_str)))
     output = subprocess.Popen(args)
     output.wait()
     return output

@@ -36,7 +36,7 @@ class Link(object):
         self.__next = None
         self.__prev = None
 
-    def next(self):
+    def __next__(self):
         return self.__next
 
     def prev(self):
@@ -53,7 +53,7 @@ class Link(object):
         return new_link
 
     def cut_next(self):
-        next_link = self.next()
+        next_link = next(self)
         if next_link is not None:
             next_link.__assign_prev(None)
         self.__assign_next(None)
@@ -71,7 +71,7 @@ class Link(object):
         self.set_prev(None)
 
     def remove(self):
-        next_link = self.next()
+        next_link = next(self)
         prev_link = self.prev()
         if next_link is not None:
             next_link.set_prev(prev_link)
@@ -114,7 +114,7 @@ class Link(object):
             if curr in visited:
                 return True
             visited.add(curr)
-            curr = curr.next()
+            curr = next(curr)
         return False
 
     def _propogate(self, next_method, stop=None, stop_criteria=None):
@@ -133,7 +133,7 @@ class Link(object):
 
     def fwd(self, stop_link=None, stop_criteria=None):
         return self._propogate(
-            lambda x: x.next(),
+            lambda x: next(x),
             stop=stop_link,
             stop_criteria=stop_criteria)
 
@@ -172,7 +172,7 @@ class Link(object):
         return not (next_method(t1) and next_method(t2))
 
     def complete_match_fwd(self, y):
-        return self._complete_match(y, lambda x: x.next())
+        return self._complete_match(y, lambda x: next(x))
 
     def complete_match_rev(self, y):
         return self._complete_match(y, lambda x: x.prev())
@@ -231,7 +231,7 @@ class DoubleLinkedList(object):
             if curr in visited:
                 return True
             visited.add(curr)
-            curr = curr.next()
+            curr = next(curr)
         return False
 
     def linearize(self, i=0):
@@ -313,7 +313,7 @@ class DoubleLinkedList(object):
         to_be_removed = self.get()[i]
         new_first = self.get_first()
         if i == 0:
-            new_first = new_first.next()
+            new_first = next(new_first)
         to_be_removed.remove()
         self.first = new_first
         return
@@ -343,7 +343,7 @@ class DoubleLinkedList(object):
             visited.add(curr_link)
             if curr_link.complete_match_fwd(q_link):
                 found.append((i, curr_link))
-            curr_link = curr_link.next()
+            curr_link = next(curr_link)
             i += 1
         return found
 
@@ -392,7 +392,7 @@ class DoubleLinkedList(object):
         current = self.first
         while current is not None:
             yield current
-            current = current.next()
+            current = next(current)
 
     def __repr__(self):
         return str(self)
@@ -432,10 +432,10 @@ def random_color():
 
 class Nucleotide(Link):
 
-    base_pairing = dict(zip(
+    base_pairing = dict(list(zip(
         ['a', 't', 'c', 'g', 'A', 'T', 'C', 'G'],
         ['t', 'a', 'g', 'c', 'T', 'A', 'G', 'C']
-    ))
+    )))
 
     def __init__(self, base):
         super(Nucleotide, self).__init__(base)
@@ -478,7 +478,7 @@ class Nucleotide(Link):
 
     def feature_fwd(self, feature):
         stop = lambda x: feature not in x.features
-        return self._propogate(lambda x: x.next(), stop_criteria=stop)
+        return self._propogate(lambda x: next(x), stop_criteria=stop)
 
     def feature_rev(self, feature):
         stop = lambda x: feature not in x.features
@@ -514,7 +514,7 @@ class Nucleotide(Link):
 
     def _remove_overlapping_features(self):
         # type: () -> Nucleotide
-        feature_pairs = itertools.combinations(self.features.keys(), 2)
+        feature_pairs = itertools.combinations(list(self.features.keys()), 2)
         tobedel = set()
         for f1, f2 in feature_pairs:
             if f1.name == f2.name:
@@ -560,7 +560,7 @@ class Nucleotide(Link):
         if not split_prev:
             # then split_next
             x1 = self
-            x2 = self.next()
+            x2 = next(self)
         # If at the end, no splitting is necessary
         if x1 is None or x2 is None:
             return
@@ -632,12 +632,12 @@ class Sequence(DoubleLinkedList):
         feature_info = {}
         for feature in features_to_nts:
             nt_to_i_list = features_to_nts[feature]
-            nts, indices = zip(*nt_to_i_list)
+            nts, indices = list(zip(*nt_to_i_list))
             first = nts[0].feature_rev(feature)[-1]
             last = nts[0].feature_fwd(feature)[-1]
-            if last.next() == nts[0]:
+            if next(last) == nts[0]:
                 first = nts[0]
-            nt_to_i = dict(zip(self.get(), range(len(self))))
+            nt_to_i = dict(list(zip(self.get(), list(range(len(self))))))
             feature_range = (first.features[feature], last.features[feature])
             pos_ranges = (nt_to_i[first], nt_to_i[last])
             feature_info[feature] = [pos_ranges, feature_range]
@@ -679,7 +679,7 @@ class Sequence(DoubleLinkedList):
         while curr and curr not in visited:
             visited.add(curr)
             curr.to_complement()
-            curr = curr.next()
+            curr = next(curr)
         return self
 
     def reverse_complement(self):
@@ -748,7 +748,7 @@ class Reaction(object):
         i = 0
         matches = []
         while t and t not in visited:
-            next_method = lambda x: x.next()
+            next_method = lambda x: next(x)
             if threeprime:
                 next_method = lambda x: x.prev()
             l = t._longest_match(p, next_method)
@@ -842,8 +842,8 @@ class Reaction(object):
 
     @staticmethod
     def pcr(template, p1, p2, min_bases=MIN_BASES):
-        ann1 = Reaction.anneal_primer(template, p1)
-        ann2 = Reaction.anneal_primer(template, p2)
+        ann1 = Reaction.anneal_primer(template, p1, min_bases=MIN_BASES)
+        ann2 = Reaction.anneal_primer(template, p2, min_bases=MIN_BASES)
 
         f = ann1['F'] + ann2['F']
         r = ann1['R'] + ann2['R']
@@ -944,16 +944,16 @@ class Reaction(object):
         f = hr['fragments']
         h = hr['homology graph']
         ig = hr['interaction graph']
-        print('Cyclic Assemblies: {}'.format(len(c)))
+        print(('Cyclic Assemblies: {}'.format(len(c))))
         for i, a in enumerate(c[::-1]):
-            print('\tAssemblyGraph {}'.format(i))
+            print(('\tAssemblyGraph {}'.format(i)))
             for n in a:
-                print('\t\t{} {}'.format(f[n].name, h[n]))
-        print('Linear Assemblies: {}'.format(len(l)))
+                print(('\t\t{} {}'.format(f[n].name, h[n])))
+        print(('Linear Assemblies: {}'.format(len(l))))
         for i, a in enumerate(l[::-1]):
-            print('\tAssemblyGraph {}'.format(i))
+            print(('\tAssemblyGraph {}'.format(i)))
             for n in a:
-                print('\t\t{} {}'.format(f[n].name, h[n]))
+                print(('\t\t{} {}'.format(f[n].name, h[n])))
 
     @staticmethod
     def cyclic_assembly(fragments, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
@@ -985,7 +985,7 @@ class Reaction(object):
             # Pair fragments for cyclic assembly
             x1 = cy
             x2 = x1[1:] + x1[:1]
-            pairs = zip(x1, x2)
+            pairs = list(zip(x1, x2))
             # Cut 5' ends of fragments according to homology
             # overlap_info = []
 
@@ -1060,8 +1060,8 @@ class Reaction(object):
     def overlap_extension_pcr(fragment_list, primer1, primer2, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
         fragment_list = [copy(f) for f in fragment_list]
         graph, fragments, match_graph = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
-        print(type(graph))
-        print(graph.keys())
+        print((type(graph)))
+        print((list(graph.keys())))
         print(graph)
         linear_assemblies = Utilities.Graph.find_linear(graph)
         print(linear_assemblies)
@@ -1187,7 +1187,7 @@ class Utilities:
             l = len(list(els))
             el = lst[t]
             t += l
-            yield range(el, el + l)
+            yield list(range(el, el + l))
 
     @staticmethod
     def lcs(S, T):
@@ -1218,7 +1218,7 @@ class Convert:
 
         def clean_data(dic):
             for key in dic:
-                if isinstance(dic[key], basestring):
+                if isinstance(dic[key], str):
                     dic[key] = str(dic[key])
 
         clean_data(data)
@@ -1256,6 +1256,7 @@ class Convert:
         data['annotations'] = []
         data['bases'] = str(seq)
         data['description'] = seq.description
+
         def add_annotation(f):
             data['annotations'].append(f)
 

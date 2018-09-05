@@ -21,9 +21,6 @@ def test_cyclic_pcr():
         r = Sequence(sequence=str(template)[ri:rj]+roh).reverse_complement()
         expected = foh + str(template)[fi:] + str(template)[:rj] + roh
         products = Reaction.pcr(template, f, r)
-        print foh
-        print roh
-        print str(template)[ri:rj]
         assert str(expected).lower() == str(products[0]).lower()
         return products
     template = Sequence(sequence=''.join([random.choice('atgc') for x in range(200)]))
@@ -177,13 +174,13 @@ def test_gibson_feature_fusion():
 
     frag1 = Reaction.pcr(template, p1, p2)[0]
     frag2 = Reaction.pcr(template, p3, p4)[0]
-    print frag2
+    print(frag2)
     fragments = [frag1, frag2]
     products = Reaction.homology_assembly(fragments, True)
     expected = str(template)
-    print frag1.get_features()
-    print frag2.get_features()
-    print template.get_features()
+    print((frag1.get_features()))
+    print((frag2.get_features()))
+    print((template.get_features()))
     assert len(products[0].search_all(Sequence(sequence=expected))) == 1
 
 def test_overlap_extension_pcr():

@@ -21,9 +21,9 @@ class Verbose(object):
 
     def __call__(self, f):
         def wrapped_f(obj, *args, **kwargs):
-            print f.__name__, 'started'
+            print((f.__name__, 'started'))
             r = f(obj, *args, **kwargs)
-            print f.__name__, 'ended'
+            print((f.__name__, 'ended'))
             return r
 
         return wrapped_f
@@ -172,7 +172,7 @@ class JBEI_REST_API(object):
         }
 
         def _clean_dictionary(dic):
-            keys = dic.keys()
+            keys = list(dic.keys())
             for k in keys:
                 v = dic[k]
                 if v is None or v == '':
@@ -185,9 +185,9 @@ class JBEI_REST_API(object):
             default_search.pop('blastQuery')
 
         _clean_dictionary(default_search['parameters'])
-        print default_search
+        print(default_search)
         r = self._post('search', params={'searchWeb': searchWeb}, data=json.dumps(default_search))
-        print r.url
+        print((r.url))
         return r
 
 
@@ -195,7 +195,7 @@ jbei = JBEI_REST_API("email", "password")
 # jbei.get_access_token()
 
 
-print len(jbei.basic_search('pBAD')['results'])
+print((len(jbei.basic_search('pBAD')['results'])))
 # print jbei.advanced_search({'queryString': 'pBAD'})
 # jbei.delete_access_token()
 

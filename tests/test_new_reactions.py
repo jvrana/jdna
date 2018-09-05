@@ -30,7 +30,7 @@ def test_overlap_extension_pcr():
     # TODO: WHY do these produce different results for finding homology in the homology graph???? (because of inversions still anneal)
 
     Reaction.overlap_extension_pcr([frag1, frag2, frag3], 1, 2)
-    print len(frag1), len(frag2), len(frag3)
-    print "*"*50
+    print((len(frag1), len(frag2), len(frag3)))
+    print(("*"*50))
     Reaction.overlap_extension_pcr([frag2, frag1, frag3], 1, 2)
-    print len(frag1), len(frag2), len(frag3)
+    print((len(frag1), len(frag2), len(frag3)))

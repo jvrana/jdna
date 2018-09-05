@@ -16,8 +16,8 @@ import base64
 import tempfile
 import os
 import zipfile
-import xmlrpclib
-from das_seqio import *
+import xmlrpc.client
+from .das_seqio import *
 
 class ContigError(Exception):
     def __init__(self, message):
@@ -231,7 +231,7 @@ class Contig(QueryRegion):
                 return self.q_start < primer.q_start < self.q_end - minimum_primer_anneal
             return False
 
-        return filter(lambda x: primer_within_bounds(x), primers)
+        return [x for x in primers if primer_within_bounds(x)]
 
         # TODO: generate additional pcr products that could be homologous to existing primer
         # TODO: compute alignment_graph for each 'contig'

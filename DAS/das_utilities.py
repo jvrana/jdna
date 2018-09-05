@@ -8,7 +8,7 @@ Description:
 
 '''
 
-from das_seqio import *
+from .das_seqio import *
 import numpy as np
 
 def generate_random_primers(seq, out, num_primers=5, min_size=15, max_size=60):

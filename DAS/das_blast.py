@@ -7,8 +7,8 @@ Date: 2/6/17
 Description: 
 
 '''
-from das_seqio import *
-from das_contig import Contig, ContigContainer, ContigContainerMeta
+from .das_seqio import *
+from .das_contig import Contig, ContigContainer, ContigContainerMeta
 import re
 from copy import copy
 
@@ -51,7 +51,7 @@ class BLAST(object):
             self.query = prefix + '_pseudocircular.' + suffix
             save_sequence(self.query, seq + seq)
             self.query_circular = True
-        print "QUERY", self.query
+        print(("QUERY", self.query))
 
     def save_query_info(self):
         self.query_circular = False
@@ -133,7 +133,7 @@ class BLAST(object):
                 except ValueError as e:
                     pass
 
-            contig_dict = dict(zip(meta['fields'], v))
+            contig_dict = dict(list(zip(meta['fields'], v)))
             contig_dict['contig_type'] = contig_type
             if self.db_input_metadata:
                 if contig_dict['subject_acc'] in self.db_input_metadata:

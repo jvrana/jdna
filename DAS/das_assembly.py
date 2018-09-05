@@ -8,7 +8,7 @@ Description:
 
 '''
 
-from das_contig import *
+from .das_contig import *
 
 
 class AssemblyGraph(ContigContainer):
@@ -31,7 +31,7 @@ class AssemblyGraph(ContigContainer):
         self.make_dictionary()
         graph = {}
         pairs = list(itertools.permutations(self.contigs, 2))
-        print '{} pairs to search'.format(len(pairs))
+        print(('{} pairs to search'.format(len(pairs))))
         for l, r in pairs:
 
             if l == r:
@@ -42,7 +42,7 @@ class AssemblyGraph(ContigContainer):
                 graph[l.contig_id].append(r.contig_id)
 
         if sort:
-            for k in graph.keys():
+            for k in list(graph.keys()):
                 a_array = graph[k][:]
 
                 # graph[k] = sorted(a_array, key=lambda x: self.compute_assembly_cost(
@@ -150,7 +150,7 @@ class Assembly(ContigContainer):
             new_contigs.append(l)
             q = QueryRegion(query_acc=l.query_acc, query_length=l.query_length, q_start=l.q_end, q_end=r.q_start)
             if q.get_span() > 0:
-                print q
+                print(q)
                 new_contigs.append(q)
         new_contigs.append(pairs[-1][1])  # append last contig
         self.contigs = new_contigs
@@ -188,12 +188,12 @@ class Assembly(ContigContainer):
                 c = self.get_contig(c)
             c_arr.append(c)
 
-        print [(c.q_start, c.q_end) for c in c_arr]
+        print([(c.q_start, c.q_end) for c in c_arr])
 
     def get_assembly_pairs(self):
         if len(self.contigs) == 1:
             return []
-        pairs = zip(self.contigs[:-1], self.contigs[1:])
+        pairs = list(zip(self.contigs[:-1], self.contigs[1:]))
         return pairs
 
     def get_gaps(self):
@@ -216,7 +216,7 @@ class Assembly(ContigContainer):
         :return:
         """
         gaps = self.get_gaps()
-        non_zero_gaps = filter(lambda x: x > 0, gaps)
+        non_zero_gaps = [x for x in gaps if x > 0]
         return sum(non_zero_gaps) * Assembly.SYNTHESIS_COST
 
     @staticmethod
@@ -255,7 +255,7 @@ class Assembly(ContigContainer):
     def get_num_synthesis_fragments(self):
         gaps = self.get_gaps()
         gaps.append(self.circular_gap())
-        return len(filter(lambda x: x > Assembly.SYNTHESIS_THRESHOLD, gaps))
+        return len([x for x in gaps if x > Assembly.SYNTHESIS_THRESHOLD])
 
     def new_synthesis_cost(self):
         return self.get_num_synthesis_fragments() * Assembly.SYNTHESIS_MIN_COST + \
@@ -423,7 +423,7 @@ class J5Assembly(Assembly):
             'eugene',
             'parameters',
         ]
-        print self.__dict__.keys()
+        print((list(self.__dict__.keys())))
         for n in names:
             with open(os.path.join(destination, n + '.csv'), 'w') as handle:
                 handle.write(J5Assembly.decode64(self.__dict__[n]))
@@ -488,10 +488,10 @@ class J5Assembly(Assembly):
     # TODO: add direct fragments to directmasterlist
     # TODO: if is direct, do something with j5 assembly parameters?
     def get_sequences(self):
-        print 'SEQUENCE LIST'
+        print('SEQUENCE LIST')
         sequences = []
         for c in self.contigs:
-            print '\tSEQ: {}  @  {}'.format(os.path.basename(c.filename), c.seqrecord.id)
+            print(('\tSEQ: {}  @  {}'.format(os.path.basename(c.filename), c.seqrecord.id)))
             sequences.append((c.filename, c.seqrecord.id,))
         rows = list(set(sequences))
 
@@ -512,7 +512,7 @@ class J5Assembly(Assembly):
 
             for s in sequences:
                 filename = s[0]
-                print '\tZipping {} as {}'.format(s[0], os.path.basename(filename))
+                print(('\tZipping {} as {}'.format(s[0], os.path.basename(filename))))
                 with open(filename, 'rU') as handle:
                     zf.writestr(os.path.join('ZippedTemplates', os.path.basename(filename)), handle.read())
         temp.seek(0)
@@ -552,10 +552,10 @@ class J5Assembly(Assembly):
 
     def run_assembly(self, assembly_method='SLIC/Gibson/CPEC'):
         d = self.to_dict()
-        print d
+        print(d)
         d['j5_session_id'] = self.session_id
         d['assembly_method'] = assembly_method
-        print self.to_dict().keys()
+        print((list(self.to_dict().keys())))
         return self.proxy.DesignAssembly(d)
 
         # params['encoded_{}_file'.format(filetype)] = self.encode(imply_file('*{}*'.format(filetype)))

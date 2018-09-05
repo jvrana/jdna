@@ -8,8 +8,8 @@ Description:
 
 '''
 
-from das_assembly import *
-from das_blast import *
+from .das_assembly import *
+from .das_blast import *
 
 locations = dict(
     database="database",
@@ -46,8 +46,8 @@ assembly.remove_redundant_contigs(include_contigs_contained_within=False, save_l
 contig_container.dump('alignment_viewer/data.json')
 
 paths = assembly.get_all_assemblies(place_holder_size=10)
-print paths[0].summary()
-print paths[0].circular_gap()
+print((paths[0].summary()))
+print((paths[0].circular_gap()))
 # a.fill_contig_gaps()
 
 # print a.summary()

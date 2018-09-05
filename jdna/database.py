@@ -64,14 +64,14 @@ def get_sample_info(sample_id):
 
 def get_sample(sample):
     s = None
-    if isinstance(sample, basestring):
+    if isinstance(sample, str):
         s = aqapi.find('sample', {'name': sample})['rows'][0]
     elif isinstance(sample, int):
         s = aqapi.find('sample', {'id': sample})['rows'][0]
     elif isinstance(sample, dict):
         s = sample
     else:
-        print 'Sample {} must be an int or string'.format(sample)
+        print(('Sample {} must be an int or string'.format(sample)))
     s['fields'] = get_sample_info(s['id'])
     return s
 
@@ -119,7 +119,7 @@ def register(item, savefsa=True):
     dnadb.close()
     if savefsa:
         _save_to_fsa(item)
-    print 'Item {} {} registered.'.format(item['id'], item['name'])
+    print(('Item {} {} registered.'.format(item['id'], item['name'])))
 
 # registers an item with a name and a sequence
 def register_jdna(jseq, savefsa=True):
@@ -138,7 +138,7 @@ def get_seq_from_db(id):
 
 # makes a json sequence from an aquarium entry
 def construct_sequence(sample_name):
-    print 'getting sequence for', sample_name
+    print(('getting sequence for', sample_name))
     s = get_sample(sample_name)
     sharelink = s['fields']['Sequence']
     bseq = api.getsequencefromsharelink(sharelink)
@@ -200,13 +200,13 @@ def parse_primer_json(json_primer):
             matched = seq.search_all(Sequence(sequence=f_seq))
             matched = matched[0]
             if not matched:
-                print warnings.warn('Primer feature {} mismatched to sequence'.format(f))
+                print((warnings.warn('Primer feature {} mismatched to sequence'.format(f))))
                 continue
             start, nt = matched
             end = start + len(f_seq)
             seq.create_feature(name, 'misc', start, end - 1)
     except:
-        print 'could not parse primer features'
+        print('could not parse primer features')
     return seq
 
 # updates the primer entry in the database from aquarium
@@ -259,10 +259,10 @@ def assembly_gibson(task_id):
     specs = json.loads(specs)
     fragments = specs['fragments Fragment']
     plasmid = aqapi.find('sample', {'id': specs['plasmid Plasmid']})['rows'][0]
-    print 'Gibson AssemblyGraph: {} {}'.format(task_id, task['name'])
-    print 'Plasmid: {} {}'.format(plasmid['id'], plasmid['name'])
-    print 'Fragments: {}'.format(fragments)
-    print 'OUT >',
+    print(('Gibson AssemblyGraph: {} {}'.format(task_id, task['name'])))
+    print(('Plasmid: {} {}'.format(plasmid['id'], plasmid['name'])))
+    print(('Fragments: {}'.format(fragments)))
+    print('OUT >')
     hfrags = [get_fragment_sequence(f) for f in fragments]
     products = Reaction.homology_assembly(hfrags, max_homology=61)
     if len(products) > 1:
@@ -288,7 +288,7 @@ def to_benchling(id, folder_name, overwrite=True):
     del bseq['id']
     bseq['name'] = str(sample['id']) + '_' + bseq['name']
     seq = sequence_json_to_benchling(bseq, folder_name, overwrite=overwrite)
-    print str('www.benchling.com' + seq['editURL'])
+    print((str('www.benchling.com' + seq['editURL'])))
 
 
 def gibson_workflow(task_id, benchling_folder_name='jdna', overwrite=True):
