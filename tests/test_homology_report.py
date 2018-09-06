@@ -34,5 +34,3 @@ def test_long_gibson_assembly():
         assert str(dnas[i]) == str(dnas_copy[i])
 
     assert len(dnas) == len(dnas_copy)
-
-test_long_gibson_assembly()
