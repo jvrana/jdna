@@ -433,8 +433,8 @@ def random_color():
 class Nucleotide(Link):
 
     base_pairing = dict(list(zip(
-        ['a', 't', 'c', 'g', 'A', 'T', 'C', 'G'],
-        ['t', 'a', 'g', 'c', 'T', 'A', 'G', 'C']
+        ['a', 't', 'c', 'g', 'A', 'T', 'C', 'G', 'n', 'N'],
+        ['t', 'a', 'g', 'c', 'T', 'A', 'G', 'C', 'n', 'N']
     )))
 
     def __init__(self, base):
