@@ -13,6 +13,7 @@ import json
 from jdna.core import Sequence, Reaction, Feature, Convert
 from copy import copy
 
+
 def test_long_gibson_assembly():
     dnas = []
     for file in glob.glob('test_data/Frag*json'):

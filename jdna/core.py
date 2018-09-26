@@ -1,9 +1,9 @@
-from collections import defaultdict
 import itertools
-import warnings
-from copy import copy, deepcopy
 import random
 import re
+import warnings
+from collections import defaultdict
+from copy import copy, deepcopy
 
 # Default values
 MIN_BASES = 13
@@ -185,8 +185,8 @@ class Link(object):
         return copied
 
     def __deepcopy__(self, memo):
-        raise NotImplementedError("copy.deepcopy not implemented with class"\
-                "{}. Use copy.copy instead.".format(self.__class__.__name__))
+        raise NotImplementedError("copy.deepcopy not implemented with class" \
+                                  "{}. Use copy.copy instead.".format(self.__class__.__name__))
 
     def __repr__(self):
         return str(self)
@@ -201,32 +201,38 @@ class DoubleLinkedList(object):
         if sequence is not None:
             self.initialize(sequence)
         elif first is not None:
-            self.first = first
+            self._head = first
 
     def initialize(self, sequence):
-        self.first = Link(sequence[0])
-        current = self.first
+        self._head = Link(sequence[0])
+        current = self._head
         for d in sequence[1:]:
             new = Link(d)
             current.set_next(new)
             current = new
 
-    def get_first(self):
+    @property
+    def head(self):
         if self.is_cyclic():
-            return self.first
-        first = self.first.find_first()
-        self.first = first
-        return self.first
+            return self._head
+        first = self._head.find_first()
+        self._head = first
+        return self._head
 
-    def set_first(self, link):
-        self.first = link
+    @head.setter
+    def head(self, link):
+        self._head = link
+
+    @property
+    def tail(self):
+        return self.head.find_last()
 
     def make_cyclic(self):
-        return self.get_first().make_cyclic()
+        return self.head.make_cyclic()
 
     def is_cyclic(self):
         visited = set()
-        curr = self.first
+        curr = self._head
         while curr:
             if curr in visited:
                 return True
@@ -235,12 +241,17 @@ class DoubleLinkedList(object):
         return False
 
     def linearize(self, i=0):
-        this_i = self.get()[i]
+        this_i = self.links[i]
         this_i.cut_prev()
         return this_i
 
-    def get(self):
-        return self.get_first().fwd()
+    # TODO: rename to "links". Change get to have an index
+    @property
+    def links(self):
+        return self.head.fwd()
+
+    def get(self, i):
+        return self.links[i]
 
     def cut(self, i, cut_prev=True):
         if isinstance(i, tuple):
@@ -257,7 +268,7 @@ class DoubleLinkedList(object):
         i.sort()
         self._inbounds(i)
         self_copy = copy(self)
-        all_links = self_copy.get()
+        all_links = self_copy.links
         cut_links = []
         for cut_loc in i:
             link = all_links[cut_loc]
@@ -274,7 +285,7 @@ class DoubleLinkedList(object):
                     cut_links.append(c)
         return DoubleLinkedList._group_links(cut_links)
 
-    #TODO: Speed up with set
+    # TODO: Speed up with set
     @staticmethod
     def _group_links(links):
         unique_first_links = []
@@ -285,7 +296,7 @@ class DoubleLinkedList(object):
         return [DoubleLinkedList(first=l) for l in unique_first_links]
 
     def insert(self, linkedlist, i, copy_insertion=True):
-        if i == len(self.get()):
+        if i == len(self.links):
             pass
         else:
             self._inbounds(i)
@@ -293,49 +304,49 @@ class DoubleLinkedList(object):
             raise TypeError("Cannot insert a cyclic sequence")
         if copy_insertion:
             linkedlist = copy(linkedlist)
-        #TODO: This copies the insertion sequence, you want that?
-        if i == len(self.get()):
+        # TODO: This copies the insertion sequence, you want that?
+        if i == len(self.links):
             loc2 = None
-            loc1 = self.get()[i-1]
+            loc1 = self.links[i - 1]
         else:
-            loc2 = self.get()[i]
+            loc2 = self.links[i]
             loc1 = loc2.prev()
-        first = linkedlist.get()[0]
-        last = linkedlist.get()[-1]
+        first = linkedlist.links[0]
+        last = linkedlist.links[-1]
         first.set_prev(loc1)
         last.set_next(loc2)
         if i == 0:  # Special case in which user inserts sequence in front of their sequence; they probably intend to re-index it
-            self.first = first
+            self._head = first
         return self
 
     def remove(self, i):
         self._inbounds(i)
-        to_be_removed = self.get()[i]
-        new_first = self.get_first()
+        to_be_removed = self.links[i]
+        new_first = self.head
         if i == 0:
             new_first = next(new_first)
         to_be_removed.remove()
-        self.first = new_first
+        self._head = new_first
         return
 
     def reindex(self, i):
         self._inbounds(i)
         if not self.is_cyclic():
             raise TypeError("Cannot re-index a linear linked set")
-        self.first = self.get()[i]
+        self._head = self.links[i]
 
     def _inbounds(self, num):
         if isinstance(num, int):
             num = [num]
         for n in num:
             mn = 0
-            mx = len(self.get()) - 1
+            mx = len(self.links) - 1
             if n < 0 or n > mx:
                 raise IndexError("Index {} out of acceptable bounds ({}, {})".format(n, mn, mx))
 
     def search_all(self, query):
-        curr_link = self.get_first()
-        q_link = query.get_first()
+        curr_link = self.head
+        q_link = query.head
         i = 0
         found = []
         visited = set()
@@ -348,25 +359,25 @@ class DoubleLinkedList(object):
         return found
 
     def reverse(self):
-        for s in self.get():
+        for s in self.links:
             s.swap()
         if self.is_cyclic():
             self.reindex(1)
         return self
 
-    # def slice(self, i, j, fwd=True):
-    #     links = self.get()
-    #     start = links[i]
-    #     stop = links[j]
-    #     method = start.fwd
-    #     if not fwd:
-    #         method = start.rev
-    #     sec_links = method(stop_link=stop)
-    #     if sec_links[-1] is stop:
-    #         return sec_links
-    #     else:
-    #         raise IndexError("Improper indices for linkedlist.")
+    def __iter__(self):
+        for link in self.links:
+            yield link
 
+    def __getitem__(self, key):
+        if isinstance(key, slice):
+            new_list = self.__copy__()
+            start = new_list.links[key.start]
+            end = new_list.links[key.stop - 1]
+            start.cut_prev()
+            end.cut_next()
+            return self.__class__(first=start)
+        return self.links[key].data
 
     def __copy__(self):
         copied = type(self)(sequence='X')
@@ -378,18 +389,18 @@ class DoubleLinkedList(object):
 
     def __deepcopy__(self, memo):
         raise NotImplementedError("copy.deepcopy not implemented with class" \
-                              "{}. Use copy.copy instead.".format(self.__class__.__name__))
+                                  "{}. Use copy.copy instead.".format(self.__class__.__name__))
 
     def __reversed__(self):
-        for s in self.get():
+        for s in self.links:
             s.swap()
         return self
 
     def __len__(self):
-        return len(self.get())
+        return len(self.links)
 
     def __iter__(self):
-        current = self.first
+        current = self._head
         while current is not None:
             yield current
             current = next(current)
@@ -398,7 +409,7 @@ class DoubleLinkedList(object):
         return str(self)
 
     def __str__(self):
-        return ''.join(str(x) for x in self.get())
+        return ''.join(str(x) for x in self.links)
 
 
 class Feature(object):
@@ -425,13 +436,13 @@ def rgb_to_hex(r, g, b):
 
     return "#{0:02x}{1:02x}{2:02x}".format(clamp(r), clamp(g), clamp(b))
 
+
 def random_color():
-    rgb = [int(random.random()*255) for x in range(3)]
+    rgb = [int(random.random() * 255) for x in range(3)]
     return rgb_to_hex(*rgb)
 
 
 class Nucleotide(Link):
-
     base_pairing = dict(list(zip(
         ['a', 't', 'c', 'g', 'A', 'T', 'C', 'G', 'n', 'N'],
         ['t', 'a', 'g', 'c', 'T', 'A', 'G', 'C', 'n', 'N']
@@ -553,7 +564,6 @@ class Nucleotide(Link):
                 except KeyError:
                     pass
 
-
     def split_features(self, split_prev=True):
         x1 = self.prev()
         x2 = self
@@ -601,28 +611,28 @@ class Sequence(DoubleLinkedList):
         self.description = ''
 
     def initialize(self, sequence):
-        self.first = Nucleotide(sequence[0])
-        current = self.first
+        self._head = Nucleotide(sequence[0])
+        current = self._head
         for d in sequence[1:]:
             new = Nucleotide(d)
             current.set_next(new)
             current = new
 
     def add_feature(self, i, j, feature, start_index=0):
-        s = self.get()
+        s = self.links
         start = s[i]
         end = s[j]
         feature_nts = start.fwd(stop_link=end)
         if not feature_nts[-1] == end:
             raise IndexError("Feature index error")
         for i, n in enumerate(feature_nts):
-            n.add_feature(feature, i+start_index)
+            n.add_feature(feature, i + start_index)
         feature.length = len(feature_nts)
         return feature
 
     def _features_to_i(self):
         features = defaultdict(list)
-        for i, x in enumerate(self.get()):
+        for i, x in enumerate(self.links):
             for f in x.features:
                 features[f].append((x, i))
         return features
@@ -637,7 +647,7 @@ class Sequence(DoubleLinkedList):
             last = nts[0].feature_fwd(feature)[-1]
             if next(last) == nts[0]:
                 first = nts[0]
-            nt_to_i = dict(list(zip(self.get(), list(range(len(self))))))
+            nt_to_i = dict(list(zip(self.links, list(range(len(self))))))
             feature_range = (first.features[feature], last.features[feature])
             pos_ranges = (nt_to_i[first], nt_to_i[last])
             feature_info[feature] = [pos_ranges, feature_range]
@@ -674,7 +684,7 @@ class Sequence(DoubleLinkedList):
         return f
 
     def complement(self):
-        curr = self.get_first()
+        curr = self.head
         visited = set()
         while curr and curr not in visited:
             visited.add(curr)
@@ -689,7 +699,7 @@ class Sequence(DoubleLinkedList):
 
     def cut(self, i, cut_prev=True):
         fragments = super(Sequence, self).cut(i, cut_prev)
-        fragments = [Sequence(first=f.get_first()) for f in fragments]
+        fragments = [Sequence(first=f.head) for f in fragments]
         return fragments
 
     def chop_off_fiveprime(self, i):
@@ -703,10 +713,13 @@ class Sequence(DoubleLinkedList):
         return self.cut(i, cut_prev=False)[0]
 
     def fuse(self, seq):
-        f = self.get_first().find_last()
-        l = seq.get_first()
+        f = self.head.find_last()
+        l = seq.head
         f.set_next(l)
         return self
+
+    def copy(self):
+        return self.__copy__()
 
     def __copy__(self):
         copied = super(Sequence, self).__copy__()
@@ -739,8 +752,8 @@ class Reaction(object):
 
     @staticmethod
     def _anneal(template, primer, min_bases=MIN_BASES, threeprime=True):
-        t = template.get_first()
-        p = primer.get_first()
+        t = template.head
+        p = primer.head
         if threeprime:
             t = t.find_last()
             p = p.find_last()
@@ -776,8 +789,10 @@ class Reaction(object):
         template.reverse_complement()
         rev_matches = Reaction.anneal_threeprime(template, primer, min_bases=min_bases)
         template.reverse_complement()
+
         def ca(matches):
-            return [dict(primer=primer, pos=m[0], len=m[1], tm=Reaction.tm(primer.cut(len(primer) - m[1])[-1])) for m in matches]
+            return [dict(primer=primer, pos=m[0], len=m[1], tm=Reaction.tm(primer.cut(len(primer) - m[1])[-1])) for m in
+                    matches]
 
         anneal = dict(F=ca(fwd_matches), R=ca(rev_matches))
 
@@ -853,7 +868,7 @@ class Reaction(object):
         for pair in pairs:
             # make a new product
             product = copy(template)
-            nts = product.get()
+            nts = product.links
             start_index = pair[0]['pos'] - pair[0]['len']
             end_index = len(template) - pair[1]['pos'] + pair[1]['len'] - 1
             s = nts[start_index]
@@ -862,15 +877,15 @@ class Reaction(object):
             e.cut_next()
 
             # if end is not in the product, continue
-            product.first = s
-            if e not in product.get():
+            product.head = s
+            if e not in product.links:
                 continue
 
             # get overhangs of primers
             fwd_primer = copy(pair[0]['primer'])
             rev_primer = copy(pair[1]['primer'])
-            o1 = fwd_primer.get()[len(fwd_primer) - pair[0]['len']].cut_prev()
-            o2 = rev_primer.get()[len(rev_primer) - pair[1]['len']].cut_prev()
+            o1 = fwd_primer.get(len(fwd_primer) - pair[0]['len']).cut_prev()
+            o2 = rev_primer.get(len(rev_primer) - pair[1]['len']).cut_prev()
             rev_primer.reverse_complement()
 
             # fuse overhangs
@@ -896,6 +911,7 @@ class Reaction(object):
             return one_match(m) \
                    and less_than_max_homology(m) \
                    and complete_match(m)
+
         fragments = fragment_list[:]
         for f in fragments[1:]:
             reversed = copy(f).reverse_complement()
@@ -904,7 +920,7 @@ class Reaction(object):
         fragment_to_id = {}
         for i, f in enumerate(fragments):
             fragment_to_id[f] = i
-        pairs = itertools.product(fragments, fragments[:]) #itertools.permutations(fragments, 2)
+        pairs = itertools.product(fragments, fragments[:])  # itertools.permutations(fragments, 2)
         graph = defaultdict(list)
         match_graph = defaultdict(list)
         for pair in pairs:
@@ -993,28 +1009,28 @@ class Reaction(object):
                 # Find homology region and cut
                 match = Reaction.anneal_threeprime(right, left)[0]
 
-                nt = right.get()[match[0]]
+                nt = right.get(match[0])
                 p = nt.cut_prev()
 
                 # modify right fragment
-                right.first = nt
+                right.head = nt
 
                 # define homology sequences
                 homology1 = Sequence(first=p)
 
-                nt = left.get()[len(left) - match[0] - 1]
+                nt = left.get(len(left) - match[0] - 1)
                 n = nt.cut_next()
-                left.first = nt
+                left.head = nt
                 homology2 = Sequence(first=n)
 
                 # add features for homology1
-                if homology1.first is not None:
+                if homology1.head is not None:
                     if not len(homology1) == len(homology2):
                         raise Exception("Homologies for assembly are different lengths.")
 
                 # copy features while removing overlapping ones
-                for n1 in homology1.get():
-                    for n2 in homology2.get():
+                for n1 in homology1.links:
+                    for n2 in homology2.links:
                         n1.copy_features_from(n2)
 
                 # overlap_info = (0, len(left), len(homology1), Reaction.tm(homology1), left.name)
@@ -1037,7 +1053,6 @@ class Reaction(object):
             products.append(cyprod)
         return products
 
-
     # def circularize_by_homology(self, seq, MAX_HOMOLOGY=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
     #     seq_str = str(seq)
     #     seq_copy = copy(seq).chop_off_threeprime(MAX_HOMOLOGY)
@@ -1057,7 +1072,8 @@ class Reaction(object):
 
     # TODO: finish overlap extension pcr
     @staticmethod
-    def overlap_extension_pcr(fragment_list, primer1, primer2, max_homology=MAX_GIBSON_HOMOLOGY, min_homology=MIN_BASES):
+    def overlap_extension_pcr(fragment_list, primer1, primer2, max_homology=MAX_GIBSON_HOMOLOGY,
+                              min_homology=MIN_BASES):
         fragment_list = [copy(f) for f in fragment_list]
         graph, fragments, match_graph = Reaction.get_homology_graph(fragment_list, max_homology, min_homology)
         print((type(graph)))
@@ -1075,29 +1091,29 @@ class Reaction(object):
 
         # Find homology region and cut
         match = Reaction.anneal_threeprime(right, left)[0]
-        nt = right.get()[match[0]]
+        nt = right.get(match[0])
         p = nt.cut_prev()
 
         # modify right fragment
-        right.first = nt
+        right.head = nt
 
         # define homology 1
         homology1 = Sequence(first=p)
 
         # define homology 2
-        nt = left.get()[len(left) - match[0] - 1]
+        nt = left.get(len(left) - match[0] - 1)
         n = nt.cut_next()
-        left.first = nt
+        left.head = nt
         homology2 = Sequence(first=n)
 
         # add features for homology1
-        if homology1.first is not None:
+        if homology1.head is not None:
             if not len(homology1) == len(homology2):
                 raise Exception("Homologies for assembly are different lengths.")
 
         # copy features while removing overlapping ones
-        for n1 in homology1.get():
-            for n2 in homology2.get():
+        for n1 in homology1.links:
+            for n2 in homology2.links:
                 n1.copy_features_from(n2)
 
         # overlap_info = (0, len(left), len(homology1), Reaction.tm(homology1), left.name)
@@ -1109,8 +1125,6 @@ class Reaction(object):
         left.get_first()
         return left, homology2
 
-
-
     @staticmethod
     def tm(seq):
         if not (isinstance(seq, Sequence) or isinstance(seq, str)):
@@ -1121,8 +1135,6 @@ class Reaction(object):
 
 
 class Utilities:
-
-
     class Graph:
 
         @staticmethod
@@ -1157,7 +1169,8 @@ class Utilities:
             paths = []
             for node in graph[path[-1]]:
                 if node not in path:
-                    newpaths = Utilities.Graph.find_linear_paths(graph, path[:] + [node], min_path_length=min_path_length)
+                    newpaths = Utilities.Graph.find_linear_paths(graph, path[:] + [node],
+                                                                 min_path_length=min_path_length)
                     paths += newpaths
             return paths
 
@@ -1170,7 +1183,8 @@ class Utilities:
                 return []
             for node in graph[path[-1]]:
                 if node not in path[1:]:
-                    newpaths = Utilities.Graph.find_cyclic_paths(graph, path[:] + [node], min_path_length=min_path_length)
+                    newpaths = Utilities.Graph.find_cyclic_paths(graph, path[:] + [node],
+                                                                 min_path_length=min_path_length)
                     paths += newpaths
             return paths
 

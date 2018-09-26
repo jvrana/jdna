@@ -9,10 +9,27 @@ def test_DoubleLinkedList():
     seq = 'This is a test string for the linked data set.'
     l = DoubleLinkedList(sequence=seq)
     assert str(l) == seq
-    assert l.get_first().data, 'T'
-    assert l.get_first().find_last().data, '.'
+    assert l.head, 'T'
+    assert l.head.find_last(), '.'
     assert len(l) == len(seq)
 
+
+def test_indexing():
+    seq = 'This is a test string for the linked data set.'
+    l = DoubleLinkedList(sequence=seq)
+
+    assert l[0] == "T"
+    assert l[-1] == "."
+    assert l[10] == seq[10]
+
+def test_slicing():
+    seq = 'This is a test string for the linked data set.'
+    l = DoubleLinkedList(sequence=seq)
+
+    assert seq[1:10] == str(l[1:10])
+
+def test_slicing_cyclic():
+    pass
 
 def test_cyclic_vs_liner():
     seq = 'This is a test string for the linked data set.'
@@ -23,8 +40,8 @@ def test_cyclic_vs_liner():
     assert l.is_cyclic()
 
     assert str(l) == seq
-    assert l.get_first().data, 'T'
-    assert l.get_first().find_last().data, '.'
+    assert l.head.data, 'T'
+    assert l.head.find_last().data, '.'
     assert len(l) == len(seq)
 
     l.linearize(1)
@@ -48,7 +65,7 @@ def test_copy():
     l = DoubleLinkedList(sequence=seq)
     l_copy = copy(l)
     assert str(l) == str(l_copy)
-    assert id(l_copy.get()[0]) is not id(l.get()[0])
+    assert id(l_copy.links[0]) is not id(l.links[0])
     from copy import deepcopy
     with pytest.raises(NotImplementedError):
         deepcopy(l)
@@ -112,7 +129,7 @@ def test_search():
     for i in range(len(template) + 1):
         for j in range(i + 1, len(template) + 1):
             query = DoubleLinkedList(sequence=query_seq[i:j])
-            assert (i, template.get()[i]) == template.search_all(DoubleLinkedList(sequence=query_seq[i:j]))[0]
+            assert (i, template.links[i]) == template.search_all(DoubleLinkedList(sequence=query_seq[i:j]))[0]
 
     query = DoubleLinkedList(sequence='ABCDFG')
     assert [] == template.search_all(query)

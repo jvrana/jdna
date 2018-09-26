@@ -9,8 +9,8 @@ def test_Sequence():
     seq = 'This is a test string for the linked data set.'
     l = Sequence(sequence=seq)
     assert str(l) == seq
-    assert l.get_first().data, 'T'
-    assert l.get_first().find_last().data, '.'
+    assert l.head.data, 'T'
+    assert l.head.find_last().data, '.'
     assert len(l) == len(seq)
 
 
@@ -23,8 +23,8 @@ def test_cyclic_vs_liner():
     assert l.is_cyclic()
 
     assert str(l) == seq
-    assert l.get_first().data, 'T'
-    assert l.get_first().find_last().data, '.'
+    assert l.head.data, 'T'
+    assert l.head.find_last().data, '.'
     assert len(l) == len(seq)
 
     l.linearize(1)
@@ -54,8 +54,8 @@ def test_copy():
     l_copy = copy(l)
     assert str(l) == str(l_copy)
     assert l.name == l_copy.name
-    assert l_copy.get()[0] is not l.get()[0]
-    for n1, n2 in zip(l.get(), l_copy.get()):
+    assert l_copy.links[0] is not l.links[0]
+    for n1, n2 in zip(l.links, l_copy.links):
         assert n1 is not n2
     assert l.__class__ == l_copy.__class__
     from copy import deepcopy
@@ -108,7 +108,7 @@ def test_search():
     for i in range(len(template)+1):
         for j in range(i+1, len(template)+1):
             query = Sequence(sequence=query_seq[i:j])
-            assert (i, template.get()[i]) == template.search_all(Sequence(sequence=query_seq[i:j]))[0]
+            assert (i, template.links[i]) == template.search_all(Sequence(sequence=query_seq[i:j]))[0]
 
     query = Sequence(sequence='ABCDFG')
     assert [] == template.search_all(query)
@@ -302,12 +302,12 @@ def test_add_and_get_features():
         for k in range(j, len(seq), 3):
             f = Feature(name='new feature', type='feature type')
             seq_copy = copy(seq)
-            for l in seq_copy.get():
+            for l in seq_copy.links:
                 assert l.features == {}
             assert seq_copy.get_features() == {}
             seq_copy.add_feature(j, k, f)
             for i in range(j, k+1):
-                assert f in seq_copy.get()[i].features
+                assert f in seq_copy.links[i].features
 
             features = seq_copy.get_features()
             assert len(features) == 1
@@ -350,8 +350,8 @@ def test_multiple_features():
     seq.add_feature(s1, e1, f1)
     seq.add_feature(s2, e2, f2)
     assert seq.get_features() == {f1: [(s1, e1), (0, e1 - s1)], f2: [(s2, e2), (0, e2 - s2)]}
-    assert f1 in seq.get()[7].features
-    assert f2 in seq.get()[7].features
+    assert f1 in seq.links[7].features
+    assert f2 in seq.links[7].features
 
 def test_reindexed_features():
     def s(seq_str):
