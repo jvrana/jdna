@@ -365,10 +365,6 @@ class DoubleLinkedList(object):
             self.reindex(1)
         return self
 
-    def __iter__(self):
-        for link in self.links:
-            yield link
-
     def __getitem__(self, key):
         if isinstance(key, slice):
             new_list = self.__copy__()

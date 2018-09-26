@@ -1,6 +1,5 @@
-from jdna import *
+from jdna import Reaction, Sequence
 import random
-from copy import copy
 
 
 def test_overlap_extension_pcr():
@@ -16,8 +15,6 @@ def test_overlap_extension_pcr():
     f1 = Sequence(sequence='AGTCGGCGGATCTATGCTGACTGATGTGTGATGT')
     f2 = Sequence(sequence='TAGTCGTTGAGTCTGATCTGgtcgtagcgcgagcgttgtggcggattctatatatgttgcGGGGAGTGTTCGGTGCGGTGTTATAG')
     f3 = Sequence(
-        sequence='GGGGAGTGTTCGGTGCGGTGTTATAGgtcgtagcgcgagcgatcttcttgtggcggattctatatatgttgcAGTCGGCGGATCTATGCTGA')
-    f4 = Sequence(
         sequence='GGGGAGTGTTCGGTGCGGTGTTATAGgtcgtagcgcgagcgatcttcttgtggcggattctatatatgttgcAGTCGGCGGATCTATGCTGA')
 
     oh1 = ran_seq(20)

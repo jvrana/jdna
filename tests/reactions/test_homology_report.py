@@ -10,7 +10,7 @@ Description:
 
 import glob
 import json
-from jdna.core import Sequence, Reaction, Feature, Convert
+from jdna.core import Reaction, Convert
 from copy import copy
 
 

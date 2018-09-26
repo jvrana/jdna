@@ -1,10 +1,6 @@
 from jdna import database
-from jdna.core import Sequence, Convert, Reaction
+from jdna.core import Reaction
 
-import webbrowser
-import re
-import pandas as pd
-#database.credentials['db_location'] = '/Users/klavinslab/Google Drive/Klavinslab/DNAdb'
 database.credentials['db_location'] = '/Volumes/120GB SSD/Google Drive/Klavinslab/DNAdb'
 
 temp_database = {}
@@ -32,7 +28,7 @@ def capture(name_or_id):
         except:
             pass
 
-    sample = database.get_sample(name_or_id)
+    # sample = database.get_sample(name_or_id)
 
 
 def temp_fragment(template_name, p1_name, p2_name):

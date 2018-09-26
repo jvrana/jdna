@@ -1,8 +1,8 @@
+from copy import copy
+
 import pytest
 
-from nose.tools import *
-from jdna.core import Link, DoubleLinkedList
-from copy import copy
+from jdna.core import DoubleLinkedList
 
 
 def test_DoubleLinkedList():
@@ -22,14 +22,17 @@ def test_indexing():
     assert l[-1] == "."
     assert l[10] == seq[10]
 
+
 def test_slicing():
     seq = 'This is a test string for the linked data set.'
     l = DoubleLinkedList(sequence=seq)
 
     assert seq[1:10] == str(l[1:10])
 
+
 def test_slicing_cyclic():
     pass
+
 
 def test_cyclic_vs_liner():
     seq = 'This is a test string for the linked data set.'
@@ -119,8 +122,8 @@ def test_linear_cutting():
         expected.sort()
         fragments.sort()
         for e, f in zip(expected, fragments):
-            assert_true(str(e) == str(f))
-            assert_equal(len(fragments), len(cs) + 1)
+            assert str(e) == str(f)
+            assert len(fragments) == len(cs) + 1
 
 
 def test_search():

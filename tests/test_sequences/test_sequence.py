@@ -1,7 +1,8 @@
-import pytest
-from nose.tools import *
-from jdna.core import Feature, Sequence
 from copy import copy
+
+import pytest
+
+from jdna.core import Feature, Sequence
 
 
 # <editor-fold desc="Basic Tests">
@@ -30,11 +31,13 @@ def test_cyclic_vs_liner():
     l.linearize(1)
     assert ~l.is_cyclic()
 
+
 def test_features_linearizing():
     seq = Sequence(sequence='agttggagcg')
-    seq.create_feature('feature', 'type', 0, len(seq)-1)
+    seq.create_feature('feature', 'type', 0, len(seq) - 1)
     seq.make_cyclic()
     seq.linearize()
+
 
 def test_reindexing():
     seq = 'This is a test string for the linked data set.'
@@ -46,6 +49,7 @@ def test_reindexing():
     l.linearize(new_index)
     assert ~l.is_cyclic()
     assert str(l) == seq[new_index:] + seq[:new_index]
+
 
 def test_copy():
     seq = 'This is a test string for the linked data set.'
@@ -62,14 +66,24 @@ def test_copy():
     with pytest.raises(NotImplementedError):
         deepcopy(l)
 
+
 def test_insertion():
     seq = 'This is a test string for the linked data set.'
     l = Sequence(sequence=seq)
-    for i in range(len(l)+1):
+    for i in range(len(l) + 1):
         l_copy = copy(l)
         insertion = Sequence(sequence='XYZ')
         l_copy.insert(insertion, i)
         assert str(l_copy) == seq[:i] + str(insertion) + seq[i:]
+
+
+def test_insertion2():
+    seq = Sequence(sequence='agtcgagggcagatag')
+    seq2 = Sequence(sequence='GTAGGCAG')
+
+    for i in range(len(seq)):
+        assert str(copy(seq).insert(copy(seq2), i)) == str(seq)[:i] + str(seq2) + str(seq)[i:]
+
 
 def test_insertion_index_error():
     seq = 'This is a test string for the linked data set.'
@@ -78,7 +92,8 @@ def test_insertion_index_error():
         l.insert(Sequence(sequence='XYZ'), -1)
 
     with pytest.raises(IndexError):
-        l.insert(Sequence(sequence='XYZ'), len(l)+1)
+        l.insert(Sequence(sequence='XYZ'), len(l) + 1)
+
 
 def test_circular_cutting():
     seq = 'This is a test string for the linked data set.'
@@ -87,8 +102,9 @@ def test_circular_cutting():
     for cs in [[10, 15, 20], [4, 10, 15]]:
         fragments = [str(x) for x in l.cut(cs)]
         expected = [seq[cs[-1]:] + seq[:cs[0]]]
-        expected += [ seq[cs[i]:cs[i+1]] for i in range(len(cs)-1) ]
+        expected += [seq[cs[i]:cs[i + 1]] for i in range(len(cs) - 1)]
         assert set(expected) == set(fragments)
+
 
 def test_linear_cutting():
     seq = 'This is a test string for the linked data set.'
@@ -96,17 +112,18 @@ def test_linear_cutting():
     for cs in [[10, 15, 20], [4, 10, 15]]:
         fragments = [str(x) for x in l.cut(cs)]
         expected = [seq[:cs[0]]]
-        expected += [seq[cs[i]:cs[i+1]] for i in range(len(cs)-1)]
+        expected += [seq[cs[i]:cs[i + 1]] for i in range(len(cs) - 1)]
         expected += [seq[cs[-1]:]]
         expected = set(expected)
         fragments = set(fragments)
         assert expected == fragments
 
+
 def test_search():
     query_seq = 'ABCDEFGHIJKLMNOP'
     template = Sequence(sequence=query_seq)
-    for i in range(len(template)+1):
-        for j in range(i+1, len(template)+1):
+    for i in range(len(template) + 1):
+        for j in range(i + 1, len(template) + 1):
             query = Sequence(sequence=query_seq[i:j])
             assert (i, template.links[i]) == template.search_all(Sequence(sequence=query_seq[i:j]))[0]
 
@@ -121,11 +138,13 @@ def test_search():
     query = Sequence(sequence='sentence')
     assert 4 == len(template.search_all(query))
 
+
 def test_circular_search():
     template = Sequence(sequence='XXXXGHHHXHGG')
     template.make_cyclic()
     query = Sequence(sequence='HGGXX')
     assert 1 == len(template.search_all(query))
+
 
 def test_reverse():
     seq = 'XXXXGHHHXHGG'
@@ -144,6 +163,8 @@ def test_reverse():
     l.reverse()
     l.make_cyclic()
     assert str(l) == seq[::-1]
+
+
 # </editor-fold>
 
 
@@ -155,10 +176,12 @@ copy features from
 
 """
 
+
 # <editor-fold desc="DNA Manipulation methods">
 def test_cutting():
     seq_str = 'agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta'
     seq = Sequence(sequence=seq_str)
+
     def test_cut(c):
         expected = [seq_str[:c[0]]]
         prev = c[0]
@@ -172,39 +195,43 @@ def test_cutting():
         assert set([str(x) for x in fragments]) == set(expected)
 
     test_cut([1, 5, 7])
-    test_cut((5,len(seq)-1))
-    test_cut([0, 1, 3, len(seq)-1, len(seq)])
+    test_cut((5, len(seq) - 1))
+    test_cut([0, 1, 3, len(seq) - 1, len(seq)])
     test_cut([0, 5, 7])
     test_cut([1, 8, len(seq)])
     assert str(seq) == seq_str
 
+
 def test_cutting_next():
     seq_str = 'agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta'
     seq = Sequence(sequence=seq_str)
+
     def test_cut(c):
-        expected = [seq_str[:c[0]+1]]
+        expected = [seq_str[:c[0] + 1]]
         prev = c[0]
         for loc in c[1:]:
-            expected.append(seq_str[prev+1:loc+1])
+            expected.append(seq_str[prev + 1:loc + 1])
             prev = loc
-        expected += [seq_str[c[-1]+1:]]
+        expected += [seq_str[c[-1] + 1:]]
         while '' in expected:
             expected.remove('')
         fragments = seq.cut(c, cut_prev=False)
         assert [str(x) for x in fragments] == expected
 
     test_cut([1, 5, 7])
-    test_cut((5,len(seq)-1))
+    test_cut((5, len(seq) - 1))
     with pytest.raises(IndexError):
-        test_cut([0, 1, 3, len(seq)-1, len(seq)])
+        test_cut([0, 1, 3, len(seq) - 1, len(seq)])
     test_cut([0, 5, 7])
-    test_cut([1, 8, len(seq)-1])
+    test_cut([1, 8, len(seq) - 1])
     assert str(seq) == seq_str
+
 
 def test_cyclic_cutting():
     seq_str = 'agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta'
     seq = Sequence(sequence=seq_str)
     seq.make_cyclic()
+
     def test_cut(c):
         expected = [seq_str[c[-1]:] + seq_str[:c[0]]]
         prev = c[0]
@@ -217,10 +244,11 @@ def test_cyclic_cutting():
         for f in fragments:
             assert ~f.is_cyclic()
         assert set([str(x) for x in fragments]) == set(expected)
+
     test_cut([1])
     test_cut([1, 5, 7])
-    test_cut((5,len(seq)-1))
-    test_cut([0, 1, 3, len(seq)-1, len(seq)])
+    test_cut((5, len(seq) - 1))
+    test_cut([0, 1, 3, len(seq) - 1, len(seq)])
     test_cut([0, 5, 7])
     test_cut([1, 8, len(seq)])
     assert str(seq) == seq_str
@@ -234,12 +262,14 @@ def test_complement():
     seq.complement()
     assert str(seq) == seq_str
 
+
 def test_cyclic_complement():
     seq_str = 'AGTcaGTC'
     seq = Sequence(sequence=seq_str)
     seq.make_cyclic()
     seq.complement()
     assert str(seq) == 'TCAgtCAG'
+
 
 def test_reverse_complement():
     seq_str = 'AGTCAGTC'
@@ -249,12 +279,15 @@ def test_reverse_complement():
     seq.reverse_complement()
     assert str(seq) == seq_str
 
+
 def test_cyclic_reverse_complement():
     seq_str = 'AGTCAGTC'
     seq = Sequence(sequence=seq_str)
     seq.make_cyclic()
     seq.reverse_complement()
     assert str(seq) == 'TCAGTCAG'[::-1]
+
+
 # </editor-fold>
 
 def test_feature_cutting():
@@ -266,19 +299,13 @@ def test_feature_cutting():
     fragments = seq.cut(c)
     assert f not in fragments[0].get_features()
     feature = list(fragments[0].get_features().keys())[0]
-    assert fragments[0].get_features() == {feature: [(s, c-1), (0, c-s-1)]}
+    assert fragments[0].get_features() == {feature: [(s, c - 1), (0, c - s - 1)]}
     assert feature.length == 11
     assert f not in fragments[1].get_features()
     feature = list(fragments[1].get_features().keys())[0]
-    assert fragments[1].get_features() == {feature: [(0, e-c), (c-s, e)]}
+    assert fragments[1].get_features() == {feature: [(0, e - c), (c - s, e)]}
     assert feature.length == 11
 
-def test_insertion():
-    seq = Sequence(sequence='agtcgagggcagatag')
-    seq2 = Sequence(sequence='GTAGGCAG')
-
-    for i in range(len(seq)):
-        assert str(copy(seq).insert(copy(seq2), i)) == str(seq)[:i] + str(seq2) + str(seq)[i:]
 
 def test_feature_fusion():
     seq = Sequence(sequence='agtcgatggagttg')
@@ -294,9 +321,11 @@ def test_feature_fusion():
                 feature = list(fused.get_features().keys())[0]
                 assert fused.get_features()[feature] == [(start, end), (0, end - start)]
 
+
 def test_add_and_get_features():
     def s(seq_str):
         return Sequence(sequence=seq_str)
+
     seq = s('agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta')
     for j in range(0, len(seq)):
         for k in range(j, len(seq), 3):
@@ -306,12 +335,13 @@ def test_add_and_get_features():
                 assert l.features == {}
             assert seq_copy.get_features() == {}
             seq_copy.add_feature(j, k, f)
-            for i in range(j, k+1):
+            for i in range(j, k + 1):
                 assert f in seq_copy.links[i].features
 
             features = seq_copy.get_features()
             assert len(features) == 1
             assert features == {f: [(j, k), (0, k - j)]}
+
 
 def test_copying_features():
     seq = Sequence(sequence="AGTCAGTCGGA")
@@ -322,9 +352,11 @@ def test_copying_features():
     assert len(seq_copy.get_features()) == 1
     assert f in seq.get_features()
 
+
 def test_add_feature_to_cyclic():
     def s(seq_str):
         return Sequence(sequence=seq_str)
+
     seq = s('agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta')
     f = Feature(name='feature fail', type='failure')
     with pytest.raises(IndexError):
@@ -339,9 +371,11 @@ def test_add_feature_to_cyclic():
     seq.add_feature(start, end, f)
     assert seq.get_features() == {f: [(10, 1), (0, len(seq) - start + end)]}
 
+
 def test_multiple_features():
     def s(seq_str):
         return Sequence(sequence=seq_str)
+
     seq = s('agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta')
     f1 = Feature(name='feature 1', type='test')
     f2 = Feature(name='feature 2', type='test')
@@ -353,9 +387,11 @@ def test_multiple_features():
     assert f1 in seq.links[7].features
     assert f2 in seq.links[7].features
 
+
 def test_reindexed_features():
     def s(seq_str):
         return Sequence(sequence=seq_str)
+
     seq = s('agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta')
     f1 = Feature(name='feature 1', type='test')
     f2 = Feature(name='feature 2', type='test')
@@ -364,21 +400,16 @@ def test_reindexed_features():
     si1, si2 = 2, 3
     seq.add_feature(s1, e1, f1, start_index=si1)
     seq.add_feature(s2, e2, f2, start_index=si2)
-    assert seq.get_features() == {f1: [(s1, e1), (si1, si1 + e1 - s1)], f2: [(s2, e2), (si2, si2+e2 - s2)]}
+    assert seq.get_features() == {f1: [(s1, e1), (si1, si1 + e1 - s1)], f2: [(s2, e2), (si2, si2 + e2 - s2)]}
+
 
 def test_maintain_features_after_reverse():
     seq = Sequence(sequence='agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta')
     f1 = Feature(name='feature 1', type='test')
     seq.add_feature(5, 10, f1)
     seq.reverse()
-    assert seq.get_features() == {f1: [(len(seq)-1-10, len(seq)-1-5), (5, 0)]}
+    assert seq.get_features() == {f1: [(len(seq) - 1 - 10, len(seq) - 1 - 5), (5, 0)]}
 
-def test_maintain_features_after_reverse():
-    seq = Sequence(sequence='agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta')
-    f1 = Feature(name='feature 1', type='test')
-    seq.add_feature(5, 10, f1)
-    seq.reverse_complement()
-    assert seq.get_features() == {f1: [(len(seq)-1-10, len(seq)-1-5), (5, 0)]}
 
 def test_chop():
     seq = Sequence(sequence='agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta')
@@ -386,4 +417,4 @@ def test_chop():
         assert str(seq.chop_off_fiveprime(i)) == str(seq)[i:]
 
     for i in range(len(seq)):
-        assert str(seq.chop_off_threeprime(i)) == str(seq)[:i+1]
+        assert str(seq.chop_off_threeprime(i)) == str(seq)[:i + 1]
