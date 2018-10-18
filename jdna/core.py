@@ -378,7 +378,10 @@ class DoubleLinkedList(object):
     # TODO: implement yield in find_iter, search_all should call this
     # TODO: query should be any interable
     # TODO: [:1] and [-10:] style cuts should be available
-
+    # TODO: documentation for methods
+    # TODO: move DoubleLinkedList to its own thing?
+    # TODO: element insertion
+    # TODO: search should return a 'cut' of the sequence
     def search_all(self, query):
         curr_link = self.head
         q_link = query.head
@@ -781,6 +784,7 @@ class Reaction(object):
             last = last + p
         return last
 
+    # TODO: what does 'anneal' supposed to return???
     @staticmethod
     def _anneal(template, primer, min_bases=MIN_BASES, threeprime=True):
         t = template.head
@@ -961,7 +965,8 @@ class Reaction(object):
                 if s[:min_homology] == s[-min_homology:]:
                     raise Exception("Fragment self circularized.")
             match = Reaction.anneal_threeprime(template=pair[1], primer=pair[0], min_bases=min_homology)
-            if match and pass_conditions(match):
+            # TODO: what is match? why is it a list??
+            if match and pass_conditions(match) and match[0][0] < len(pair[1]) and match[0][1] < len(pair[0]):
                 left, right = fragment_to_id[pair[0]], fragment_to_id[pair[1]]
                 graph[left].append(right)
                 match_graph[left].append(match)
@@ -1033,8 +1038,9 @@ class Reaction(object):
             x1 = cy[:-1]
             x2 = cy[1:]
             if cyclic:
-                x1 = cy
-                x2 = x1[1:] + x1[:1]
+                x1 = cy[:]
+                x2 = cy[1:] + cy[:-1]
+                # x2 = x1[:-1] + x1[1:]
             pairs = list(zip(x1, x2))
             # Cut 5' ends of fragments according to homology
             # overlap_info = []
@@ -1044,10 +1050,11 @@ class Reaction(object):
                 matches = Reaction.anneal_threeprime(right, left)
                 if len(matches) == 0:
                     raise Exception("The fragment \"{}\" does not anneal to fragment \"{}\"".format(left.name, right.name))
+
                 match = matches[0]
 
-
                 right_nt = right.get(match[0])
+
                 homology1_head_nt = right_nt.cut_prev()
                 homology1 = Sequence(first=homology1_head_nt)
                 right.head = right_nt
