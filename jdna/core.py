@@ -168,7 +168,7 @@ class Link(object):
         l = self._longest_match(y, next_method)
         if not l:
             return False
-        t1, t2 = self._longest_match(y, next_method)[-1]
+        t1, t2 = l[-1]
         return not (next_method(t1) and next_method(t2))
 
     def complete_match_fwd(self, y):
@@ -202,6 +202,37 @@ class DoubleLinkedList(object):
             self.initialize(sequence)
         elif first is not None:
             self._head = first
+
+    def find(self, data):
+        t = self.head
+        visited = set()
+        while t and t not in visited:
+            next_method = lambda x: next(x)
+
+
+
+
+        @staticmethod
+        def _anneal(template, primer, min_bases=MIN_BASES, threeprime=True):
+            t = template.head
+            p = primer.head
+            if threeprime:
+                t = t.find_last()
+                p = p.find_last()
+            visited = set()
+            i = 0
+            matches = []
+            while t and t not in visited:
+                next_method = lambda x: next(x)
+                if threeprime:
+                    next_method = lambda x: x.prev()
+                l = t._longest_match(p, next_method)
+                if len(l) >= min_bases:
+                    matches.append((i, len(l)))
+                visited.add(t)
+                t = next_method(t)
+                i += 1
+            return matches
 
     def initialize(self, sequence):
         self._head = Link(sequence[0])
@@ -343,6 +374,10 @@ class DoubleLinkedList(object):
             mx = len(self.links) - 1
             if n < 0 or n > mx:
                 raise IndexError("Index {} out of acceptable bounds ({}, {})".format(n, mn, mx))
+
+    # TODO: implement yield in find_iter, search_all should call this
+    # TODO: query should be any interable
+    # TODO: [:1] and [-10:] style cuts should be available
 
     def search_all(self, query):
         curr_link = self.head
@@ -925,7 +960,7 @@ class Reaction(object):
                 s = str(pair[0])
                 if s[:min_homology] == s[-min_homology:]:
                     raise Exception("Fragment self circularized.")
-            match = Reaction.anneal_threeprime(*pair, min_bases=min_homology)
+            match = Reaction.anneal_threeprime(template=pair[1], primer=pair[0], min_bases=min_homology)
             if match and pass_conditions(match):
                 left, right = fragment_to_id[pair[0]], fragment_to_id[pair[1]]
                 graph[left].append(right)
@@ -995,29 +1030,32 @@ class Reaction(object):
             cy = [copy(x) for x in cy]
 
             # Pair fragments for cyclic assembly
-            x1 = cy
-            x2 = x1[1:] + x1[:1]
+            x1 = cy[:-1]
+            x2 = cy[1:]
+            if cyclic:
+                x1 = cy
+                x2 = x1[1:] + x1[:1]
             pairs = list(zip(x1, x2))
             # Cut 5' ends of fragments according to homology
             # overlap_info = []
 
-            for right, left in pairs:
+            for left, right in pairs:
                 # Find homology region and cut
-                match = Reaction.anneal_threeprime(right, left)[0]
+                matches = Reaction.anneal_threeprime(right, left)
+                if len(matches) == 0:
+                    raise Exception("The fragment \"{}\" does not anneal to fragment \"{}\"".format(left.name, right.name))
+                match = matches[0]
 
-                nt = right.get(match[0])
-                p = nt.cut_prev()
 
-                # modify right fragment
-                right.head = nt
+                right_nt = right.get(match[0])
+                homology1_head_nt = right_nt.cut_prev()
+                homology1 = Sequence(first=homology1_head_nt)
+                right.head = right_nt
 
-                # define homology sequences
-                homology1 = Sequence(first=p)
-
-                nt = left.get(len(left) - match[0] - 1)
-                n = nt.cut_next()
-                left.head = nt
-                homology2 = Sequence(first=n)
+                left_nt = left.get(len(left) - match[0] - 1)
+                homology2_head_nt = left_nt.cut_next()
+                left.head = left_nt
+                homology2 = Sequence(first=homology2_head_nt)
 
                 # add features for homology1
                 if homology1.head is not None:
@@ -1036,7 +1074,7 @@ class Reaction(object):
 
             # Fuse all fragments
             for p in pairs:
-                right, left = p
+                left, right = p
                 left.fuse(right)
 
             # Annotate new product

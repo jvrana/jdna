@@ -153,6 +153,14 @@ def test_circular_search():
     query = DoubleLinkedList(sequence='HGGXX')
     assert 1 == len(template.search_all(query))
 
+def test_circular_find_iter():
+    template = DoubleLinkedList(sequence='agcghgahcghaghdgfkajdsagcghgagadhgajsdgfkajds')
+    template.make_cyclic()
+
+    query = DoubleLinkedList(sequence='dgfkajdsagcghga')
+
+    for found in template.find_iter(query):
+        print(found)
 
 def test_reverse():
     seq = 'XXXXGHHHXHGG'
