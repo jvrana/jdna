@@ -61,3 +61,18 @@ def test_linear_assembly():
     assert len(seqs) == 2
     assert len(seqs[0]) == len(final_sequence)
     assert str(seqs[0]).upper() == final_sequence.upper()
+
+
+def test_cyclic_assembly():
+    final_sequence = "CGTTTTAAGAGCTTGGTGAGCGCTAGGAGTCACTGCCAGGTATCGTTTGAACACGGCATTAGTCAGGGAAGTCATAACACAGTCCTTTCCCGCAATTTTCTTTTTCTATTACTCTTGGCCTCCTCTAGTACACTCTATATTTTTTTATGCCTCGGTAATGATTTTCATTTTTTTTTTTCCACCTAGCGGATGACTCTTTTTTTTTCTTAGCGATTGGCATTATCACATAATGAATTATACATTATATAAAGTAATGTGATTTCTTCGAAGAATATACTAAAAAATGAGCAGGCAAGATAAACGAAGGCAAAG"
+
+    seq1 = Sequence(name='seq1', sequence=final_sequence[:50])
+    seq2 = Sequence(name='seq2', sequence=final_sequence[30:130])
+    seq3 = Sequence(name='seq3', sequence=final_sequence[100:] + final_sequence[:30])
+
+    report = Reaction.homology_report([seq1, seq2, seq3])
+    seqs = Reaction.cyclic_assembly([seq1, seq2, seq3])
+
+    assert len(seqs) == 1
+    assert len(seqs[0]) == len(final_sequence)
+    assert str(seqs[0]).upper() == final_sequence.upper()
