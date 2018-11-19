@@ -2,7 +2,7 @@ from copy import copy
 
 import pytest
 
-from jdna import Feature, Sequence
+from jdna import Feature, Sequence, Nucleotide
 
 
 # <editor-fold desc="Basic Tests">
@@ -40,8 +40,9 @@ def test_reindexing():
     new_index = 10
 
     l.linearize(new_index)
-    assert ~l.cyclic
+    nodes = l.nodes
     assert str(l) == seq[new_index:] + seq[:new_index]
+    assert ~l.cyclic
 
 
 def test_copy():
@@ -350,34 +351,119 @@ class TestFeature(object):
         seq.linearize()
 
     def test_feature_cutting(self):
+        """
+
+        012345678912345  INDICES
+        XXXXXXXXXXX----  FEATURE LOCATION
+
+             V <--CUT HERE
+        01234 5678912345  OLD INDEX
+        XXXXX XXXXXX----  FEATURE LOCATION
+        01234 0123456789  NEW INDEX
+        """
         seq = Sequence(sequence='agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta')
         f = Feature(name='feature name', type='feature type')
         s, e = 0, 10
         seq.add_feature(s, e, f)
+        assert len(seq.features) == 1
         c = 5
         fragments = seq.cut(c)
-        assert f not in fragments[0].get_features()
-        feature = list(fragments[0].get_features().keys())[0]
-        assert fragments[0].get_features() == {feature: [(s, c - 1), (0, c - s - 1)]}
-        assert feature.length == 11
-        assert f not in fragments[1].get_features()
-        feature = list(fragments[1].get_features().keys())[0]
-        assert fragments[1].get_features() == {feature: [(0, e - c), (c - s, e)]}
-        assert feature.length == 11
+        assert len(fragments[0].features) == 1
+        assert len(fragments[1].features) == 1
+
+        feature = list(fragments[0].features)[0]
+        assert dict(fragments[0].feature_positions()) == {feature: [[s, c - 1]]}
+        assert dict(fragments[1].feature_positions()) == {feature: [[0, e - c]]}
 
     def test_feature_fusion(self):
-        seq = Sequence(sequence='agtcgatggagttg')
-        f1 = Feature(name='left', type='left')
-        for start in range(1, len(seq)):
-            for end in range(start, len(seq)):
-                seq_copy = copy(seq)
-                seq_copy.add_feature(start, end, f1)
-                for cut in range(start, end):
-                    fragments = seq_copy.cut(cut)
-                    fused = fragments[0].insert(fragments[1], len(fragments[0]))
-                    assert len(fused.get_features()) == 1
-                    feature = list(fused.get_features().keys())[0]
-                    assert fused.get_features()[feature] == [(start, end), (0, end - start)]
+        seq = Sequence(sequence='abcdefghijkl')
+        f1 = Feature(name='myfeature', type='myfeature')
+        f2 = Feature(name='myfeature', type='myfeature')
+
+        i = 0
+        j = 4
+        k = 5
+        l = 7
+
+        seq.add_feature(i, j, f1)
+        seq.add_feature(k, l, f2)
+        assert len(seq.features) == 2
+        Nucleotide.fuse_features(seq.get(j), seq.get(k))
+        assert len(seq.features) == 1
+        assert seq.feature_positions() == {
+            f1: [[i, l]]
+        }
+
+    def test_feature_fusion_unsuccessful(self):
+        seq = Sequence(sequence='abcdefghijkl')
+        f1 = Feature(name='myfeature', type='myfeature')
+        f2 = Feature(name='myfeature2', type='myfeature')
+
+        i = 0
+        j = 4
+        k = 5
+        l = 7
+
+        seq.add_feature(i, j, f1)
+        seq.add_feature(k, l, f2)
+        assert len(seq.features) == 2
+        Nucleotide.fuse_features(seq.get(j), seq.get(k))
+        assert len(seq.features) == 2
+
+    def test_feature_fusion_by_setting(self):
+        seq1 = Sequence(sequence='a'*10)
+        seq2 = Sequence(sequence='a'*10)
+
+        f1 = Feature(name='myfeature')
+        f2 = Feature(name='myfeature')
+
+        seq1.add_feature(5, 9, f1)
+        seq2.add_feature(0, 5, f2)
+
+        product = seq1.fuse(seq2)
+        assert len(product.features) == 1
+        assert product.feature_positions() == {
+            f1: [[5, 15]]
+        }
+
+    def test_feature_fusion_by_setting(self):
+        seq1 = Sequence(sequence='a'*10)
+        seq2 = Sequence(sequence='a'*10)
+
+        f1 = Feature(name='myfeature')
+        f2 = Feature(name='myfeature')
+
+        seq1.add_feature(5, 9, f1)
+        seq2.add_feature(1, 5, f2)
+
+        product = seq1.fuse(seq2)
+        assert len(product.features) == 2
+
+    def test_feature_fusion_cyclic(self):
+        seq1 = Sequence(sequence='a'*20)
+        f1 = Feature(name='name')
+        seq1.add_feature(10, 19, f1)
+        seq1.add_feature(0, 5, f1)
+        assert seq1.feature_positions() == {
+            f1: [[0, 5], [10, 19]]
+        }
+
+        seq1.cyclic = True
+        assert seq1.feature_positions() == {
+            f1: [[10, 5]]
+        }
+
+
+        # for start in range(1, len(seq)):
+        #     for end in range(start, len(seq)):
+        #         seq_copy = copy(seq)
+        #         seq_copy.add_feature(start, end, f1)
+        #         for cut in range(start, end):
+        #             fragments = seq_copy.cut(cut)
+        #             fused = fragments[0].insert(fragments[1], len(fragments[0]))
+        #             assert len(fused.get_features()) == 1
+        #             feature = list(fused.get_features().keys())[0]
+        #             assert fused.get_features()[feature] == [(start, end), (0, end - start)]
 
     def test_add_feature_to_cyclic(self):
         def s(seq_str):

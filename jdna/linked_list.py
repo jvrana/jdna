@@ -14,7 +14,6 @@ class Node(object):
     def __next__(self):
         return self.__next
 
-    @property
     def prev(self):
         """
         Return the previous node
@@ -24,7 +23,6 @@ class Node(object):
         """
         return self.__prev
 
-    @property
     def next(self):
         """
         Return the next node
@@ -80,7 +78,7 @@ class Node(object):
         :return: the cut (previous) node
         :rtype: Node
         """
-        prev_node = self.prev
+        prev_node = self.prev()
         if prev_node is not None:
             prev_node.__assign_next(None)
         self.__assign_prev(None)
@@ -103,7 +101,7 @@ class Node(object):
         :rtype: None
         """
         next_node = next(self)
-        prev_node = self.prev
+        prev_node = self.prev()
         if next_node is not None:
             next_node.set_prev(prev_node)
         if prev_node is not None:
@@ -194,7 +192,7 @@ class Node(object):
         :rtype:
         """
         return self._propogate(
-            lambda x: x.prev,
+            lambda x: x.prev(),
             stop=stop_node,
             stop_criteria=stop_criteria)
 
@@ -269,7 +267,7 @@ class Node(object):
         return self._complete_match(y, lambda x: next(x))
 
     def complete_match_rev(self, y):
-        return self._complete_match(y, lambda x: x.prev)
+        return self._complete_match(y, lambda x: x.prev())
 
     def equivalent(self, other):
         """Evaluates whether two nodes hold the same data"""
@@ -336,7 +334,7 @@ class DoubleLinkedList(object):
         self._head = first
         return self._head
     #
-    # @head.setter
+    # @head.setterdef __len
     # def head(self, node):
     #     self._head = node
 
@@ -368,7 +366,7 @@ class DoubleLinkedList(object):
 
     def linearize(self, i=0):
         this_i = self.nodes[i]
-        this_i.cut_prev
+        this_i.cut_prev()
         return this_i
 
     @property
@@ -404,7 +402,7 @@ class DoubleLinkedList(object):
             node = all_nodes[cut_loc]
             c = None
             if cut_prev:
-                c = node.cut_prev
+                c = node.cut_prev()
                 if c is not None:
                     cut_nodes.append(c)
                 cut_nodes.append(node)
@@ -436,14 +434,20 @@ class DoubleLinkedList(object):
     def find_ends(nodes):
         """Efficiently finds the head and tails from a group of nodes."""
         visited = set()
-        pairs = set()
+        heads = []
+        tails = []
         for n in nodes:
             if n not in visited:
+                head = n
+                tail = n
                 for tail in n.fwd(stop_criteria=lambda x: x not in visited):
                     visited.add(tail)
                 for head in n.rev(stop_criteria=lambda x: x not in visited):
                     visited.add(head)
-                pairs.add([head, tail])
+                if head not in heads and tails not in tails:
+                    heads.append(head)
+                    tails.append(tail)
+        return zip(heads, tails)
 
     @classmethod
     def segments(cls, nodes):
@@ -464,7 +468,7 @@ class DoubleLinkedList(object):
             loc1 = self.nodes[i - 1]
         else:
             loc2 = self.nodes[i]
-            loc1 = loc2.prev
+            loc1 = loc2.prev()
         first = node_list.nodes[0]
         last = node_list.nodes[-1]
         first.set_prev(loc1)
@@ -531,7 +535,7 @@ class DoubleLinkedList(object):
             new_list = self.__copy__()
             start = new_list.nodes[key.start]
             end = new_list.nodes[key.stop - 1]
-            start.cut_prev
+            start.cut_prev()
             end.cut_next()
             return self.__class__(first=start)
         return self.nodes[key].data
@@ -554,7 +558,10 @@ class DoubleLinkedList(object):
         return self
 
     def __len__(self):
-        return len(self.nodes)
+        l = 0
+        for n in self:
+            l += 1
+        return l
 
     def __iter__(self):
         current = self._head

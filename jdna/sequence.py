@@ -165,22 +165,17 @@ class Nucleotide(Node):
 
     @classmethod
     def fuse_features(cls, n1, n2, fuse_condition=None):
-
+        if n1 is None or n2 is None:
+            return
         if fuse_condition is None:
             fuse_condition = cls._default_fuse_condition
 
-        if not (n1.next is n2 and n2.prev is n1):
-            n1_next = id(n1.next)
-            n2_prev = id(n2.prev)
-            n1_id = id(n1)
-            n2_id = id(n2)
-            n = n1.next
-            _n = n2.prev
+        if not (n1.next() is n2 and n2.prev() is n1):
             raise Exception("Cannot fuse non-consecutive features")
 
-        for f1 in n1.features:
-            for f2 in n2.features:
-                if fuse_condition(f1, f2):
+        for f1 in set(n1.features):
+            for f2 in set(n2.features):
+                if f1 is not f2 and fuse_condition(f1, f2):
                     for n in n2.feature_fwd(f2):
                         n.add_feature(f1)
                         n.remove_feature(f2)
@@ -275,20 +270,34 @@ class Sequence(DoubleLinkedList):
 
     def feature_positions(self, with_nodes=False):
         index = 0
-        feature_dict = defaultdict(list)
+        feature_pos = defaultdict(list)
         feature_nodes = defaultdict(list)
+        l = len(self)
         for n in self:
             for f in n.features:
-                if feature_dict[f] and feature_dict[f][-1][-1] + 1 == index:
-                    feature_dict[f][-1][-1] = index
+                if feature_pos[f] and feature_pos[f][-1][-1] + 1 == index:
+                    feature_pos[f][-1][-1] = index
                     feature_nodes[f][-1][-1] = n
                 else:
-                    feature_dict[f].append([index, index])
+                    feature_pos[f].append([index, index])
                     feature_nodes[f].append([n, n])
             index += 1
+
+        # capture features that span the origin
+        if self.cyclic:
+            for k in feature_pos:
+                positions = feature_pos[k]
+                nodes = feature_nodes[k]
+                if len(nodes) > 1:
+                    if positions[0][0] == 0 and positions[-1][-1] == l-1:
+                        nodes[0][0] = nodes[-1][0]
+                        positions[0][0] = positions[-1][0]
+                        nodes.pop()
+                        positions.pop()
+
         if with_nodes:
-            return feature_dict, feature_nodes
-        return feature_dict
+            return feature_pos, feature_nodes
+        return feature_pos
 
     def feature_nodes(self):
         return self.feature_positions(with_nodes=True)[-1]
@@ -381,9 +390,10 @@ class Sequence(DoubleLinkedList):
         return self.__copy__()
 
     def __copy__(self):
+        feature_positions = self.feature_positions()
         copied = super(Sequence, self).__copy__()
-        for feature, positions in self.feature_positions().items():
-            self.add_multipart_feature(positions, feature)
+        for feature, positions in feature_positions.items():
+            copied.add_multipart_feature(positions, feature)
         return copied
 
     def __add__(self, other):
