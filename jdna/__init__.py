@@ -1,6 +1,6 @@
 """ jdna. """
 
 
-from jdna.core import (
-    Link, DoubleLinkedList, Nucleotide, Sequence, Reaction, Convert
-)
+from jdna.sequence import Feature, Sequence
+from jdna.reaction import Reaction
+from jdna import convert

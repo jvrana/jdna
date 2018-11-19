@@ -1,7 +1,4 @@
-from jdna.core import Sequence, Reaction, Convert
-from copy import copy
-import json
-import glob
+from jdna import Sequence, Reaction
 
 
 def test_cyclic_assembly_report():

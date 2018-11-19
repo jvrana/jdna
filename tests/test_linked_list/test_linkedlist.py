@@ -2,7 +2,7 @@ from copy import copy
 
 import pytest
 
-from jdna.core import DoubleLinkedList
+from jdna.linked_list import DoubleLinkedList
 
 
 def test_DoubleLinkedList():
@@ -37,10 +37,10 @@ def test_slicing_cyclic():
 def test_cyclic_vs_liner():
     seq = 'This is a test string for the linked data set.'
     l = DoubleLinkedList(sequence=seq)
-    assert ~l.is_cyclic()
+    assert ~l.cyclic
 
-    l.make_cyclic()
-    assert l.is_cyclic()
+    l.circularize()
+    assert l.cyclic
 
     assert str(l) == seq
     assert l.head.data, 'T'
@@ -48,18 +48,18 @@ def test_cyclic_vs_liner():
     assert len(l) == len(seq)
 
     l.linearize(1)
-    assert ~l.is_cyclic()
+    assert ~l.cyclic
 
 
 def test_reindexing():
     seq = 'This is a test string for the linked data set.'
     l = DoubleLinkedList(sequence=seq)
-    l.make_cyclic()
+    l.circularize()
 
     new_index = 10
 
     l.linearize(new_index)
-    assert ~l.is_cyclic()
+    assert ~l.cyclic
     assert str(l) == seq[new_index:] + seq[:new_index]
 
 
@@ -68,7 +68,7 @@ def test_copy():
     l = DoubleLinkedList(sequence=seq)
     l_copy = copy(l)
     assert str(l) == str(l_copy)
-    assert id(l_copy.links[0]) is not id(l.links[0])
+    assert id(l_copy.nodes[0]) is not id(l.nodes[0])
     from copy import deepcopy
     with pytest.raises(NotImplementedError):
         deepcopy(l)
@@ -98,7 +98,8 @@ def test_insertion_index_error():
 def test_circular_cutting():
     seq = 'This is a test string for the linked data set.'
     l = DoubleLinkedList(sequence=seq)
-    l.make_cyclic()
+    # l.circularize()
+    l.cyclic = True
     for cs in [[10, 15, 20], [4, 10, 15]]:
         fragments = [str(x) for x in l.cut(cs)]
         expected = [seq[cs[-1]:] + seq[:cs[0]]]
@@ -132,7 +133,7 @@ def test_search():
     for i in range(len(template) + 1):
         for j in range(i + 1, len(template) + 1):
             query = DoubleLinkedList(sequence=query_seq[i:j])
-            assert (i, template.links[i]) == template.search_all(DoubleLinkedList(sequence=query_seq[i:j]))[0]
+            assert (i, template.nodes[i]) == template.search_all(DoubleLinkedList(sequence=query_seq[i:j]))[0]
 
     query = DoubleLinkedList(sequence='ABCDFG')
     assert [] == template.search_all(query)
@@ -149,13 +150,14 @@ def test_search():
 def test_circular_search():
     # Search Circular
     template = DoubleLinkedList(sequence='XXXXGHHHXHGG')
-    template.make_cyclic()
+    template.circularize()
     query = DoubleLinkedList(sequence='HGGXX')
     assert 1 == len(template.search_all(query))
 
+
 def test_circular_find_iter():
     template = DoubleLinkedList(sequence='agcghgahcghaghdgfkajdsagcghgagadhgajsdgfkajds')
-    template.make_cyclic()
+    template.circularize()
 
     query = DoubleLinkedList(sequence='dgfkajdsagcghga')
 
@@ -170,14 +172,14 @@ def test_reverse():
 
     seq = 'XXXXGHHHXHGG'
     l = DoubleLinkedList(sequence=seq)
-    l.make_cyclic()
+    l.circularize()
     l.reverse()
     assert str(l) == seq[::-1]
 
     seq = 'XXXXGHHHXHGG'
     l = DoubleLinkedList(sequence=seq)
     l.reverse()
-    l.make_cyclic()
+    l.circularize()
     assert str(l) == seq[::-1]
 
 

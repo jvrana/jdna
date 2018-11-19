@@ -1,6 +1,6 @@
 import random
 
-from jdna.core import Sequence, Reaction
+from jdna import Sequence, Reaction
 
 
 def test_pcr():
@@ -28,7 +28,7 @@ def test_cyclic_pcr():
         return products
 
     template = Sequence(sequence=''.join([random.choice('atgc') for x in range(200)]))
-    template.make_cyclic()
+    template.circularize()
     random_overhang1 = ''.join([random.choice('atcg') for x in range(20)])
     random_overhang2 = ''.join([random.choice('atcg') for x in range(21)])
     pcr(template, len(template) - 40, len(template) - 20, random_overhang1, 100, 120, random_overhang2)[0]
@@ -131,7 +131,7 @@ def test_gibson_feature_fusion():
     template = Sequence(
         sequence='aataaaccagccagccggaagggccgagcgcagaagtggtcctgcaactttatccgcctccatccagtctattaattgttgccgggaagctagagtaagtagttcgccagttaatagtttgcgcaacgttgttgccattgctacaggcatcgtggtgtcacgctcgtcgtttggtatggcttcattcagctccggttcccaacgatcaaggcgagttacatgatcccccatgttgtgcaaaaaagcggttagctccttcggtcctccgatcgttgtcagaagtaagttggccgcagtgttatcactcatggttatggcagcactgcataattctcttactgtcatgccatccgtaagatgcttttctgtgactggtgagtactcaaccaagtcattctgagaatagtgtatgcggcgaccgagttgctcttgcccggcgtcaatacgggata')
     template.create_feature('feature', 'type', 0, len(template) - 1)
-    template.make_cyclic()
+    template.circularize()
 
     p1 = Sequence(sequence=str(template)[10:30])
     p2 = Sequence(sequence=str(template)[200:220]).reverse_complement()

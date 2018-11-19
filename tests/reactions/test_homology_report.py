@@ -10,7 +10,7 @@ Description:
 
 import glob
 import json
-from jdna.core import Reaction, Convert
+from jdna import Reaction, convert
 from copy import copy
 
 
@@ -19,7 +19,7 @@ def test_long_gibson_assembly():
     for file in glob.glob('test_data/Frag*json'):
         with open(file, 'r') as f:
             bseq = json.load(f)
-            dnas.append(Convert.from_benchling(bseq))
+            dnas.append(convert.from_benchling(bseq))
     dnas_copy = [copy(x) for x in dnas]
     h_report = Reaction.homology_report(dnas)
     Reaction.print_homology_report(h_report)
