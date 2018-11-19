@@ -461,15 +461,12 @@ class TestFeature(object):
         #         for cut in range(start, end):
         #             fragments = seq_copy.cut(cut)
         #             fused = fragments[0].insert(fragments[1], len(fragments[0]))
-        #             assert len(fused.get_features()) == 1
-        #             feature = list(fused.get_features().keys())[0]
-        #             assert fused.get_features()[feature] == [(start, end), (0, end - start)]
+        #             assert len(fused.feature_positions()) == 1
+        #             feature = list(fused.feature_positions().keys())[0]
+        #             assert fused.feature_positions()[feature] == [(start, end), (0, end - start)]
 
     def test_add_feature_to_cyclic(self):
-        def s(seq_str):
-            return Sequence(sequence=seq_str)
-
-        seq = s('agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta')
+        seq = Sequence(sequence='agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta')
         f = Feature(name='feature fail', type='failure')
         with pytest.raises(IndexError):
             seq.add_feature(-1, 10, f)
@@ -481,9 +478,9 @@ class TestFeature(object):
         start = 10
         end = 1
         seq.add_feature(start, end, f)
-        assert seq.get_features() == {f: [(10, 1), (0, len(seq) - start + end)]}
+        assert seq.feature_positions() == {f: [[10, 1]]}
 
-    def test_add_and_get_features(self):
+    def test_add_and_feature_positions(self):
         def s(seq_str):
             return Sequence(sequence=seq_str)
 
@@ -493,13 +490,13 @@ class TestFeature(object):
                 f = Feature(name='new feature', type='feature type')
                 seq_copy = copy(seq)
                 for l in seq_copy.nodes:
-                    assert l.features == {}
-                assert seq_copy.get_features() == {}
+                    assert l.features == set()
+                assert seq_copy.feature_positions() == {}
                 seq_copy.add_feature(j, k, f)
                 for i in range(j, k + 1):
                     assert f in seq_copy.nodes[i].features
 
-                features = seq_copy.get_features()
+                features = seq_copy.feature_positions()
                 assert len(features) == 1
                 assert features == {f: [(j, k), (0, k - j)]}
 
@@ -508,9 +505,9 @@ class TestFeature(object):
         f = Feature(name='alfjl', type='lkdjflkj')
         seq.add_feature(0, 5, f)
         seq_copy = copy(seq)
-        assert f not in list(seq_copy.get_features().keys())
-        assert len(seq_copy.get_features()) == 1
-        assert f in seq.get_features()
+        assert f not in list(seq_copy.feature_positions().keys())
+        assert len(seq_copy.feature_positions()) == 1
+        assert f in seq.feature_positions()
 
     def test_multiple_features(self):
         def s(seq_str):
@@ -523,7 +520,7 @@ class TestFeature(object):
         s2, e2 = (5, 15)
         seq.add_feature(s1, e1, f1)
         seq.add_feature(s2, e2, f2)
-        assert seq.get_features() == {f1: [(s1, e1), (0, e1 - s1)], f2: [(s2, e2), (0, e2 - s2)]}
+        assert seq.feature_positions() == {f1: [(s1, e1), (0, e1 - s1)], f2: [(s2, e2), (0, e2 - s2)]}
         assert f1 in seq.nodes[7].features
         assert f2 in seq.nodes[7].features
 
@@ -539,11 +536,11 @@ class TestFeature(object):
         si1, si2 = 2, 3
         seq.add_feature(s1, e1, f1, start_index=si1)
         seq.add_feature(s2, e2, f2, start_index=si2)
-        assert seq.get_features() == {f1: [(s1, e1), (si1, si1 + e1 - s1)], f2: [(s2, e2), (si2, si2 + e2 - s2)]}
+        assert seq.feature_positions() == {f1: [(s1, e1), (si1, si1 + e1 - s1)], f2: [(s2, e2), (si2, si2 + e2 - s2)]}
 
     def test_maintain_features_after_reverse(self):
         seq = Sequence(sequence='agtcgtatgctgcggcgattctgatgctgatgctgatgtcggta')
         f1 = Feature(name='feature 1', type='test')
         seq.add_feature(5, 10, f1)
         seq.reverse()
-        assert seq.get_features() == {f1: [(len(seq) - 1 - 10, len(seq) - 1 - 5), (5, 0)]}
+        assert seq.feature_positions() == {f1: [(len(seq) - 1 - 10, len(seq) - 1 - 5), (5, 0)]}

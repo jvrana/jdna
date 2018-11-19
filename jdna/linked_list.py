@@ -176,7 +176,7 @@ class Node(object):
         :rtype:
         """
         return self._propogate(
-            lambda x: next(x),
+            lambda x: x.next(),
             stop=stop_node,
             stop_criteria=stop_criteria)
 
@@ -360,6 +360,16 @@ class DoubleLinkedList(object):
         elif not self.cyclic and b:
             return self.circularize()
 
+    @property
+    def circular(self):
+        """Alias for cyclic"""
+        return self.cyclic
+
+    @circular.setter
+    def circular(self, v):
+        """Alias for cyclic"""
+        self.cyclic = v
+
     def circularize(self):
         if not self.cyclic:
             return self.tail.set_next(self.head)
@@ -400,7 +410,6 @@ class DoubleLinkedList(object):
         cut_nodes = []
         for cut_loc in i:
             node = all_nodes[cut_loc]
-            c = None
             if cut_prev:
                 c = node.cut_prev()
                 if c is not None:
@@ -440,13 +449,18 @@ class DoubleLinkedList(object):
             if n not in visited:
                 head = n
                 tail = n
-                for tail in n.fwd(stop_criteria=lambda x: x not in visited):
-                    visited.add(tail)
-                for head in n.rev(stop_criteria=lambda x: x not in visited):
-                    visited.add(head)
+                visited_tails = set()
+                visited_heads = set()
+                for tail in n.fwd(stop_criteria=lambda x: x in visited):
+                    visited_tails.add(tail)
+                for head in n.rev(stop_criteria=lambda x: x in visited):
+                    visited_heads.add(head)
+                visited = visited.union(visited_heads)
+                visited = visited.union(visited_tails)
                 if head not in heads and tails not in tails:
-                    heads.append(head)
-                    tails.append(tail)
+                    if head.prev() is None and tail.next() is None:
+                        heads.append(head)
+                        tails.append(tail)
         return zip(heads, tails)
 
     @classmethod
@@ -575,8 +589,8 @@ class DoubleLinkedList(object):
 
     def __repr__(self):
         return "<{cls} data='{data}'>".format(
-            self.__class__.__name__,
-            str(self)
+            cls=self.__class__.__name__,
+            data=str(self)
         )
         return str(self)
 

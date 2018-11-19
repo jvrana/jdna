@@ -95,36 +95,36 @@ def test_insertion_index_error():
         l.insert(DoubleLinkedList(sequence='XYZ'), len(l) + 1)
 
 
-def test_circular_cutting():
+@pytest.mark.parametrize('cut_sites,circular,expected_num_fragments', [
+    ([10], False, 2),
+    ([10], True, 1),
+    ([10, 15, 20], False, 4),
+    ([10, 15, 20], True, 3),
+    ([4, 10, 15], False, 4),
+    ([4, 10, 15], True, 3),
+])
+def test_cutting(cut_sites, circular, expected_num_fragments):
     seq = 'This is a test string for the linked data set.'
-    l = DoubleLinkedList(sequence=seq)
-    # l.circularize()
-    l.cyclic = True
-    for cs in [[10, 15, 20], [4, 10, 15]]:
-        fragments = [str(x) for x in l.cut(cs)]
-        expected = [seq[cs[-1]:] + seq[:cs[0]]]
-        expected += [seq[cs[i]:cs[i + 1]] for i in range(len(cs) - 1)]
-        expected.sort()
-        fragments.sort()
-        assert len(expected) == len(fragments)
-        for e, f in zip(expected, fragments):
-            assert str(e) == str(f)
+    linkedlist = DoubleLinkedList(sequence=seq)
+    linkedlist.cyclic = circular
+    assert linkedlist.cyclic == circular, "fragment should be cyclic={}".format(circular)
+    fragments = linkedlist.cut(cut_sites)
+    assert len(fragments) == expected_num_fragments, "Wrong number of cut fragments"
+    for f in fragments:
+        assert not f.cyclic, "all cut fragments should be linear"
 
-
-def test_linear_cutting():
-    seq = 'This is a test string for the linked data set.'
-    l = DoubleLinkedList(sequence=seq)
-    for cs in [[10, 15, 20], [4, 10, 15]]:
-        fragments = [str(x) for x in l.cut(cs)]
-        expected = [seq[:cs[0]]]
-        expected += [seq[cs[i]:cs[i + 1]] for i in range(len(cs) - 1)]
-        expected += [seq[cs[-1]:]]
-        assert len(expected) == len(fragments)
-        expected.sort()
-        fragments.sort()
-        for e, f in zip(expected, fragments):
-            assert str(e) == str(f)
-            assert len(fragments) == len(cs) + 1
+    expected = []
+    expected.append(seq[:cut_sites[0]])
+    if len(cut_sites) > 1:
+        pairs = zip(cut_sites[:-1], cut_sites[1:])
+        for i, j in pairs:
+            expected.append(seq[i:j])
+    expected.append(seq[cut_sites[-1]:])
+    if circular:
+        last = expected[-1]
+        expected.remove(last)
+        expected[0] = last + expected[0]
+    assert [str(f) for f in fragments] == expected
 
 
 def test_search():
