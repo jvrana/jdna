@@ -1,14 +1,12 @@
 import pytest
 from jdna import Sequence, Reaction
-import lorem
 
 @pytest.fixture(scope='function')
-def test_str():
-    p = lorem.paragraph()
-    return p
+def seq():
+    return Sequence.random(300)
 
 @pytest.fixture(scope='function')
-def sequences(test_str):
+def sequences(seq):
     """
     A number of overlapping sequences
     :param test_str:
@@ -16,18 +14,16 @@ def sequences(test_str):
     :return:
     :rtype:
     """
-    p = test_str
     num_fragments = 3
     overlap = 20
     sequences = []
-    indices = list(range(0, len(test_str), int(len(test_str)/num_fragments)))
+    indices = list(range(0, len(seq), int(len(seq)/num_fragments)))
     for i, j in zip(indices[:-1], indices[1:]):
         sequences.append(
-            Sequence(p[i:j+overlap])
+            seq[i:j+overlap]
         )
     sequences[0] = Sequence(p[-20:]) + sequences[0]
     return sequences
-
 
 
 def test_cyclic_assembly_report(sequences):

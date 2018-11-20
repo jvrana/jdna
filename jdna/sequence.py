@@ -4,7 +4,7 @@ from collections import defaultdict
 from jdna.linked_list import Node, DoubleLinkedList
 from jdna.utils import random_color
 from enum import Enum
-
+import random
 
 class STRAND(Enum):
 
@@ -69,7 +69,7 @@ class Feature(object):
 
 class Nucleotide(Node):
 
-    base_pairing = dict(list(zip(
+    BASES = dict(list(zip(
         ['a', 't', 'c', 'g', 'A', 'T', 'C', 'G', 'n', 'N'],
         ['t', 'a', 'g', 'c', 'T', 'A', 'G', 'C', 'n', 'N']
     )))
@@ -78,6 +78,11 @@ class Nucleotide(Node):
         super(Nucleotide, self).__init__(base)
         self._features = set()
 
+    @classmethod
+    def random(cls):
+        """Generate a random sequence"""
+        return cls(random.choice(cls.BASES))
+
     def base(self):
         return self.data
 
@@ -85,7 +90,7 @@ class Nucleotide(Node):
         return str(self.base()).upper() == str(other.base()).upper()
 
     def to_complement(self):
-        self.data = self.base_pairing[self.data]
+        self.data = self.BASES[self.data]
 
     def set_next(self, nucleotide):
         self.cut_next()
@@ -106,11 +111,10 @@ class Nucleotide(Node):
     def _cut(self, cut_prev=True):
         for f in self.features:
             self.split_features(split_prev=cut_prev)
-        nxt = None
         if cut_prev:
-            nxt = super(Nucleotide, self).cut_prev()
+            nxt = super().cut_prev()
         else:
-            nxt = super(Nucleotide, self).cut_next()
+            nxt = super().cut_next()
         return nxt
 
     @property
@@ -268,6 +272,14 @@ class Sequence(DoubleLinkedList):
         self.description = description
         self._global_id = next(Sequence.counter)
 
+    @classmethod
+    def random(cls, length):
+        """Generate a random sequence"""
+        seq = ""
+        for i in range(length):
+            seq += random.choice(cls.NODE_CLASS.BASES)
+        return cls(sequence=seq)
+
     @property
     def features(self):
         features_set = set()
@@ -310,17 +322,19 @@ class Sequence(DoubleLinkedList):
         return self.feature_positions(with_nodes=True)[-1]
 
     def add_feature(self, i, j, feature):
-        s = self.nodes
-        nodes = self.nodes
-        l = len(nodes)
-        start = s[i]
-        end = s[j]
-        feature_nts = list(start.fwd(stop_node=end))
-        if end != feature_nts[-1]:
-            raise IndexError("")
-        for i, n in enumerate(feature_nts):
+        feature_nts = list(self.inclusive_range(i, j))
+        if feature_nts[-1] is not self[j]:
+            if not self.cyclic:
+                raise IndexError("Cannot add feature to {} to linear dna with bounds {}".format(
+                    (i, j),
+                    (0, len(self))
+                ))
+            else:
+                raise IndexError("Cannot add feature to {}".format(
+                    (i, j)
+                ))
+        for n in self.inclusive_range(i, j):
             n.add_feature(feature)
-        feature.length = len(feature_nts)
         return feature
 
     def add_multipart_feature(self, positions, feature):

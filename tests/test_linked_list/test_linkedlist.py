@@ -229,6 +229,13 @@ def test_zip_with_node():
 
 class TestLinkedListMagic(object):
 
+
+    def test_splice_magic_raises_index_error(self, linked_list):
+        linked_list.circularize()
+        with pytest.raises(IndexError):
+            linked_list[10:len(linked_list)+10]
+
+
     def test_contains_magic(self, linked_list, test_str):
         for n in linked_list:
             assert n in linked_list

@@ -319,7 +319,6 @@ class DoubleLinkedList(object):
 
     def __init__(self, data=None, first=None):
         self._head = None
-        self.not_head = None
         if data is not None:
             self.initialize(data)
         elif first is not None:
@@ -345,7 +344,6 @@ class DoubleLinkedList(object):
             curr = self.new_node(d)
             if i == 0:
                 self._head = curr
-                self.not_head = curr
             if prev:
                 prev.set_next(curr)
             prev = curr
@@ -532,8 +530,8 @@ class DoubleLinkedList(object):
     def reindex(self, i):
         self._check_if_in_bounds(i)
         if not self.cyclic:
-            raise TypeError("Cannot re-index a linear node_ set")
-        self.head = self.nodes[i]
+            raise TypeError("Cannot re-index a linear {}".format(self.__class__.__name__))
+        self.head = self[i]
 
     def _check_if_in_bounds(self, num):
         if isinstance(num, int):
@@ -631,6 +629,15 @@ class DoubleLinkedList(object):
     def __add__(self, other):
         return self.fuse(other)
 
+    def range(self, i, j):
+        return self.inclusive_range(i, j-1)
+
+    def inclusive_range(self, i, j):
+        """Return inclusive nodes between index i and j"""
+        curr = self[i]
+        for n in curr.fwd(stop_node=self[j]):
+            yield n
+
     def __getitem__(self, key):
         if isinstance(key, slice):
             if key.step and key.step > 1:
@@ -650,7 +657,15 @@ class DoubleLinkedList(object):
             start.cut_prev()
             end.cut_next()
             return self.__class__(first=start)
-        return self.nodes[key]
+        i = 0
+        if key < 0:
+            return self.nodes[key]
+        else:
+            for n in self:
+                if i == key:
+                    return n
+                i += 1
+        raise IndexError("Index {} out of bounds (0, {})".format(key, len(self)))
 
     def __contains__(self, item):
         return item in self.all_nodes()
