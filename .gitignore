@@ -104,9 +104,4 @@ venv.bak/
 .mypy_cache/
 .idea
 .idea/**/*
-*.xml
-*.xml
-*.iml
-.idea/TridentScripts.iml
-.idea/misc.xml
-.idea/markdown-navigator/profiles_settings.xml
+.idea/**/*
