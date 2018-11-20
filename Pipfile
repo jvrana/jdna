@@ -4,11 +4,13 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pyflakes = "*"
+biopython = "*"
 
 [dev-packages]
 pytest = "*"
 pylint = "*"
+guzzle-sphinx-theme = "*"
+pyflakes = "*"
 
 [requires]
 python_version = "3.6"

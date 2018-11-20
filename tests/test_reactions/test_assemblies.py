@@ -19,16 +19,13 @@ def sequences(seq):
     sequences = []
     indices = list(range(0, len(seq), int(len(seq)/num_fragments)))
     for i, j in zip(indices[:-1], indices[1:]):
-        sequences.append(
-            seq[i:j+overlap]
-        )
-    sequences[0] = Sequence(p[-20:]) + sequences[0]
+        sequences.append(seq[i:j+overlap])
+    sequences[0] = Sequence(seq[-20:]) + sequences[0]
     return sequences
 
 
 def test_cyclic_assembly_report(sequences):
     report = Reaction.homology_report(sequences)
-
     assert len(report['cyclic_paths']) == 1, "There should be a single cyclic assembly path"
     assert len(report['cyclic_paths'][0]) == len(sequences), "The cyclic assembly should contain all 3 fragments"
 

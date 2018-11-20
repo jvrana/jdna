@@ -1,17 +1,20 @@
+import random
 from copy import copy
 
 import pytest
 
-from jdna import Feature, Sequence, Nucleotide
+from jdna import Sequence
 
 
 @pytest.fixture(scope='function')
 def test_str():
     return '^This is a test string for the sequence data set.'
 
+
 @pytest.fixture(scope='function')
 def l(test_str):
     return Sequence(test_str)
+
 
 # <editor-fold desc="Basic Tests">
 def test_Sequence(test_str, l):
@@ -101,6 +104,7 @@ def test_linear_cutting(test_str, l):
         expected = set(expected)
         fragments = set(fragments)
         assert expected == fragments
+
 
 def test_reverse():
     seq_str = 'XXXXGHHHXHGG'
@@ -251,3 +255,18 @@ def test_chop(test_str):
 
     for i in range(len(seq)):
         assert str(seq.chop_off_threeprime(i)) == str(seq)[:i + 1]
+
+
+@pytest.mark.parametrize('length', [
+    0,
+    1,
+    10,
+    100,
+    2000
+])
+def test_random(length):
+    if length == 0:
+        assert Sequence.random(length) is None
+        return
+    seq = Sequence.random(length)
+    assert len(seq) == length

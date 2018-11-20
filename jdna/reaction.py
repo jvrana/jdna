@@ -1,3 +1,7 @@
+"""
+Simulate molecular reactions
+"""
+
 import itertools
 import warnings
 from collections import defaultdict

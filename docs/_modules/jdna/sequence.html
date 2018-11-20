@@ -1,0 +1,547 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>jdna.sequence &#8212; jdna 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><a href="" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#40583f; color:#4bd04b; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+<div>
+    <div>
+        <h1 align="center"><a href="../../index.html">jdna</a>
+        </h1>
+    </div>
+</div>
+
+<p align="center" class="sidebar-subtitle">version: <a href="">0.0.1</a></p>
+<div>
+
+</div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">jdna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/api_reference.html">API Reference</a></li>
+</ul>
+
+    
+  </div>
+</div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Module code</a></li>
+              
+              <li>jdna.sequence</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <h1>Source code for jdna.sequence</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Represent linear or circularized nucleotides</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">jdna.linked_list</span> <span class="k">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">DoubleLinkedList</span>
+<span class="kn">from</span> <span class="nn">jdna.utils</span> <span class="k">import</span> <span class="n">random_color</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<div class="viewcode-block" id="STRAND"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.STRAND">[docs]</a><span class="k">class</span> <span class="nc">STRAND</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+
+    <span class="n">FORWARD</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">REVERSE</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
+
+
+<span class="k">class</span> <span class="nc">Feature</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;misc feature&#39;</span><span class="p">,</span> <span class="n">strand</span><span class="o">=</span><span class="n">STRAND</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strand</span> <span class="o">=</span> <span class="n">strand</span>
+        <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">random_color</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">strand</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span>
+
+    <span class="k">def</span> <span class="nf">segments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Sequence</span><span class="o">.</span><span class="n">segments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="c1"># visited = set()</span>
+        <span class="c1"># pairs = set()</span>
+        <span class="c1"># stop = lambda x: x not in self._nodes</span>
+        <span class="c1"># for n in self._nodes:</span>
+        <span class="c1">#     if n not in visited:</span>
+        <span class="c1">#         tail = n</span>
+        <span class="c1">#         for tail in n.fwd(stop_criteria=stop):</span>
+        <span class="c1">#             visited.add(tail)</span>
+        <span class="c1">#         head = n</span>
+        <span class="c1">#         for head in n.rev(stop_criteria=stop):</span>
+        <span class="c1">#             visited.add(head)</span>
+        <span class="c1">#         pairs.add((head, tail))</span>
+        <span class="c1"># return pairs</span>
+
+    <span class="k">def</span> <span class="nf">is_multipart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_unbind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Nucleotide"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide">[docs]</a><span class="k">class</span> <span class="nc">Nucleotide</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+
+    <span class="n">BASES</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
+        <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">]</span>
+    <span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Nucleotide</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_features</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Nucleotide.random"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide.random">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate a random sequence&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">BASES</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+
+<div class="viewcode-block" id="Nucleotide.equivalent"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide.equivalent">[docs]</a>    <span class="k">def</span> <span class="nf">equivalent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">())</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">base</span><span class="p">())</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">to_complement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BASES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Nucleotide.set_next"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide.set_next">[docs]</a>    <span class="k">def</span> <span class="nf">set_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nucleotide</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cut_next</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Nucleotide</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="n">nucleotide</span><span class="p">)</span>
+        <span class="n">Nucleotide</span><span class="o">.</span><span class="n">fuse_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nucleotide</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Nucleotide.set_prev"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide.set_prev">[docs]</a>    <span class="k">def</span> <span class="nf">set_prev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nucleotide</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cut_prev</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Nucleotide</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_prev</span><span class="p">(</span><span class="n">nucleotide</span><span class="p">)</span>
+        <span class="n">Nucleotide</span><span class="o">.</span><span class="n">fuse_features</span><span class="p">(</span><span class="n">nucleotide</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Nucleotide.cut_prev"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide.cut_prev">[docs]</a>    <span class="k">def</span> <span class="nf">cut_prev</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cut</span><span class="p">(</span><span class="n">cut_prev</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Nucleotide.cut_next"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide.cut_next">[docs]</a>    <span class="k">def</span> <span class="nf">cut_next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cut</span><span class="p">(</span><span class="n">cut_prev</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_cut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cut_prev</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">split_features</span><span class="p">(</span><span class="n">split_prev</span><span class="o">=</span><span class="n">cut_prev</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cut_prev</span><span class="p">:</span>
+            <span class="n">nxt</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">cut_prev</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nxt</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">cut_next</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">nxt</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_features</span>
+
+    <span class="k">def</span> <span class="nf">add_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+        <span class="n">feature</span><span class="o">.</span><span class="n">_bind</span><span class="p">([</span><span class="bp">self</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">remove_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+        <span class="n">feature</span><span class="o">.</span><span class="n">_unbind</span><span class="p">([</span><span class="bp">self</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">feature_fwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">feature</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">features</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_propogate</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">next</span><span class="p">(),</span> <span class="n">stop_criteria</span><span class="o">=</span><span class="n">stop</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">feature_rev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">feature</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">features</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_propogate</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">prev</span><span class="p">(),</span> <span class="n">stop_criteria</span><span class="o">=</span><span class="n">stop</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">replace_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_feature</span><span class="p">,</span> <span class="n">new_feature</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">new_feature</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">old_feature</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_feature</span><span class="p">(</span><span class="n">old_feature</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">copy_features_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">f</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_overlapping_features</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_feature_span</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_rev</span><span class="p">(</span><span class="n">feature</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_fwd</span><span class="p">(</span><span class="n">feature</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">start</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">feature</span><span class="p">],</span> <span class="n">end</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">feature</span><span class="p">])</span>
+
+    <span class="c1"># def update_feature_span(self, feature, delta_i):</span>
+    <span class="c1">#     start = self.feature_rev(feature)[-1]</span>
+    <span class="c1">#     for n in start.feature_fwd(feature):</span>
+    <span class="c1">#         n.features[feature] += delta_i</span>
+
+    <span class="k">def</span> <span class="nf">_remove_overlapping_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; Nucleotide</span>
+        <span class="n">feature_pairs</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">tobedel</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span> <span class="ow">in</span> <span class="n">feature_pairs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">f1</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">f2</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                <span class="n">tobedel</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tob</span> <span class="ow">in</span> <span class="n">tobedel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_feature</span><span class="p">(</span><span class="n">tob</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_default_fuse_condition</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">f1</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">f2</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fuse_features</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">fuse_condition</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">n2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">fuse_condition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fuse_condition</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_default_fuse_condition</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">next</span><span class="p">()</span> <span class="ow">is</span> <span class="n">n2</span> <span class="ow">and</span> <span class="n">n2</span><span class="o">.</span><span class="n">prev</span><span class="p">()</span> <span class="ow">is</span> <span class="n">n1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cannot fuse non-consecutive features&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">f1</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">features</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">f2</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">n2</span><span class="o">.</span><span class="n">features</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">f1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">f2</span> <span class="ow">and</span> <span class="n">fuse_condition</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">n2</span><span class="o">.</span><span class="n">feature_fwd</span><span class="p">(</span><span class="n">f2</span><span class="p">):</span>
+                        <span class="n">n</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
+                        <span class="n">n</span><span class="o">.</span><span class="n">remove_feature</span><span class="p">(</span><span class="n">f2</span><span class="p">)</span>
+
+
+    <span class="c1">#</span>
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def fuse_features(n1, n2):</span>
+    <span class="c1">#     if n1 is None:</span>
+    <span class="c1">#         return</span>
+    <span class="c1">#     if n2 is None:</span>
+    <span class="c1">#         return</span>
+    <span class="c1">#</span>
+    <span class="c1">#     delset = set()</span>
+    <span class="c1">#</span>
+    <span class="c1">#     for f1 in n1.features:</span>
+    <span class="c1">#         for f2 in n2.features:</span>
+    <span class="c1">#             f1_pos = n1.features[f1]</span>
+    <span class="c1">#             f2_pos = n2.features[f2]</span>
+    <span class="c1">#             f1_copy = copy(f1)</span>
+    <span class="c1">#             # same name &amp; consecutive position</span>
+    <span class="c1">#             if f1 is f2:</span>
+    <span class="c1">#                 continue</span>
+    <span class="c1">#             if f1.name == f2.name and f1_pos + 1 == f2_pos:</span>
+    <span class="c1">#                 delset.add((f1, f2, f1_copy))</span>
+    <span class="c1">#     for f1, f2, f1_copy in delset:</span>
+    <span class="c1">#         for n in n1.feature_rev(f1):</span>
+    <span class="c1">#             try:</span>
+    <span class="c1">#                 n.replace_feature(f1, f1_copy)</span>
+    <span class="c1">#             except KeyError:</span>
+    <span class="c1">#                 pass</span>
+    <span class="c1">#         for n in n2.feature_fwd(f2):</span>
+    <span class="c1">#             try:</span>
+    <span class="c1">#                 n.replace_feature(f2, f1_copy)</span>
+    <span class="c1">#             except KeyError:</span>
+    <span class="c1">#                 pass</span>
+
+    <span class="k">def</span> <span class="nf">split_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split_prev</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev</span><span class="p">()</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">split_prev</span><span class="p">:</span>
+            <span class="c1"># then split_next</span>
+            <span class="n">x1</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># If at the end, no splitting is necessary</span>
+        <span class="k">if</span> <span class="n">x1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">x1</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+            <span class="c1"># If this feature spans</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">x2</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+                <span class="c1"># Grab the sequences for the split feature</span>
+                <span class="n">frag1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">feature_rev</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="n">frag2</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">feature_fwd</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+                <span class="c1"># check if its a cyclic feature</span>
+                <span class="k">if</span> <span class="n">x2</span> <span class="ow">in</span> <span class="n">frag1</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">x1</span> <span class="ow">in</span> <span class="n">frag2</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Make two copies of the feature</span>
+                <span class="n">f1</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="n">f2</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+                <span class="c1"># Swap original feature for copy</span>
+                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">frag1</span><span class="p">:</span>
+                    <span class="n">n</span><span class="o">.</span><span class="n">replace_feature</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">frag2</span><span class="p">:</span>
+                    <span class="n">n</span><span class="o">.</span><span class="n">replace_feature</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">copied</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Nucleotide</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
+        <span class="n">copied</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">copied</span></div>
+
+
+<div class="viewcode-block" id="Sequence"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence">[docs]</a><span class="k">class</span> <span class="nc">Sequence</span><span class="p">(</span><span class="n">DoubleLinkedList</span><span class="p">):</span>
+
+    <span class="n">NODE_CLASS</span> <span class="o">=</span> <span class="n">Nucleotide</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Sequence</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">sequence</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="n">first</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_global_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">Sequence</span><span class="o">.</span><span class="n">counter</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Sequence.random"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.random">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate a random sequence&quot;&quot;&quot;</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
+            <span class="n">seq</span> <span class="o">+=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">NODE_CLASS</span><span class="o">.</span><span class="n">BASES</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="n">seq</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">sequence</span><span class="o">=</span><span class="n">seq</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">features_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">features_set</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">features_set</span>
+
+    <span class="k">def</span> <span class="nf">feature_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">with_nodes</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">feature_pos</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">feature_nodes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">feature_pos</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="ow">and</span> <span class="n">feature_pos</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">index</span><span class="p">:</span>
+                    <span class="n">feature_pos</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span>
+                    <span class="n">feature_nodes</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">feature_pos</span><span class="p">[</span><span class="n">f</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">index</span><span class="p">,</span> <span class="n">index</span><span class="p">])</span>
+                    <span class="n">feature_nodes</span><span class="p">[</span><span class="n">f</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">])</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># capture features that span the origin</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">feature_pos</span><span class="p">:</span>
+                <span class="n">positions</span> <span class="o">=</span> <span class="n">feature_pos</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="n">nodes</span> <span class="o">=</span> <span class="n">feature_nodes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">positions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                        <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                        <span class="n">positions</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">with_nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">feature_pos</span><span class="p">,</span> <span class="n">feature_nodes</span>
+        <span class="k">return</span> <span class="n">feature_pos</span>
+
+    <span class="k">def</span> <span class="nf">feature_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_positions</span><span class="p">(</span><span class="n">with_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">add_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+        <span class="n">feature_nts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inclusive_range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">feature_nts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Cannot add feature to </span><span class="si">{}</span><span class="s2"> to linear dna with bounds </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span>
+                    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+                <span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Cannot add feature to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+                <span class="p">))</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inclusive_range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">feature</span>
+
+    <span class="k">def</span> <span class="nf">add_multipart_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">feature</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">feature</span>
+
+    <span class="k">def</span> <span class="nf">print_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">find_feature_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_positions</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">feature</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">found</span>
+
+    <span class="k">def</span> <span class="nf">create_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">Feature</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span>
+
+    <span class="k">def</span> <span class="nf">complement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">curr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span>
+        <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">curr</span> <span class="ow">and</span> <span class="n">curr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
+            <span class="n">curr</span><span class="o">.</span><span class="n">to_complement</span><span class="p">()</span>
+            <span class="n">curr</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">reverse_complement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">cut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">cut_prev</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">fragments</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Sequence</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">cut_prev</span><span class="p">)</span>
+        <span class="n">fragments</span> <span class="o">=</span> <span class="p">[</span><span class="n">Sequence</span><span class="p">(</span><span class="n">first</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">head</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fragments</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">fragments</span>
+
+    <span class="k">def</span> <span class="nf">chop_off_fiveprime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;Cannot chop a cyclic sequence.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">i</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">chop_off_threeprime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;Cannot chop a cyclic sequence.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">cut_prev</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">feature_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_positions</span><span class="p">()</span>
+        <span class="n">copied</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Sequence</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">feature</span><span class="p">,</span> <span class="n">positions</span> <span class="ow">in</span> <span class="n">feature_positions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">copied</span><span class="o">.</span><span class="n">add_multipart_feature</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">copy</span><span class="p">(</span><span class="n">feature</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">copied</span></div>
+
+    <span class="c1"># def __repr__(self):</span>
+    <span class="c1">#     return str(self)</span>
+
+</pre></div>
+
+          </div>
+            
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, University of Washington. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

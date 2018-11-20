@@ -1,9 +1,13 @@
+"""
+Linked list model to represent linear or circular sequences
+"""
+
 from copy import copy
 
 
 class Node(object):
     """
-    A node in a node_ list
+    A node in a linked list
     """
 
     def __init__(self, data):
@@ -297,6 +301,9 @@ class Node(object):
 
 
 class LinkedListMatch(object):
+    """
+    A match object
+    """
 
     def __init__(self, start, end, span):
         self.span = span
@@ -315,6 +322,10 @@ class LinkedListMatch(object):
 
 
 class DoubleLinkedList(object):
+    """
+    A generic double linked list class.
+    """
+
     NODE_CLASS = Node
 
     def __init__(self, data=None, first=None):
@@ -688,10 +699,10 @@ class DoubleLinkedList(object):
         return copied
 
     def __len__(self):
-        l = 0
-        for n in self:
-            l += 1
-        return l
+        length = 0
+        for _ in self:
+            length += 1
+        return length
 
     def __iter__(self):
         current = self.head

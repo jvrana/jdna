@@ -1,3 +1,7 @@
+"""
+misc utilities
+"""
+
 import random
 
 def rgb_to_hex(r, g, b):

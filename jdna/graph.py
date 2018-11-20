@@ -1,3 +1,7 @@
+"""
+graph utilities for reactions
+"""
+
 import itertools
 
 class Graph:

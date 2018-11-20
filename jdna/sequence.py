@@ -1,3 +1,7 @@
+"""
+Represent linear or circularized nucleotides
+"""
+
 from copy import copy, deepcopy
 import itertools
 from collections import defaultdict
@@ -277,7 +281,9 @@ class Sequence(DoubleLinkedList):
         """Generate a random sequence"""
         seq = ""
         for i in range(length):
-            seq += random.choice(cls.NODE_CLASS.BASES)
+            seq += random.choice(list(cls.NODE_CLASS.BASES.keys()))
+        if seq == '':
+            return None
         return cls(sequence=seq)
 
     @property
