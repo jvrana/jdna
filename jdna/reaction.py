@@ -139,6 +139,8 @@ class Reaction(object):
         # examine reversed sequences as well
         for f in fragments[1:]:
             reversed = copy(f).reverse_complement()
+            if reversed.name is None:
+                reversed.name = ''
             reversed.name = reversed.name + '(reversed)'
             fragments.append(reversed)
 

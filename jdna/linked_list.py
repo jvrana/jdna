@@ -4,6 +4,12 @@ Linked list model to represent linear or circular sequences
 
 from copy import copy
 
+class LinkedListException(Exception):
+    """Generic linked list exception"""
+
+class LinkedListIndexError(LinkedListException, IndexError):
+    """Indices were out of bounds for LinkedList"""
+
 
 class Node(object):
     """
@@ -335,7 +341,7 @@ class DoubleLinkedList(object):
         elif first is not None:
             self._head = first
         else:
-            raise Exception("Either 'data' or 'first' must be provided.")
+            raise AttributeError("Either 'data' or 'first' must be provided.")
 
     # @classmethod
     # def initialize_by_node(cls):
@@ -418,12 +424,14 @@ class DoubleLinkedList(object):
         return list(self.head.fwd())
 
     def get(self, i):
-        if i < 0:
+        if i is None:
+            return None
+        elif i < 0:
             return self.nodes[i]
         for index, n in enumerate(self):
             if index == i:
                 return n
-        raise IndexError("There is no node at index '{}'. There are only {} nodes.".format(i, index))
+        raise LinkedListIndexError("There is no node at index '{}'. There are only {} nodes.".format(i, index))
 
     def cut(self, i, cut_prev=True):
         if isinstance(i, tuple):
@@ -551,7 +559,7 @@ class DoubleLinkedList(object):
             mn = 0
             mx = len(self.nodes) - 1
             if n < 0 or n > mx:
-                raise IndexError("Index {} out of acceptable bounds ({}, {})".format(n, mn, mx))
+                raise LinkedListIndexError("Index {} out of acceptable bounds ({}, {})".format(n, mn, mx))
 
     # TODO: implement yield in find_iter, search_all should call this
     # TODO: query should be any interable
@@ -594,6 +602,35 @@ class DoubleLinkedList(object):
                     start = stop
             other_node = next(other_node)
 
+    # def longest_match(self, other):
+    #     matched = []
+    #     i = 0
+    #     j = i
+    #     for x1, x2 in zip(self, other):
+    #         if x1.equivalent(x2):
+    #             j += 1
+    #             matched.append((x1, x2))
+    #     if j > len(self):
+    #         if not self.cyclic:
+    #             raise Exception("Template was expected to be cyclic but was not")
+    #         j -= len(self)
+    #     return LinkedListMatch(self.head, )
+    #     if len(matched) == qlen:
+    #         if j > len(self):
+    #             if self.cyclic:
+    #                 j -= len(self)
+    #             else:
+    #                 raise Exception("Template was expected to be cyclic but was not")
+    #         yield LinkedListMatch(curr_node, x1, span=(i, j - 1))
+
+    @staticmethod
+    def match(n1, n2):
+        for x1, x2 in zip(n1.fwd(), n2.fwd()):
+            if x1.equivalent(x2):
+                yield (x1, x2)
+            else:
+                return
+
     def find_iter(self, query):
         curr_node = self.head
         visited = set()
@@ -602,19 +639,15 @@ class DoubleLinkedList(object):
         i = 0
         while curr_node and curr_node not in visited:
             visited.add(curr_node)
-            matched = []
-            j = i
-            for x1, x2 in zip(curr_node.fwd(), qhead.fwd()):
-                if x1.equivalent(x2):
-                    j += 1
-                    matched.append((x1, x2))
-            if len(matched) == qlen:
+            matches = list(self.match(curr_node, qhead))
+            j = i + len(matches)
+            if len(matches) == qlen:
                 if j > len(self):
                     if self.cyclic:
                         j -= len(self)
                     else:
                         raise Exception("Template was expected to be cyclic but was not")
-                yield LinkedListMatch(curr_node, x1, span=(i, j-1))
+                yield LinkedListMatch(matches[0][0], matches[-1][0], span=(i, j-1))
             curr_node = next(curr_node)
             i += 1
 
@@ -637,22 +670,48 @@ class DoubleLinkedList(object):
     def copy(self):
         return self.__copy__()
 
-    def __add__(self, other):
-        return self.fuse(other)
+    @staticmethod
+    def empty_iterator():
+        return
+        yield
 
     def range(self, i, j):
-        return self.inclusive_range(i, j-1)
+        """Returns an iterator from node at 'i' to node at 'j-1'"""
+        if i == j:
+            return self.empty_iterator()
+        if j is not None:
+            if j == 0 and not self.cyclic:
+                return self.empty_iterator()
+            j = j - 1
+        try:
+            return self.inclusive_range(i, j)
+        except LinkedListIndexError:
+            return self.empty_iterator()
 
     def inclusive_range(self, i, j):
-        """Return inclusive nodes between index i and j"""
-        curr = self[i]
-        for n in curr.fwd(stop_node=self[j]):
+        """Return generator for inclusive nodes between index i and j"""
+        start = self.get(i)
+        if start is None:
+            start = self.head
+        try:
+            stop = self.get(j)
+        except LinkedListIndexError:
+            stop = None
+        stop_hit = False
+        for n in start.fwd(stop_node=stop):
             yield n
+            if n is stop:
+                stop_hit = True
+        if stop is not None and not stop_hit:
+            raise LinkedListIndexError("Inclusive indices {} out of bounds".format([i,j]))
+
+    def __add__(self, other):
+        return self.fuse(other)
 
     def __getitem__(self, key):
         if isinstance(key, slice):
             if key.step and key.step > 1:
-                raise Exception("Step > 1 is not supported for sliced object of '{}'".format(self.__class__.__name__))
+                raise LinkedListIndexError("Step > 1 is not supported for sliced object of '{}'".format(self.__class__.__name__))
             new_list = self.__copy__()
             if key.start is None and key.stop is None:
                 if key.step == -1:
@@ -660,12 +719,17 @@ class DoubleLinkedList(object):
                 else:
                     return new_list
 
-            if key.start > key.stop and not self.cyclic:
+            if key.start is not None and key.stop is not None:
+                if key.start == key.stop:
+                    return None
+            try:
+                new_nodes = list(new_list.range(key.start, key.stop))
+            except LinkedListIndexError:
                 return None
-            if key.start == key.stop:
+            if not new_nodes:
                 return None
-            start = new_list.nodes[key.start]
-            end = new_list.nodes[key.stop - 1]
+            start = new_nodes[0]
+            end = new_nodes[-1]
             start.cut_prev()
             end.cut_next()
             return self.__class__(first=start)

@@ -229,12 +229,31 @@ def test_zip_with_node():
 
 class TestLinkedListMagic(object):
 
+    @pytest.mark.parametrize('i', [
+        0, 2, 3, -2, 7, -10, None
+    ])
+    @pytest.mark.parametrize('j', [
+        0, 2, 3, 7, -2, -10, None
+    ])
+    @pytest.mark.parametrize('circular', [
+        False
+    ])
+    def test_splice_magic(self, i, j, circular, linked_list, test_str):
+        linked_list.cyclic = circular
+        expected = test_str[i:j]
+        print(i)
+        print(j)
+        print(expected)
+        print(linked_list[i:j])
+        if test_str[i:j] == '':
+            assert linked_list[i:j] is None, "({},{}) should return None".format(i, j)
+        else:
+            assert str(linked_list[i:j]) == test_str[i:j]
 
-    def test_splice_magic_raises_index_error(self, linked_list):
-        linked_list.circularize()
-        with pytest.raises(IndexError):
-            linked_list[10:len(linked_list)+10]
-
+    def test_(self, linked_list, test_str):
+        i = 3
+        j = None
+        assert str(linked_list[i:j]) == test_str[i:j]
 
     def test_contains_magic(self, linked_list, test_str):
         for n in linked_list:
@@ -244,7 +263,7 @@ class TestLinkedListMagic(object):
             assert not n in linked_list
 
 
-    def test_copy_magic(self, linked_list, test_str):
+    def test_splice_copy_magic(self, linked_list, test_str):
         assert str(linked_list[:]) == test_str
         assert linked_list[:] is not linked_list
 
