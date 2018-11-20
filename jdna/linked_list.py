@@ -418,11 +418,11 @@ class DoubleLinkedList(object):
         return list(self.head.fwd())
 
     def get(self, i):
-        index = 0
-        for n in self:
+        if i < 0:
+            return self.nodes[i]
+        for index, n in enumerate(self):
             if index == i:
                 return n
-            index += 1
         raise IndexError("There is no node at index '{}'. There are only {} nodes.".format(i, index))
 
     def cut(self, i, cut_prev=True):
@@ -659,6 +659,7 @@ class DoubleLinkedList(object):
                     return new_list.reverse()
                 else:
                     return new_list
+
             if key.start > key.stop and not self.cyclic:
                 return None
             if key.start == key.stop:
@@ -668,15 +669,7 @@ class DoubleLinkedList(object):
             start.cut_prev()
             end.cut_next()
             return self.__class__(first=start)
-        i = 0
-        if key < 0:
-            return self.nodes[key]
-        else:
-            for n in self:
-                if i == key:
-                    return n
-                i += 1
-        raise IndexError("Index {} out of bounds (0, {})".format(key, len(self)))
+        return self.get(key)
 
     def __contains__(self, item):
         return item in self.all_nodes()
