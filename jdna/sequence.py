@@ -5,10 +5,12 @@ from jdna.linked_list import Node, DoubleLinkedList
 from jdna.utils import random_color
 from enum import Enum
 
+
 class STRAND(Enum):
 
     FORWARD = 1
     REVERSE = -1
+
 
 class Feature(object):
 
@@ -27,25 +29,28 @@ class Feature(object):
     def __repr__(self):
         return str(self)
 
+    def __copy__(self):
+        return self.__class__(self.name, self.type, self.strand, self.color)
+
     @property
     def nodes(self):
         return self._nodes
 
-    @property
     def segments(self):
-        visited = set()
-        pairs = set()
-        stop = lambda x: x not in self._nodes
-        for n in self._nodes:
-            if n not in visited:
-                tail = n
-                for tail in n.fwd(stop_criteria=stop):
-                    visited.add(tail)
-                head = n
-                for head in n.rev(stop_criteria=stop):
-                    visited.add(head)
-                pairs.add((head, tail))
-        return pairs
+        return Sequence.segments(self.nodes)
+        # visited = set()
+        # pairs = set()
+        # stop = lambda x: x not in self._nodes
+        # for n in self._nodes:
+        #     if n not in visited:
+        #         tail = n
+        #         for tail in n.fwd(stop_criteria=stop):
+        #             visited.add(tail)
+        #         head = n
+        #         for head in n.rev(stop_criteria=stop):
+        #             visited.add(head)
+        #         pairs.add((head, tail))
+        # return pairs
 
     def is_multipart(self):
         if len(self.segments) > 1:
@@ -255,17 +260,19 @@ class Nucleotide(Node):
 class Sequence(DoubleLinkedList):
 
     NODE_CLASS = Nucleotide
+    counter = itertools.count()
 
-    def __init__(self, first=None, sequence=None, name='unknown'):
-        super(Sequence, self).__init__(first=first, sequence=sequence)
+    def __init__(self, sequence=None, first=None, name=None, description=''):
+        super(Sequence, self).__init__(data=sequence, first=first)
         self.name = name
-        self.description = ''
+        self.description = description
+        self._global_id = next(Sequence.counter)
 
     @property
     def features(self):
         features_set = set()
-        for n in self:
-            features_set = features_set.union(n.features)
+        for i, n in enumerate(self):
+            features_set.update(n.features)
         return features_set
 
     def feature_positions(self, with_nodes=False):
@@ -323,21 +330,6 @@ class Sequence(DoubleLinkedList):
 
     def print_features(self):
         raise NotImplementedError()
-        # features = self.get_feature_pos()
-        # print "Features:",
-        # for f in features:
-        #     e = f.end
-        #     if e is None:
-        #         e = ''
-        #     span = '[{}...{}]'.format(f.start, e)
-        #     if f.end == None and f.start == 0:
-        #         span = ''
-        #     print '{}{} {}'.format(f.name, span, f.type),
-        #     ranges = list(Utilities.group_ranges(features[f]))
-        #     feature_ranges = []
-        #     for r in ranges:
-        #         print '{}...{},'.format(r[0], r[-1]),
-        # print
 
     def find_feature_by_name(self, name):
         found = []
@@ -380,24 +372,13 @@ class Sequence(DoubleLinkedList):
             raise IndexError('Cannot chop a cyclic sequence.')
         return self.cut(i, cut_prev=False)[0]
 
-    def fuse(self, seq):
-        f = self.head.find_last()
-        l = seq.head
-        f.set_next(l)
-        return self
-
-    def copy(self):
-        return self.__copy__()
-
     def __copy__(self):
         feature_positions = self.feature_positions()
         copied = super(Sequence, self).__copy__()
-        for feature, positions in feature_positions.items():
-            copied.add_multipart_feature(positions, feature)
-        return copied
 
-    def __add__(self, other):
-        return copy(self).fuse(copy(other))
+        for feature, positions in feature_positions.items():
+            copied.add_multipart_feature(positions, copy(feature))
+        return copied
 
     # def __repr__(self):
     #     return str(self)

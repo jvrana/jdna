@@ -7,15 +7,14 @@ def test_overlap_extension_pcr():
         return ''.join([random.choice('agtc') for x in range(l)])
 
     def create_product(template, oh1, oh2):
-        f = Sequence(sequence=oh1 + str(template)[0:20])
-        r = Sequence(sequence=str(template)[len(template) - 20:len(template)] + oh2).reverse_complement()
+        f = Sequence()
+        r = Sequence().reverse_complement()
         return Reaction.pcr(template, f, r)[0]
 
 
-    f1 = Sequence(sequence='AGTCGGCGGATCTATGCTGACTGATGTGTGATGT')
-    f2 = Sequence(sequence='TAGTCGTTGAGTCTGATCTGgtcgtagcgcgagcgttgtggcggattctatatatgttgcGGGGAGTGTTCGGTGCGGTGTTATAG')
-    f3 = Sequence(
-        sequence='GGGGAGTGTTCGGTGCGGTGTTATAGgtcgtagcgcgagcgatcttcttgtggcggattctatatatgttgcAGTCGGCGGATCTATGCTGA')
+    f1 = Sequence()
+    f2 = Sequence()
+    f3 = Sequence()
 
     oh1 = ran_seq(20)
     oh2 = ran_seq(20)

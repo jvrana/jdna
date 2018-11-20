@@ -1,154 +1,195 @@
-# from nose.tools import *
-#
-# from hydradna import *
-#
-#
-#
-#
-# def test_features():
-#     # Sequence
-#     sequence = 'AGCTGCGGCGGTAGTTTGCTTGAG'
-#     s = Sequence(sequence=sequence)
-#     s.make_cyclic()
-#     assert_true(s.is_cyclic())
-#     s.linearize(0)
-#     assert_false(s.is_cyclic())
-#     s.make_cyclic()
-#
-#     s_copy = deepcopy(s)
-#     s_copy.make_cyclic()
-#     s_copy.reverse()
-#     s_copy.reverse_complement()
-#     s_copy.complement()
-#
-#
-#     # Complement
-#     complement = [Nucleotide.base_pairing[x] for x in sequence]
-#     s.complement()
-#     assert_true(str(s), complement)
-#     s.reverse()
-#     assert_true(str(s), complement[::-1])
-#     s.complement()
-#     s.reverse()
-#     assert_true(sequence, str(s))
-#
-#     def capture_features(seq, feature):
-#         pos = seq.get_features()[feature][0]
-#         assert_equal(len(pos), 1)
-#         return pos[0]
-#
-#
-#     # Standard Features
-#     assert_equal(len(s.get_features()), 0)
-#
-#     feature1 = Feature('first_feature', 'test type')
-#     start, end = 4, 7
-#     s.add_feature(start, end, feature1)
-#     assert_equal(capture_features(s, feature1), list((start,end)))
-#
-#     feature2 = Feature('second_feature', 'test type')
-#     start, end = 5, 8
-#     s.add_feature(start, end, feature2)
-#     assert_equal(capture_features(s, feature2), list((start, end)))
-#
-#
-#     # Find Features
-#     assert_equal(s.find_feature('second_feature'), [feature2])
-#     assert_equal(s.find_feature('scond_f'), [])
-#
-#
-#     # Circular Feature
-#     start = 8
-#     end = 5
-#     new_feature = s.create_feature('circular_feature', 'test type', start, end)
-#     assert_true(list(range(end+1)) + list(range(start, len(s))), s.get_features()[new_feature])
-#
-#     # Cut feature next
-#     s_original = Sequence(sequence="ATGCGTGGCGGATATATCTCTCT")
-#
-#     f_start = 0
-#     f_end = 10
-#     for i in range(1, len(s_original)-1):
-#         for j in range(i+1, len(s_original)-1):
-#             s = deepcopy(s_original)
-#             f = Feature('to be cut', 'test')
-#             s.add_feature(f_start, f_end, f)
-#             cut_start = i
-#             cut_end = j
-#             fragments = s.cut((cut_start, cut_end), cut_prev=False)
-#
-#             def get_endpoints(fragment, feature_name):
-#                 features = fragment.find_feature('to_be_cut')
-#                 ranges = []
-#                 for feature in features:
-#                     feature = features[0]
-#                     start, end = fragment.get_features()[feature][1]
-#                     ranges.append((start,end))
-#                 return ranges
-#             print get_endpoints(fragments[0], 'to_be_cut')
-#             print get_endpoints(fragments[1], 'to_be_cut')
-#             print get_endpoints(fragments[2], 'to_be_cut')
-# #             l1 = [(x.start, x.end) for x in fragments[0].find_feature('to be cut')]
-# #             l2 = [(x.start, x.end) for x in fragments[1].find_feature('to be cut')]
-# #             l3 = [(x.start, x.end) for x in fragments[2].find_feature('to be cut')]
-# #             x1 = [0, cut_start]
-# #             x2 = [cut_start + 1, cut_end]
-# #             x3 = [cut_end + 1, None]
-# #             for X in [x1, x2, x3]:
-# #                 if X[1] >= f_end - f_start:
-# #                     X[1] = None
-# #                 if X[0] > f_end - f_start:
-# #                     X[0] = None
-# #                 if X == [None, None]:
-# #                     X.remove(None)
-# #                     X.remove(None)
-# #             x1, x2, x3 = [tuple(x) for x in x1, x2, x3]
-# #             l1 = [[]] if l1 == [] else l1
-# #             l2 = [[]] if l2 == [] else l2
-# #             l3 = [[]] if l3 == [] else l3
-# #             x1 = [] if x1 == () else x1
-# #             x2 = [] if x2 == () else x2
-# #             x3 = [] if x3 == () else x3
-# #
-# #             assert_equal(x1, l1[0])
-# #             assert_equal(x2, l2[0])
-# #             assert_equal(x3, l3[0])
-# #
-# # # Cut feature next
-# #     s_original = Sequence(sequence="ATGCGTGGCGGATATATCTCTCT")
-# #
-# #     f_start = 0
-# #     f_end = 10
-# #     for i in range(1, len(s_original)-1):
-# #         for j in range(i+1, len(s_original)-1):
-# #             s = deepcopy(s_original)
-# #             f = Feature('to be cut', 'test')
-# #             s.add_feature(f_start, f_end, f)
-# #             cut_start = i
-# #             cut_end = j
-# #             fragments = s.cut((cut_start, cut_end), cut_prev=True)
-# #             l1 = [(x.start, x.end) for x in fragments[0].find_feature('to be cut')]
-# #             l2 = [(x.start, x.end) for x in fragments[1].find_feature('to be cut')]
-# #             l3 = [(x.start, x.end) for x in fragments[2].find_feature('to be cut')]
-# #             x1 = [0, cut_start-1]
-# #             x2 = [cut_start, cut_end-1]
-# #             x3 = [cut_end, None]
-# #             for X in [x1, x2, x3]:
-# #                 if X[1] >= f_end - f_start:
-# #                     X[1] = None
-# #                 if X[0] > f_end - f_start:
-# #                     X[0] = None
-# #                 if X == [None, None]:
-# #                     X.remove(None)
-# #                     X.remove(None)
-# #             x1, x2, x3 = [tuple(x) for x in x1, x2, x3]
-# #             l1 = [[]] if l1 == [] else l1
-# #             l2 = [[]] if l2 == [] else l2
-# #             l3 = [[]] if l3 == [] else l3
-# #             x1 = [] if x1 == () else x1
-# #             x2 = [] if x2 == () else x2
-# #             x3 = [] if x3 == () else x3
-# #
-# #             assert_equal(x1, l1[0])
-# #             assert_equal(x2, l2[0])
-# #             assert_equal(x3, l3[0])
+import pytest
+from copy import copy
+from jdna.sequence import Sequence, Feature, Nucleotide
+
+
+class TestFeatureProperties(object):
+
+    @pytest.fixture(scope='function')
+    def seq(self, test_str):
+        return Sequence(test_str)
+
+    @pytest.fixture(scope="function")
+    def basic_feature(self, test_seq):
+        f = test_seq.create_feature('feature', 'type', 1, len(test_seq) - 1)
+        return f
+
+    def test_(self, test_seq):
+        pass
+
+    def test_sequence_has_features(self, test_seq):
+        print("Head: {}".format(test_seq._head))
+        len(test_seq)
+        test_seq.create_feature('feature', 'type', 1, len(test_seq) - 1)
+        test_seq.create_feature('feature', 'type', 1, len(test_seq) - 1)
+        test_seq.create_feature('feature', 'type', 1, len(test_seq) - 1)
+        assert len(test_seq.features) == 3
+
+    def test_sequence_has_feature_positions(self, test_seq, test_str):
+        f1 = test_seq.create_feature('feature', 'type', 1, len(test_seq) - 1)
+        f2 = test_seq.create_feature('feature', 'type', 2, len(test_seq) - 2)
+        f3 = test_seq.create_feature('feature', 'type', 3, len(test_seq) - 3)
+        fpos = test_seq.feature_positions()
+        assert len(fpos) == 3
+        assert fpos[f1] == [[1, len(test_str) - 1]]
+        assert fpos[f2] == [[2, len(test_str) - 2]]
+        assert fpos[f3] == [[3, len(test_str) - 3]]
+
+    def test_feature_has_nodes(self, basic_feature):
+        print(basic_feature.nodes)
+
+    def test_feature_has_segments(self, basic_feature):
+        print(basic_feature.segments)
+
+    def test_basic_feature_name(self, basic_feature):
+        assert basic_feature.name == 'feature'
+
+    def test_basic_feature_type(self, basic_feature):
+        assert basic_feature.type == 'type'
+
+    # def test_basic_feature_start(self, basic_feature):
+    #     assert basic_feature.start == 1
+    #
+    # def test_basic_feature_end(self, basic_feature):
+    #     assert basic_feature.end == 25 - 1
+
+
+class TestFeatureManipulations(object):
+
+    def test_features_linearizing(self, test_seq):
+        test_seq.create_feature('feature', 'type', 0, len(test_seq) - 1)
+        test_seq.circularize()
+        test_seq.linearize()
+
+    @pytest.mark.parametrize('c,s,e', [
+        (5, 0, 10)
+    ])
+    def test_feature_cutting(self, test_seq, c, s, e):
+        """
+        e.g.
+        012345678912345  INDICES
+        XXXXXXXXXXX----  FEATURE LOCATION
+
+             V <--CUT HERE
+        01234 5678912345  OLD INDEX
+        XXXXX XXXXXX----  FEATURE LOCATION
+        01234 0123456789  NEW INDEX
+        """
+        f = Feature(name='feature name', type='feature type')
+        test_seq.add_feature(s, e, f)
+        assert len(test_seq.features) == 1
+        fragments = test_seq.cut(c)
+        assert len(fragments[0].features) == 1
+        assert len(fragments[1].features) == 1
+
+        feature = list(fragments[0].features)[0]
+        assert dict(fragments[0].feature_positions()) == {feature: [[s, c - 1]]}
+        assert dict(fragments[1].feature_positions()) == {feature: [[0, e - c]]}
+
+        print(feature.segments())
+        assert len(feature.segments()) == 2
+
+    def test_feature_fusion(self, test_seq):
+        f1 = Feature(name='myfeature', type='myfeature')
+        f2 = Feature(name='myfeature', type='myfeature')
+
+        i = 0
+        j = 4
+        k = 5
+        l = 7
+
+        test_seq.add_feature(i, j, f1)
+        test_seq.add_feature(k, l, f2)
+        assert len(test_seq.features) == 2
+        Nucleotide.fuse_features(test_seq.get(j), test_seq.get(k))
+        assert len(test_seq.features) == 1
+        assert test_seq.feature_positions() == {
+            f1: [[i, l]]
+        }
+
+    def test_feature_fusion_unsuccessful(self, test_seq):
+        f1 = Feature(name='myfeature', type='myfeature')
+        f2 = Feature(name='myfeature2', type='myfeature')
+
+        i = 0
+        j = 4
+        k = 5
+        l = 7
+
+        test_seq.add_feature(i, j, f1)
+        test_seq.add_feature(k, l, f2)
+        assert len(test_seq.features) == 2
+        Nucleotide.fuse_features(test_seq.get(j), test_seq.get(k))
+        assert len(test_seq.features) == 2
+
+    def test_feature_fusion_cyclic(self, test_seq):
+        f1 = Feature(name='name')
+
+        i, j, k, l = len(test_seq) - 5, len(test_seq) - 1, 0, 5
+
+        test_seq.add_feature(i, j, f1)
+        test_seq.add_feature(k, l, f1)
+        assert test_seq.feature_positions() == {
+            f1: [[k, l], [i, j]]
+        }
+
+        test_seq.cyclic = True
+        assert test_seq.feature_positions() == {
+            f1: [[i, l]]
+        }
+
+
+        # for start in range(1, len(test_seq)):
+        #     for end in range(start, len(test_seq)):
+        #         seq_copy = copy(seq)
+        #         seq_copy.add_feature(start, end, f1)
+        #         for cut in range(start, end):
+        #             fragments = seq_copy.cut(cut)
+        #             fused = fragments[0].insert(fragments[1], len(fragments[0]))
+        #             assert len(fused.feature_positions()) == 1
+        #             feature = list(fused.feature_positions().keys())[0]
+        #             assert fused.feature_positions()[feature] == [(start, end), (0, end - start)]
+
+    def test_add_feature_to_cyclic(self, test_seq):
+        f = Feature(name='feature fail', type='failure')
+        with pytest.raises(IndexError):
+            test_seq.add_feature(-1, 10, f)
+        with pytest.raises(IndexError):
+            test_seq.add_feature(10, len(test_seq), f)
+        with pytest.raises(IndexError):
+            test_seq.add_feature(10, 1, f)
+        test_seq.circularize()
+        start = 10
+        end = 1
+        test_seq.add_feature(start, end, f)
+        assert test_seq.feature_positions() == {f: [[10, 1]]}
+
+    def test_copying_features(self, test_seq):
+        f = Feature(name='alfjl', type='lkdjflkj')
+        test_seq.add_feature(0, 5, f)
+        seq_copy = copy(test_seq)
+        assert f not in list(seq_copy.feature_positions().keys())
+        assert len(seq_copy.feature_positions()) == 1
+        assert f in test_seq.feature_positions()
+
+    def test_multiple_features(self, test_seq):
+        f1 = Feature(name='feature 1', type='test')
+        f2 = Feature(name='feature 2', type='test')
+        s1, e1 = (0, 10)
+        s2, e2 = (5, 15)
+        test_seq.add_feature(s1, e1, f1)
+        test_seq.add_feature(s2, e2, f2)
+        assert test_seq.feature_positions() == {f1: [[s1, e1]], f2: [[s2, e2]]}
+        assert f1 in test_seq.nodes[7].features
+        assert f2 in test_seq.nodes[7].features
+
+    def test_maintain_features_after_reverse(self, test_seq, test_str):
+        f1 = Feature(name='feature 1', type='test')
+        test_seq.add_feature(5, 10, f1)
+        assert len(test_seq.features) == 1
+        test_seq.reverse()
+        # assert str(test_seq) == test_str[::-1]
+        assert len(test_seq) == len(test_str)
+        print(test_seq.features)
+        assert len(test_seq.features) == 1, "Sequence should have one feature after reversal"
+        # assert test_seq.feature_positions() == {f1: [(len(test_seq) - 1 - 10, len(test_seq) - 1 - 5), (5, 0)]}

@@ -10,7 +10,7 @@ def from_benchling(data):
 
     clean_data(data)
     # Sequence, name
-    seq = Sequence(sequence=data['bases'], name=data['name'])
+    seq = Sequence()
 
     # Topology
     if data['circular']:

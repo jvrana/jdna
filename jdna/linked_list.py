@@ -152,6 +152,12 @@ class Node(object):
             node.__assign_next(self)
         self.__assign_prev(node)
 
+    def has_next(self):
+        return self.__next is not None
+
+    def has_prev(self):
+        return self.__prev is not None
+
     def _propogate(self, next_method, stop=None, stop_criteria=None):
         visited = set()
         curr = self
@@ -223,7 +229,7 @@ class Node(object):
             except StopIteration:
                 return n
 
-    def _longest_match(self, node, next_method):
+    def longest_match(self, node, next_method=None):
         """
         Find the longest match between two linked_lists
 
@@ -234,17 +240,19 @@ class Node(object):
         :return: list of tuples containing matching nodes
         :rtype: list
         """
+        if next_method is None:
+            next_method = lambda x: x.next()
         x1 = self
         x2 = node
-        longest_match = []
-        while x1 and x2:
-            if x1.equivalent(x2):
-                longest_match.append((x1, x2))
-                x1 = next_method(x1)
-                x2 = next_method(x2)
-            else:
-                break
-        return longest_match
+        start = None
+        end = None
+        while x1 and x2 and x1.equivalent(x2):
+            if start is None:
+                start = (x1, x2)
+            end = (x1, x2)
+            x1 = next_method(x1)
+            x2 = next_method(x2)
+        return start, end
 
     def _complete_match(self, node, next_method):
         """
@@ -257,7 +265,7 @@ class Node(object):
         :return: whether the longest match between two nodes is equivalent
         :rtype: bool
         """
-        l = self._longest_match(node, next_method)
+        l = self.longest_match(node, next_method)
         if not l:
             return False
         t1, t2 = l[-1]
@@ -288,18 +296,36 @@ class Node(object):
         return str(self.data)
 
 
-class DoubleLinkedList(object):
+class LinkedListMatch(object):
 
+    def __init__(self, start, end, span):
+        self.span = span
+        self.start = start
+        self.end = end
+
+    def __repr__(self):
+        return "<LinkedListMatch start={start} end={end} span={span}>".format(
+            start=self.start,
+            end=self.end,
+            span=self.span
+        )
+
+    def __str__(self):
+        return self.__repr__()
+
+
+class DoubleLinkedList(object):
     NODE_CLASS = Node
 
-    def __init__(self, first=None, sequence=None):
+    def __init__(self, data=None, first=None):
         self._head = None
         self.not_head = None
-        if sequence is not None:
-            self.initialize(sequence)
-            print("HEAD: {}".format(self._head))
+        if data is not None:
+            self.initialize(data)
         elif first is not None:
             self._head = first
+        else:
+            raise Exception("Either 'data' or 'first' must be provided.")
 
     # @classmethod
     # def initialize_by_node(cls):
@@ -328,15 +354,14 @@ class DoubleLinkedList(object):
     def head(self):
         if self.cyclic:
             return self._head
-        assert self._head
         first = self._head.find_first()
-        assert first, "First cannot be None"
         self._head = first
         return self._head
-    #
-    # @head.setterdef __len
-    # def head(self, node):
-    #     self._head = node
+
+    @head.setter
+    def head(self, new_head):
+        self._head = new_head
+        return new_head
 
     @property
     def tail(self):
@@ -404,7 +429,7 @@ class DoubleLinkedList(object):
                 i.append(0)
         i = list(set(i))
         i.sort()
-        self._inbounds(i)
+        self._check_if_in_bounds(i)
         self_copy = copy(self)
         all_nodes = self_copy.nodes
         cut_nodes = []
@@ -423,7 +448,7 @@ class DoubleLinkedList(object):
         return self.segments(cut_nodes)
 
     @staticmethod
-    def all_nodes(nodes):
+    def collect_nodes(nodes):
         """
         Return all visisted nodes and return an unordered set of nodes.
 
@@ -433,11 +458,14 @@ class DoubleLinkedList(object):
         visited = set()
         for n in nodes:
             if n not in visited:
-                for tail in n.fwd(stop_criteria=lambda x: x not in visited):
+                for tail in n.fwd(stop_criteria=lambda x: x in visited):
                     visited.add(tail)
-                for head in n.rev(stop_criteria=lambda x: x not in visited):
+                for head in n.rev(stop_criteria=lambda x: x in visited):
                     visited.add(head)
         return visited
+
+    def all_nodes(self):
+        return self.collect_nodes([self.head])
 
     @staticmethod
     def find_ends(nodes):
@@ -458,7 +486,7 @@ class DoubleLinkedList(object):
                 visited = visited.union(visited_heads)
                 visited = visited.union(visited_tails)
                 if head not in heads and tails not in tails:
-                    if head.prev() is None and tail.next() is None:
+                    if not head.has_prev() is None and not tail.has_next():
                         heads.append(head)
                         tails.append(tail)
         return zip(heads, tails)
@@ -471,7 +499,7 @@ class DoubleLinkedList(object):
         if i == len(self.nodes):
             pass
         else:
-            self._inbounds(i)
+            self._check_if_in_bounds(i)
         if node_list.cyclic:
             raise TypeError("Cannot insert a cyclic sequence")
         if copy_insertion:
@@ -488,26 +516,26 @@ class DoubleLinkedList(object):
         first.set_prev(loc1)
         last.set_next(loc2)
         if i == 0:  # Special case in which user inserts sequence in front of their sequence; they probably intend to re-index it
-            self._head = first
+            self.head = first
         return self
 
     def remove(self, i):
-        self._inbounds(i)
+        self._check_if_in_bounds(i)
         to_be_removed = self.nodes[i]
         new_first = self.head
         if i == 0:
             new_first = next(new_first)
         to_be_removed.remove()
-        self._head = new_first
+        self.head = new_first
         return
 
     def reindex(self, i):
-        self._inbounds(i)
+        self._check_if_in_bounds(i)
         if not self.cyclic:
             raise TypeError("Cannot re-index a linear node_ set")
-        self._head = self.nodes[i]
+        self.head = self.nodes[i]
 
-    def _inbounds(self, num):
+    def _check_if_in_bounds(self, num):
         if isinstance(num, int):
             num = [num]
         for n in num:
@@ -537,6 +565,50 @@ class DoubleLinkedList(object):
             i += 1
         return found
 
+    def longest_match(self, other):
+        n1 = self.head
+        n2 = other.head
+        start = None
+        end = None
+        while n1 and n2 and n1.equivalent(n2):
+            if start is None:
+                start = (n1, n2)
+            end = (n1, n2)
+            n1 = next(n1)
+            n2 = next(n2)
+
+            curr = next(curr)
+        for n in self:
+            if other_node.equivalent(n):
+                stop = n
+                if start is None:
+                    start = stop
+            other_node = next(other_node)
+
+    def find_iter(self, query):
+        curr_node = self.head
+        visited = set()
+        qhead = query.head
+        qlen = len(query)
+        i = 0
+        while curr_node and curr_node not in visited:
+            visited.add(curr_node)
+            matched = []
+            j = i
+            for x1, x2 in zip(curr_node.fwd(), qhead.fwd()):
+                if x1.equivalent(x2):
+                    j += 1
+                    matched.append((x1, x2))
+            if len(matched) == qlen:
+                if j > len(self):
+                    if self.cyclic:
+                        j -= len(self)
+                    else:
+                        raise Exception("Template was expected to be cyclic but was not")
+                yield LinkedListMatch(curr_node, x1, span=(i, j-1))
+            curr_node = next(curr_node)
+            i += 1
+
     def reverse(self):
         for s in self.nodes:
             s.swap()
@@ -544,18 +616,47 @@ class DoubleLinkedList(object):
             self.reindex(1)
         return self
 
+    def fuse_in_place(self, seq):
+        f = self.head.find_last()
+        l = seq.head
+        f.set_next(l)
+        return self
+
+    def fuse(self, other):
+        return copy(self).fuse_in_place(copy(other))
+
+    def copy(self):
+        return self.__copy__()
+
+    def __add__(self, other):
+        return self.fuse(other)
+
     def __getitem__(self, key):
         if isinstance(key, slice):
+            if key.step and key.step > 1:
+                raise Exception("Step > 1 is not supported for sliced object of '{}'".format(self.__class__.__name__))
             new_list = self.__copy__()
+            if key.start is None and key.stop is None:
+                if key.step == -1:
+                    return new_list.reverse()
+                else:
+                    return new_list
+            if key.start > key.stop and not self.cyclic:
+                return None
+            if key.start == key.stop:
+                return None
             start = new_list.nodes[key.start]
             end = new_list.nodes[key.stop - 1]
             start.cut_prev()
             end.cut_next()
             return self.__class__(first=start)
-        return self.nodes[key].data
+        return self.nodes[key]
+
+    def __contains__(self, item):
+        return item in self.all_nodes()
 
     def __copy__(self):
-        copied = type(self)(sequence='X')
+        copied = type(self)('X')
         copied.__dict__.update(self.__dict__)
         copied.initialize(str(self))
         if self.cyclic:
@@ -567,9 +668,9 @@ class DoubleLinkedList(object):
                                   "{}. Use copy.copy instead.".format(self.__class__.__name__))
 
     def __reversed__(self):
-        for s in self.nodes:
-            s.swap()
-        return self
+        copied = self.copy()
+        copied.reverse()
+        return copied
 
     def __len__(self):
         l = 0
@@ -578,7 +679,7 @@ class DoubleLinkedList(object):
         return l
 
     def __iter__(self):
-        current = self._head
+        current = self.head
         visited = set()
         while current is not None:
             if current in visited:
@@ -596,3 +697,4 @@ class DoubleLinkedList(object):
 
     def __str__(self):
         return ''.join(str(x) for x in self.nodes)
+

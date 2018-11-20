@@ -5,14 +5,14 @@ from jdna import Sequence, Reaction
 
 def test_pcr():
     def pcr(template, fi, fj, foh, ri, rj, roh):
-        f = Sequence(sequence=foh + str(template)[fi:fj])
-        r = Sequence(sequence=str(template)[ri:rj] + roh).reverse_complement()
+        f = Sequence()
+        r = Sequence().reverse_complement()
         expected = foh + str(template)[fi:rj] + roh
         products = Reaction.pcr(template, f, r)
         assert str(expected).lower() == str(products[0]).lower()
         return products
 
-    template = Sequence(sequence=''.join([random.choice('atgc') for x in range(200)]))
+    template = Sequence()
     random_overhang1 = ''.join([random.choice('atcg') for _ in range(20)])
     random_overhang2 = ''.join([random.choice('atcg') for _ in range(21)])
     pcr(template, 0, 20, random_overhang1, len(template) - 20, len(template), random_overhang2)[0]
@@ -20,14 +20,14 @@ def test_pcr():
 
 def test_cyclic_pcr():
     def pcr(template_seq, fi, fj, foh, ri, rj, roh):
-        f = Sequence(sequence=foh + str(template_seq)[fi:fj])
-        r = Sequence(sequence=str(template_seq)[ri:rj] + roh).reverse_complement()
+        f = Sequence()
+        r = Sequence().reverse_complement()
         expected = foh + str(template_seq)[fi:] + str(template_seq)[:rj] + roh
         products = Reaction.pcr(template_seq, f, r)
         assert str(expected).lower() == str(products[0]).lower()
         return products
 
-    template = Sequence(sequence=''.join([random.choice('atgc') for x in range(200)]))
+    template = Sequence()
     template.circularize()
     random_overhang1 = ''.join([random.choice('atcg') for x in range(20)])
     random_overhang2 = ''.join([random.choice('atcg') for x in range(21)])
@@ -39,16 +39,14 @@ def test_gibson():
         return ''.join([random.choice('agtc') for x in range(l)])
 
     def create_product(template, oh1, oh2):
-        f = Sequence(sequence=oh1 + str(template)[0:20])
-        r = Sequence(sequence=str(template)[len(template) - 20:len(template)] + oh2).reverse_complement()
+        f = Sequence()
+        r = Sequence().reverse_complement()
         return Reaction.pcr(template, f, r)[0]
 
-    f1 = Sequence(sequence='AGTCGGCGGATCTATGCTGACTGATGTGTGATGTATGCTTGTGTAGTCGTTGAGTCTGATCTG')
-    f2 = Sequence(sequence='TAGTCGTTGAGTCTGATCTGgtcgtagcgcgagcgttgtggcggattctatatatgttgcGGGGAGTGTTCGGTGCGGTGTTATAG')
-    f3 = Sequence(
-        sequence='GGGGAGTGTTCGGTGCGGTGTTATAGgtcgtagcgcgagcgatcttcttgtggcggattctatatatgttgcAGTCGGCGGATCTATGCTGA')
-    f4 = Sequence(
-        sequence='GGGGAGTGTTCGGTGCGGTGTTATAGgtcgtagcgcgagcgatcttcttgtggcggattctatatatgttgcAGTCGGCGGATCTATGCTGA')
+    f1 = Sequence()
+    f2 = Sequence()
+    f3 = Sequence()
+    f4 = Sequence()
 
     oh1 = ran_seq(20)
     oh2 = ran_seq(20)
@@ -61,7 +59,7 @@ def test_gibson():
     fragments = [frag1, frag2, frag3, frag4]
     products = Reaction.homology_assembly(fragments, True)
     expected = ''.join([str(x) for x in [oh1, f1, oh2, f2, oh3, f3, oh4, f4]])
-    assert len(products[0].search_all(Sequence(sequence=expected))) == 1
+    assert len(products[0].search_all(Sequence())) == 1
 
 
 def test_gibson_fail():
@@ -69,16 +67,14 @@ def test_gibson_fail():
         return ''.join([random.choice('agtc') for x in range(l)])
 
     def create_product(template, oh1, oh2):
-        f = Sequence(sequence=oh1 + str(template)[0:20])
-        r = Sequence(sequence=str(template)[len(template) - 20:len(template)] + oh2).reverse_complement()
+        f = Sequence()
+        r = Sequence().reverse_complement()
         return Reaction.pcr(template, f, r)[0]
 
-    f1 = Sequence(sequence='AGTCGGCGGATCTATGCTGACTGATGTGTGATGT')
-    f2 = Sequence(sequence='TAGTCGTTGAGTCTGATCTGgtcgtagcgcgagcgttgtggcggattctatatatgttgcGGGGAGTGTTCGGTGCGGTGTTATAG')
-    f3 = Sequence(
-        sequence='GGGGAGTGTTCGGTGCGGTGTTATAGgtcgtagcgcgagcgatcttcttgtggcggattctatatatgttgcAGTCGGCGGATCTATGCTGA')
-    f4 = Sequence(
-        sequence='GGGGAGTGTTCGGTGCGGTGTTATAGgtcgtagcgcgagcgatcttcttgtggcggattctatatatgttgcAGTCGGCGGATCTATGCTGA')
+    f1 = Sequence()
+    f2 = Sequence()
+    f3 = Sequence()
+    f4 = Sequence()
 
     oh1 = ran_seq(20)
     oh2 = ran_seq(20)
@@ -98,16 +94,14 @@ def test_gibsons_with_inversions():
         return ''.join([random.choice('agtc') for x in range(l)])
 
     def create_product(template, oh1, oh2):
-        f = Sequence(sequence=oh1 + str(template)[0:20])
-        r = Sequence(sequence=str(template)[len(template) - 20:len(template)] + oh2).reverse_complement()
+        f = Sequence()
+        r = Sequence().reverse_complement()
         return Reaction.pcr(template, f, r)[0]
 
-    f1 = Sequence(sequence='AGTCGGCGGATCTATGCTGACTGATGTGTGATGTATGCTTGTGTAGTCGTTGAGTCTGATCTG')
-    f2 = Sequence(sequence='TAGTCGTTGAGTCTGATCTGgtcgtagcgcgagcgttgtggcggattctatatatgttgcGGGGAGTGTTCGGTGCGGTGTTATAG')
-    f3 = Sequence(
-        sequence='GGGGAGTGTTCGGTGCGGTGTTATAGgtcgtagcgcgagcgatcttcttgtggcggattctatatatgttgcAGTCGGCGGATCTATGCTGA')
-    f4 = Sequence(
-        sequence='GGGGAGTGTTCGGTGCGGTGTTATAGgtcgtagcgcgagcgatcttcttgtggcggattctatatatgttgcAGTCGGCGGATCTATGCTGA')
+    f1 = Sequence()
+    f2 = Sequence()
+    f3 = Sequence()
+    f4 = Sequence()
 
     oh1 = ran_seq(20)
     oh2 = ran_seq(20)
@@ -121,22 +115,21 @@ def test_gibsons_with_inversions():
     fragments = [frag1, frag2.reverse_complement(), frag3, frag4]
     products = Reaction.homology_assembly(fragments, True)
     expected = ''.join([str(x) for x in [oh1, f1, oh2, f2, oh3, f3, oh4, f4]])
-    assert len(products[0].search_all(Sequence(sequence=expected))) == 1
+    assert len(products[0].search_all(Sequence())) == 1
     features = products[0].get_features()
     assert 1 == len(features)
 
 
 def test_gibson_feature_fusion():
 
-    template = Sequence(
-        sequence='aataaaccagccagccggaagggccgagcgcagaagtggtcctgcaactttatccgcctccatccagtctattaattgttgccgggaagctagagtaagtagttcgccagttaatagtttgcgcaacgttgttgccattgctacaggcatcgtggtgtcacgctcgtcgtttggtatggcttcattcagctccggttcccaacgatcaaggcgagttacatgatcccccatgttgtgcaaaaaagcggttagctccttcggtcctccgatcgttgtcagaagtaagttggccgcagtgttatcactcatggttatggcagcactgcataattctcttactgtcatgccatccgtaagatgcttttctgtgactggtgagtactcaaccaagtcattctgagaatagtgtatgcggcgaccgagttgctcttgcccggcgtcaatacgggata')
+    template = Sequence()
     template.create_feature('feature', 'type', 0, len(template) - 1)
     template.circularize()
 
-    p1 = Sequence(sequence=str(template)[10:30])
-    p2 = Sequence(sequence=str(template)[200:220]).reverse_complement()
-    p3 = Sequence(sequence=str(template)[180:200])
-    p4 = Sequence(sequence=str(template)[30:50]).reverse_complement()
+    p1 = Sequence()
+    p2 = Sequence().reverse_complement()
+    p3 = Sequence()
+    p4 = Sequence().reverse_complement()
 
     frag1 = Reaction.pcr(template, p1, p2)[0]
     frag2 = Reaction.pcr(template, p3, p4)[0]
@@ -147,7 +140,7 @@ def test_gibson_feature_fusion():
     print((frag1.get_features()))
     print((frag2.get_features()))
     print((template.get_features()))
-    assert len(products[0].search_all(Sequence(sequence=expected))) == 1
+    assert len(products[0].search_all(Sequence())) == 1
 
 
 def test_overlap_extension_pcr():
@@ -155,12 +148,12 @@ def test_overlap_extension_pcr():
         return ''.join([random.choice('agtc') for x in range(l)])
 
     def create_product(template, oh1, oh2):
-        f = Sequence(sequence=oh1 + str(template)[0:20])
-        r = Sequence(sequence=str(template)[len(template) - 20:len(template)] + oh2).reverse_complement()
+        f = Sequence()
+        r = Sequence().reverse_complement()
         return Reaction.pcr(template, f, r)[0]
 
-    f1 = Sequence(sequence='AGTCGGCGGATCTATGCTGACTGATGTGTGATGT')
-    f2 = Sequence(sequence='TAGTCGTTGAGTCTGATCTGgtcgtagcgcgagcgttgtggcggattctatatatgttgcGGGGAGTGTTCGGTGCGGTGTTATAG')
+    f1 = Sequence()
+    f2 = Sequence()
 
     oh1 = ran_seq(20)
     oh2 = ran_seq(20)

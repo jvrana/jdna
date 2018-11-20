@@ -9,6 +9,7 @@ pyflakes = "*"
 [dev-packages]
 pytest = "*"
 pylint = "*"
+lorem = "*"
 
 [requires]
 python_version = "3.6"
