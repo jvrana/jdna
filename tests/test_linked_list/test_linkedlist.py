@@ -13,7 +13,6 @@ def test_linked_list_constructor(test_str, linked_list):
 
 
 def test_indexing(test_str, linked_list):
-
     assert linked_list[0].data == test_str[0]
     assert linked_list[-1].data == test_str[-1]
     assert linked_list[10].data == test_str[10]
@@ -98,6 +97,7 @@ def test_insertion_index_error(test_str, linked_list):
     with pytest.raises(IndexError):
         linked_list.insert(DoubleLinkedList(data='XYZ'), len(linked_list) + 1)
 
+
 @pytest.mark.parametrize('cut_sites,circular,expected_num_fragments', [
     ([10], False, 2),
     ([10], True, 1),
@@ -128,6 +128,7 @@ def test_cutting(cut_sites, circular, expected_num_fragments, test_str):
         expected[0] = last + expected[0]
     assert [str(f) for f in fragments] == expected
 
+@pytest.mark.parametrize('direction', [1,-1])
 @pytest.mark.parametrize('query_test_str,expected,template_circular,query_circular', [
     ('ABC', (1, 6), False, False),
     ('ABCD', (1,), False, False),
@@ -135,15 +136,17 @@ def test_cutting(cut_sites, circular, expected_num_fragments, test_str):
     ('234', tuple(), False, False),
     ('BCD', (2,), False, False),
     ('BCD', (2, 7), True, False),
+    ('BCDA', (7, ), True, False),
     ('BCD', (2,), False, True),
 ])
-def test_find_iter(query_test_str, expected, template_circular, query_circular):
+def test_find_iter(query_test_str, expected, template_circular, query_circular, direction):
     query = DoubleLinkedList(data=query_test_str)
     template_test_str = 'DABCDEABC'
     template = DoubleLinkedList(data=template_test_str)
     template.circular = template_circular
     query.circular = query_circular
-    found = list(template.find_iter(query))
+    found = list(template.find_iter(query, direction=direction))
+    found = sorted(found, key=lambda x: template.index_of(x.start))
     assert len(found) == len(expected)
     for i, f in enumerate(found):
         assert f.start is template[expected[i]]
@@ -154,22 +157,74 @@ def test_find_iter(query_test_str, expected, template_circular, query_circular):
         assert f.span == (expected[i], j)
 
 
-    # template = DoubleLinkedList(data=query_test_str)
-    # for i in range(len(template) + 1):
-    #     for j in range(i + 1, len(template) + 1):
-    #         query = DoubleLinkedList(data=query_test_str[i:j])
-    #         assert (i, template.nodes[i]) == template.search_all(DoubleLinkedList(data=query_test_str[i:j]))[0]
-    #
-    # query = DoubleLinkedList(data='ABCDFG')
-    # assert [] == template.search_all(query)
-    #
-    # template = DoubleLinkedList(data='XXXXGHHHXHGG')
-    # query = DoubleLinkedList(data='XX')
-    # assert 3 == len(template.search_all(query))
-    #
-    # template = DoubleLinkedList(data='longer sentence now for this sentence to find the sentence sentence')
-    # query = DoubleLinkedList(data='sentence')
-    # assert 4 == len(template.search_all(query))
+@pytest.mark.parametrize('direction', [
+    1,
+    -1
+])
+@pytest.mark.parametrize('length,expected', [
+    (1, ((0, 5), (6, 4), (11, 3))),
+    (2, ((0, 5), (6, 4), (11, 3))),
+    (3, ((0, 5), (6, 4), (11, 3))),
+    (4, ((0, 5), (6, 4), (11, 3))),
+    (5, ((0, 5), (6, 4),)),
+    (6, ((0, 5),)),
+])
+def test_find_iter_min_length(length, expected, direction):
+    template_test_str = "ABCDEFABCDEABCD"
+    template = DoubleLinkedList(template_test_str)
+
+    found = list(template.find_iter(DoubleLinkedList('ABCDEFZZZ'), min_query_length=length, direction=direction))
+
+    print()
+    for i, f in enumerate(found):
+        assert f.start is template[expected[i][0]]
+        print(template[f.span[0]:f.span[1] + 1])
+        assert f.span == (expected[i][0], expected[i][0] + expected[i][1])
+
+
+def test_find_iter_min_length_reverse():
+    template_test_str = "CDEF BCDEF ABCDEF"
+    template = DoubleLinkedList(template_test_str)
+
+    found = list(template.find_iter(DoubleLinkedList('ZZZABCDEF'), min_query_length=1, direction=-1))
+
+    assert len(found) == 3
+
+    assert found[0].start is template.get(0)
+    assert found[0].end is template.get(3)
+    assert found[0].span == (0, 3)
+
+    assert found[1].start is template.get(5)
+    assert found[1].end is template.get(9)
+    assert found[1].span == (5, 9)
+
+    assert found[2].start is template.get(11)
+    assert found[2].end is template.get(16)
+    assert found[2].span == (11, 16)
+
+
+def test_find_iter_protocol():
+
+    template_test_str = "ABCDEFGHIJKL"
+    template = DoubleLinkedList(template_test_str)
+
+    found = list(template.find_iter(DoubleLinkedList("BCD"), protocol=lambda x,y: False))
+    assert len(found) == 0
+
+
+def test_find_iter_query_span():
+    template_test_str = "ABCDEFGHIJKL"
+    template = DoubleLinkedList(template_test_str)
+
+    query1 = DoubleLinkedList("BCDEFZZZZ")
+    for match in template.find_iter(query1, min_query_length=3):
+        assert match.span == (1, 5)
+        assert match.query_span == (0, 4)
+
+    query2 = DoubleLinkedList("ZZZZBCDEF")
+    for match in template.find_iter(query2, min_query_length=3):
+        assert match.query_span == (4, 8)
+
 
 def test_reverse():
     test_str = 'XXXXGHHHXHGG'
@@ -189,6 +244,7 @@ def test_reverse():
     l.circularize()
     assert str(l) == test_str[::-1]
 
+
 @pytest.mark.parametrize('circular', [
     True,
     False,
@@ -198,6 +254,7 @@ def test_reverse():
 def test_all_nodes(circular, linked_list, test_str):
     linked_list.circular = circular
     assert len(linked_list.all_nodes()) == len(test_str)
+
 
 def test_remove():
     test_str = 'XXXXGHHHXHGG'
@@ -212,11 +269,13 @@ def test_remove():
         else:
             assert str(l_copy) == test_str[:i] + test_str[i + 1:]
 
+
 def test_zip():
     l1 = DoubleLinkedList('abcd')
     l2 = DoubleLinkedList('agasdf')
     for x1, x2 in zip(l1, l2):
         print('{} {}'.format(x1, x2))
+
 
 def test_zip_with_node():
     l1 = DoubleLinkedList('abcdefghijk')
@@ -241,14 +300,23 @@ class TestLinkedListMagic(object):
     def test_splice_magic(self, i, j, circular, linked_list, test_str):
         linked_list.cyclic = circular
         expected = test_str[i:j]
-        print(i)
-        print(j)
-        print(expected)
-        print(linked_list[i:j])
         if test_str[i:j] == '':
             assert linked_list[i:j] is None, "({},{}) should return None".format(i, j)
         else:
             assert str(linked_list[i:j]) == test_str[i:j]
+
+    @pytest.mark.parametrize('i,j', [
+        (5, 2),
+        (0, 0),
+        (2, 2),
+        (-2, -4),
+    ])
+    def test_splice_magic_circular(self, i, j, linked_list, test_str):
+        linked_list.circularize()
+        if i == j:
+            assert linked_list[i:j] is None
+            return
+        assert str(linked_list[i:j]) == test_str[i:] + test_str[:j]
 
     def test_(self, linked_list, test_str):
         i = 3
@@ -262,15 +330,12 @@ class TestLinkedListMagic(object):
         for n in linked_list_2:
             assert not n in linked_list
 
-
     def test_splice_copy_magic(self, linked_list, test_str):
         assert str(linked_list[:]) == test_str
         assert linked_list[:] is not linked_list
 
-
     def test_reverse_magic(self, linked_list, test_str):
         assert str(linked_list[::-1]) == test_str[::-1]
-
 
     @pytest.mark.parametrize('circular', [
         True,

@@ -2,23 +2,26 @@
 Represent linear or circularized nucleotides
 """
 
-from copy import copy, deepcopy
 import itertools
-from collections import defaultdict
-from jdna.linked_list import Node, DoubleLinkedList
-from jdna.utils import random_color
-from enum import Enum
 import random
+from collections import defaultdict
+from copy import copy, deepcopy
+from enum import IntFlag
 
-class STRAND(Enum):
+from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
+from jdna.utils import random_color
 
+
+class SequenceFlags(IntFlag):
     FORWARD = 1
     REVERSE = -1
+    TOP = 1
+    BOTTOM = -1
 
 
 class Feature(object):
 
-    def __init__(self, name, type='misc feature', strand=STRAND.FORWARD, color=None):
+    def __init__(self, name, type='misc feature', strand=SequenceFlags.FORWARD, color=None):
         self.name = name
         self.type = type
         self.strand = strand
@@ -71,7 +74,41 @@ class Feature(object):
                 self._nodes.remove(n)
 
 
+class BindPos(LinkedListMatch):
+
+    def __init__(self, start, end, anneal_span, query_span, direction, primer):
+        super().__init__(start, end, anneal_span, query_span)
+        self.primer = primer.copy()
+        self.direction = direction
+        self.anneal = self.primer[query_span[0]:query_span[1]+1]
+        self.five_prime_overhang = self.primer[:query_span[0]]
+        self.three_prime_overhang = self.primer[query_span[1]+1:]
+
+        if self.direction == SequenceFlags.REVERSE:
+            if self.anneal:
+                self.anneal.reverse_complement()
+            if self.five_prime_overhang:
+                self.five_prime_overhang.reverse_complement()
+            if self.three_prime_overhang:
+                self.three_prime_overhang.reverse_complement()
+                l = len(self.three_prime_overhang)
+            else:
+                l = 0
+            self.three_prime_overhang, self.five_prime_overhang = self.five_prime_overhang, self.three_prime_overhang
+            self.query_span = (self.query_span[0] + l, self.query_span[1] + l)
+
+    def __repr__(self):
+        return "<{cls} span={span} 5'='{five}' anneal='{anneal}' 3'='{three}'>".format(
+            cls=self.__class__.__name__,
+            span=self.span,
+            five=self.five_prime_overhang,
+            three=self.three_prime_overhang,
+            anneal=self.anneal
+        )
+
 class Nucleotide(Node):
+
+    __slots__ = ['data', '__next', '__prev', '_features']
 
     BASES = dict(list(zip(
         ['a', 't', 'c', 'g', 'A', 'T', 'C', 'G', 'n', 'N'],
@@ -87,11 +124,15 @@ class Nucleotide(Node):
         """Generate a random sequence"""
         return cls(random.choice(cls.BASES))
 
+    @property
     def base(self):
         return self.data
 
     def equivalent(self, other):
-        return str(self.base()).upper() == str(other.base()).upper()
+        return self.base.upper() == other.base.upper()
+
+    def complementary(self, other):
+        return self.base.upper() == self.BASES[other.base].upper()
 
     def to_complement(self):
         self.data = self.BASES[self.data]
@@ -193,7 +234,6 @@ class Nucleotide(Node):
                         n.add_feature(f1)
                         n.remove_feature(f2)
 
-
     #
     # @staticmethod
     # def fuse_features(n1, n2):
@@ -266,7 +306,6 @@ class Nucleotide(Node):
 
 
 class Sequence(DoubleLinkedList):
-
     NODE_CLASS = Nucleotide
     counter = itertools.count()
 
@@ -314,7 +353,7 @@ class Sequence(DoubleLinkedList):
                 positions = feature_pos[k]
                 nodes = feature_nodes[k]
                 if len(nodes) > 1:
-                    if positions[0][0] == 0 and positions[-1][-1] == l-1:
+                    if positions[0][0] == 0 and positions[-1][-1] == l - 1:
                         nodes[0][0] = nodes[-1][0]
                         positions[0][0] = positions[-1][0]
                         nodes.pop()
@@ -400,6 +439,33 @@ class Sequence(DoubleLinkedList):
             copied.add_multipart_feature(positions, copy(feature))
         return copied
 
-    # def __repr__(self):
-    #     return str(self)
+    def anneal_to_bottom_strand(self, other, min_bases=10):
+        for match in self.find_iter(other,
+                                    min_query_length=min_bases,
+                                    direction=self.Direction.REVERSE, ):
+            yield match
 
+    def anneal_to_top_strand(self, other, min_bases=10):
+        for match in self.find_iter(other,
+                                    min_query_length=min_bases,
+                                    protocol=lambda x, y: x.complementary(y)):
+            yield match
+
+    def _forward_anneals(self, other, min_bases=10):
+        for match in self.find_iter(other, min_query_length=min_bases,
+                                    direction=self.Direction.REVERSE):
+            yield BindPos(match.start, match.end, match.span, match.query_span, SequenceFlags.FORWARD, other)
+
+    def _reverse_anneals(self, other, min_bases=10):
+        other = other.copy().reverse_complement()
+        for match in self.find_iter(other, min_query_length=min_bases):
+            yield BindPos(match.start, match.end, match.span, match.query_span, SequenceFlags.REVERSE, other)
+
+    def anneal(self, other, min_bases=10):
+        for match in self._forward_anneals(other, min_bases=min_bases):
+            yield match
+        for match in self._reverse_anneals(other, min_bases=min_bases):
+            yield match
+
+# def __repr__(self):
+#     return str(self)

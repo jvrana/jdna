@@ -270,3 +270,80 @@ def test_random(length):
         return
     seq = Sequence.random(length)
     assert len(seq) == length
+
+def test_find_iter_complementary():
+    seq = Sequence("CTACAAATTTTACACAGTGGGACGGGCCA")
+
+
+    matches = list(seq.find_iter(Sequence("TTTT"), direction=-1))
+    assert len(matches) == 1
+
+    matches = list(seq.find_iter(Sequence("TTTT"), protocol=lambda x, y: x.complementary(y), direction=-1))
+    assert len(matches) == 0
+
+    matches = list(seq.find_iter(Sequence("TGTTTA"), protocol=lambda x, y: x.complementary(y), direction=-1))
+    assert len(matches) == 1
+
+
+@pytest.mark.parametrize('overhang', [
+    'A',
+    'ACGTGCTTGCGTGTCGTTGA',
+    ''
+])
+def test_anneal(overhang):
+    anneal = "CTACAAATTTACACAGTGGGACGGGCCA"
+    primer = Sequence(overhang + anneal)
+    primer_seq = str(primer)
+    seq = Sequence.random(99) + \
+          Sequence("N") + Sequence(anneal) + Sequence("N") + \
+          Sequence.random(18) + \
+          Sequence("N") + Sequence(anneal).reverse_complement() + Sequence("N") + \
+          Sequence.random(100)
+
+    assert str(primer) == primer_seq
+
+    forward_matches = list(seq._forward_anneals(primer))
+    print(forward_matches)
+
+    f = forward_matches[0]
+
+    # check annealing span
+    assert f.span == (100, 100 + len(anneal)-1)
+    assert f.query_span == (len(overhang), len(overhang) + len(anneal) - 1)
+
+    # check annealing sequence
+    assert str(f.anneal) == anneal
+
+    # check overhang sequence
+    assert f.three_prime_overhang is None
+    if overhang == '':
+        assert f.five_prime_overhang is None
+    else:
+        assert str(f.five_prime_overhang) == overhang
+
+    # check num matches
+    assert len(forward_matches) == 1
+    assert str(primer) == primer_seq
+
+    reverse_matches = list(seq._reverse_anneals(primer))
+    print(reverse_matches)
+    r = reverse_matches[0]
+    # check spans
+    assert r.span == (100 + len(anneal) + 20, 100 + len(anneal) + 20 + len(anneal)-1)
+    assert r.query_span == (len(overhang), len(overhang) + len(anneal) - 1)
+
+    # check annealing sequence
+    assert str(r.anneal) == anneal
+
+    # check overhang sequences
+    assert r.three_prime_overhang is None
+    if overhang == '':
+        assert r.five_prime_overhang is None
+    else:
+        assert str(r.five_prime_overhang) == overhang
+
+    # check num matches
+    assert len(reverse_matches) == 1
+
+    # check primer has not changed
+    assert str(primer) == primer_seq

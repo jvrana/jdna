@@ -3,9 +3,11 @@ Linked list model to represent linear or circular sequences
 """
 
 from copy import copy
+from enum import IntFlag
 
 class LinkedListException(Exception):
     """Generic linked list exception"""
+
 
 class LinkedListIndexError(LinkedListException, IndexError):
     """Indices were out of bounds for LinkedList"""
@@ -16,13 +18,12 @@ class Node(object):
     A node in a linked list
     """
 
+    __slots__ = ['data', '__next', '__prev']
+
     def __init__(self, data):
         self.data = data
         self.__next = None
         self.__prev = None
-
-    def __next__(self):
-        return self.__next
 
     def prev(self):
         """
@@ -291,6 +292,9 @@ class Node(object):
         """Evaluates whether two nodes hold the same data"""
         return self.data == other.data
 
+    def __next__(self):
+        return self.next()
+
     def __copy__(self):
         copied = type(self)(self.data)
         return copied
@@ -311,16 +315,19 @@ class LinkedListMatch(object):
     A match object
     """
 
-    def __init__(self, start, end, span):
+    def __init__(self, start, end, span, query_span):
         self.span = span
+        self.query_span = query_span
         self.start = start
         self.end = end
 
     def __repr__(self):
-        return "<LinkedListMatch start={start} end={end} span={span}>".format(
+        return "<{cls} start={start} end={end} span={span}, qspan={query_span}>".format(
+            cls=self.__class__.__name__,
             start=self.start,
             end=self.end,
-            span=self.span
+            span=self.span,
+            query_span=self.query_span
         )
 
     def __str__(self):
@@ -331,6 +338,10 @@ class DoubleLinkedList(object):
     """
     A generic double linked list class.
     """
+
+    class Direction(IntFlag):
+        FORWARD = 1
+        REVERSE = -1
 
     NODE_CLASS = Node
 
@@ -623,33 +634,59 @@ class DoubleLinkedList(object):
     #                 raise Exception("Template was expected to be cyclic but was not")
     #         yield LinkedListMatch(curr_node, x1, span=(i, j - 1))
 
-    @staticmethod
-    def match(n1, n2):
-        for x1, x2 in zip(n1.fwd(), n2.fwd()):
-            if x1.equivalent(x2):
+    @classmethod
+    def match(cls, n1, n2, direction=Direction.FORWARD, protocol=None):
+        if protocol is None:
+            protocol = lambda x, y: x.equivalent(y)
+        if direction == cls.Direction.REVERSE:
+            get_iterator = lambda x: x.rev()
+        else:
+            get_iterator = lambda x: x.fwd()
+        for x1, x2 in zip(get_iterator(n1), get_iterator(n2)):
+            if protocol(x1, x2):
                 yield (x1, x2)
             else:
                 return
 
-    def find_iter(self, query):
+    def find_iter(self, query, min_query_length=None, direction=Direction.FORWARD, protocol=None):
         curr_node = self.head
+        reverse = self.Direction.REVERSE == direction
         visited = set()
-        qhead = query.head
+        if reverse:
+            query_start = query.tail
+        else:
+            query_start = query.head
         qlen = len(query)
-        i = 0
+        if min_query_length is None:
+            min_query_length = qlen
+        index = 0
         while curr_node and curr_node not in visited:
             visited.add(curr_node)
-            matches = list(self.match(curr_node, qhead))
-            j = i + len(matches)
-            if len(matches) == qlen:
-                if j > len(self):
+            matches = list(self.match(curr_node, query_start, direction=direction, protocol=protocol))
+            span_start = index
+            span_end = span_start + len(matches) - 1
+            if reverse:
+                matches = matches[::-1]
+                span_end = index
+                span_start = index - len(matches) + 1
+                if span_start < 0:
+                    span_start += len(self)
+            if len(matches) >= min_query_length:
+                if span_end >= len(self):
                     if self.cyclic:
-                        j -= len(self)
+                        span_end -= len(self)
                     else:
                         raise Exception("Template was expected to be cyclic but was not")
-                yield LinkedListMatch(matches[0][0], matches[-1][0], span=(i, j-1))
+                if reverse:
+                    query_span = (qlen-len(matches), qlen-1)
+                else:
+                    query_span = (0, len(matches)-1)
+                yield LinkedListMatch(matches[0][0], matches[-1][0],
+                                      span=(span_start, span_end),
+                                      query_span=query_span
+                                      )
             curr_node = next(curr_node)
-            i += 1
+            index += 1
 
     def reverse(self):
         for s in self.nodes:
@@ -704,6 +741,11 @@ class DoubleLinkedList(object):
                 stop_hit = True
         if stop is not None and not stop_hit:
             raise LinkedListIndexError("Inclusive indices {} out of bounds".format([i,j]))
+
+    def index_of(self, node):
+        for i, n in enumerate(self):
+            if n is node:
+                return i
 
     def __add__(self, other):
         return self.fuse(other)

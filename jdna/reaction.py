@@ -28,54 +28,56 @@ class Reaction(object):
             last = last + p
         return last
 
-    # TODO: what does 'anneal' supposed to return???
-    @staticmethod
-    def _anneal(template, primer, min_bases=MIN_BASES, threeprime=True):
-        t = template.head
-        p = primer.head
-        if threeprime:
-            t = t.find_last()
-            p = p.find_last()
-        visited = set()
-        i = 0
-        matches = []
-        while t and t not in visited:
-            next_method = lambda x: next(x)
-            if threeprime:
-                next_method = lambda x: x.prev()
-            l = t._longest_match(p, next_method)
-            if len(l) >= min_bases:
-                matches.append((i, len(l)))
-            visited.add(t)
-            t = next_method(t)
-            i += 1
-        return matches
 
-    @staticmethod
-    def anneal_fiveprime(template, primer, min_bases=MIN_BASES):
-        return Reaction._anneal(template, primer, min_bases=min_bases, threeprime=False)
-
-    @staticmethod
-    def anneal_threeprime(template, primer, min_bases=MIN_BASES):
-        matches = Reaction._anneal(template, primer, min_bases=min_bases, threeprime=True)
-        return [(len(template) - m[0], m[1]) for m in matches]
-
-    @staticmethod
-    def anneal_primer(template, primer, min_bases=MIN_BASES):
-        fwd_matches = Reaction.anneal_threeprime(template, primer, min_bases=min_bases)
-        # for f in fwd_matches:
-        #     primer.cut
-        template.reverse_complement()
-        rev_matches = Reaction.anneal_threeprime(template, primer, min_bases=min_bases)
-        template.reverse_complement()
-
-        def ca(matches):
-            return [dict(primer=primer, pos=m[0], len=m[1], tm=Reaction.tm(primer.cut(len(primer) - m[1])[-1])) for m in
-                    matches]
-
-        anneal = dict(F=ca(fwd_matches), R=ca(rev_matches))
-
-        return anneal
+    #
+    # # TODO: what does 'anneal' supposed to return???
+    # @staticmethod
+    # def _anneal(template, primer, min_bases=MIN_BASES, threeprime=True):
+    #     t = template.head
+    #     p = primer.head
+    #     if threeprime:
+    #         t = t.find_last()
+    #         p = p.find_last()
+    #     visited = set()
+    #     i = 0
+    #     matches = []
+    #     while t and t not in visited:
+    #         next_method = lambda x: next(x)
+    #         if threeprime:
+    #             next_method = lambda x: x.prev()
+    #         l = t._longest_match(p, next_method)
+    #         if len(l) >= min_bases:
+    #             matches.append((i, len(l)))
+    #         visited.add(t)
+    #         t = next_method(t)
+    #         i += 1
+    #     return matches
+    #
+    # @staticmethod
+    # def anneal_fiveprime(template, primer, min_bases=MIN_BASES):
+    #     return Reaction._anneal(template, primer, min_bases=min_bases, threeprime=False)
+    #
+    # @staticmethod
+    # def anneal_threeprime(template, primer, min_bases=MIN_BASES):
+    #     matches = Reaction._anneal(template, primer, min_bases=min_bases, threeprime=True)
+    #     return [(len(template) - m[0], m[1]) for m in matches]
+    #
+    # @staticmethod
+    # def anneal_primer(template, primer, min_bases=MIN_BASES):
+    #     fwd_matches = Reaction.anneal_threeprime(template, primer, min_bases=min_bases)
+    #     # for f in fwd_matches:
+    #     #     primer.cut
+    #     template.reverse_complement()
+    #     rev_matches = Reaction.anneal_threeprime(template, primer, min_bases=min_bases)
+    #     template.reverse_complement()
+    #
+    #     def ca(matches):
+    #         return [dict(primer=primer, pos=m[0], len=m[1], tm=Reaction.tm(primer.cut(len(primer) - m[1])[-1])) for m in
+    #                 matches]
+    #
+    #     anneal = dict(F=ca(fwd_matches), R=ca(rev_matches))
+    #
+    #     return anneal
 
     @staticmethod
     def pcr(template, p1, p2, min_bases=MIN_BASES):
