@@ -3,13 +3,13 @@ Represent linear or circularized nucleotides
 """
 
 import itertools
-import random
 from collections import defaultdict
 from copy import copy, deepcopy
 from enum import IntFlag
 
 from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
 from jdna.utils import random_color
+from jdna.alphabet import DNA, UnambiguousDNA, AmbiguousDNA
 
 
 class SequenceFlags(IntFlag):
@@ -106,14 +106,11 @@ class BindPos(LinkedListMatch):
             anneal=self.anneal
         )
 
+
 class Nucleotide(Node):
 
     __slots__ = ['data', '__next', '__prev', '_features']
 
-    BASES = dict(list(zip(
-        ['a', 't', 'c', 'g', 'A', 'T', 'C', 'G', 'n', 'N'],
-        ['t', 'a', 'g', 'c', 'T', 'A', 'G', 'C', 'n', 'N']
-    )))
 
     def __init__(self, base):
         super(Nucleotide, self).__init__(base)
@@ -122,7 +119,7 @@ class Nucleotide(Node):
     @classmethod
     def random(cls):
         """Generate a random sequence"""
-        return cls(random.choice(cls.BASES))
+        return cls(UnambiguousDNA.random())
 
     @property
     def base(self):
@@ -132,10 +129,10 @@ class Nucleotide(Node):
         return self.base.upper() == other.base.upper()
 
     def complementary(self, other):
-        return self.base.upper() == self.BASES[other.base].upper()
+        return self.base.upper() == DNA[other.base].upper()
 
     def to_complement(self):
-        self.data = self.BASES[self.data]
+        self.data = DNA[self.data]
 
     def set_next(self, nucleotide):
         self.cut_next()
@@ -320,7 +317,7 @@ class Sequence(DoubleLinkedList):
         """Generate a random sequence"""
         seq = ""
         for i in range(length):
-            seq += random.choice(list(cls.NODE_CLASS.BASES.keys()))
+            seq += UnambiguousDNA.random().upper()
         if seq == '':
             return None
         return cls(sequence=seq)
