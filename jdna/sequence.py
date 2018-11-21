@@ -451,20 +451,20 @@ class Sequence(DoubleLinkedList):
                                     protocol=lambda x, y: x.complementary(y)):
             yield match
 
-    def _forward_anneals(self, other, min_bases=10):
+    def anneal_forward(self, other, min_bases=10):
         for match in self.find_iter(other, min_query_length=min_bases,
                                     direction=self.Direction.REVERSE):
             yield BindPos(match.start, match.end, match.span, match.query_span, SequenceFlags.FORWARD, other)
 
-    def _reverse_anneals(self, other, min_bases=10):
+    def anneal_reverse(self, other, min_bases=10):
         other = other.copy().reverse_complement()
         for match in self.find_iter(other, min_query_length=min_bases):
             yield BindPos(match.start, match.end, match.span, match.query_span, SequenceFlags.REVERSE, other)
 
     def anneal(self, other, min_bases=10):
-        for match in self._forward_anneals(other, min_bases=min_bases):
+        for match in self.anneal_forward(other, min_bases=min_bases):
             yield match
-        for match in self._reverse_anneals(other, min_bases=min_bases):
+        for match in self.anneal_reverse(other, min_bases=min_bases):
             yield match
 
 # def __repr__(self):

@@ -31,3 +31,8 @@ docs:
 
 klocs:
 	find . -name '*.py' | xargs wc -l
+
+benchmark:
+	rm -rf .benchmarks/images/*svg
+	pipenv run python -m pytest --benchmark-autosave --benchmark-max-time=0.1 --benchmark-group-by=func --benchmark-histogram=.benchmarks/images/histogram
+

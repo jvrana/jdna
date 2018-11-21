@@ -1,0 +1,71 @@
+{
+    "machine_info": {
+        "node": "Justins-iMac.local",
+        "processor": "i386",
+        "machine": "x86_64",
+        "python_compiler": "GCC 4.2.1 Compatible Clang 4.0.1 (tags/RELEASE_401/final)",
+        "python_implementation": "CPython",
+        "python_implementation_version": "3.6.4",
+        "python_version": "3.6.4",
+        "python_build": [
+            "default",
+            "Mar 12 2018 20:05:31"
+        ],
+        "release": "16.7.0",
+        "system": "Darwin",
+        "cpu": {
+            "vendor_id": "GenuineIntel",
+            "hardware": "unknown",
+            "brand": "Intel(R) Core(TM) i5-3570K CPU @ 3.40GHz"
+        }
+    },
+    "commit_info": {
+        "id": "f4221b20533ec0ad616a90c42328ebfc84976e8d",
+        "time": "2018-11-20T19:54:37-08:00",
+        "author_time": "2018-11-20T19:54:37-08:00",
+        "dirty": true,
+        "project": "jdna",
+        "branch": "master"
+    },
+    "benchmarks": [
+        {
+            "group": null,
+            "name": "test_anneal_small[100]",
+            "fullname": "tests/benchmarks/test_benchmark.py::test_anneal_small[100]",
+            "params": {
+                "template_length": 100
+            },
+            "param": "100",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 0.1,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 2.5949993869289757e-07,
+                "max": 7.42779957363382e-06,
+                "mean": 2.6434630322470957e-07,
+                "stddev": 5.7489975077819494e-08,
+                "rounds": 17684,
+                "median": 2.6249908842146396e-07,
+                "iqr": 1.5003024600446542e-09,
+                "q1": 2.6180059649050235e-07,
+                "q3": 2.63300898950547e-07,
+                "iqr_outliers": 1152,
+                "stddev_outliers": 69,
+                "outliers": "69;1152",
+                "ld15iqr": 2.5960034690797327e-07,
+                "hd15iqr": 2.655986463651061e-07,
+                "ops": 3782916.5295719747,
+                "total": 0.004674700026225768,
+                "iterations": 20
+            }
+        }
+    ],
+    "datetime": "2018-11-21T04:02:55.957318",
+    "version": "3.1.1"
+}

@@ -302,7 +302,7 @@ def test_anneal(overhang):
 
     assert str(primer) == primer_seq
 
-    forward_matches = list(seq._forward_anneals(primer))
+    forward_matches = list(seq.anneal_forward(primer))
     print(forward_matches)
 
     f = forward_matches[0]
@@ -325,7 +325,7 @@ def test_anneal(overhang):
     assert len(forward_matches) == 1
     assert str(primer) == primer_seq
 
-    reverse_matches = list(seq._reverse_anneals(primer))
+    reverse_matches = list(seq.anneal_reverse(primer))
     print(reverse_matches)
     r = reverse_matches[0]
     # check spans

@@ -11,6 +11,9 @@ pytest = "*"
 pylint = "*"
 guzzle-sphinx-theme = "*"
 pyflakes = "*"
+pytest-benchmark = "*"
+pygaljs = "*"
+pygal = "*"
 
 [requires]
 python_version = "3.6"
