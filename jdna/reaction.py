@@ -53,6 +53,15 @@ class Reaction(object):
             products.append(amplified)
         return products
 
+    @classmethod
+    def anneal_sequences(cls, sequences):
+        pairs = itertools.product(sequences, sequences)
+        bindings = []
+        for s1, s2 in pairs:
+            for binding in s1.anneal(s2):
+                bindings.append((s1, s2, binding))
+        return bindings
+
 
 
 
