@@ -129,20 +129,29 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">Feature</span></code>(name[,&nbsp;type,&nbsp;strand,&nbsp;color])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#jdna.sequence.BindPos" title="jdna.sequence.BindPos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BindPos</span></code></a>(start,&nbsp;end,&nbsp;anneal_span,&nbsp;query_span,&nbsp;…)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#jdna.sequence.Nucleotide" title="jdna.sequence.Nucleotide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nucleotide</span></code></a>(base)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">Feature</span></code>(name[,&nbsp;type,&nbsp;strand,&nbsp;color])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#jdna.sequence.STRAND" title="jdna.sequence.STRAND"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STRAND</span></code></a></td>
-<td>An enumeration.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#jdna.sequence.Nucleotide" title="jdna.sequence.Nucleotide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nucleotide</span></code></a>(base)</td>
+<td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#jdna.sequence.Sequence" title="jdna.sequence.Sequence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sequence</span></code></a>([sequence,&nbsp;first,&nbsp;name,&nbsp;description])</td>
 <td></td>
 </tr>
+<tr class="row-odd"><td><a class="reference internal" href="#jdna.sequence.SequenceFlags" title="jdna.sequence.SequenceFlags"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SequenceFlags</span></code></a></td>
+<td>An enumeration.</td>
+</tr>
 </tbody>
 </table>
+<dl class="class">
+<dt id="jdna.sequence.BindPos">
+<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">BindPos</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>anneal_span</em>, <em>query_span</em>, <em>direction</em>, <em>primer</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#BindPos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.BindPos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.LinkedListMatch" title="jdna.linked_list.LinkedListMatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.linked_list.LinkedListMatch</span></code></a></p>
+</dd></dl>
+
 <dl class="class">
 <dt id="jdna.sequence.Nucleotide">
 <em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">Nucleotide</code><span class="sig-paren">(</span><em>base</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide" title="Permalink to this definition">¶</a></dt>
@@ -466,16 +475,16 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="jdna.sequence.STRAND">
-<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">STRAND</code><a class="reference internal" href="../../_modules/jdna/sequence.html#STRAND"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.STRAND" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
-</dd></dl>
-
-<dl class="class">
 <dt id="jdna.sequence.Sequence">
 <em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">Sequence</code><span class="sig-paren">(</span><em>sequence=None</em>, <em>first=None</em>, <em>name=None</em>, <em>description=''</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.linked_list.DoubleLinkedList</span></code></a></p>
+<dl class="class">
+<dt id="jdna.sequence.Sequence.Direction">
+<em class="property">class </em><code class="descname">Direction</code><a class="headerlink" href="#jdna.sequence.Sequence.Direction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntFlag</span></code></p>
+<p>An enumeration.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="jdna.sequence.Sequence.NODE_CLASS">
 <code class="descname">NODE_CLASS</code><a class="headerlink" href="#jdna.sequence.Sequence.NODE_CLASS" title="Permalink to this definition">¶</a></dt>
@@ -513,7 +522,7 @@
 <dl class="method">
 <dt id="jdna.sequence.Sequence.inclusive_range">
 <code class="descname">inclusive_range</code><span class="sig-paren">(</span><em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.inclusive_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return inclusive nodes between index i and j</p>
+<dd><p>Return generator for inclusive nodes between index i and j</p>
 </dd></dl>
 
 <dl class="classmethod">
@@ -522,6 +531,19 @@
 <dd><p>Generate a random sequence</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="jdna.sequence.Sequence.range">
+<code class="descname">range</code><span class="sig-paren">(</span><em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator from node at ‘i’ to node at ‘j-1’</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="jdna.sequence.SequenceFlags">
+<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">SequenceFlags</code><a class="reference internal" href="../../_modules/jdna/sequence.html#SequenceFlags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.SequenceFlags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntFlag</span></code></p>
+<p>An enumeration.</p>
 </dd></dl>
 
 </div>

@@ -411,10 +411,16 @@ class Sequence(DoubleLinkedList):
             curr = next(curr)
         return self
 
+    def c(self):
+        return self.complement()
+
     def reverse_complement(self):
         self.reverse()
         self.complement()
         return self
+
+    def rc(self):
+        return self.reverse_complement()
 
     def cut(self, i, cut_prev=True):
         fragments = super(Sequence, self).cut(i, cut_prev)

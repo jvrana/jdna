@@ -13,10 +13,11 @@ jdna.sequence
 
    .. autosummary::
    
+      BindPos
       Feature
       Nucleotide
-      STRAND
       Sequence
+      SequenceFlags
    
    
 

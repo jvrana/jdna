@@ -3,13 +3,13 @@ PIP=pip3
 .PHONY: docs
 
 lock:
+	pipenv lock
 	pipenv lock -r > requirements.txt
 	pipenv lock -r > requirements-dev.txt
 	pipenv lock --dev -r >> requirements-dev.txt
 
-
 pylint:
-	pipenv run pylint -E benchlingapi
+	pipenv run pylint -E jdna
 
 flake:
 	pipenv run pyflakes .

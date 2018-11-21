@@ -5,6 +5,14 @@ import pytest
 from jdna.linked_list import DoubleLinkedList
 
 
+def test_empty():
+    l = DoubleLinkedList()
+    l2 = DoubleLinkedList()
+    l3 = l + l2
+    for n in l3:
+        print(n)
+
+
 def test_linked_list_constructor(test_str, linked_list):
     assert str(linked_list) == test_str
     assert linked_list.head, test_str[0]
@@ -354,3 +362,5 @@ class TestLinkedListMagic(object):
         assert str(l2) == 'def'
         assert l1 is not l2
         assert l2 is not l3
+
+

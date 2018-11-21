@@ -310,6 +310,29 @@ class Node(object):
         return str(self.data)
 
 
+class EmptyNode(Node):
+
+    def __init__(self):
+        pass
+
+    # @property
+    # def __next(self):
+    #     return EmptyNode()
+    #
+    # @property
+    # def __prev(self):
+    #     return EmptyNode()
+
+    def __eq__(self, other):
+        return False
+
+    def _propogate(self, *args, **kwargs):
+        return
+        yield
+
+    def __str__(self):
+        return ''
+
 class LinkedListMatch(object):
     """
     A match object
@@ -346,13 +369,13 @@ class DoubleLinkedList(object):
     NODE_CLASS = Node
 
     def __init__(self, data=None, first=None):
-        self._head = None
+        self._head = EmptyNode()
         if data is not None:
             self.initialize(data)
         elif first is not None:
             self._head = first
-        else:
-            raise AttributeError("Either 'data' or 'first' must be provided.")
+        # else:
+        #     raise AttributeError("Either 'data' or 'first' must be provided.")
 
     # @classmethod
     # def initialize_by_node(cls):
@@ -377,7 +400,13 @@ class DoubleLinkedList(object):
             prev = curr
 
     @property
+    def is_empty(self):
+        return isinstance(self._head, EmptyNode)
+
+    @property
     def head(self):
+        if self.is_empty:
+            return self._head
         if self.cyclic:
             return self._head
         first = self._head.find_first()
@@ -395,6 +424,8 @@ class DoubleLinkedList(object):
 
     @property
     def cyclic(self):
+        if self.is_empty:
+            return False
         visited = set()
         curr = self._head
         while curr:
@@ -432,7 +463,8 @@ class DoubleLinkedList(object):
 
     @property
     def nodes(self):
-        return list(self.head.fwd())
+        n = list(self.head.fwd())
+        return n
 
     def get(self, i):
         if i is None:
@@ -696,6 +728,10 @@ class DoubleLinkedList(object):
         return self
 
     def fuse_in_place(self, seq):
+        if seq.is_empty:
+            return self
+        elif self.is_empty:
+            return seq.copy()
         f = self.head.find_last()
         l = seq.head
         f.set_next(l)
@@ -746,6 +782,11 @@ class DoubleLinkedList(object):
         for i, n in enumerate(self):
             if n is node:
                 return i
+
+    def __eq__(self, other):
+        data1 = [n.data for n in self]
+        data2 = [n.data for n in other]
+        return data1 == data2
 
     def __add__(self, other):
         return self.fuse(other)
@@ -804,14 +845,7 @@ class DoubleLinkedList(object):
         return length
 
     def __iter__(self):
-        current = self.head
-        visited = set()
-        while current is not None:
-            if current in visited:
-                raise StopIteration
-            yield current
-            visited.add(current)
-            current = next(current)
+        return self.head.fwd()
 
     def __repr__(self):
         return "<{cls} data='{data}'>".format(
@@ -822,4 +856,3 @@ class DoubleLinkedList(object):
 
     def __str__(self):
         return ''.join(str(x) for x in self.nodes)
-

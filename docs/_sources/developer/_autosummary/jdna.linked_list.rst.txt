@@ -21,4 +21,11 @@ jdna.linked\_list
 
    
    
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      LinkedListException
+      LinkedListIndexError
+   
    

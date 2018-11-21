@@ -132,11 +132,26 @@
 <tr class="row-odd"><td><a class="reference internal" href="#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DoubleLinkedList</span></code></a>([data,&nbsp;first])</td>
 <td>A generic double linked list class.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#jdna.linked_list.LinkedListMatch" title="jdna.linked_list.LinkedListMatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LinkedListMatch</span></code></a>(start,&nbsp;end,&nbsp;span)</td>
+<tr class="row-even"><td><a class="reference internal" href="#jdna.linked_list.LinkedListMatch" title="jdna.linked_list.LinkedListMatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LinkedListMatch</span></code></a>(start,&nbsp;end,&nbsp;span,&nbsp;query_span)</td>
 <td>A match object</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#jdna.linked_list.Node" title="jdna.linked_list.Node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Node</span></code></a>(data)</td>
 <td>A node in a linked list</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Exceptions</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#jdna.linked_list.LinkedListException" title="jdna.linked_list.LinkedListException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LinkedListException</span></code></a></td>
+<td>Generic linked list exception</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#jdna.linked_list.LinkedListIndexError" title="jdna.linked_list.LinkedListIndexError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LinkedListIndexError</span></code></a></td>
+<td>Indices were out of bounds for LinkedList</td>
 </tr>
 </tbody>
 </table>
@@ -145,6 +160,13 @@
 <em class="property">class </em><code class="descclassname">jdna.linked_list.</code><code class="descname">DoubleLinkedList</code><span class="sig-paren">(</span><em>data=None</em>, <em>first=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A generic double linked list class.</p>
+<dl class="class">
+<dt id="jdna.linked_list.DoubleLinkedList.Direction">
+<em class="property">class </em><code class="descname">Direction</code><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.Direction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.Direction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntFlag</span></code></p>
+<p>An enumeration.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="jdna.linked_list.DoubleLinkedList.NODE_CLASS">
 <code class="descname">NODE_CLASS</code><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.NODE_CLASS" title="Permalink to this definition">¶</a></dt>
@@ -182,14 +204,48 @@
 <dl class="method">
 <dt id="jdna.linked_list.DoubleLinkedList.inclusive_range">
 <code class="descname">inclusive_range</code><span class="sig-paren">(</span><em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.inclusive_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.inclusive_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return inclusive nodes between index i and j</p>
+<dd><p>Return generator for inclusive nodes between index i and j</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.DoubleLinkedList.range">
+<code class="descname">range</code><span class="sig-paren">(</span><em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator from node at ‘i’ to node at ‘j-1’</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="jdna.linked_list.LinkedListException">
+<em class="property">exception </em><code class="descclassname">jdna.linked_list.</code><code class="descname">LinkedListException</code><a class="reference internal" href="../../_modules/jdna/linked_list.html#LinkedListException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.LinkedListException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Generic linked list exception</p>
+<dl class="method">
+<dt id="jdna.linked_list.LinkedListException.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.LinkedListException.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="jdna.linked_list.LinkedListIndexError">
+<em class="property">exception </em><code class="descclassname">jdna.linked_list.</code><code class="descname">LinkedListIndexError</code><a class="reference internal" href="../../_modules/jdna/linked_list.html#LinkedListIndexError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.LinkedListIndexError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdna.linked_list.LinkedListException" title="jdna.linked_list.LinkedListException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.linked_list.LinkedListException</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">IndexError</span></code></p>
+<p>Indices were out of bounds for LinkedList</p>
+<dl class="method">
+<dt id="jdna.linked_list.LinkedListIndexError.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.LinkedListIndexError.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="jdna.linked_list.LinkedListMatch">
-<em class="property">class </em><code class="descclassname">jdna.linked_list.</code><code class="descname">LinkedListMatch</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>span</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#LinkedListMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.LinkedListMatch" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">jdna.linked_list.</code><code class="descname">LinkedListMatch</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>span</em>, <em>query_span</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#LinkedListMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.LinkedListMatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A match object</p>
 </dd></dl>
