@@ -4,6 +4,8 @@ Linked list model to represent linear or circular sequences
 
 from copy import copy
 from enum import IntFlag
+from functools import reduce
+
 
 class LinkedListException(Exception):
     """Generic linked list exception"""
@@ -333,22 +335,73 @@ class EmptyNode(Node):
     def __str__(self):
         return ''
 
+
 class LinkedListMatch(object):
     """
     A match object
     """
 
-    def __init__(self, start, end, span, query_span):
-        self.span = span
-        self.query_span = query_span
-        self.start = start
-        self.end = end
+    def __init__(self, template_bounds, query_bounds, template, query):
+        self.span = tuple(template.indices_of(template_bounds))
+        self.query_span = tuple(query.indices_of(query_bounds))
+        self.query_bounds = query_bounds
+        self.template_bounds = template_bounds
+
+    @classmethod
+    def batch_create(cls, template_bounds_list, query_bounds_list, template, query):
+        """
+        Efficiently create several LinkedListMatches from lists of template starts/ends and query starts/ends
+
+        :param template_bounds_list: list of 2 len tuples containing starts and ends from a template
+        :type template_bounds_list: template DoubleLinkedList
+        :param query_bounds_list: list of 2 len tuples containing starts and ends from a query
+        :type query_bounds_list: query DoubleLinkedList
+        :param template: the template
+        :type template: DoubleLinkedList
+        :param query: the query
+        :type query: DoubleLinkedList
+        :return: matchese
+        :rtype: list of LinkedListMatch
+        """
+        if len(template_bounds_list) != len(query_bounds_list):
+            raise LinkedListIndexError("Cannot create Matches The template bounds list must be same size as query_"
+                                       "bounds list")
+        if not template_bounds_list:
+            return []
+        template_nodes = reduce(lambda x, y: list(x) + list(y), template_bounds_list)
+        query_nodes = reduce(lambda x, y: list(x) + list(y), query_bounds_list)
+        template_indices = template.indices_of(template_nodes)
+        query_indices = query.indices_of(query_nodes)
+
+        matches = []
+        for i in range(0, len(template_nodes), 2):
+            new_match = cls.__new__(cls)
+            new_match.span = (template_indices[i], template_indices[i+1])
+            new_match.query_span = (query_indices[i], query_indices[i+1])
+            new_match.query_bounds = (query_nodes[i], query_nodes[i+1])
+            new_match.template_bounds = (template_nodes[i], template_nodes[i+1])
+            matches.append(new_match)
+        return matches
+
+    @property
+    def start(self):
+        return self.template_bounds[0]
+
+    @property
+    def end(self):
+        return self.template_bounds[1]
+
+    @property
+    def query_start(self):
+        return self.query_bounds[0]
+
+    @property
+    def query_end(self):
+        return self.query_bounds[1]
 
     def __repr__(self):
-        return "<{cls} start={start} end={end} span={span}, qspan={query_span}>".format(
+        return "<{cls} span={span}, qspan={query_span}>".format(
             cls=self.__class__.__name__,
-            start=self.start,
-            end=self.end,
             span=self.span,
             query_span=self.query_span
         )
@@ -667,58 +720,72 @@ class DoubleLinkedList(object):
     #         yield LinkedListMatch(curr_node, x1, span=(i, j - 1))
 
     @classmethod
-    def match(cls, n1, n2, direction=Direction.FORWARD, protocol=None):
+    def match(cls, n1, n2, query_direction=Direction.FORWARD, template_direction=Direction.FORWARD, protocol=None):
+        """"""
         if protocol is None:
             protocol = lambda x, y: x.equivalent(y)
-        if direction == cls.Direction.REVERSE:
-            get_iterator = lambda x: x.rev()
-        else:
-            get_iterator = lambda x: x.fwd()
-        for x1, x2 in zip(get_iterator(n1), get_iterator(n2)):
+
+        iterators = {
+            cls.Direction.FORWARD: lambda x: x.fwd(),
+            cls.Direction.REVERSE: lambda x: x.rev()
+        }
+        for x1, x2 in zip(iterators[template_direction](n1), iterators[query_direction](n2)):
             if protocol(x1, x2):
                 yield (x1, x2)
             else:
                 return
 
     def find_iter(self, query, min_query_length=None, direction=Direction.FORWARD, protocol=None):
+        """
+        Iteratively finds positions that match the query.
+
+        :param query: query list to find
+        :type query: DoubleLinkedList
+        :param min_query_length: the minimum number of matches to return. If None, find_iter will only return complete
+                                matches
+        :type min_query_length: inst
+        :param direction: If Direction.FORWARD (+1), find iter will search from the query head and search forward,
+                        potentially leaving a 'tail' overhang on the query. If
+                        Direction.REVERSE (-1), find iter will search from the query tail and search reverse, potentially
+                        leaving a 'head' overhang on the query. If a tuple, the template_direction and query_direction are
+                        set respectively.
+        :type direction: int or tuple
+        :param protocol: the callable taking two parameters (as Node) to compare during find. If None, defaults
+                        to 'equivalent'
+        :type protocol: callable
+        :return: list of LinkedListMatches
+        :rtype: list
+        """
+        if isinstance(direction, tuple):
+            template_direction, query_direction = direction
+        else:
+            template_direction, query_direction = direction, direction
+
         curr_node = self.head
-        reverse = self.Direction.REVERSE == direction
         visited = set()
-        if reverse:
+        if self.Direction.REVERSE == query_direction:
             query_start = query.tail
         else:
             query_start = query.head
         qlen = len(query)
         if min_query_length is None:
             min_query_length = qlen
+
+        template_nodes = []
+        query_nodes = []
         index = 0
         while curr_node and curr_node not in visited:
-            visited.add(curr_node)
-            matches = list(self.match(curr_node, query_start, direction=direction, protocol=protocol))
-            span_start = index
-            span_end = span_start + len(matches) - 1
-            if reverse:
-                matches = matches[::-1]
-                span_end = index
-                span_start = index - len(matches) + 1
-                if span_start < 0:
-                    span_start += len(self)
-            if len(matches) >= min_query_length:
-                if span_end >= len(self):
-                    if self.cyclic:
-                        span_end -= len(self)
-                    else:
-                        raise Exception("Template was expected to be cyclic but was not")
-                if reverse:
-                    query_span = (qlen-len(matches), qlen-1)
-                else:
-                    query_span = (0, len(matches)-1)
-                yield LinkedListMatch(matches[0][0], matches[-1][0],
-                                      span=(span_start, span_end),
-                                      query_span=query_span
-                                      )
-            curr_node = next(curr_node)
             index += 1
+            visited.add(curr_node)
+            matches = list(self.match(curr_node, query_start, query_direction=query_direction,
+                                      template_direction=template_direction, protocol=protocol))
+            if self.Direction.REVERSE == template_direction:
+                matches = matches[::-1]
+            if len(matches) >= min_query_length:
+                query_nodes.append([matches[0][1], matches[-1][1]])
+                template_nodes.append([matches[0][0], matches[-1][0]])
+            curr_node = next(curr_node)
+        return LinkedListMatch.batch_create(template_nodes, query_nodes, self, query)
 
     def reverse(self):
         for s in self.nodes:
@@ -747,6 +814,34 @@ class DoubleLinkedList(object):
     def empty_iterator():
         return
         yield
+
+    def node_range(self, start, end):
+        """Iterate between 'start' to 'end' nodes (inclusive)"""
+        for n in start.fwd(stop_node=end):
+            yield n
+
+    @classmethod
+    def new_slice(cls, start, end):
+        """Return a new copy of the sequence between 'start' and 'end' nodes"""
+        if start is None:
+            return None
+        prev = None
+        new_nodes = []
+        for n in start.fwd(stop_node=end):
+            new_node = copy(n)
+            new_nodes.append(new_node)
+            new_node.set_prev(prev)
+            prev = new_node
+        new_nodes[-1].set_next(None)
+        return cls(first=new_nodes[0])
+
+    def copy_slice(self, start, end):
+        """Return a copy of the sequence between 'start' and 'end' nodes. If start is None,
+        return the slice copy from head to end. If end is None, return copy from start to tail.
+        If both start and end are None return None."""
+        if start is None:
+            start = self.head
+        return self.new_slice(start, end)
 
     def range(self, i, j):
         """Returns an iterator from node at 'i' to node at 'j-1'"""
@@ -782,6 +877,14 @@ class DoubleLinkedList(object):
         for i, n in enumerate(self):
             if n is node:
                 return i
+
+    def indices_of(self, nodes):
+        index_dict = {}
+        for i, n in enumerate(self):
+            for node in nodes:
+                if n is node:
+                    index_dict[n] = i
+        return [index_dict.get(n, None) for n in nodes]
 
     def __eq__(self, other):
         data1 = [n.data for n in self]

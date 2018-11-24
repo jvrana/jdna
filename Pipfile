@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 biopython = "*"
+networkx = "*"
 
 [dev-packages]
 pytest = "*"

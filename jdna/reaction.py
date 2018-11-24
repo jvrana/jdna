@@ -10,6 +10,8 @@ Simulate molecular reactions
 # from jdna.graph import Graph
 
 from jdna.sequence import SequenceFlags
+from collections import namedtuple
+import networkx as nx
 import itertools
 
 class ReactionException(Exception):
@@ -18,6 +20,8 @@ class ReactionException(Exception):
 
 class PCRException(ReactionException):
     """Exception with pcr"""
+
+BindingEvent = namedtuple("BindingEvent", ["template", "primer", "position"])
 
 class Reaction(object):
     MIN_BASES = 13
@@ -55,17 +59,82 @@ class Reaction(object):
 
     @classmethod
     def anneal_sequences(cls, sequences):
-        pairs = itertools.product(sequences, sequences)
+        # pairs = itertools.product(sequences, sequences + [s.copy().reverse_complement() for s in sequences[1:]])
+        pairs = itertools.product(sequences, repeat=2)
         bindings = []
         for s1, s2 in pairs:
-            for binding in s1.anneal(s2):
-                bindings.append((s1, s2, binding))
+            for binding in s1.dsanneal(s2):
+                if not (binding.span[0] == 0 and binding.span[-1] == len(s1)-1):
+                    bindings.append(BindingEvent(s1, s2, binding))
         return bindings
 
+    @staticmethod
+    def make_edge(G, binding_event):
+        n1 = binding_event.position.strand * binding_event.primer.global_id
+        n2 = binding_event.position.direction * binding_event.template.global_id
+        return G.add_edge(n1, n2, binding=binding_event)
+
+    @classmethod
+    def interaction_graph(cls, sequences):
+        G = nx.DiGraph()
+
+        for s in sequences:
+            G.add_node(s.global_id, sequence=s)
+
+        for b in cls.anneal_sequences(sequences):
+            cls.make_edge(G, b)
+        return G
+
+    @classmethod
+    def linear_paths(cls, G):
+        paths = []
+        subgraph = G.subgraph(G.nodes).copy()
+        while subgraph.nodes:
+            path = nx.dag_longest_path(subgraph)
+            if len(path) < 2:
+                break
+            subgraph.remove_nodes_from(path)
+            paths.append(path)
+        return paths
+
+    @classmethod
+    def cyclic_paths(cls, G):
+        paths = []
+        for path in nx.simple_cycles(G.copy()):
+            paths.append(path)
+        return paths
+
+    @classmethod
+    def _make_seq_dict(cls, sequences):
+        seq_dict = {x.global_id: x for x in sequences}
+        seq_dict.update(
+            {-x.global_id: x.copy().rc() for x in sequences}
+        )
+        return seq_dict
+
+    @classmethod
+    def linear_assemblies(cls, sequences):
+        seq_dict = cls._make_seq_dict(sequences)
+        G = cls.interaction_graph(sequences)
+        paths = cls.linear_paths(G)
+        homologies = []
+        for path in paths:
+            edges = zip(path[:-1], path[1:])
+            binding_positions = []
+            for n1, n2 in edges:
+                edge = G.edges[n1, n2]
+                binding = edge['binding']
+                binding_positions.append(binding.position)
+            homologies.append({
+                'path': path,
+                'binding_positions': binding_positions
+            })
+        return homologies
 
 
 
-#
+
+
 # class Reaction(object):
 #
 #     @staticmethod

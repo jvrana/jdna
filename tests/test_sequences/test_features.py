@@ -11,7 +11,7 @@ class TestFeatureProperties(object):
 
     @pytest.fixture(scope="function")
     def basic_feature(self, test_seq):
-        f = test_seq.create_feature('feature', 'type', 1, len(test_seq) - 1)
+        f = test_seq.create_feature(1, len(test_seq) - 1, 'feature', 'type')
         return f
 
     def test_(self, test_seq):
@@ -20,15 +20,15 @@ class TestFeatureProperties(object):
     def test_sequence_has_features(self, test_seq):
         print("Head: {}".format(test_seq._head))
         len(test_seq)
-        test_seq.create_feature('feature', 'type', 1, len(test_seq) - 1)
-        test_seq.create_feature('feature', 'type', 1, len(test_seq) - 1)
-        test_seq.create_feature('feature', 'type', 1, len(test_seq) - 1)
+        test_seq.create_feature(1, len(test_seq) - 1, 'feature', 'type')
+        test_seq.create_feature(1, len(test_seq) - 1, 'feature', 'type')
+        test_seq.create_feature(1, len(test_seq) - 1, 'feature', 'type')
         assert len(test_seq.features) == 3
 
     def test_sequence_has_feature_positions(self, test_seq, test_str):
-        f1 = test_seq.create_feature('feature', 'type', 1, len(test_seq) - 1)
-        f2 = test_seq.create_feature('feature', 'type', 2, len(test_seq) - 2)
-        f3 = test_seq.create_feature('feature', 'type', 3, len(test_seq) - 3)
+        f1 = test_seq.create_feature(1, len(test_seq) - 1, 'feature', 'type')
+        f2 = test_seq.create_feature(2, len(test_seq) - 2, 'feature', 'type')
+        f3 = test_seq.create_feature(3, len(test_seq) - 3, 'feature', 'type')
         fpos = test_seq.feature_positions()
         assert len(fpos) == 3
         assert fpos[f1] == [[1, len(test_str) - 1]]
@@ -57,7 +57,7 @@ class TestFeatureProperties(object):
 class TestFeatureManipulations(object):
 
     def test_features_linearizing(self, test_seq):
-        test_seq.create_feature('feature', 'type', 0, len(test_seq) - 1)
+        test_seq.create_feature(0, len(test_seq) - 1, 'feature', 'type')
         test_seq.circularize()
         test_seq.linearize()
 

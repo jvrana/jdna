@@ -11,7 +11,8 @@ tests_require = [
 
 install_requires = [
     "biopython",
-    "numpy"
+    "numpy",
+    "networkx"
 ]
 
 def parse_version_file():

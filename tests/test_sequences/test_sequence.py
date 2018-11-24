@@ -271,6 +271,18 @@ def test_random(length):
     seq = Sequence.random(length)
     assert len(seq) == length
 
+@pytest.mark.parametrize('length', [
+    0,
+    1,
+    10,
+    100,
+    2000
+])
+def test_repr(length):
+    seq = Sequence.random(length)
+    import textwrap
+    print(seq.__repr__())
+
 def test_find_iter_complementary():
     seq = Sequence("CTACAAATTTTACACAGTGGGACGGGCCA")
 
@@ -285,65 +297,141 @@ def test_find_iter_complementary():
     assert len(matches) == 1
 
 
+@pytest.mark.parametrize('reverse,complement,direction,expected', [
+    (False, False, 1, True),
+    (False, False, -1, True),
+    ('reverse', False, (-1, 1), True),
+    ('reverse', False, (1, -1), True),
+    ('reverse', False, -1, False),
+    ('reverse', False, 1, False),
+    (False, 'complement', 1, True),
+    (False, 'complement', -1, True),
+    (False, 'complement', (1, -1), False),
+    (False, 'complement', (-1, 1), False),
+    ('reverse', 'complement', 1, False),
+    ('reverse', 'complement', -1, False),
+    ('reverse', 'complement', (1, -1), True),
+    ('reverse', 'complement', (-1, 1), True),
+])
+@pytest.mark.parametrize('i,j', [
+    (10, 20),
+    (0, None),
+    (10, None)
+])
+def test_find_iter_reverse_complement(i, j, reverse, complement, direction, expected):
+    reverse = reverse == 'reverse'
+    complement = complement == 'complement'
+
+    # get slice
+    if i is None:
+        i = 0
+    if j is None:
+        j = 30 + i
+    template = Sequence('N'*i) + Sequence.random(j-i) + Sequence('N'*10)
+    query = template[i:j]
+
+    # manipulate query
+    if reverse:
+        query.reverse()
+    if complement:
+        query.complement()
+
+    # get results
+    if complement:
+        results = list(template.find_iter(query, direction=direction, protocol=lambda x, y: x.complementary(y)))
+    else:
+        results = list(template.find_iter(query, direction=direction))
+
+    if expected:
+        assert len(results) == 1
+        res = results[0]
+        if i is None:
+            expected_i = 0
+        else:
+            expected_i = i
+
+        if j is None:
+            expected_j = len(template) - 1
+        else:
+            expected_j = expected_i + (j-i) - 1
+        assert res.span == (expected_i, expected_j)
+    else:
+        assert not results
+
+
+@pytest.mark.parametrize('reverse,complement,expected', [
+    # (False, False, True),
+    ('reverse', 'complement', True),
+])
+@pytest.mark.parametrize('i,j', [
+    (10, 20),
+    (0, None),
+    (10, None)
+])
+def test_anneal_basic(i, j, reverse, complement, expected):
+    reverse = reverse == 'reverse'
+    complement = complement == 'complement'
+
+    # get slice
+    if i is None:
+        i = 0
+    if j is None:
+        j = 30 + i
+    template = Sequence('N'*i) + Sequence.random(j-i) + Sequence('N'*10)
+    query = template[i:j]
+
+    # manipulate query
+    if reverse:
+        query.reverse()
+    if complement:
+        query.complement()
+
+    # results = list(template.anneal(query))
+    # assert results
+    #
+    results = list(template.find_iter(query, direction=(1, -1), min_query_length=10, protocol=lambda x, y: x.complementary(y)))
+    print(results)
+    results = list(template.anneal_reverse(query))
+    print(results)
+
+@pytest.mark.parametrize('reverse_complement', [False, True])
 @pytest.mark.parametrize('overhang', [
     'A',
     'ACGTGCTTGCGTGTCGTTGA',
     ''
 ])
-def test_anneal(overhang):
+def test_anneal(overhang, reverse_complement):
     anneal = "CTACAAATTTACACAGTGGGACGGGCCA"
     primer = Sequence(overhang + anneal)
     primer_seq = str(primer)
+    anneal_seq = Sequence(anneal)
+    if reverse_complement:
+        anneal_seq.reverse_complement()
+
+    print(str(anneal_seq))
     seq = Sequence.random(99) + \
-          Sequence("N") + Sequence(anneal) + Sequence("N") + \
-          Sequence.random(18) + \
-          Sequence("N") + Sequence(anneal).reverse_complement() + Sequence("N") + \
+          Sequence("N") + anneal_seq + Sequence("N") + \
           Sequence.random(100)
 
     assert str(primer) == primer_seq
 
-    forward_matches = list(seq.anneal_forward(primer))
-    print(forward_matches)
+    method = seq.anneal_forward
+    if reverse_complement:
+        method = seq.anneal_reverse
 
-    f = forward_matches[0]
-
+    matches = list(method(primer))
     # check annealing span
-    assert f.span == (100, 100 + len(anneal)-1)
-    assert f.query_span == (len(overhang), len(overhang) + len(anneal) - 1)
-
-    # check annealing sequence
-    assert str(f.anneal) == anneal
+    assert matches[0].span == (100, 100 + len(anneal)-1)
+    assert matches[0].query_span == (len(overhang), len(overhang) + len(anneal) - 1)
+    assert str(matches[0].anneal) == anneal
 
     # check overhang sequence
-    assert f.three_prime_overhang is None
+    assert matches[0].three_prime_overhang is None
     if overhang == '':
-        assert f.five_prime_overhang is None
+        assert matches[0].five_prime_overhang is None
     else:
-        assert str(f.five_prime_overhang) == overhang
+        assert str(matches[0].five_prime_overhang) == overhang
 
     # check num matches
-    assert len(forward_matches) == 1
-    assert str(primer) == primer_seq
-
-    reverse_matches = list(seq.anneal_reverse(primer))
-    print(reverse_matches)
-    r = reverse_matches[0]
-    # check spans
-    assert r.span == (100 + len(anneal) + 20, 100 + len(anneal) + 20 + len(anneal)-1)
-    assert r.query_span == (len(overhang), len(overhang) + len(anneal) - 1)
-
-    # check annealing sequence
-    assert str(r.anneal) == anneal
-
-    # check overhang sequences
-    assert r.three_prime_overhang is None
-    if overhang == '':
-        assert r.five_prime_overhang is None
-    else:
-        assert str(r.five_prime_overhang) == overhang
-
-    # check num matches
-    assert len(reverse_matches) == 1
-
-    # check primer has not changed
+    assert len(matches) == 1
     assert str(primer) == primer_seq

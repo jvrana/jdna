@@ -6,6 +6,8 @@ import itertools
 from collections import defaultdict
 from copy import copy, deepcopy
 from enum import IntFlag
+import textwrap
+
 
 from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
 from jdna.utils import random_color
@@ -76,34 +78,89 @@ class Feature(object):
 
 class BindPos(LinkedListMatch):
 
-    def __init__(self, start, end, anneal_span, query_span, direction, primer):
-        super().__init__(start, end, anneal_span, query_span)
-        self.primer = primer.copy()
-        self.direction = direction
-        self.anneal = self.primer[query_span[0]:query_span[1]+1]
-        self.five_prime_overhang = self.primer[:query_span[0]]
-        self.three_prime_overhang = self.primer[query_span[1]+1:]
+    def __init__(self, template_bounds, query_bounds, template, query, direction, strand=SequenceFlags.TOP):
+        """
+        Makes a sequence binding position.
 
-        if self.direction == SequenceFlags.REVERSE:
-            if self.anneal:
-                self.anneal.reverse_complement()
-            if self.five_prime_overhang:
-                self.five_prime_overhang.reverse_complement()
-            if self.three_prime_overhang:
-                self.three_prime_overhang.reverse_complement()
-                l = len(self.three_prime_overhang)
-            else:
-                l = 0
-            self.three_prime_overhang, self.five_prime_overhang = self.five_prime_overhang, self.three_prime_overhang
-            self.query_span = (self.query_span[0] + l, self.query_span[1] + l)
+        :param template_bounds_list: list of 2 len tuples containing starts and ends from a template
+        :type template_bounds_list: template DoubleLinkedList
+        :param query_bounds_list: list of 2 len tuples containing starts and ends from a query
+        :type query_bounds_list: query DoubleLinkedList
+        :param template: the template
+        :type template: DoubleLinkedList
+        :param query: the query
+        :type query: DoubleLinkedList
+        :param direction: If SequenceFlags.FORWARD, the binding position indicates binding forward, to the bottom strand
+                            of a dsDNA sequence.
+        :type direction: int
+        :param strand: If SequenceFlags.BOTTOM, then the query is assumed to be the reverse_complement of the original
+                        query
+        :type strand: int
+        """
+        super().__init__(template_bounds, query_bounds, template, query)
+        self.direction = direction
+        self.strand = strand
+
+        self.anneal = query.copy_slice(*self.query_bounds)
+        self.five_prime_overhang = query.copy_slice(None, query_bounds[0].prev())
+        self.three_prime_overhang = query.copy_slice(query_bounds[1].next(), None)
+
+        # self.anneal = self.primer[query_span[0]:query_span[1]+1]
+        # self.five_prime_overhang = self.primer[:query_span[0]]
+        # self.three_prime_overhang = self.primer[query_span[1]+1:]
+
+    # def innitialize(self):
+    #     if self.direction == SequenceFlags.REVERSE:
+    #         if self.anneal:
+    #             self.anneal.reverse_complement()
+    #         if self.five_prime_overhang:
+    #             self.five_prime_overhang.reverse_complement()
+    #         if self.three_prime_overhang:
+    #             self.three_prime_overhang.reverse_complement()
+    #             length = len(self.three_prime_overhang)
+    #         else:
+    #             length = 0
+    #         self.three_prime_overhang, self.five_prime_overhang = self.five_prime_overhang, self.three_prime_overhang
+    #         self.query_span = (self.query_span[0] + length, self.query_span[1] + length)
+
+    @classmethod
+    def from_match(cls, linked_list_match, template, query, direction, strand=SequenceFlags.TOP):
+        """
+        Return a binding pos
+        :param linked_list_match: the linked list match
+        :type linked_list_match: LinkedListMatch
+        :return:
+        :rtype:
+        """
+        return cls(linked_list_match.template_bounds, linked_list_match.query_bounds,
+            template, query,
+            direction,
+            strand=strand
+        )
+
+    @property
+    def template_anneal(self):
+        if self.strand == SequenceFlags.FORWARD:
+            return Sequence.new_slice(self.start, self.end)
+        else:
+            return Sequence.new_slice(self.start, self.end)
+
+    @property
+    def query_anneal(self):
+        if self.direction == SequenceFlags.FORWARD:
+            return Sequence.new_slice(self.query_start, self.query_end)
+        else:
+            return Sequence.new_slice(self.query_end, self.query_start).reverse_complement()
 
     def __repr__(self):
-        return "<{cls} span={span} 5'='{five}' anneal='{anneal}' 3'='{three}'>".format(
+        return "<{cls} span={span} direction='{direction}' strand='{strand}' 5'='{five}' anneal='{anneal}' 3'='{three}'>".format(
             cls=self.__class__.__name__,
             span=self.span,
-            five=self.five_prime_overhang,
-            three=self.three_prime_overhang,
-            anneal=self.anneal
+            direction=self.direction,
+            strand=self.strand,
+            five=self.five_prime_overhang.__repr__(),
+            three=self.three_prime_overhang.__repr__(),
+            anneal=self.anneal.__repr__()
         )
 
 
@@ -198,7 +255,7 @@ class Nucleotide(Node):
     # def update_feature_span(self, feature, delta_i):
     #     start = self.feature_rev(feature)[-1]
     #     for n in start.feature_fwd(feature):
-    #         n.features[feature] += delta_i
+    #         n.ffeatures[feature] += delta_i
 
     def _remove_overlapping_features(self):
         # type: () -> Nucleotide
@@ -298,11 +355,12 @@ class Nucleotide(Node):
 
     def __copy__(self):
         copied = super(Nucleotide, self).__copy__()
-        copied.features = deepcopy(self.features)
+        copied._features = deepcopy(self.features)
         return copied
 
 
 class Sequence(DoubleLinkedList):
+
     NODE_CLASS = Nucleotide
     counter = itertools.count()
 
@@ -311,6 +369,10 @@ class Sequence(DoubleLinkedList):
         self.name = name
         self.description = description
         self._global_id = next(Sequence.counter)
+
+    @property
+    def global_id(self):
+        return self._global_id
 
     @classmethod
     def random(cls, length):
@@ -394,10 +456,15 @@ class Sequence(DoubleLinkedList):
                 found.append(feature)
         return found
 
-    def create_feature(self, name, feature_type, start, end):
+    def create_feature(self, start, end, name, feature_type):
         f = Feature(name, feature_type)
         self.add_feature(start, end, f)
         return f
+
+    def annotate(self, start, end, name, feature_type=None):
+        if feature_type is None:
+            feature_type = 'misc'
+        return self.create_feature(start, end, name, feature_type)
 
     def complement(self):
         curr = self.head
@@ -442,33 +509,52 @@ class Sequence(DoubleLinkedList):
             copied.add_multipart_feature(positions, copy(feature))
         return copied
 
-    def anneal_to_bottom_strand(self, other, min_bases=10):
-        for match in self.find_iter(other,
-                                    min_query_length=min_bases,
-                                    direction=self.Direction.REVERSE, ):
-            yield match
-
-    def anneal_to_top_strand(self, other, min_bases=10):
-        for match in self.find_iter(other,
-                                    min_query_length=min_bases,
-                                    protocol=lambda x, y: x.complementary(y)):
-            yield match
+    # def anneal_to_bottom_strand(self, other, min_bases=10):
+    #     for match in self.find_iter(other,
+    #                                 min_query_length=min_bases,
+    #                                 direction=self.Direction.REVERSE, ):
+    #         yield match
+    #
+    # def anneal_to_top_strand(self, other, min_bases=10):
+    #     for match in self.find_iter(other,
+    #                                 min_query_length=min_bases,
+    #                                 protocol=lambda x, y: x.complementary(y)):
+    #         yield match
 
     def anneal_forward(self, other, min_bases=10):
         for match in self.find_iter(other, min_query_length=min_bases,
                                     direction=self.Direction.REVERSE):
-            yield BindPos(match.start, match.end, match.span, match.query_span, SequenceFlags.FORWARD, other)
+            yield BindPos.from_match(match, self, other, direction=self.Direction.FORWARD)
 
     def anneal_reverse(self, other, min_bases=10):
-        other = other.copy().reverse_complement()
-        for match in self.find_iter(other, min_query_length=min_bases):
-            yield BindPos(match.start, match.end, match.span, match.query_span, SequenceFlags.REVERSE, other)
+        for match in self.find_iter(other,
+                                    min_query_length=min_bases,
+                                    direction=(1, -1),
+                                    protocol=lambda x, y: x.complementary(y)
+                                    ):
+            yield BindPos.from_match(match, self, other, direction=self.Direction.REVERSE)
 
-    def anneal(self, other, min_bases=10):
-        for match in self.anneal_forward(other, min_bases=min_bases):
+    def anneal(self, ssDNA, min_bases=10):
+        """Simulate annealing a single stranded piece of DNA to a double_stranded template"""
+        for match in self.anneal_forward(ssDNA, min_bases=min_bases):
             yield match
-        for match in self.anneal_reverse(other, min_bases=min_bases):
+        for match in self.anneal_reverse(ssDNA, min_bases=min_bases):
             yield match
 
-# def __repr__(self):
-#     return str(self)
+    def dsanneal(self, dsDNA, min_bases=10):
+        """Simulate annealing a double stranded piece of DNA to a double_stranded template"""
+        for binding in self.anneal(dsDNA, min_bases=min_bases):
+            yield binding
+        for binding in self.anneal(dsDNA.copy().reverse_complement(), min_bases=min_bases):
+            binding.strand = SequenceFlags.BOTTOM
+            yield binding
+
+    def __repr__(self):
+        max_width = 30
+        replace = '...'
+        display = int((max_width - len(replace))/2.0)
+        s = str(self)
+        if len(s) > display*2:
+            # diff = display*2 - len(s)
+            s = s[:display] + '...' + s[-display:]
+        return "Sequence('{}')".format(s)

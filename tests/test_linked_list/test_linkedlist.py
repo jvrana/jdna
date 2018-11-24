@@ -155,6 +155,10 @@ def test_find_iter(query_test_str, expected, template_circular, query_circular, 
     query.circular = query_circular
     found = list(template.find_iter(query, direction=direction))
     found = sorted(found, key=lambda x: template.index_of(x.start))
+
+    # for f in found:
+    #     print(template.index_of(f.start))
+
     assert len(found) == len(expected)
     for i, f in enumerate(found):
         assert f.start is template[expected[i]]
@@ -218,6 +222,17 @@ def test_find_iter_protocol():
 
     found = list(template.find_iter(DoubleLinkedList("BCD"), protocol=lambda x,y: False))
     assert len(found) == 0
+
+
+def test_find_iter_reverse_query():
+    template_test_str = "ABCDEFGHIJKL"
+    template = DoubleLinkedList(template_test_str)
+
+    found = list(template.find_iter(DoubleLinkedList("ZZIJKL"[::-1]), min_query_length=2,
+                                    direction=(-1, 1)))
+    assert len(found) == 1
+    assert found[0].span == (8, 11)
+    assert found[0].query_span == (3, 0)
 
 
 def test_find_iter_query_span():
