@@ -452,13 +452,12 @@ class DoubleLinkedList(object):
                 prev.set_next(curr)
             prev = curr
 
-    @property
     def is_empty(self):
         return isinstance(self._head, EmptyNode)
 
     @property
     def head(self):
-        if self.is_empty:
+        if self.is_empty():
             return self._head
         if self.cyclic:
             return self._head
@@ -477,7 +476,7 @@ class DoubleLinkedList(object):
 
     @property
     def cyclic(self):
-        if self.is_empty:
+        if self.is_empty():
             return False
         visited = set()
         curr = self._head
@@ -510,7 +509,7 @@ class DoubleLinkedList(object):
             return self.tail.set_next(self.head)
 
     def linearize(self, i=0):
-        this_i = self.nodes[i]
+        this_i = self.get(i)
         this_i.cut_prev()
         return this_i
 
@@ -609,7 +608,7 @@ class DoubleLinkedList(object):
         return [cls(first=h) for h, _ in cls.find_ends(nodes)]
 
     def insert(self, node_list, i, copy_insertion=True):
-        if i == len(self.nodes):
+        if i == len(self):
             pass
         else:
             self._check_if_in_bounds(i)
@@ -618,11 +617,11 @@ class DoubleLinkedList(object):
         if copy_insertion:
             node_list = copy(node_list)
         # TODO: This copies the insertion sequence, you want that?
-        if i == len(self.nodes):
+        if i == len(self):
             loc2 = None
-            loc1 = self.nodes[i - 1]
+            loc1 = self.get(i-1)
         else:
-            loc2 = self.nodes[i]
+            loc2 = self.get(i)
             loc1 = loc2.prev()
         first = node_list.nodes[0]
         last = node_list.nodes[-1]
@@ -634,7 +633,7 @@ class DoubleLinkedList(object):
 
     def remove(self, i):
         self._check_if_in_bounds(i)
-        to_be_removed = self.nodes[i]
+        to_be_removed = self.get(i)
         new_first = self.head
         if i == 0:
             new_first = next(new_first)
@@ -646,14 +645,14 @@ class DoubleLinkedList(object):
         self._check_if_in_bounds(i)
         if not self.cyclic:
             raise TypeError("Cannot re-index a linear {}".format(self.__class__.__name__))
-        self.head = self[i]
+        self.head = self.get(i)
 
     def _check_if_in_bounds(self, num):
         if isinstance(num, int):
             num = [num]
         for n in num:
             mn = 0
-            mx = len(self.nodes) - 1
+            mx = len(self) - 1
             if n < 0 or n > mx:
                 raise LinkedListIndexError("Index {} out of acceptable bounds ({}, {})".format(n, mn, mx))
 
@@ -682,11 +681,9 @@ class DoubleLinkedList(object):
         n1 = self.head
         n2 = other.head
         start = None
-        end = None
         while n1 and n2 and n1.equivalent(n2):
             if start is None:
                 start = (n1, n2)
-            end = (n1, n2)
             n1 = next(n1)
             n2 = next(n2)
 
@@ -795,9 +792,9 @@ class DoubleLinkedList(object):
         return self
 
     def fuse_in_place(self, seq):
-        if seq.is_empty:
+        if seq.is_empty():
             return self
-        elif self.is_empty:
+        elif self.is_empty():
             return seq.copy()
         f = self.head.find_last()
         l = seq.head
@@ -809,6 +806,10 @@ class DoubleLinkedList(object):
 
     def copy(self):
         return self.__copy__()
+
+    @classmethod
+    def empty(cls):
+        return cls()
 
     @staticmethod
     def empty_iterator():
@@ -822,17 +823,27 @@ class DoubleLinkedList(object):
 
     @classmethod
     def new_slice(cls, start, end):
-        """Return a new copy of the sequence between 'start' and 'end' nodes"""
-        if start is None:
-            return None
+        """Return a copy of the sequence between 'start' and 'end' nodes)"""
+
         prev = None
         new_nodes = []
-        for n in start.fwd(stop_node=end):
-            new_node = copy(n)
-            new_nodes.append(new_node)
-            new_node.set_prev(prev)
-            prev = new_node
+        if start is not None:
+            for n in start.fwd(stop_node=end):
+                new_node = copy(n)
+                new_nodes.append(new_node)
+                new_node.set_prev(prev)
+                prev = new_node
+        else:
+            if end is None:
+                return cls.empty()
+            for n in end.rev(stop_node=start):
+                new_node = copy(n)
+                new_nodes.append(new_node)
+                new_node.set_next(prev)
+                prev = new_node
+            new_nodes = new_nodes[::-1]
         new_nodes[-1].set_next(None)
+        new_nodes[0].set_prev(None)
         return cls(first=new_nodes[0])
 
     def copy_slice(self, start, end):
@@ -886,6 +897,9 @@ class DoubleLinkedList(object):
                     index_dict[n] = i
         return [index_dict.get(n, None) for n in nodes]
 
+    def data(self):
+        return [n.data for n in self]
+
     def __eq__(self, other):
         data1 = [n.data for n in self]
         data2 = [n.data for n in other]
@@ -898,6 +912,11 @@ class DoubleLinkedList(object):
         if isinstance(key, slice):
             if key.step and key.step > 1:
                 raise LinkedListIndexError("Step > 1 is not supported for sliced object of '{}'".format(self.__class__.__name__))
+
+            if key.start is not None and key.stop is not None:
+                if key.start == key.stop:
+                    return self.empty()
+
             new_list = self.__copy__()
             if key.start is None and key.stop is None:
                 if key.step == -1:
@@ -905,17 +924,15 @@ class DoubleLinkedList(object):
                 else:
                     return new_list
 
-            if key.start is not None and key.stop is not None:
-                if key.start == key.stop:
-                    return None
             try:
                 new_nodes = list(new_list.range(key.start, key.stop))
             except LinkedListIndexError:
-                return None
+                return self.empty()
             if not new_nodes:
-                return None
+                return self.empty()
             start = new_nodes[0]
             end = new_nodes[-1]
+
             start.cut_prev()
             end.cut_next()
             return self.__class__(first=start)
@@ -958,4 +975,4 @@ class DoubleLinkedList(object):
         return str(self)
 
     def __str__(self):
-        return ''.join(str(x) for x in self.nodes)
+        return ''.join(str(x) for x in self)

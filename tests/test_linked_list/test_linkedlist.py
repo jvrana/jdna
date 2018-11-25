@@ -34,10 +34,11 @@ def test_indexing(test_str, linked_list):
     (1, 2)
 ])
 def test_slicing(i, j, test_str, linked_list):
+    mylist = linked_list[i:j]
     if i >= j:
-        assert linked_list[i:j] is None
+        assert mylist.is_empty()
     else:
-        assert str(linked_list[i:j]) == test_str[i:j]
+        assert str(mylist) == test_str[i:j]
 
 
 @pytest.mark.parametrize('i,j', [
@@ -48,7 +49,7 @@ def test_slicing(i, j, test_str, linked_list):
 def test_slicing_cyclic(i, j, test_str, linked_list):
     linked_list.cyclic = True
     if i == j:
-        assert linked_list[i:j] is None
+        assert linked_list[i:j].is_empty()
     else:
         assert str(linked_list[i:j]) == test_str[i:] + test_str[:j]
 
@@ -249,22 +250,14 @@ def test_find_iter_query_span():
         assert match.query_span == (4, 8)
 
 
-def test_reverse():
+@pytest.mark.parametrize('circular', [False, True])
+def test_reverse(circular):
     test_str = 'XXXXGHHHXHGG'
     l = DoubleLinkedList(data=test_str)
+    if circular:
+        l.circularize()
+    assert str(l) == test_str
     l.reverse()
-    assert str(l) == test_str[::-1]
-
-    test_str = 'XXXXGHHHXHGG'
-    l = DoubleLinkedList(data=test_str)
-    l.circularize()
-    l.reverse()
-    assert str(l) == test_str[::-1]
-
-    test_str = 'XXXXGHHHXHGG'
-    l = DoubleLinkedList(data=test_str)
-    l.reverse()
-    l.circularize()
     assert str(l) == test_str[::-1]
 
 
@@ -324,7 +317,7 @@ class TestLinkedListMagic(object):
         linked_list.cyclic = circular
         expected = test_str[i:j]
         if test_str[i:j] == '':
-            assert linked_list[i:j] is None, "({},{}) should return None".format(i, j)
+            assert linked_list[i:j].is_empty(), "({},{}) should return None".format(i, j)
         else:
             assert str(linked_list[i:j]) == test_str[i:j]
 
@@ -337,7 +330,7 @@ class TestLinkedListMagic(object):
     def test_splice_magic_circular(self, i, j, linked_list, test_str):
         linked_list.circularize()
         if i == j:
-            assert linked_list[i:j] is None
+            assert linked_list[i:j].is_empty()
             return
         assert str(linked_list[i:j]) == test_str[i:] + test_str[:j]
 
@@ -357,13 +350,14 @@ class TestLinkedListMagic(object):
         assert str(linked_list[:]) == test_str
         assert linked_list[:] is not linked_list
 
-    def test_reverse_magic(self, linked_list, test_str):
+    @pytest.mark.parametrize('circular', [True, False])
+    def test_reverse_magic(self, circular, linked_list, test_str):
+        if circular:
+            linked_list.circularize()
+        assert str(linked_list) == test_str
         assert str(linked_list[::-1]) == test_str[::-1]
 
-    @pytest.mark.parametrize('circular', [
-        True,
-        False,
-    ])
+    @pytest.mark.parametrize('circular', [True, False])
     def test_len_magic(self, circular, linked_list, test_str):
         linked_list.circular = circular
         assert len(linked_list) == len(test_str)

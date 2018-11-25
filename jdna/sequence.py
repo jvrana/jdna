@@ -361,6 +361,9 @@ class Nucleotide(Node):
 
 class Sequence(DoubleLinkedList):
 
+    class DEFAULTS(object):
+        MIN_ANNEAL_BASES = 13
+    
     NODE_CLASS = Nucleotide
     counter = itertools.count()
 
@@ -381,7 +384,7 @@ class Sequence(DoubleLinkedList):
         for i in range(length):
             seq += UnambiguousDNA.random().upper()
         if seq == '':
-            return None
+            return cls.empty()
         return cls(sequence=seq)
 
     @property
@@ -521,12 +524,12 @@ class Sequence(DoubleLinkedList):
     #                                 protocol=lambda x, y: x.complementary(y)):
     #         yield match
 
-    def anneal_forward(self, other, min_bases=10):
+    def anneal_forward(self, other, min_bases=DEFAULTS.MIN_ANNEAL_BASES):
         for match in self.find_iter(other, min_query_length=min_bases,
                                     direction=self.Direction.REVERSE):
             yield BindPos.from_match(match, self, other, direction=self.Direction.FORWARD)
 
-    def anneal_reverse(self, other, min_bases=10):
+    def anneal_reverse(self, other, min_bases=DEFAULTS.MIN_ANNEAL_BASES):
         for match in self.find_iter(other,
                                     min_query_length=min_bases,
                                     direction=(1, -1),
@@ -534,14 +537,14 @@ class Sequence(DoubleLinkedList):
                                     ):
             yield BindPos.from_match(match, self, other, direction=self.Direction.REVERSE)
 
-    def anneal(self, ssDNA, min_bases=10):
+    def anneal(self, ssDNA, min_bases=DEFAULTS.MIN_ANNEAL_BASES):
         """Simulate annealing a single stranded piece of DNA to a double_stranded template"""
         for match in self.anneal_forward(ssDNA, min_bases=min_bases):
             yield match
         for match in self.anneal_reverse(ssDNA, min_bases=min_bases):
             yield match
 
-    def dsanneal(self, dsDNA, min_bases=10):
+    def dsanneal(self, dsDNA, min_bases=DEFAULTS.MIN_ANNEAL_BASES):
         """Simulate annealing a double stranded piece of DNA to a double_stranded template"""
         for binding in self.anneal(dsDNA, min_bases=min_bases):
             yield binding

@@ -9,7 +9,7 @@ Simulate molecular reactions
 # from jdna.sequence import Sequence
 # from jdna.graph import Graph
 
-from jdna.sequence import SequenceFlags
+from jdna.sequence import Sequence, SequenceFlags
 from collections import namedtuple
 import networkx as nx
 import itertools
@@ -58,12 +58,12 @@ class Reaction(object):
         return products
 
     @classmethod
-    def anneal_sequences(cls, sequences):
+    def anneal_sequences(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES):
         # pairs = itertools.product(sequences, sequences + [s.copy().reverse_complement() for s in sequences[1:]])
         pairs = itertools.product(sequences, repeat=2)
         bindings = []
         for s1, s2 in pairs:
-            for binding in s1.dsanneal(s2):
+            for binding in s1.dsanneal(s2, min_bases=min_bases):
                 if not (binding.span[0] == 0 and binding.span[-1] == len(s1)-1):
                     bindings.append(BindingEvent(s1, s2, binding))
         return bindings
@@ -75,13 +75,13 @@ class Reaction(object):
         return G.add_edge(n1, n2, binding=binding_event)
 
     @classmethod
-    def interaction_graph(cls, sequences):
+    def interaction_graph(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES):
         G = nx.DiGraph()
 
         for s in sequences:
             G.add_node(s.global_id, sequence=s)
 
-        for b in cls.anneal_sequences(sequences):
+        for b in cls.anneal_sequences(sequences, min_bases=min_bases):
             cls.make_edge(G, b)
         return G
 
@@ -117,19 +117,22 @@ class Reaction(object):
         seq_dict = cls._make_seq_dict(sequences)
         G = cls.interaction_graph(sequences)
         paths = cls.linear_paths(G)
+
         homologies = []
         for path in paths:
-            edges = zip(path[:-1], path[1:])
-            binding_positions = []
-            for n1, n2 in edges:
-                edge = G.edges[n1, n2]
-                binding = edge['binding']
-                binding_positions.append(binding.position)
-            homologies.append({
-                'path': path,
-                'binding_positions': binding_positions
-            })
+            edges = [G.edges[n1, n2] for n1, n2 in zip(path[:-1], path[1:])]
+            binding_positions = [e['binding'] for e in edges]
+            binding_pairs = zip([None] + binding_positions[:-1], binding_positions[1:] + [None])
         return homologies
+            # for n1, n2 in edges:
+            #     edge = G.edges[n1, n2]
+            #     binding = edge['binding']
+            #     binding_positions.append(binding.position)
+            # homologies.append({
+            #     'path': path,
+            #     'binding_positions': binding_positions
+            # })
+
 
 
 

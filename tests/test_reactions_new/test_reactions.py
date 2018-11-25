@@ -57,9 +57,6 @@ def generate_sequences(seq):
 
 def test_(generate_sequences):
     seqs = generate_sequences(3, cyclic=False)
-    # seqs[0].reverse_complement()
-    # print(list(seqs[0].anneal(seqs[1])))
-    # print(list(seqs[1].anneal(seqs[0])))
     bindings = Reaction.anneal_sequences(seqs)
     for b in bindings:
         print()
@@ -67,37 +64,52 @@ def test_(generate_sequences):
         print(b.template.global_id)
         print(b.position)
 
-@pytest.mark.parametrize('cyclic', [True, False])
-@pytest.mark.parametrize('overhang', [20, 10, 15])
+@pytest.mark.parametrize('cyclic', ['cyclic', False])
+@pytest.mark.parametrize('overhang_length', [20, 30, 15, 10])
 @pytest.mark.parametrize('num_fragments', [1, 3])
-@pytest.mark.parametrize('reverse_first', [False, True])
-def test_anneal_sequences(seq, num_fragments, generate_sequences, cyclic, overhang, reverse_first):
-    sequences = generate_sequences(num_fragments=num_fragments, cyclic=cyclic, overhang=overhang)
+@pytest.mark.parametrize('reverse_first', [False, 'reverse_first'])
+def test_anneal_sequences(seq, num_fragments, generate_sequences, cyclic, overhang_length, reverse_first):
+    cyclic = cyclic == 'cyclic'
+    reverse_first = reverse_first == 'reverse_first'
+    sequences = generate_sequences(num_fragments=num_fragments, cyclic=cyclic, overhang=overhang_length)
+
     if reverse_first:
         sequences[0].reverse_complement()
     bindings = list(Reaction.anneal_sequences(sequences))
 
-    print(bindings)
-    assert len(bindings) == (num_fragments - int(not cyclic)) * 2
+    if overhang_length >= Sequence.DEFAULTS.MIN_ANNEAL_BASES:
+        assert len(bindings) == (num_fragments - int(not cyclic)) * 2
+    else:
+        assert len(bindings) == 0
 
     for b in bindings:
-        assert b.position.span[1] - b.position.span[0] + 1 == overhang, "Length of overhang should be {}".format(overhang)
+        assert b.position.span[1] - b.position.span[0] + 1 == overhang_length, "Length of overhang should be {}".format(overhang_length)
 
-    for b in bindings:
-        print()
-        print(b.position)
-        print(b.position.template_anneal)
-        print(b.position.query_anneal)
+    for i, b in enumerate(bindings):
+        if reverse_first:
+            if (cyclic and i in [0, 1]) or (not cyclic and i == 0):
+                assert str(b.position.template_anneal.reverse_complement()) in str(seq), \
+                'Reverse sequence ({}) {} not in sequence\n{}'.format(i, b.position.template_anneal.reverse_complement(), seq)
+        else:
+            assert str(b.position.template_anneal) in str(seq), 'Sequence ({}) {} not in template\n{}'.format(i, b.position.template_anneal, seq)
 
 
 # TODO: deterministic cycles with first global id in front (rotate to index of first)
-# TODO: all paths using all pairs shortest paths
-def test_interaction_graph(seq, generate_sequences):
-    sequences = generate_sequences(4, cyclic=False)
+# TODO: all paths using all pairs shortest paths\
+@pytest.mark.parametrize('num_fragments', [4])
+@pytest.mark.parametrize('cyclic', [False, 'cyclic'])
+def test_interaction_graph(num_fragments, cyclic, seq, generate_sequences):
+    cyclic = cyclic == 'cyclic'
+    sequences = generate_sequences(num_fragments, cyclic=cyclic)
     sequences[0].reverse_complement()
     seq_dict = {x.global_id: x for x in sequences}
     seq_dict.update({-x.global_id: x.copy().reverse_complement() for x in sequences})
     G = Reaction.interaction_graph(sequences)
+    assert len(G) == num_fragments * 2
+    if cyclic:
+        assert len(G.edges) == num_fragments * 2
+    else:
+        assert len(G.edges) == num_fragments * 2 - 2
     for e in G.edges:
         print(e)
 
@@ -108,18 +120,7 @@ def test_linear_assemblies(seq, generate_sequences):
     seq_dict = {x.global_id: x for x in sequences}
     seq_dict.update({-x.global_id: x.copy().reverse_complement() for x in sequences})
     infos = Reaction.linear_assemblies(sequences)
-    print()
-    print(len(infos))
-    for info in infos:
-        print()
-        print(info['path'])
-        for o in info['binding_positions']:
-            print(o)
-            print(o.span)
-            print(o.query_span)
-            print(o.query_start)
-            print(o.query_end)
-            print(o.query_start in o.primer)
+    print(infos)
     # if not reverse_first:
     #     for b in bindings:
     #         assert b.position.span[0] == 0

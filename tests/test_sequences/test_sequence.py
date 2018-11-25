@@ -266,7 +266,7 @@ def test_chop(test_str):
 ])
 def test_random(length):
     if length == 0:
-        assert Sequence.random(length) is None
+        assert Sequence.random(length).is_empty()
         return
     seq = Sequence.random(length)
     assert len(seq) == length
@@ -394,44 +394,56 @@ def test_anneal_basic(i, j, reverse, complement, expected):
     results = list(template.anneal_reverse(query))
     print(results)
 
-@pytest.mark.parametrize('reverse_complement', [False, True])
-@pytest.mark.parametrize('overhang', [
-    'A',
-    'ACGTGCTTGCGTGTCGTTGA',
-    ''
-])
-def test_anneal(overhang, reverse_complement):
-    anneal = "CTACAAATTTACACAGTGGGACGGGCCA"
-    primer = Sequence(overhang + anneal)
-    primer_seq = str(primer)
-    anneal_seq = Sequence(anneal)
-    if reverse_complement:
-        anneal_seq.reverse_complement()
+def test_anneal():
+    anneal_length = 20
+    overhang_length = 0
 
-    print(str(anneal_seq))
-    seq = Sequence.random(99) + \
-          Sequence("N") + anneal_seq + Sequence("N") + \
-          Sequence.random(100)
+    anneal = Sequence.random(20)
+    overhang = Sequence.random(0)
 
-    assert str(primer) == primer_seq
-
-    method = seq.anneal_forward
-    if reverse_complement:
-        method = seq.anneal_reverse
-
-    matches = list(method(primer))
-    # check annealing span
-    assert matches[0].span == (100, 100 + len(anneal)-1)
-    assert matches[0].query_span == (len(overhang), len(overhang) + len(anneal) - 1)
-    assert str(matches[0].anneal) == anneal
-
-    # check overhang sequence
-    assert matches[0].three_prime_overhang is None
-    if overhang == '':
-        assert matches[0].five_prime_overhang is None
-    else:
-        assert str(matches[0].five_prime_overhang) == overhang
-
-    # check num matches
-    assert len(matches) == 1
-    assert str(primer) == primer_seq
+#
+# @pytest.mark.parametrize('reverse_complement', [False, True])
+# @pytest.mark.parametrize('overhang', [
+#     'A',
+#     'ACGTGCTTGCGTGTCGTTGA',
+#     ''
+# ])
+# def test_anneal(overhang, reverse_complement):
+#     anneal = "CTACAAATTTACACAGTGGGACGGGCCA"
+#     primer = Sequence(overhang + anneal)
+#     primer_seq = str(primer)
+#     anneal_seq = Sequence(anneal)
+#     if reverse_complement:
+#         anneal_seq.reverse_complement()
+#
+#     print(str(anneal_seq))
+#     seq = Sequence.random(99) + \
+#           Sequence("N") + anneal_seq + Sequence("N") + \
+#           Sequence.random(100)
+#
+#     assert str(primer) == primer_seq
+#
+#     method = seq.anneal_forward
+#     if reverse_complement:
+#         method = seq.anneal_reverse
+#
+#     matches = list(method(primer))
+#     # check annealing span
+#     assert matches[0].span == (100, 100 + len(anneal)-1)
+#
+#     if reverse_complement:
+#         assert matches[0].query_span == (len(overhang) + len(anneal) - 1, len(overhang))
+#     else:
+#         assert matches[0].query_span == (len(overhang), len(overhang) + len(anneal) - 1)
+#     assert str(matches[0].anneal) == anneal
+#
+#     # check overhang sequence
+#     assert matches[0].three_prime_overhang is None
+#     if overhang == '':
+#         assert matches[0].five_prime_overhang is None
+#     else:
+#         assert str(matches[0].five_prime_overhang) == overhang
+#
+#     # check num matches
+#     assert len(matches) == 1
+#     assert str(primer) == primer_seq
