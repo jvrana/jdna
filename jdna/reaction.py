@@ -28,8 +28,8 @@ class Reaction(object):
 
     @classmethod
     def pcr(cls, template, p1, p2, min_bases=MIN_BASES):
-        bindings = list(template.anneal(p1))
-        bindings += template.anneal(p2)
+        bindings = list(template.anneal(p1, min_bases=min_bases))
+        bindings += template.anneal(p2, min_bases=min_bases)
 
         forward_bindings = []
         reverse_bindings = []
@@ -49,12 +49,14 @@ class Reaction(object):
         for fwd, rev in itertools.product(forward_bindings, reverse_bindings):
             overhang1 = fwd.five_prime_overhang
             overhang2 = rev.five_prime_overhang
-            amplified = template[fwd.span[0]:rev.span[-1]]
-            if overhang1:
-                amplified = overhang1 + amplified
-            if overhang2:
-                amplified = amplified + overhang2
-            products.append(amplified)
+            print(fwd.span)
+            print(rev.span)
+            print(template.index_of(fwd.start))
+            print(template.index_of(rev.end))
+            amplified = template.new_slice(fwd.start, rev.end)
+            print(overhang1)
+            print(overhang2)
+            products.append(overhang1 + amplified + overhang2)
         return products
 
     @classmethod
@@ -67,6 +69,17 @@ class Reaction(object):
                 if not (binding.span[0] == 0 and binding.span[-1] == len(s1)-1):
                     bindings.append(BindingEvent(s1, s2, binding))
         return bindings
+
+    # @classmethod
+    # def anneal_sequences(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES):
+    #     # pairs = itertools.product(sequences, sequences + [s.copy().reverse_complement() for s in sequences[1:]])
+    #     pairs = itertools.product(sequences, repeat=2)
+    #     bindings = []
+    #     for s1, s2 in pairs:
+    #         for binding in s1.dsanneal(s2, min_bases=min_bases):
+    #             if not (binding.span[0] == 0 and binding.span[-1] == len(s1)-1):
+    #                 bindings.append(BindingEvent(s1, s2, binding))
+    #     return bindings
 
     @staticmethod
     def make_edge(G, binding_event):
@@ -112,6 +125,13 @@ class Reaction(object):
         )
         return seq_dict
 
+    @staticmethod
+    def _paths_to_binding_positions(graph, path, circular):
+        node_pairs = list(zip(path[:-1], path[1:]))
+        if circular:
+            node_pairs.append((path[-1], path[0]))
+        return [graph.edges[n1, n2]['binding'] for n1, n2 in node_pairs]
+
     @classmethod
     def linear_assemblies(cls, sequences):
         seq_dict = cls._make_seq_dict(sequences)
@@ -119,10 +139,44 @@ class Reaction(object):
         paths = cls.linear_paths(G)
 
         homologies = []
-        for path in paths:
-            edges = [G.edges[n1, n2] for n1, n2 in zip(path[:-1], path[1:])]
-            binding_positions = [e['binding'] for e in edges]
-            binding_pairs = zip([None] + binding_positions[:-1], binding_positions[1:] + [None])
+        # amplified = []
+        # overhangs = []
+        print()
+        for path_num, path in enumerate(paths):
+            print("Path {}".format(path_num))
+            node_pairs = list(zip(path[:-1], path[1:]))
+
+            query_ends = [None]
+            for n1, n2 in node_pairs:
+                edge = G.edges[n1, n2]
+                binding = edge['binding']
+                if binding.position.direction == SequenceFlags.FORWARD:
+                    query_ends.append(binding.position.query_end)
+                else:
+                    query_ends.append(binding.position.query_start)
+                print('{n1} binds to {n2} in {direction} direction'.format(n1=n1,
+                                                                           n2=n2,
+                                                                           direction=binding.position.direction))
+
+                print(binding.position.span)
+                print(binding.position.query_span)
+
+            for q1, q2 in zip(query_ends[:-1], query_ends[1:]):
+                q = Sequence.new_slice(q1, q2)
+                print(q)
+            # binding_positions = cls._paths_to_binding_positions(G, path, circular=False)
+            #
+            #
+            # nodes = [None]
+            # for b in binding_positions:
+            #     print(b.position.span)
+            #     if b.position.direction == SequenceFlags.FORWARD:
+            #         nodes.append(b.position.end)
+            #         nodes.append(b.position.query_end)
+            #     else:
+            #         nodes.append(b.position.start)
+            #         nodes.append(b.position.query_start)
+
         return homologies
             # for n1, n2 in edges:
             #     edge = G.edges[n1, n2]

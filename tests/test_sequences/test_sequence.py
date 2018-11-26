@@ -394,12 +394,23 @@ def test_anneal_basic(i, j, reverse, complement, expected):
     results = list(template.anneal_reverse(query))
     print(results)
 
-def test_anneal():
-    anneal_length = 20
-    overhang_length = 0
 
-    anneal = Sequence.random(20)
-    overhang = Sequence.random(0)
+@pytest.mark.parametrize('reverse_complement', [False, True])
+def test_anneal_with_overhang(reverse_complement):
+
+    template = Sequence.random(200)
+    anneal = template[20:50]
+    overhang = Sequence.random(20) + Sequence('N'*5)
+    if reverse_complement:
+        anneal.reverse_complement()
+    primer = overhang + anneal
+
+    for b in template.anneal(primer):
+        assert str(b.five_prime_overhang) == str(overhang)
+
+
+
+
 
 #
 # @pytest.mark.parametrize('reverse_complement', [False, True])

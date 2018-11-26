@@ -102,9 +102,13 @@ class BindPos(LinkedListMatch):
         self.strand = strand
 
         self.anneal = query.copy_slice(*self.query_bounds)
-        self.five_prime_overhang = query.copy_slice(None, query_bounds[0].prev())
-        self.three_prime_overhang = query.copy_slice(query_bounds[1].next(), None)
 
+        if self.direction == SequenceFlags.REVERSE:
+            self.five_prime_overhang = query.new_slice(None, self.query_end.prev())
+            self.three_prime_overhang = query.new_slice(self.query_start.next(), None)
+        else:
+            self.five_prime_overhang = query.new_slice(None, self.query_start.prev())
+            self.three_prime_overhang = query.new_slice(self.query_end.next(), None)
         # self.anneal = self.primer[query_span[0]:query_span[1]+1]
         # self.five_prime_overhang = self.primer[:query_span[0]]
         # self.three_prime_overhang = self.primer[query_span[1]+1:]

@@ -10,21 +10,46 @@ def template():
     return Sequence.random(500)
 
 
-@pytest.mark.parametrize('o1', [0])
-@pytest.mark.parametrize('o2', [0])
-@pytest.mark.parametrize('l1', [15])
-@pytest.mark.parametrize('l2', [15])
-def test_pcr(template, l1, l2, o1, o2):
-    pos1 = 100
-    pos2 = 200
-    p1 = Sequence('N'*o1) + template[pos1:pos1+l1]
-    p2 = Sequence('N'*o2) + template[pos2-l2:pos2+1].reverse_complement()
+@pytest.mark.parametrize('o1', [10, 0])
+@pytest.mark.parametrize('o2', [10, 0])
+@pytest.mark.parametrize('primer1_inset', [30, 15])
+@pytest.mark.parametrize('primer2_inset', [30, 15])
+@pytest.mark.parametrize('circular_template', [False, True])
+def test_pcr(primer1_inset, primer2_inset, o1, o2, circular_template):
+    template = Sequence.random(100)
+
+    primer_len = 20
+    p1_start = primer1_inset
+    p1_end = primer1_inset + primer_len
+
+    p2_end = len(template) - primer2_inset
+    p2_start = p2_end - primer_len
+
+    print(p1_start)
+    print(p1_end)
+    print(p2_start)
+    print(p2_end)
+
+    p1 = Sequence('N'*o1) + template[p1_start:p1_end]
+    p2 = Sequence('N'*o2) + template[p2_start:p2_end].reverse_complement()
+
+    template.circularize()
+    if circular_template:
+        template.reindex(int((len(template) - primer2_inset - primer1_inset)/2))
 
     products = Reaction.pcr(template, p1, p2)
     assert len(products) == 1
-    expected_len = o1 + o2 + (pos2-pos1)
-    assert len(products[0]) == expected_len
-    assert str(products[0]) == 'N'*o1 + str(template)[pos1:pos2] + 'N'*o2
+    expected_len = len(template) - primer1_inset - primer2_inset + o1 + o2
+    assert len(products[0]) == expected_len, "Product should be {} long".format(expected_len)
+
+    # p1 = Sequence('N'*o1) + template[pos1:pos1+l1]
+    # p2 = Sequence('N'*o2) + template[pos2-l2:pos2+1].reverse_complement()
+    #
+    # products = Reaction.pcr(template, p1, p2)
+    # assert len(products) == 1
+    # expected_len = o1 + o2 + (pos2-pos1)
+    # assert len(products[0]) == expected_len
+    # assert str(products[0]) == 'N'*o1 + str(template)[pos1:pos2] + 'N'*o2
 
 
 @pytest.fixture(scope='function')
@@ -63,6 +88,19 @@ def test_(generate_sequences):
         print(b.primer.global_id)
         print(b.template.global_id)
         print(b.position)
+
+
+def test_anneal():
+    template = Sequence.random(200)
+
+    anneal = template[50:80]
+    overhang = Sequence('N'*20)
+    primer = overhang + anneal
+
+    bindings = template.anneal(template, primer)
+    for b in bindings:
+        print(b)
+
 
 @pytest.mark.parametrize('cyclic', ['cyclic', False])
 @pytest.mark.parametrize('overhang_length', [20, 30, 15, 10])
@@ -105,6 +143,8 @@ def test_interaction_graph(num_fragments, cyclic, seq, generate_sequences):
     seq_dict = {x.global_id: x for x in sequences}
     seq_dict.update({-x.global_id: x.copy().reverse_complement() for x in sequences})
     G = Reaction.interaction_graph(sequences)
+    for e in G.edges:
+        print(e)
     assert len(G) == num_fragments * 2
     if cyclic:
         assert len(G.edges) == num_fragments * 2
@@ -121,6 +161,15 @@ def test_linear_assemblies(seq, generate_sequences):
     seq_dict.update({-x.global_id: x.copy().reverse_complement() for x in sequences})
     infos = Reaction.linear_assemblies(sequences)
     print(infos)
+
+def test_all_products(seq, generate_sequences):
+    sequences = generate_sequences(4, cyclic=False)
+
+    from itertools import product
+    pairs = product(sequences, repeat=2)
+    for p1, p2 in pairs:
+        for b in p1.anneal_forward(p2):
+            print(b)
     # if not reverse_first:
     #     for b in bindings:
     #         assert b.position.span[0] == 0

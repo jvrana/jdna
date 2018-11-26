@@ -224,8 +224,8 @@ class Node(object):
         """
         rev = self.rev()
         first = self
-        for n in rev:
-            first = n
+        for first in rev:
+            pass
         return first
 
     def find_last(self):
@@ -236,11 +236,10 @@ class Node(object):
         :rtype:
         """
         fwd = self.fwd()
-        while True:
-            try:
-                n = next(fwd)
-            except StopIteration:
-                return n
+        last = self
+        for last in fwd:
+            pass
+        return last
 
     def longest_match(self, node, next_method=None):
         """
@@ -302,7 +301,7 @@ class Node(object):
         return copied
 
     def __deepcopy__(self, memo):
-        raise NotImplementedError("copy.deepcopy not implemented with class" \
+        raise NotImplementedError("copy.deepcopy not implemented with class"
                                   "{}. Use copy.copy instead.".format(self.__class__.__name__))
 
     def __repr__(self):
