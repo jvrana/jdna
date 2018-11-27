@@ -511,7 +511,7 @@ class Sequence(DoubleLinkedList):
     def __copy__(self):
         feature_positions = self.feature_positions()
         copied = super(Sequence, self).__copy__()
-
+        copied._global_id = next(self.counter)
         for feature, positions in feature_positions.items():
             copied.add_multipart_feature(positions, copy(feature))
         return copied

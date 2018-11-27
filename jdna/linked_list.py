@@ -175,12 +175,14 @@ class Node(object):
         visited = set()
         curr = self
         while True:
-            if curr is None or curr in visited or (stop_criteria and stop_criteria(curr)):
+            if curr is None or \
+                    curr in visited or \
+                    (stop_criteria and stop_criteria(curr)):
                 return
             yield curr
-            visited.add(curr)
             if curr is stop:
                 return
+            visited.add(curr)
             curr = next_method(curr)
 
     def fwd(self, stop_node=None, stop_criteria=None):
@@ -823,27 +825,33 @@ class DoubleLinkedList(object):
     @classmethod
     def new_slice(cls, start, end):
         """Return a copy of the sequence between 'start' and 'end' nodes)"""
-
-        prev = None
-        new_nodes = []
+        nodes = []
         if start is not None:
             for n in start.fwd(stop_node=end):
-                new_node = copy(n)
-                new_nodes.append(new_node)
-                new_node.set_prev(prev)
-                prev = new_node
+                nodes.append(n)
+                # new_node = copy(n)
+                # new_nodes.append(new_node)
+                # new_node.set_prev(prev)
+                # prev = new_node
         else:
             if end is None:
                 return cls.empty()
             for n in end.rev(stop_node=start):
-                new_node = copy(n)
-                new_nodes.append(new_node)
-                new_node.set_next(prev)
-                prev = new_node
-            new_nodes = new_nodes[::-1]
-        new_nodes[-1].set_next(None)
-        new_nodes[0].set_prev(None)
-        return cls(first=new_nodes[0])
+                nodes.append(n)
+            nodes = nodes[::-1]
+        if end is not None and nodes[-1] is not end:
+            return cls()
+        if start is not None and nodes[0] is not start:
+            return cls()
+
+        next = None
+        for n in nodes[::-1]:
+            n = copy(n)
+            n.set_next(next)
+            next = n
+        n.set_prev(None)
+
+        return cls(first=n)
 
     def copy_slice(self, start, end):
         """Return a copy of the sequence between 'start' and 'end' nodes. If start is None,

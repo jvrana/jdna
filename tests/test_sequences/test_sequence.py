@@ -406,6 +406,8 @@ def test_anneal_with_overhang(reverse_complement):
     primer = overhang + anneal
 
     for b in template.anneal(primer):
+        print(b.span)
+        print(b.query_span)
         assert str(b.five_prime_overhang) == str(overhang)
 
 

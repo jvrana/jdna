@@ -54,7 +54,7 @@ def test_slicing_cyclic(i, j, test_str, linked_list):
         assert str(linked_list[i:j]) == test_str[i:] + test_str[:j]
 
 
-def test_cyclic_vs_liner(test_str, linked_list):
+def test_cyclic_vs_linear(test_str, linked_list):
     assert ~linked_list.cyclic
 
     linked_list.circularize()
@@ -89,6 +89,31 @@ def test_copy(test_str, linked_list):
     with pytest.raises(NotImplementedError):
         deepcopy(linked_list)
 
+
+@pytest.mark.parametrize('i', [None, 1, 4, 6, 8])
+@pytest.mark.parametrize('j', [None, 1, 4, 6, 8])
+def test_new_slice(test_str, linked_list, i, j):
+    n1 = linked_list.get(i)
+    n2 = linked_list.get(j)
+
+    new_slice = DoubleLinkedList.new_slice(n1, n2)
+    if i is None and j is None:
+        assert new_slice.is_empty()
+    elif i is None:
+        assert str(new_slice) == str(linked_list)[:j+1]
+    elif j is None:
+        assert str(new_slice) == str(linked_list)[i:]
+    elif i > j:
+        assert new_slice.is_empty()
+    else:
+        assert str(new_slice) == str(linked_list)[i:j+1]
+
+
+def test_new_slice_with_node_never_reached(test_str, linked_list):
+    n1 = linked_list.get(1)
+    n2 = linked_list.copy().get(3)
+    new_slice = DoubleLinkedList.new_slice(n1, n2)
+    assert new_slice.is_empty()
 
 def test_insertion(test_str, linked_list):
     for i in range(len(linked_list) + 1):
@@ -308,7 +333,7 @@ class TestLinkedListMagic(object):
         0, 2, 3, -2, 7, -10, None
     ])
     @pytest.mark.parametrize('j', [
-        0, 2, 3, 7, -2, -10, None
+        0, 2, 3, 4, 7, -2, -10, None
     ])
     @pytest.mark.parametrize('circular', [
         False

@@ -132,44 +132,62 @@ def test_anneal_sequences(seq, num_fragments, generate_sequences, cyclic, overha
             assert str(b.position.template_anneal) in str(seq), 'Sequence ({}) {} not in template\n{}'.format(i, b.position.template_anneal, seq)
 
 
-# TODO: deterministic cycles with first global id in front (rotate to index of first)
-# TODO: all paths using all pairs shortest paths\
-@pytest.mark.parametrize('num_fragments', [4])
-@pytest.mark.parametrize('cyclic', [False, 'cyclic'])
-def test_interaction_graph(num_fragments, cyclic, seq, generate_sequences):
-    cyclic = cyclic == 'cyclic'
+@pytest.mark.parametrize('cyclic', [pytest.param(False, id='linear'), pytest.param(True, id='circular'),])
+@pytest.mark.parametrize('try_reverse_complement', [False, True])
+@pytest.mark.parametrize('bind_reverse_complement', [False, True])
+def test_interaction_graph(cyclic, seq, generate_sequences, try_reverse_complement, bind_reverse_complement):
+    num_fragments = 4
     sequences = generate_sequences(num_fragments, cyclic=cyclic)
-    sequences[0].reverse_complement()
-    seq_dict = {x.global_id: x for x in sequences}
-    seq_dict.update({-x.global_id: x.copy().reverse_complement() for x in sequences})
-    G = Reaction.interaction_graph(sequences)
-    for e in G.edges:
-        print(e)
-    assert len(G) == num_fragments * 2
-    if cyclic:
-        assert len(G.edges) == num_fragments * 2
-    else:
-        assert len(G.edges) == num_fragments * 2 - 2
-    for e in G.edges:
-        print(e)
+    if try_reverse_complement == 'try_reverse_complement':
+        sequences[1].reverse_complement()
+    G = Reaction.interaction_graph(sequences, bind_reverse_complement=bind_reverse_complement)
 
+    edges = list(G.edges)
+    print(len(edges))
+    if bind_reverse_complement:
+        if cyclic:
+            assert len(edges) == 4 * 2
+        else:
+            assert len(edges) == 3 * 2
+    else:
+        if cyclic:
+            assert len(edges) == 4
+        else:
+            assert len(edges) == 3
+
+
+
+@pytest.mark.parametrize('cyclic', [pytest.param(False, id='linear'), pytest.param(True, id='circular'),])
+def test_linear_paths(generate_sequences, cyclic):
+    sequences = generate_sequences(4, cyclic=cyclic)
+    G = Reaction.interaction_graph(sequences, bind_reverse_complement=True)
+    paths = Reaction.linear_paths(G)
+
+    if not cyclic:
+        assert len(paths) == 2
+        for p in paths:
+            assert len(p) == 4
+    else:
+        assert len(paths) == 0
+
+@pytest.mark.parametrize('cyclic', [pytest.param(False, id='linear'), pytest.param(True, id='circular'),])
+def test_cyclic_paths(generate_sequences, cyclic):
+    sequences = generate_sequences(4, cyclic=cyclic)
+    G = Reaction.interaction_graph(sequences, bind_reverse_complement=True)
+    paths = Reaction.cyclic_paths(G)
+    for e in G.edges:
+        print(e)
+    if cyclic:
+        assert len(paths) == 2
+        for p in paths:
+            assert len(p) == 4
+    else:
+        assert len(paths) == 0
 
 def test_linear_assemblies(seq, generate_sequences):
     sequences = generate_sequences(4, cyclic=False)
-    sequences[0].reverse_complement()
-    seq_dict = {x.global_id: x for x in sequences}
-    seq_dict.update({-x.global_id: x.copy().reverse_complement() for x in sequences})
-    infos = Reaction.linear_assemblies(sequences)
-    print(infos)
+    Reaction.linear_assemblies(sequences)
 
-def test_all_products(seq, generate_sequences):
-    sequences = generate_sequences(4, cyclic=False)
-
-    from itertools import product
-    pairs = product(sequences, repeat=2)
-    for p1, p2 in pairs:
-        for b in p1.anneal_forward(p2):
-            print(b)
     # if not reverse_first:
     #     for b in bindings:
     #         assert b.position.span[0] == 0
