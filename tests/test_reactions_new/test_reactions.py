@@ -12,8 +12,14 @@ def template():
 
 @pytest.mark.parametrize('o1', [10, 0])
 @pytest.mark.parametrize('o2', [10, 0])
-@pytest.mark.parametrize('primer1_inset', [30, 15])
-@pytest.mark.parametrize('primer2_inset', [30, 15])
+@pytest.mark.parametrize('primer1_inset', [
+    pytest.param(30, id="inset1=30bp"),
+    pytest.param(15, id="inset1=15bp"),
+])
+@pytest.mark.parametrize('primer2_inset', [
+    pytest.param(30, id="inset2=30bp"),
+    pytest.param(15, id="inset2=15bp"),
+])
 @pytest.mark.parametrize('circular_template', [False, True])
 def test_pcr(primer1_inset, primer2_inset, o1, o2, circular_template):
     template = Sequence.random(100)
@@ -97,7 +103,7 @@ def test_anneal():
     overhang = Sequence('N'*20)
     primer = overhang + anneal
 
-    bindings = template.anneal(template, primer)
+    bindings = template.anneal(primer)
     for b in bindings:
         print(b)
 
