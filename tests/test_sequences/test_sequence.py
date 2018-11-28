@@ -419,6 +419,13 @@ def test_viewer():
     view.print()
     s.view().print()
 
+def test_viewer_annotate():
+    s = Sequence.random(550)
+    s.annotate(50, 99, "GFP")
+    s.annotate(50, 53, 'START')
+    s.annotate(60, 300, 'RFP')
+    s.view(spacer='\n', include_complement=True).print()
+
 def test_print():
     Sequence.random(550).print(include_complement=True)
 

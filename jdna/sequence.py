@@ -576,7 +576,7 @@ class Sequence(DoubleLinkedList):
             viewer = SequenceViewer([a[0], mid, a[1]], name="Alignment")
             viewer.print()
 
-    def view(self, indent=10, width=85, spacer=None, include_complement=False):
+    def view(self, indent=10, width=85, spacer=None, include_complement=False, include_annotations=True):
 
         if indent is None:
             indent = 10
@@ -592,7 +592,12 @@ class Sequence(DoubleLinkedList):
                 spacer = '\n'
             else:
                 spacer = ''
-        return SequenceViewer(seqs, indent=indent, width=width, spacer=spacer)
+        viewer = SequenceViewer(seqs, indent=indent, width=width, spacer=spacer)
+        if include_annotations:
+            for feature, positions in self.feature_positions().items():
+                for pos in positions:
+                    viewer.annotate(pos[0], pos[1], label=feature.name, direction=None)
+        return viewer
 
     def print(self, indent=None, width=None, spacer=None, include_complement=False):
         self.view(indent=indent, width=width, spacer=spacer, include_complement=include_complement).print()
