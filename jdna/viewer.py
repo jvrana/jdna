@@ -1,6 +1,8 @@
 import functools
 import itertools
 import operator
+from enum import Enum
+
 
 def chunkify(iterable, n):
     """Break an interable into chunks of size at most 'n'"""
@@ -44,30 +46,37 @@ def prepend_lines(lines, label_iterable, indent, fill=' ', align='<'):
     return new_lines
 
 
-def indent(lines, indent):
+def indent(string, indent):
     """Indent lines"""
-    return prepend_lines(lines, ['']*len(lines), indent)
+    lines = string.split("\n")
+    new_lines = prepend_lines(lines, ['']*len(lines), indent)
+    return '\n'.join(new_lines)
+
+# def set_indent(lines, indent):
+#     """Reset the indent of lines"""
+#     return indent([l.lstrip() for l in lines], indent)
+#
+#
+# def enumerate_lines(lines, indent):
+#     """Enumerate lines"""
+#     labels = range(len(lines))
+#     return prepend_lines(lines, labels, indent)
+#
+#
+# def accumulate_length_of_lines(lines, indent):
+#     labels = itertools.accumulate([len(l.strip('\n')) for l in lines], operator.add)
+#     return prepend_lines(lines, labels, indent)
+#
+#
+# def accumulate_length_of_first_line(lines, indent):
+#     labels = itertools.accumulate([len(l.split('\n')[0].strip('\n')) for l in lines], operator.add)
+#     return prepend_lines(lines, labels, indent)
 
 
-def set_indent(lines, indent):
-    """Reset the indent of lines"""
-    return indent([l.lstrip() for l in lines], indent)
-
-
-def enumerate_lines(lines, indent):
-    """Enumerate lines"""
-    labels = range(len(lines))
-    return prepend_lines(lines, labels, indent)
-
-
-def accumulate_length_of_lines(lines, indent):
-    labels = itertools.accumulate([len(l.strip('\n')) for l in lines], operator.add)
-    return prepend_lines(lines, labels, indent)
-
-
-def accumulate_length_of_first_line(lines, indent):
-    labels = itertools.accumulate([len(l.split('\n')[0].strip('\n')) for l in lines], operator.add)
-    return prepend_lines(lines, labels, indent)
+class AnnotationFlag(object):
+    FORWARD = ">"
+    REVERSE = "<"
+    BOTH = "^"
 
 
 class SequenceRow(object):
@@ -76,36 +85,54 @@ class SequenceRow(object):
         lengths = set([len(r) for r in lines])
         if len(lengths) > 1:
             raise Exception("Cannot format rows that have different lengths")
-        self.lines = lines
+        self._lines = lines
         self.labels = labels
         self.indent = indent
         self.start = start
         self.end = end
         self.annotations = []
 
-    def absolute_annotate(self, start, end):
+    @property
+    def lines(self):
+        return prepend_lines(self._lines, self.labels, self.indent)
+
+    @property
+    def annotation_lines(self):
+        annotations = []
+        for a in self.annotations:
+            annotations.append(indent(a, self.indent))
+        return annotations
+
+    @staticmethod
+    def make_annotation(label, span, fill='*'):
+        s = ''
+        if len(label) > span:
+            s += "|<{0:{fill}{align}{indent}}\n".format(label, fill=' ', align='^', indent=span)
+            label = fill * span
+        s += "{0:{fill}{align}{indent}}".format(label, fill=fill, align='^', indent=span)
+        return s
+
+    def absolute_annotate(self, start, end, fill, label):
+        span = end - start + 1
+        annotation = self.make_annotation(label, span, fill)
+        annotation_lines = [' '*start + a for a in annotation.split('\n')]
         self.annotations.append(
-            "{0:{fill}{align}{indent}}".format("*"*(end-start+1), fill=' ', align='>', indent=end)
+            '\n'.join(annotation_lines)
         )
 
-    def annotate(self, start, end):
+    def annotate(self, start, end, fill, label=''):
         s = max(start - self.start, 0)
-        e = min(end - self.start, len(self))
-        return self.absolute_annotate(s, e)
-
+        e = min(end - self.start, len(self)-1)
+        return self.absolute_annotate(s, e, fill, label)
 
     def in_bounds(self, x):
         return x >= self.start and x <= self.end
 
     def __len__(self):
-        return len(self.lines[0])
+        return len(self._lines[0])
 
     def __str__(self):
-        lines = []
-        if self.annotations:
-            lines += prepend_lines(self.annotations, ['']*len(self.annotations), self.indent)
-        lines += prepend_lines(self.lines, self.labels, self.indent)
-        return '\n'.join(lines)
+        return '\n'.join(self.annotation_lines + self.lines)
 
 
 class SequenceViewer(object):
@@ -117,7 +144,7 @@ class SequenceViewer(object):
             raise Exception("Sequence must be same length")
         self._sequences = [str(s) for s in sequences]
         self._indent = indent
-        self._width = width - self.indent
+        self._width = width
         self._spacer = spacer
         self._rows = self.create_rows()
         if name is None:
@@ -183,12 +210,14 @@ class SequenceViewer(object):
             index += len(chunk[0])
         return rows
 
-    def annotate(self, start, end):
+    def annotate(self, start, end, label=None, direction=None):
+        if direction is None:
+            direction = AnnotationFlag.BOTH
+        if label is None:
+            label = ''
         for row in self.rows:
-            if row.in_bounds(start):
-                row.annotate(start, end)
-            elif row.in_bounds(end):
-                row.annotate(start, end)
+            if end >= row.start and start <= row.end:
+                row.annotate(start, end, label=label, fill=str(direction))
 
     def print(self):
         print(str(self))
