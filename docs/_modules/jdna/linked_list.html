@@ -115,6 +115,8 @@
 
 <span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">copy</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">IntFlag</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">reduce</span>
+
 
 <div class="viewcode-block" id="LinkedListException"><a class="viewcode-back" href="../../developer/_autosummary/jdna.linked_list.html#jdna.linked_list.LinkedListException">[docs]</a><span class="k">class</span> <span class="nc">LinkedListException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generic linked list exception&quot;&quot;&quot;</span></div>
@@ -284,12 +286,14 @@
         <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">curr</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">curr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">curr</span> <span class="ow">in</span> <span class="n">visited</span> <span class="ow">or</span> <span class="p">(</span><span class="n">stop_criteria</span> <span class="ow">and</span> <span class="n">stop_criteria</span><span class="p">(</span><span class="n">curr</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">curr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> \
+                    <span class="n">curr</span> <span class="ow">in</span> <span class="n">visited</span> <span class="ow">or</span> \
+                    <span class="p">(</span><span class="n">stop_criteria</span> <span class="ow">and</span> <span class="n">stop_criteria</span><span class="p">(</span><span class="n">curr</span><span class="p">)):</span>
                 <span class="k">return</span>
             <span class="k">yield</span> <span class="n">curr</span>
-            <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">curr</span> <span class="ow">is</span> <span class="n">stop</span><span class="p">:</span>
                 <span class="k">return</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
             <span class="n">curr</span> <span class="o">=</span> <span class="n">next_method</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Node.fwd"><a class="viewcode-back" href="../../developer/_autosummary/jdna.linked_list.html#jdna.linked_list.Node.fwd">[docs]</a>    <span class="k">def</span> <span class="nf">fwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stop_node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stop_criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -333,8 +337,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rev</span><span class="p">()</span>
         <span class="n">first</span> <span class="o">=</span> <span class="bp">self</span>
-        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">rev</span><span class="p">:</span>
-            <span class="n">first</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="k">for</span> <span class="n">first</span> <span class="ow">in</span> <span class="n">rev</span><span class="p">:</span>
+            <span class="k">pass</span>
         <span class="k">return</span> <span class="n">first</span></div>
 
 <div class="viewcode-block" id="Node.find_last"><a class="viewcode-back" href="../../developer/_autosummary/jdna.linked_list.html#jdna.linked_list.Node.find_last">[docs]</a>    <span class="k">def</span> <span class="nf">find_last</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -345,11 +349,10 @@
 <span class="sd">        :rtype:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fwd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fwd</span><span class="p">()</span>
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">n</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">fwd</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">n</span></div>
+        <span class="n">last</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">for</span> <span class="n">last</span> <span class="ow">in</span> <span class="n">fwd</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">last</span></div>
 
 <div class="viewcode-block" id="Node.longest_match"><a class="viewcode-back" href="../../developer/_autosummary/jdna.linked_list.html#jdna.linked_list.Node.longest_match">[docs]</a>    <span class="k">def</span> <span class="nf">longest_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">next_method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -411,7 +414,7 @@
         <span class="k">return</span> <span class="n">copied</span>
 
     <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;copy.deepcopy not implemented with class&quot;</span> \
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;copy.deepcopy not implemented with class&quot;</span>
                                   <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">. Use copy.copy instead.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -421,22 +424,96 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="EmptyNode"><a class="viewcode-back" href="../../developer/_autosummary/jdna.linked_list.html#jdna.linked_list.EmptyNode">[docs]</a><span class="k">class</span> <span class="nc">EmptyNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def __next(self):</span>
+    <span class="c1">#     return EmptyNode()</span>
+    <span class="c1">#</span>
+    <span class="c1"># @property</span>
+    <span class="c1"># def __prev(self):</span>
+    <span class="c1">#     return EmptyNode()</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_propogate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span>
+        <span class="k">yield</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
+
+
 <div class="viewcode-block" id="LinkedListMatch"><a class="viewcode-back" href="../../developer/_autosummary/jdna.linked_list.html#jdna.linked_list.LinkedListMatch">[docs]</a><span class="k">class</span> <span class="nc">LinkedListMatch</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A match object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">span</span><span class="p">,</span> <span class="n">query_span</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">span</span> <span class="o">=</span> <span class="n">span</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">query_span</span> <span class="o">=</span> <span class="n">query_span</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_bounds</span><span class="p">,</span> <span class="n">query_bounds</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">span</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">indices_of</span><span class="p">(</span><span class="n">template_bounds</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query_span</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">indices_of</span><span class="p">(</span><span class="n">query_bounds</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query_bounds</span> <span class="o">=</span> <span class="n">query_bounds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_bounds</span> <span class="o">=</span> <span class="n">template_bounds</span>
+
+<div class="viewcode-block" id="LinkedListMatch.batch_create"><a class="viewcode-back" href="../../developer/_autosummary/jdna.linked_list.html#jdna.linked_list.LinkedListMatch.batch_create">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">batch_create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">template_bounds_list</span><span class="p">,</span> <span class="n">query_bounds_list</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Efficiently create several LinkedListMatches from lists of template starts/ends and query starts/ends</span>
+
+<span class="sd">        :param template_bounds_list: list of 2 len tuples containing starts and ends from a template</span>
+<span class="sd">        :type template_bounds_list: template DoubleLinkedList</span>
+<span class="sd">        :param query_bounds_list: list of 2 len tuples containing starts and ends from a query</span>
+<span class="sd">        :type query_bounds_list: query DoubleLinkedList</span>
+<span class="sd">        :param template: the template</span>
+<span class="sd">        :type template: DoubleLinkedList</span>
+<span class="sd">        :param query: the query</span>
+<span class="sd">        :type query: DoubleLinkedList</span>
+<span class="sd">        :return: matchese</span>
+<span class="sd">        :rtype: list of LinkedListMatch</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_bounds_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">query_bounds_list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">LinkedListIndexError</span><span class="p">(</span><span class="s2">&quot;Cannot create Matches The template bounds list must be same size as query_&quot;</span>
+                                       <span class="s2">&quot;bounds list&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">template_bounds_list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">template_nodes</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">template_bounds_list</span><span class="p">)</span>
+        <span class="n">query_nodes</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">query_bounds_list</span><span class="p">)</span>
+        <span class="n">template_indices</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">indices_of</span><span class="p">(</span><span class="n">template_nodes</span><span class="p">)</span>
+        <span class="n">query_indices</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">indices_of</span><span class="p">(</span><span class="n">query_nodes</span><span class="p">)</span>
+
+        <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_nodes</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">new_match</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="n">new_match</span><span class="o">.</span><span class="n">span</span> <span class="o">=</span> <span class="p">(</span><span class="n">template_indices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">template_indices</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">new_match</span><span class="o">.</span><span class="n">query_span</span> <span class="o">=</span> <span class="p">(</span><span class="n">query_indices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">query_indices</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">new_match</span><span class="o">.</span><span class="n">query_bounds</span> <span class="o">=</span> <span class="p">(</span><span class="n">query_nodes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">query_nodes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">new_match</span><span class="o">.</span><span class="n">template_bounds</span> <span class="o">=</span> <span class="p">(</span><span class="n">template_nodes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">template_nodes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_match</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">matches</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">query_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">query_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">{cls}</span><span class="s2"> start=</span><span class="si">{start}</span><span class="s2"> end=</span><span class="si">{end}</span><span class="s2"> span=</span><span class="si">{span}</span><span class="s2">, qspan=</span><span class="si">{query_span}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">{cls}</span><span class="s2"> span=</span><span class="si">{span}</span><span class="s2">, qspan=</span><span class="si">{query_span}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="bp">cls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-            <span class="n">start</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
-            <span class="n">end</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
             <span class="n">span</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">span</span><span class="p">,</span>
             <span class="n">query_span</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">query_span</span>
         <span class="p">)</span>
@@ -457,13 +534,13 @@
     <span class="n">NODE_CLASS</span> <span class="o">=</span> <span class="n">Node</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_head</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_head</span> <span class="o">=</span> <span class="n">EmptyNode</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">first</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_head</span> <span class="o">=</span> <span class="n">first</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Either &#39;data&#39; or &#39;first&#39; must be provided.&quot;</span><span class="p">)</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     raise AttributeError(&quot;Either &#39;data&#39; or &#39;first&#39; must be provided.&quot;)</span>
 
     <span class="c1"># @classmethod</span>
     <span class="c1"># def initialize_by_node(cls):</span>
@@ -487,8 +564,13 @@
                 <span class="n">prev</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
             <span class="n">prev</span> <span class="o">=</span> <span class="n">curr</span>
 
+    <span class="k">def</span> <span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_head</span><span class="p">,</span> <span class="n">EmptyNode</span><span class="p">)</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_head</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_head</span>
         <span class="n">first</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_head</span><span class="o">.</span><span class="n">find_first</span><span class="p">()</span>
@@ -506,6 +588,8 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cyclic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">curr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_head</span>
         <span class="k">while</span> <span class="n">curr</span><span class="p">:</span>
@@ -537,13 +621,14 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">linearize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="n">this_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">this_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="n">this_i</span><span class="o">.</span><span class="n">cut_prev</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">this_i</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">fwd</span><span class="p">())</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">fwd</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">n</span>
 
     <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -635,7 +720,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">cls</span><span class="p">(</span><span class="n">first</span><span class="o">=</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">find_ends</span><span class="p">(</span><span class="n">nodes</span><span class="p">)]</span>
 
     <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_list</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">copy_insertion</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_if_in_bounds</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
@@ -644,11 +729,11 @@
         <span class="k">if</span> <span class="n">copy_insertion</span><span class="p">:</span>
             <span class="n">node_list</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">node_list</span><span class="p">)</span>
         <span class="c1"># TODO: This copies the insertion sequence, you want that?</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">loc2</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">loc1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">loc1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">loc2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">loc2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="n">loc1</span> <span class="o">=</span> <span class="n">loc2</span><span class="o">.</span><span class="n">prev</span><span class="p">()</span>
         <span class="n">first</span> <span class="o">=</span> <span class="n">node_list</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">last</span> <span class="o">=</span> <span class="n">node_list</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -660,7 +745,7 @@
 
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_if_in_bounds</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-        <span class="n">to_be_removed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">to_be_removed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="n">new_first</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span>
         <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">new_first</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">new_first</span><span class="p">)</span>
@@ -672,14 +757,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_if_in_bounds</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot re-index a linear </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_check_if_in_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">num</span> <span class="o">=</span> <span class="p">[</span><span class="n">num</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">num</span><span class="p">:</span>
             <span class="n">mn</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">mx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">mx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">mx</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">LinkedListIndexError</span><span class="p">(</span><span class="s2">&quot;Index </span><span class="si">{}</span><span class="s2"> out of acceptable bounds (</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mn</span><span class="p">,</span> <span class="n">mx</span><span class="p">))</span>
 
@@ -708,11 +793,9 @@
         <span class="n">n1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span>
         <span class="n">n2</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">head</span>
         <span class="n">start</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">while</span> <span class="n">n1</span> <span class="ow">and</span> <span class="n">n2</span> <span class="ow">and</span> <span class="n">n1</span><span class="o">.</span><span class="n">equivalent</span><span class="p">(</span><span class="n">n2</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
             <span class="n">n1</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span>
             <span class="n">n2</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">n2</span><span class="p">)</span>
 
@@ -746,58 +829,72 @@
     <span class="c1">#         yield LinkedListMatch(curr_node, x1, span=(i, j - 1))</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">Direction</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">query_direction</span><span class="o">=</span><span class="n">Direction</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">,</span> <span class="n">template_direction</span><span class="o">=</span><span class="n">Direction</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">protocol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">protocol</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">equivalent</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="bp">cls</span><span class="o">.</span><span class="n">Direction</span><span class="o">.</span><span class="n">REVERSE</span><span class="p">:</span>
-            <span class="n">get_iterator</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">rev</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">get_iterator</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">fwd</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">get_iterator</span><span class="p">(</span><span class="n">n1</span><span class="p">),</span> <span class="n">get_iterator</span><span class="p">(</span><span class="n">n2</span><span class="p">)):</span>
+
+        <span class="n">iterators</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">Direction</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">fwd</span><span class="p">(),</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">Direction</span><span class="o">.</span><span class="n">REVERSE</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">rev</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">iterators</span><span class="p">[</span><span class="n">template_direction</span><span class="p">](</span><span class="n">n1</span><span class="p">),</span> <span class="n">iterators</span><span class="p">[</span><span class="n">query_direction</span><span class="p">](</span><span class="n">n2</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">protocol</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
                 <span class="k">yield</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span>
 
-    <span class="k">def</span> <span class="nf">find_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">min_query_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">Direction</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DoubleLinkedList.find_iter"><a class="viewcode-back" href="../../developer/_autosummary/jdna.linked_list.html#jdna.linked_list.DoubleLinkedList.find_iter">[docs]</a>    <span class="k">def</span> <span class="nf">find_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">min_query_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">Direction</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iteratively finds positions that match the query.</span>
+
+<span class="sd">        :param query: query list to find</span>
+<span class="sd">        :type query: DoubleLinkedList</span>
+<span class="sd">        :param min_query_length: the minimum number of matches to return. If None, find_iter will only return complete</span>
+<span class="sd">                                matches</span>
+<span class="sd">        :type min_query_length: inst</span>
+<span class="sd">        :param direction: If Direction.FORWARD (+1), find iter will search from the query head and search forward,</span>
+<span class="sd">                        potentially leaving a &#39;tail&#39; overhang on the query. If</span>
+<span class="sd">                        Direction.REVERSE (-1), find iter will search from the query tail and search reverse, potentially</span>
+<span class="sd">                        leaving a &#39;head&#39; overhang on the query. If a tuple, the template_direction and query_direction are</span>
+<span class="sd">                        set respectively.</span>
+<span class="sd">        :type direction: int or tuple</span>
+<span class="sd">        :param protocol: the callable taking two parameters (as Node) to compare during find. If None, defaults</span>
+<span class="sd">                        to &#39;equivalent&#39;</span>
+<span class="sd">        :type protocol: callable</span>
+<span class="sd">        :return: list of LinkedListMatches</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">template_direction</span><span class="p">,</span> <span class="n">query_direction</span> <span class="o">=</span> <span class="n">direction</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">template_direction</span><span class="p">,</span> <span class="n">query_direction</span> <span class="o">=</span> <span class="n">direction</span><span class="p">,</span> <span class="n">direction</span>
+
         <span class="n">curr_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span>
-        <span class="n">reverse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Direction</span><span class="o">.</span><span class="n">REVERSE</span> <span class="o">==</span> <span class="n">direction</span>
         <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Direction</span><span class="o">.</span><span class="n">REVERSE</span> <span class="o">==</span> <span class="n">query_direction</span><span class="p">:</span>
             <span class="n">query_start</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">tail</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">query_start</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">head</span>
         <span class="n">qlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">min_query_length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">min_query_length</span> <span class="o">=</span> <span class="n">qlen</span>
+
+        <span class="n">template_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">query_nodes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="n">curr_node</span> <span class="ow">and</span> <span class="n">curr_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
-            <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">curr_node</span><span class="p">)</span>
-            <span class="n">matches</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">curr_node</span><span class="p">,</span> <span class="n">query_start</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">))</span>
-            <span class="n">span_start</span> <span class="o">=</span> <span class="n">index</span>
-            <span class="n">span_end</span> <span class="o">=</span> <span class="n">span_start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
-                <span class="n">matches</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">span_end</span> <span class="o">=</span> <span class="n">index</span>
-                <span class="n">span_start</span> <span class="o">=</span> <span class="n">index</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">span_start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">span_start</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">min_query_length</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">span_end</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span><span class="p">:</span>
-                        <span class="n">span_end</span> <span class="o">-=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Template was expected to be cyclic but was not&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
-                    <span class="n">query_span</span> <span class="o">=</span> <span class="p">(</span><span class="n">qlen</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">),</span> <span class="n">qlen</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">query_span</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-                <span class="k">yield</span> <span class="n">LinkedListMatch</span><span class="p">(</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">matches</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                                      <span class="n">span</span><span class="o">=</span><span class="p">(</span><span class="n">span_start</span><span class="p">,</span> <span class="n">span_end</span><span class="p">),</span>
-                                      <span class="n">query_span</span><span class="o">=</span><span class="n">query_span</span>
-                                      <span class="p">)</span>
-            <span class="n">curr_node</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">curr_node</span><span class="p">)</span>
             <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">curr_node</span><span class="p">)</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">curr_node</span><span class="p">,</span> <span class="n">query_start</span><span class="p">,</span> <span class="n">query_direction</span><span class="o">=</span><span class="n">query_direction</span><span class="p">,</span>
+                                      <span class="n">template_direction</span><span class="o">=</span><span class="n">template_direction</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Direction</span><span class="o">.</span><span class="n">REVERSE</span> <span class="o">==</span> <span class="n">template_direction</span><span class="p">:</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">min_query_length</span><span class="p">:</span>
+                <span class="n">query_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">matches</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]])</span>
+                <span class="n">template_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">matches</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="n">curr_node</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">curr_node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">LinkedListMatch</span><span class="o">.</span><span class="n">batch_create</span><span class="p">(</span><span class="n">template_nodes</span><span class="p">,</span> <span class="n">query_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
@@ -807,6 +904,10 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">fuse_in_place</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">seq</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">seq</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">find_last</span><span class="p">()</span>
         <span class="n">l</span> <span class="o">=</span> <span class="n">seq</span><span class="o">.</span><span class="n">head</span>
         <span class="n">f</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
@@ -818,10 +919,58 @@
     <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
 
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span>
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">empty_iterator</span><span class="p">():</span>
         <span class="k">return</span>
         <span class="k">yield</span>
+
+<div class="viewcode-block" id="DoubleLinkedList.node_range"><a class="viewcode-back" href="../../developer/_autosummary/jdna.linked_list.html#jdna.linked_list.DoubleLinkedList.node_range">[docs]</a>    <span class="k">def</span> <span class="nf">node_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate between &#39;start&#39; to &#39;end&#39; nodes (inclusive)&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">start</span><span class="o">.</span><span class="n">fwd</span><span class="p">(</span><span class="n">stop_node</span><span class="o">=</span><span class="n">end</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">n</span></div>
+
+<div class="viewcode-block" id="DoubleLinkedList.new_slice"><a class="viewcode-back" href="../../developer/_autosummary/jdna.linked_list.html#jdna.linked_list.DoubleLinkedList.new_slice">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">new_slice</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a copy of the sequence between &#39;start&#39; and &#39;end&#39; nodes)&quot;&quot;&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">start</span><span class="o">.</span><span class="n">fwd</span><span class="p">(</span><span class="n">stop_node</span><span class="o">=</span><span class="n">end</span><span class="p">):</span>
+                <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                <span class="c1"># new_node = copy(n)</span>
+                <span class="c1"># new_nodes.append(new_node)</span>
+                <span class="c1"># new_node.set_prev(prev)</span>
+                <span class="c1"># prev = new_node</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">end</span><span class="o">.</span><span class="n">rev</span><span class="p">(</span><span class="n">stop_node</span><span class="o">=</span><span class="n">start</span><span class="p">):</span>
+                <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">nodes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">end</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">start</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span>
+
+        <span class="nb">next</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="nb">next</span><span class="p">)</span>
+            <span class="nb">next</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="n">n</span><span class="o">.</span><span class="n">set_prev</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">first</span><span class="o">=</span><span class="n">n</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DoubleLinkedList.copy_slice"><a class="viewcode-back" href="../../developer/_autosummary/jdna.linked_list.html#jdna.linked_list.DoubleLinkedList.copy_slice">[docs]</a>    <span class="k">def</span> <span class="nf">copy_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a copy of the sequence between &#39;start&#39; and &#39;end&#39; nodes. If start is None,</span>
+<span class="sd">        return the slice copy from head to end. If end is None, return copy from start to tail.</span>
+<span class="sd">        If both start and end are None return None.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DoubleLinkedList.range"><a class="viewcode-back" href="../../developer/_autosummary/jdna.linked_list.html#jdna.linked_list.DoubleLinkedList.range">[docs]</a>    <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns an iterator from node at &#39;i&#39; to node at &#39;j-1&#39;&quot;&quot;&quot;</span>
@@ -858,6 +1007,22 @@
             <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="n">node</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">i</span>
 
+    <span class="k">def</span> <span class="nf">indices_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+        <span class="n">index_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="n">node</span><span class="p">:</span>
+                    <span class="n">index_dict</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">index_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="n">data1</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+        <span class="n">data2</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">other</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">data1</span> <span class="o">==</span> <span class="n">data2</span>
+
     <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuse</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
@@ -865,6 +1030,11 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">step</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">step</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">LinkedListIndexError</span><span class="p">(</span><span class="s2">&quot;Step &gt; 1 is not supported for sliced object of &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">start</span> <span class="o">==</span> <span class="n">key</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+
             <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">step</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
@@ -872,17 +1042,15 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">new_list</span>
 
-            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">start</span> <span class="o">==</span> <span class="n">key</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">None</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">new_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">new_list</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">stop</span><span class="p">))</span>
             <span class="k">except</span> <span class="n">LinkedListIndexError</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">new_nodes</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
             <span class="n">start</span> <span class="o">=</span> <span class="n">new_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">end</span> <span class="o">=</span> <span class="n">new_nodes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
             <span class="n">start</span><span class="o">.</span><span class="n">cut_prev</span><span class="p">()</span>
             <span class="n">end</span><span class="o">.</span><span class="n">cut_next</span><span class="p">()</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">first</span><span class="o">=</span><span class="n">start</span><span class="p">)</span>
@@ -915,14 +1083,7 @@
         <span class="k">return</span> <span class="n">length</span>
 
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span>
-        <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="k">while</span> <span class="n">current</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">current</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">StopIteration</span>
-            <span class="k">yield</span> <span class="n">current</span>
-            <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
-            <span class="n">current</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">fwd</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">{cls}</span><span class="s2"> data=&#39;</span><span class="si">{data}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -932,8 +1093,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span></div>
-
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

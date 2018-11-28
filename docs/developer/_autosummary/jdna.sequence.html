@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="jdna.reaction" href="jdna.reaction.html" />
+    <link rel="next" title="jdna.alphabet" href="jdna.alphabet.html" />
     <link rel="prev" title="jdna.linked_list" href="jdna.linked_list.html" />
   
    
@@ -41,7 +41,7 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="jdna.reaction.html" title="jdna.reaction"
+          <a href="jdna.alphabet.html" title="jdna.alphabet"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="jdna.linked_list.html" title="jdna.linked_list"
@@ -129,8 +129,8 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#jdna.sequence.BindPos" title="jdna.sequence.BindPos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BindPos</span></code></a>(start,&nbsp;end,&nbsp;anneal_span,&nbsp;query_span,&nbsp;…)</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#jdna.sequence.BindPos" title="jdna.sequence.BindPos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BindPos</span></code></a>(template_bounds,&nbsp;query_bounds,&nbsp;…)</td>
+<td>Makes a sequence binding position.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">Feature</span></code>(name[,&nbsp;type,&nbsp;strand,&nbsp;color])</td>
 <td></td>
@@ -148,8 +148,63 @@
 </table>
 <dl class="class">
 <dt id="jdna.sequence.BindPos">
-<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">BindPos</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>anneal_span</em>, <em>query_span</em>, <em>direction</em>, <em>primer</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#BindPos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.BindPos" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">BindPos</code><span class="sig-paren">(</span><em>template_bounds</em>, <em>query_bounds</em>, <em>template</em>, <em>query</em>, <em>direction</em>, <em>strand=&lt;SequenceFlags.FORWARD: 1&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#BindPos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.BindPos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.LinkedListMatch" title="jdna.linked_list.LinkedListMatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.linked_list.LinkedListMatch</span></code></a></p>
+<p>Makes a sequence binding position.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>template_bounds_list</strong> (<em>template DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a template</li>
+<li><strong>query_bounds_list</strong> (<em>query DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a query</li>
+<li><strong>template</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the template</li>
+<li><strong>query</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the query</li>
+<li><strong>direction</strong> (<em>int</em>) – If SequenceFlags.FORWARD, the binding position indicates binding forward, to the bottom strand
+of a dsDNA sequence.</li>
+<li><strong>strand</strong> (<em>int</em>) – If SequenceFlags.BOTTOM, then the query is assumed to be the reverse_complement of the original
+query</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="classmethod">
+<dt id="jdna.sequence.BindPos.batch_create">
+<em class="property">classmethod </em><code class="descname">batch_create</code><span class="sig-paren">(</span><em>template_bounds_list</em>, <em>query_bounds_list</em>, <em>template</em>, <em>query</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.BindPos.batch_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Efficiently create several LinkedListMatches from lists of template starts/ends and query starts/ends</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>template_bounds_list</strong> (<em>template DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a template</li>
+<li><strong>query_bounds_list</strong> (<em>query DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a query</li>
+<li><strong>template</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the template</li>
+<li><strong>query</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the query</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">matchese</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of LinkedListMatch</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="jdna.sequence.BindPos.from_match">
+<em class="property">classmethod </em><code class="descname">from_match</code><span class="sig-paren">(</span><em>linked_list_match</em>, <em>template</em>, <em>query</em>, <em>direction</em>, <em>strand=&lt;SequenceFlags.FORWARD: 1&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#BindPos.from_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.BindPos.from_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a binding pos
+:param linked_list_match: the linked list match
+:type linked_list_match: LinkedListMatch
+:return:
+:rtype:</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -491,6 +546,12 @@
 <dd><p>alias of <a class="reference internal" href="#jdna.sequence.Nucleotide" title="jdna.sequence.Nucleotide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nucleotide</span></code></a></p>
 </dd></dl>
 
+<dl class="method">
+<dt id="jdna.sequence.Sequence.anneal">
+<code class="descname">anneal</code><span class="sig-paren">(</span><em>ssDNA</em>, <em>min_bases=13</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.anneal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.anneal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulate annealing a single stranded piece of DNA to a double_stranded template</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="jdna.sequence.Sequence.circular">
 <code class="descname">circular</code><a class="headerlink" href="#jdna.sequence.Sequence.circular" title="Permalink to this definition">¶</a></dt>
@@ -513,6 +574,20 @@
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="jdna.sequence.Sequence.copy_slice">
+<code class="descname">copy_slice</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.copy_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the sequence between ‘start’ and ‘end’ nodes. If start is None,
+return the slice copy from head to end. If end is None, return copy from start to tail.
+If both start and end are None return None.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.sequence.Sequence.dsanneal">
+<code class="descname">dsanneal</code><span class="sig-paren">(</span><em>dsDNA</em>, <em>min_bases=13</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.dsanneal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.dsanneal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulate annealing a double stranded piece of DNA to a double_stranded template</p>
+</dd></dl>
+
 <dl class="staticmethod">
 <dt id="jdna.sequence.Sequence.find_ends">
 <em class="property">static </em><code class="descname">find_ends</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.find_ends" title="Permalink to this definition">¶</a></dt>
@@ -520,9 +595,53 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="jdna.sequence.Sequence.find_iter">
+<code class="descname">find_iter</code><span class="sig-paren">(</span><em>query</em>, <em>min_query_length=None</em>, <em>direction=&lt;Direction.FORWARD: 1&gt;</em>, <em>protocol=None</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.find_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iteratively finds positions that match the query.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>query</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – query list to find</li>
+<li><strong>min_query_length</strong> (<em>inst</em>) – the minimum number of matches to return. If None, find_iter will only return complete
+matches</li>
+<li><strong>direction</strong> (<em>int</em><em> or </em><em>tuple</em>) – If Direction.FORWARD (+1), find iter will search from the query head and search forward,
+potentially leaving a ‘tail’ overhang on the query. If
+Direction.REVERSE (-1), find iter will search from the query tail and search reverse, potentially
+leaving a ‘head’ overhang on the query. If a tuple, the template_direction and query_direction are
+set respectively.</li>
+<li><strong>protocol</strong> (<em>callable</em>) – the callable taking two parameters (as Node) to compare during find. If None, defaults
+to ‘equivalent’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of LinkedListMatches</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="jdna.sequence.Sequence.inclusive_range">
 <code class="descname">inclusive_range</code><span class="sig-paren">(</span><em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.inclusive_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return generator for inclusive nodes between index i and j</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="jdna.sequence.Sequence.new_slice">
+<em class="property">classmethod </em><code class="descname">new_slice</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.new_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the sequence between ‘start’ and ‘end’ nodes)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.sequence.Sequence.node_range">
+<code class="descname">node_range</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.node_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate between ‘start’ to ‘end’ nodes (inclusive)</p>
 </dd></dl>
 
 <dl class="classmethod">
@@ -558,7 +677,7 @@
       </div>
     
       <div class="pull-right">
-        <a class="btn btn-default" href="jdna.reaction.html" title="next chapter (use the right arrow)">jdna.reaction</a>
+        <a class="btn btn-default" href="jdna.alphabet.html" title="next chapter (use the right arrow)">jdna.alphabet</a>
       </div>
     </div>
     <div class="clearer"></div>
@@ -576,7 +695,7 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="jdna.reaction.html" title="jdna.reaction"
+          <a href="jdna.alphabet.html" title="jdna.alphabet"
              >next</a> |</li>
         <li class="right" >
           <a href="jdna.linked_list.html" title="jdna.linked_list"

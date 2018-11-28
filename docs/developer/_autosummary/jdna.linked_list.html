@@ -132,10 +132,13 @@
 <tr class="row-odd"><td><a class="reference internal" href="#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DoubleLinkedList</span></code></a>([data,&nbsp;first])</td>
 <td>A generic double linked list class.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#jdna.linked_list.LinkedListMatch" title="jdna.linked_list.LinkedListMatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LinkedListMatch</span></code></a>(start,&nbsp;end,&nbsp;span,&nbsp;query_span)</td>
+<tr class="row-even"><td><a class="reference internal" href="#jdna.linked_list.EmptyNode" title="jdna.linked_list.EmptyNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EmptyNode</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#jdna.linked_list.LinkedListMatch" title="jdna.linked_list.LinkedListMatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LinkedListMatch</span></code></a>(template_bounds,&nbsp;…)</td>
 <td>A match object</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#jdna.linked_list.Node" title="jdna.linked_list.Node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Node</span></code></a>(data)</td>
+<tr class="row-even"><td><a class="reference internal" href="#jdna.linked_list.Node" title="jdna.linked_list.Node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Node</span></code></a>(data)</td>
 <td>A node in a linked list</td>
 </tr>
 </tbody>
@@ -195,10 +198,50 @@
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="jdna.linked_list.DoubleLinkedList.copy_slice">
+<code class="descname">copy_slice</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.copy_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.copy_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the sequence between ‘start’ and ‘end’ nodes. If start is None,
+return the slice copy from head to end. If end is None, return copy from start to tail.
+If both start and end are None return None.</p>
+</dd></dl>
+
 <dl class="staticmethod">
 <dt id="jdna.linked_list.DoubleLinkedList.find_ends">
 <em class="property">static </em><code class="descname">find_ends</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.find_ends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.find_ends" title="Permalink to this definition">¶</a></dt>
 <dd><p>Efficiently finds the head and tails from a group of nodes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.DoubleLinkedList.find_iter">
+<code class="descname">find_iter</code><span class="sig-paren">(</span><em>query</em>, <em>min_query_length=None</em>, <em>direction=&lt;Direction.FORWARD: 1&gt;</em>, <em>protocol=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.find_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.find_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iteratively finds positions that match the query.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>query</strong> (<a class="reference internal" href="#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – query list to find</li>
+<li><strong>min_query_length</strong> (<em>inst</em>) – the minimum number of matches to return. If None, find_iter will only return complete
+matches</li>
+<li><strong>direction</strong> (<em>int</em><em> or </em><em>tuple</em>) – If Direction.FORWARD (+1), find iter will search from the query head and search forward,
+potentially leaving a ‘tail’ overhang on the query. If
+Direction.REVERSE (-1), find iter will search from the query tail and search reverse, potentially
+leaving a ‘head’ overhang on the query. If a tuple, the template_direction and query_direction are
+set respectively.</li>
+<li><strong>protocol</strong> (<em>callable</em>) – the callable taking two parameters (as Node) to compare during find. If None, defaults
+to ‘equivalent’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of LinkedListMatches</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -207,10 +250,338 @@
 <dd><p>Return generator for inclusive nodes between index i and j</p>
 </dd></dl>
 
+<dl class="classmethod">
+<dt id="jdna.linked_list.DoubleLinkedList.new_slice">
+<em class="property">classmethod </em><code class="descname">new_slice</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.new_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.new_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the sequence between ‘start’ and ‘end’ nodes)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.DoubleLinkedList.node_range">
+<code class="descname">node_range</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.node_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.node_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate between ‘start’ to ‘end’ nodes (inclusive)</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="jdna.linked_list.DoubleLinkedList.range">
 <code class="descname">range</code><span class="sig-paren">(</span><em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an iterator from node at ‘i’ to node at ‘j-1’</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="jdna.linked_list.EmptyNode">
+<em class="property">class </em><code class="descclassname">jdna.linked_list.</code><code class="descname">EmptyNode</code><a class="reference internal" href="../../_modules/jdna/linked_list.html#EmptyNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.EmptyNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdna.linked_list.Node" title="jdna.linked_list.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.linked_list.Node</span></code></a></p>
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode._break_connections">
+<code class="descname">_break_connections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode._break_connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Break connections in this node.
+:return:
+:rtype:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode._complete_match">
+<code class="descname">_complete_match</code><span class="sig-paren">(</span><em>node</em>, <em>next_method</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode._complete_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the longest match between two nodes is equivalent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<a class="reference internal" href="#jdna.linked_list.Node" title="jdna.linked_list.Node"><em>Node</em></a>) – the node to compare</li>
+<li><strong>next_method</strong> (<em>callable</em>) – how to obtain the next node</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">whether the longest match between two nodes is equivalent</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.add_next">
+<code class="descname">add_next</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.add_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new node and add to next</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>any</em>) – any data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the new node</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.add_prev">
+<code class="descname">add_prev</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.add_prev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new node and add to previous</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>any</em>) – any data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the new node</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.cut_next">
+<code class="descname">cut_next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.cut_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cut the next node, return the cut node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the cut (next) node</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.cut_prev">
+<code class="descname">cut_prev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.cut_prev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cut the previous node, return the cut node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the cut (previous) node</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.equivalent">
+<code class="descname">equivalent</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.equivalent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates whether two nodes hold the same data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.find_first">
+<code class="descname">find_first</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.find_first" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the head node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.find_last">
+<code class="descname">find_last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.find_last" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the tail node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.fwd">
+<code class="descname">fwd</code><span class="sig-paren">(</span><em>stop_node=None</em>, <em>stop_criteria=None</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.fwd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Propogates forwards until stop node is visited or stop criteria is reached.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>stop_node</strong> – </li>
+<li><strong>stop_criteria</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.longest_match">
+<code class="descname">longest_match</code><span class="sig-paren">(</span><em>node</em>, <em>next_method=None</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.longest_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the longest match between two linked_lists</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<a class="reference internal" href="#jdna.linked_list.Node" title="jdna.linked_list.Node"><em>Node</em></a>) – the node to compare</li>
+<li><strong>next_method</strong> (<em>callable</em>) – how to obtain the next node</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of tuples containing matching nodes</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.next">
+<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the next node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the next node</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.prev">
+<code class="descname">prev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.prev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the previous node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the previous node</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove node from linked list, connecting the previous and next nodes together.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.rev">
+<code class="descname">rev</code><span class="sig-paren">(</span><em>stop_node=None</em>, <em>stop_criteria=None</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.rev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Propogates backwards until stop node is visited or stop criteria is reached.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>stop_node</strong> – </li>
+<li><strong>stop_criteria</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.set_next">
+<code class="descname">set_next</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.set_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the next node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.set_prev">
+<code class="descname">set_prev</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.set_prev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the previous node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.linked_list.EmptyNode.swap">
+<code class="descname">swap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.linked_list.EmptyNode.swap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Swap the previous and next nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -245,9 +616,35 @@ set self.__traceback__ to tb and return self.</p>
 
 <dl class="class">
 <dt id="jdna.linked_list.LinkedListMatch">
-<em class="property">class </em><code class="descclassname">jdna.linked_list.</code><code class="descname">LinkedListMatch</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>span</em>, <em>query_span</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#LinkedListMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.LinkedListMatch" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">jdna.linked_list.</code><code class="descname">LinkedListMatch</code><span class="sig-paren">(</span><em>template_bounds</em>, <em>query_bounds</em>, <em>template</em>, <em>query</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#LinkedListMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.LinkedListMatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A match object</p>
+<dl class="classmethod">
+<dt id="jdna.linked_list.LinkedListMatch.batch_create">
+<em class="property">classmethod </em><code class="descname">batch_create</code><span class="sig-paren">(</span><em>template_bounds_list</em>, <em>query_bounds_list</em>, <em>template</em>, <em>query</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#LinkedListMatch.batch_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.LinkedListMatch.batch_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Efficiently create several LinkedListMatches from lists of template starts/ends and query starts/ends</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>template_bounds_list</strong> (<em>template DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a template</li>
+<li><strong>query_bounds_list</strong> (<em>query DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a query</li>
+<li><strong>template</strong> (<a class="reference internal" href="#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the template</li>
+<li><strong>query</strong> (<a class="reference internal" href="#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the query</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">matchese</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of LinkedListMatch</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">

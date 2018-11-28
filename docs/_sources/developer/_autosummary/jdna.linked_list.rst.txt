@@ -14,6 +14,7 @@ jdna.linked\_list
    .. autosummary::
    
       DoubleLinkedList
+      EmptyNode
       LinkedListMatch
       Node
    

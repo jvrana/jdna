@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="jdna.graph" href="jdna.graph.html" />
-    <link rel="prev" title="jdna.sequence" href="jdna.sequence.html" />
+    <link rel="prev" title="jdna.alphabet" href="jdna.alphabet.html" />
   
    
 
@@ -44,7 +44,7 @@
           <a href="jdna.graph.html" title="jdna.graph"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="jdna.sequence.html" title="jdna.sequence"
+          <a href="jdna.alphabet.html" title="jdna.alphabet"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api_reference.html" accesskey="U">API Reference</a> &#187;</li> 
@@ -129,11 +129,111 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reaction</span></code></td>
+<tr class="row-odd"><td><a class="reference internal" href="#jdna.reaction.BindingEvent" title="jdna.reaction.BindingEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BindingEvent</span></code></a>(template,&nbsp;primer,&nbsp;position)</td>
+<td>Create new instance of BindingEvent(template, primer, position)</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reaction</span></code></td>
 <td></td>
 </tr>
 </tbody>
 </table>
+<p class="rubric">Exceptions</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#jdna.reaction.PCRException" title="jdna.reaction.PCRException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCRException</span></code></a></td>
+<td>Exception with pcr</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#jdna.reaction.ReactionException" title="jdna.reaction.ReactionException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReactionException</span></code></a></td>
+<td>Generic reaction exception</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="jdna.reaction.BindingEvent">
+<em class="property">class </em><code class="descclassname">jdna.reaction.</code><code class="descname">BindingEvent</code><span class="sig-paren">(</span><em>template</em>, <em>primer</em>, <em>position</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.reaction.BindingEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Create new instance of BindingEvent(template, primer, position)</p>
+<dl class="method">
+<dt id="jdna.reaction.BindingEvent._asdict">
+<code class="descname">_asdict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.reaction.BindingEvent._asdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new OrderedDict which maps field names to their values.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="jdna.reaction.BindingEvent._make">
+<em class="property">classmethod </em><code class="descname">_make</code><span class="sig-paren">(</span><em>iterable</em>, <em>new=&lt;built-in method __new__ of type object&gt;</em>, <em>len=&lt;built-in function len&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.reaction.BindingEvent._make" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a new BindingEvent object from a sequence or iterable</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.reaction.BindingEvent._replace">
+<code class="descname">_replace</code><span class="sig-paren">(</span><em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.reaction.BindingEvent._replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new BindingEvent object replacing specified fields with new values</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.reaction.BindingEvent.count">
+<code class="descname">count</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span> &#x2192; integer -- return number of occurrences of value<a class="headerlink" href="#jdna.reaction.BindingEvent.count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="jdna.reaction.BindingEvent.index">
+<code class="descname">index</code><span class="sig-paren">(</span><em>value</em><span class="optional">[</span>, <em>start</em><span class="optional">[</span>, <em>stop</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; integer -- return first index of value.<a class="headerlink" href="#jdna.reaction.BindingEvent.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="jdna.reaction.BindingEvent.position">
+<code class="descname">position</code><a class="headerlink" href="#jdna.reaction.BindingEvent.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="jdna.reaction.BindingEvent.primer">
+<code class="descname">primer</code><a class="headerlink" href="#jdna.reaction.BindingEvent.primer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="jdna.reaction.BindingEvent.template">
+<code class="descname">template</code><a class="headerlink" href="#jdna.reaction.BindingEvent.template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="jdna.reaction.PCRException">
+<em class="property">exception </em><code class="descclassname">jdna.reaction.</code><code class="descname">PCRException</code><a class="reference internal" href="../../_modules/jdna/reaction.html#PCRException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.reaction.PCRException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdna.reaction.ReactionException" title="jdna.reaction.ReactionException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.reaction.ReactionException</span></code></a></p>
+<p>Exception with pcr</p>
+<dl class="method">
+<dt id="jdna.reaction.PCRException.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.reaction.PCRException.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="jdna.reaction.ReactionException">
+<em class="property">exception </em><code class="descclassname">jdna.reaction.</code><code class="descname">ReactionException</code><a class="reference internal" href="../../_modules/jdna/reaction.html#ReactionException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.reaction.ReactionException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Generic reaction exception</p>
+<dl class="method">
+<dt id="jdna.reaction.ReactionException.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.reaction.ReactionException.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -142,7 +242,7 @@
   <div class="footer-relations">
     
       <div class="pull-left">
-        <a class="btn btn-default" href="jdna.sequence.html" title="previous chapter (use the left arrow)">jdna.sequence</a>
+        <a class="btn btn-default" href="jdna.alphabet.html" title="previous chapter (use the left arrow)">jdna.alphabet</a>
       </div>
     
       <div class="pull-right">
@@ -167,7 +267,7 @@
           <a href="jdna.graph.html" title="jdna.graph"
              >next</a> |</li>
         <li class="right" >
-          <a href="jdna.sequence.html" title="jdna.sequence"
+          <a href="jdna.alphabet.html" title="jdna.alphabet"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api_reference.html" >API Reference</a> &#187;</li> 
