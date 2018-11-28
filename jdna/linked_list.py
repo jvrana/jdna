@@ -507,12 +507,13 @@ class DoubleLinkedList(object):
 
     def circularize(self):
         if not self.cyclic:
-            return self.tail.set_next(self.head)
+            self.tail.set_next(self.head)
+        return self
 
     def linearize(self, i=0):
         this_i = self.get(i)
         this_i.cut_prev()
-        return this_i
+        return self
 
     @property
     def nodes(self):
@@ -647,6 +648,7 @@ class DoubleLinkedList(object):
         if not self.cyclic:
             raise TypeError("Cannot re-index a linear {}".format(self.__class__.__name__))
         self.head = self.get(i)
+        return self
 
     def _check_if_in_bounds(self, num):
         if isinstance(num, int):
@@ -733,7 +735,7 @@ class DoubleLinkedList(object):
             else:
                 return
 
-    def find_iter(self, query, min_query_length=None, direction=Direction.FORWARD, protocol=None):
+    def find_iter(self, query, min_query_length=None, direction=Direction.FORWARD, protocol=None, depth=None):
         """
         Iteratively finds positions that match the query.
 
@@ -774,6 +776,8 @@ class DoubleLinkedList(object):
         index = 0
         while curr_node and curr_node not in visited:
             index += 1
+            if depth is not None and index > depth:
+                break
             visited.add(curr_node)
             matches = list(self.match(curr_node, query_start, query_direction=query_direction,
                                       template_direction=template_direction, protocol=protocol))
@@ -907,7 +911,33 @@ class DoubleLinkedList(object):
     def data(self):
         return [n.data for n in self]
 
+    def compare(self, other):
+        """
+        Compares two linked lists. If both are cyclic, will attempt to reindex
+
+        :param other: other linked list
+        :type other: DoubleLinkedList
+        :return: whether sequence data is equivalent
+        :rtype: bool
+        """
+        if self.cyclic and other.cyclic:
+            anchors = []
+            if len(other) > 100:
+                for a in self.find_iter(other[:20]):
+                    anchors.append(a.span[0])
+            else:
+                anchors = range(len(other))
+            for a in anchors:
+                temp = self.copy().reindex(a)
+                if temp == other:
+                    return True
+            return False
+        else:
+            return self == other
+
     def __eq__(self, other):
+        if self.cyclic != other.cyclic:
+            return False
         data1 = [n.data for n in self]
         data2 = [n.data for n in other]
         return data1 == data2

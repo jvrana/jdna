@@ -23,6 +23,15 @@ class PCRException(ReactionException):
 
 BindingEvent = namedtuple("BindingEvent", ["template", "primer", "position"])
 
+
+class Assembly(object):
+
+    def __init__(self, product, templates, overhangs):
+        self.product = product
+        self.template = templates
+        self.overhangs = overhangs
+
+
 class Reaction(object):
     MIN_BASES = 13
 
@@ -71,15 +80,15 @@ class Reaction(object):
         return bindings
 
     @classmethod
-    def interaction_graph(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, bind_reverse_complement=False):
+    def interaction_graph(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, bind_reverse_complement=False, depth=None):
         G = nx.DiGraph()
-        for s in sequences:
-            G.add_node(s.global_id, sequence=s)
         if bind_reverse_complement:
             sequences = [s.copy() for s in sequences] + [s.copy().reverse_complement() for s in sequences[:]]
+        for s in sequences:
+            G.add_node(s.global_id, sequence=s)
         seq_pairs = itertools.product(sequences, repeat=2)
         for s1, s2 in seq_pairs:
-            for binding in s1.anneal_forward(s2, min_bases=min_bases):
+            for binding in s1.anneal_forward(s2, min_bases=min_bases, depth=depth):
                 if not (binding.span[0] == 0 and binding.span[-1] == len(s1) - 1):
                     G.add_edge(s2.global_id, s1.global_id, template=s1, primer=s2, binding=binding)
         return G
@@ -117,7 +126,7 @@ class Reaction(object):
         return edges
 
     @classmethod
-    def path_to_product(self, path, G, cyclic=False):
+    def path_to_assembly(self, path, G, cyclic=False):
         prev_template_end = None
 
         node_pairs = []
@@ -151,28 +160,41 @@ class Reaction(object):
             product += s1 + s2
         if cyclic:
             product.circularize()
-        return product
+        return Assembly(product, amplified_sequences, overhangs)
 
     @classmethod
-    def linear_assemblies(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES):
-        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases)
+    def linear_assemblies(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, depth=None):
+        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases, depth=depth)
         linear_paths = cls.linear_paths(G)
         if not linear_paths:
             return []
-        products = []
+        assemblies = []
         for path in linear_paths:
-            products.append(cls.path_to_product(path, G))
-        return products
+            assembly = cls.path_to_assembly(path, G)
+            assemblies.append(assembly)
+        return assemblies
 
     @classmethod
-    def cyclic_assemblies(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES):
-        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases)
+    def cyclic_assemblies(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, depth=None):
+        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases, depth=depth)
+
+        nodes = list(G.nodes)
+        fwd = nodes[:len(sequences)]
+        rev = nodes[len(sequences):]
+        fpriority = list(range(len(fwd)))
+        rpriority = list(range(len(fwd), len(fwd)*2))
+        priority_rank = fpriority + rpriority[1:] + [rpriority[0]]
+        node_priority = dict(zip(fwd+rev, priority_rank))
+
         cyclic_paths = cls.cyclic_paths(G)
         if not cyclic_paths:
             return []
-        products = []
+        assemblies = []
+        cyclic_paths = sorted(cyclic_paths, key=lambda x: min([node_priority[n] for n in x]))
         for path in cyclic_paths:
-            mn = path.index(min(path))
+            ranks = [node_priority[n] for n in path]
+            mn = ranks.index(min(ranks))
             cyclic_path = path[mn:] + path[:mn]
-            products.append(cls.path_to_product(cyclic_path, G, cyclic=True))
-        return products
+            assembly = cls.path_to_assembly(cyclic_path, G, cyclic=True)
+            assemblies.append(assembly)
+        return assemblies

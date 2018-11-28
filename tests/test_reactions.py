@@ -2,7 +2,6 @@ import pytest
 
 from jdna.reaction import Reaction
 from jdna.sequence import Sequence
-import networkx as nx
 
 
 @pytest.fixture(scope='function')
@@ -177,8 +176,11 @@ def test_linear_paths(generate_sequences, cyclic):
 @pytest.mark.parametrize('cyclic', [pytest.param(False, id='linear'), pytest.param(True, id='circular'),])
 def test_cyclic_paths(generate_sequences, cyclic):
     sequences = generate_sequences(4, cyclic=cyclic)
+    sequences[0].reverse_complement()
     G = Reaction.interaction_graph(sequences, bind_reverse_complement=True)
     paths = Reaction.cyclic_paths(G)
+    for p in paths:
+        print(p)
     for e in G.edges:
         print(e)
     if cyclic:
@@ -188,30 +190,47 @@ def test_cyclic_paths(generate_sequences, cyclic):
     else:
         assert len(paths) == 0
 
-def test_linear_assemblies(seq, generate_sequences):
+@pytest.mark.parametrize('reverse_complement', [
+    [],
+    [0],
+    [1],
+    [0, 1],
+    [0, 2],
+])
+def test_linear_assemblies(seq, generate_sequences, reverse_complement):
     sequences = generate_sequences(4, cyclic=False)
-    sequences[1].reverse_complement()
-    products = Reaction.linear_assemblies(sequences)
+    for rc in reverse_complement:
+        sequences[rc].reverse_complement()
+    assemblies = Reaction.linear_assemblies(sequences)
 
-    assert len(products) == 2
+    assert len(assemblies) == 2
 
-    for p in products:
+    for a in assemblies:
+        p = a.product
         assert not p.cyclic
         assert len(p) == len(seq)
         assert str(p) == str(seq) or str(p.copy().reverse_complement()) == str(seq)
 
-def test_cyclic_assemblies(seq, generate_sequences):
+@pytest.mark.parametrize('reverse_complement', [
+    [],
+    [0],
+    [1],
+    [2],
+    [0, 1],
+    [0, 2],
+])
+def test_cyclic_assemblies(seq, generate_sequences, reverse_complement):
     sequences = generate_sequences(4, cyclic=True)
-    sequences[0].reverse_complement()
-    products = Reaction.cyclic_assemblies(sequences)
+    for rc in reverse_complement:
+        sequences[rc].reverse_complement()
 
-    for p in products:
-        p.print_alignment(seq)
+    assemblies = Reaction.cyclic_assemblies(sequences, depth=50)
 
-    assert len(products) == 2
-    for p in products:
+    assert len(assemblies) == 2
+    for a in assemblies:
+        p = a.product
         assert p.cyclic
-        assert len(p) == len(seq)
-        print(str(p) == str(seq))
-        print(str(p.copy().reverse_complement()) == str(seq))
-        # assert str(p) == str(seq) or str(p.copy().reverse_complement()) == str(seq)
+        expected = seq.copy().circularize()
+        rc_expected = expected.copy().reverse_complement()
+        g = [p.compare(expected), p.compare(rc_expected)]
+        assert any(g)

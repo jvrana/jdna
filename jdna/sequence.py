@@ -529,31 +529,33 @@ class Sequence(DoubleLinkedList):
     #                                 protocol=lambda x, y: x.complementary(y)):
     #         yield match
 
-    def anneal_forward(self, other, min_bases=DEFAULTS.MIN_ANNEAL_BASES):
+    def anneal_forward(self, other, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
         for match in self.find_iter(other, min_query_length=min_bases,
-                                    direction=self.Direction.REVERSE):
+                                    direction=self.Direction.REVERSE,
+                                    depth=depth):
             yield BindPos.from_match(match, self, other, direction=self.Direction.FORWARD)
 
-    def anneal_reverse(self, other, min_bases=DEFAULTS.MIN_ANNEAL_BASES):
+    def anneal_reverse(self, other, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
         for match in self.find_iter(other,
                                     min_query_length=min_bases,
                                     direction=(1, -1),
-                                    protocol=lambda x, y: x.complementary(y)
+                                    protocol=lambda x, y: x.complementary(y),
+                                    depth=depth
                                     ):
             yield BindPos.from_match(match, self, other, direction=self.Direction.REVERSE)
 
-    def anneal(self, ssDNA, min_bases=DEFAULTS.MIN_ANNEAL_BASES):
+    def anneal(self, ssDNA, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
         """Simulate annealing a single stranded piece of DNA to a double_stranded template"""
-        for match in self.anneal_forward(ssDNA, min_bases=min_bases):
+        for match in self.anneal_forward(ssDNA, min_bases=min_bases, depth=depth):
             yield match
-        for match in self.anneal_reverse(ssDNA, min_bases=min_bases):
+        for match in self.anneal_reverse(ssDNA, min_bases=min_bases, depth=depth):
             yield match
 
-    def dsanneal(self, dsDNA, min_bases=DEFAULTS.MIN_ANNEAL_BASES):
+    def dsanneal(self, dsDNA, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
         """Simulate annealing a double stranded piece of DNA to a double_stranded template"""
-        for binding in self.anneal(dsDNA, min_bases=min_bases):
+        for binding in self.anneal(dsDNA, min_bases=min_bases, depth=depth):
             yield binding
-        for binding in self.anneal(dsDNA.copy().reverse_complement(), min_bases=min_bases):
+        for binding in self.anneal(dsDNA.copy().reverse_complement(), min_bases=min_bases, depth=depth):
             binding.strand = SequenceFlags.BOTTOM
             yield binding
 
@@ -601,8 +603,6 @@ class Sequence(DoubleLinkedList):
 
     def print(self, indent=None, width=None, spacer=None, include_complement=False):
         self.view(indent=indent, width=width, spacer=spacer, include_complement=include_complement).print()
-
-
 
     def __repr__(self):
         max_width = 30

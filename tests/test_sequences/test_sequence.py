@@ -213,13 +213,15 @@ def test_cyclic_cutting():
     test_cut([1, 8, len(seq)])
     assert str(seq) == seq_str
 
-
-def test_complement():
+@pytest.mark.parametrize('cyclic', [False, True])
+def test_complement(cyclic):
     seq_str = 'AGTCAGTC'
     seq = Sequence(seq_str)
+    seq.cyclic = cyclic
     seq.complement()
     assert str(seq) == 'TCAGTCAG'
     seq.complement()
+    assert seq.cyclic == cyclic
     assert str(seq) == seq_str
 
 
@@ -229,6 +231,7 @@ def test_cyclic_complement():
     seq.circularize()
     seq.complement()
     assert str(seq) == 'TCAgtCAG'
+    assert seq.cyclic
 
 
 def test_reverse_complement():
@@ -280,7 +283,6 @@ def test_random(length):
 ])
 def test_repr(length):
     seq = Sequence.random(length)
-    import textwrap
     print(seq.__repr__())
 
 def test_find_iter_complementary():
@@ -419,6 +421,7 @@ def test_viewer():
     view.print()
     s.view().print()
 
+
 def test_viewer_annotate():
     s = Sequence.random(550)
     s.annotate(50, 99, "GFP")
@@ -426,14 +429,28 @@ def test_viewer_annotate():
     s.annotate(60, 300, 'RFP')
     s.view(spacer='\n', include_complement=True).print()
 
+
 def test_print():
     Sequence.random(550).print(include_complement=True)
+
 
 def test_align():
     s1 = Sequence.random(100)
     s2 = Sequence.random(50) + s1[:50] + Sequence.random(50)
     s1.print_alignment(s2)
 
+
+def test_compare():
+    s1 = Sequence.random(200)
+    s1.cyclic = True
+    s2 = s1.copy().reindex(10)
+    s3 = s2 + Sequence("A")
+    assert not str(s2) == str(s3)
+    assert s1.compare(s2)
+    assert not s1.compare(s3)
+    assert not s2.compare(s3)
+
+    # assert not s1.compare(s2 + Sequence("A"))
 #
 # @pytest.mark.parametrize('reverse_complement', [False, True])
 # @pytest.mark.parametrize('overhang', [

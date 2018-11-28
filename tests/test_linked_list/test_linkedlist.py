@@ -80,11 +80,13 @@ def test_reindexing(index, test_str, linked_list):
     assert ~linked_list.cyclic
     assert str(linked_list) == test_str[index:] + test_str[:index]
 
-
-def test_copy(test_str, linked_list):
+@pytest.mark.parametrize('circular', [False, True])
+def test_copy(test_str, linked_list, circular):
+    linked_list.cyclic = circular
     l_copy = copy(linked_list)
     assert str(linked_list) == str(l_copy)
     assert id(l_copy.nodes[0]) is not id(linked_list.nodes[0])
+    assert l_copy.cyclic == linked_list.cyclic
     from copy import deepcopy
     with pytest.raises(NotImplementedError):
         deepcopy(linked_list)
@@ -279,10 +281,10 @@ def test_find_iter_query_span():
 def test_reverse(circular):
     test_str = 'XXXXGHHHXHGG'
     l = DoubleLinkedList(data=test_str)
-    if circular:
-        l.circularize()
+    l.cyclic = circular
     assert str(l) == test_str
     l.reverse()
+    assert l.cyclic == circular
     assert str(l) == test_str[::-1]
 
 
@@ -325,6 +327,17 @@ def test_zip_with_node():
     l1.circularize()
     for x1, x2 in zip(l2.get(1).fwd(), l1.get(2).fwd()):
         print('{} {}'.format(x1, x2))
+
+
+def test_compare(linked_list):
+    s1 = linked_list
+    s1.cyclic = True
+    s2 = s1.copy().reindex(10)
+    s3 = s2 + DoubleLinkedList("A")
+    assert not str(s2) == str(s3)
+    assert s1.compare(s2)
+    assert not s1.compare(s3)
+    assert not s2.compare(s3)
 
 
 class TestLinkedListMagic(object):
