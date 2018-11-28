@@ -411,8 +411,21 @@ def test_anneal_with_overhang(reverse_complement):
         assert str(b.five_prime_overhang) == str(overhang)
 
 
+def test_viewer():
+    s = Sequence.random(550)
+    view = s.view()
+    view.annotate(100, 150)
+    view.annotate(110, 160)
+    view.print()
+    s.view().print()
 
+def test_print():
+    Sequence.random(550).print(include_complement=True)
 
+def test_align():
+    s1 = Sequence.random(100)
+    s2 = Sequence.random(50) + s1[:50] + Sequence.random(50)
+    s1.print_alignment(s2)
 
 #
 # @pytest.mark.parametrize('reverse_complement', [False, True])

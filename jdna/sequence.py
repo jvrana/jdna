@@ -6,12 +6,13 @@ import itertools
 from collections import defaultdict
 from copy import copy, deepcopy
 from enum import IntFlag
-import textwrap
-
+from Bio import pairwise2
 
 from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
 from jdna.utils import random_color
 from jdna.alphabet import DNA, UnambiguousDNA, AmbiguousDNA
+from jdna.format import format_sequence
+from jdna.viewer import SequenceViewer
 
 
 class SequenceFlags(IntFlag):
@@ -555,6 +556,48 @@ class Sequence(DoubleLinkedList):
         for binding in self.anneal(dsDNA.copy().reverse_complement(), min_bases=min_bases):
             binding.strand = SequenceFlags.BOTTOM
             yield binding
+
+    def format(self, width=75, spacer=''):
+        return format_sequence(str(self), width=width, spacer=spacer)
+
+    def pairwise(self, other):
+        alignments = pairwise2.align.globalxx(str(self), str(other))
+        return alignments
+
+    def print_alignment(self, other, max=1):
+        alignments = self.pairwise(other)
+        for a in alignments[:max]:
+            mid = ''
+            for x1, x2 in zip(a[0], a[1]):
+                if '-' not in [x1, x2]:
+                    mid += '|'
+                else:
+                    mid += ' '
+            viewer = SequenceViewer([a[0], mid, a[1]], name="Alignment")
+            viewer.print()
+
+    def view(self, indent=10, width=85, spacer=None, include_complement=False):
+
+        if indent is None:
+            indent = 10
+
+        if width is None:
+            width = 85
+
+        seqs = [self]
+        if include_complement:
+            seqs.append(self.copy().complement())
+        if spacer is None:
+            if include_complement:
+                spacer = '\n'
+            else:
+                spacer = ''
+        return SequenceViewer(seqs, indent=indent, width=width, spacer=spacer)
+
+    def print(self, indent=None, width=None, spacer=None, include_complement=False):
+        self.view(indent=indent, width=width, spacer=spacer, include_complement=include_complement).print()
+
+
 
     def __repr__(self):
         max_width = 30

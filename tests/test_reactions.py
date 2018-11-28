@@ -161,8 +161,6 @@ def test_interaction_graph(cyclic, seq, generate_sequences, try_reverse_compleme
         else:
             assert len(edges) == 3
 
-
-
 @pytest.mark.parametrize('cyclic', [pytest.param(False, id='linear'), pytest.param(True, id='circular'),])
 def test_linear_paths(generate_sequences, cyclic):
     sequences = generate_sequences(4, cyclic=cyclic)
@@ -192,14 +190,28 @@ def test_cyclic_paths(generate_sequences, cyclic):
 
 def test_linear_assemblies(seq, generate_sequences):
     sequences = generate_sequences(4, cyclic=False)
-    Reaction.linear_assemblies(sequences)
+    sequences[1].reverse_complement()
+    products = Reaction.linear_assemblies(sequences)
 
-    # if not reverse_first:
-    #     for b in bindings:
-    #         assert b.position.span[0] == 0
-    #         assert b.position.span[-1] == overhang-1
-    # else:
-    #     for b in bindings[:]:
-    #         assert b.position.span[0] == 0
-    #         assert b.position.span[-1] == overhang-1
-        # assert bindings
+    assert len(products) == 2
+
+    for p in products:
+        assert not p.cyclic
+        assert len(p) == len(seq)
+        assert str(p) == str(seq) or str(p.copy().reverse_complement()) == str(seq)
+
+def test_cyclic_assemblies(seq, generate_sequences):
+    sequences = generate_sequences(4, cyclic=True)
+    sequences[0].reverse_complement()
+    products = Reaction.cyclic_assemblies(sequences)
+
+    for p in products:
+        p.print_alignment(seq)
+
+    assert len(products) == 2
+    for p in products:
+        assert p.cyclic
+        assert len(p) == len(seq)
+        print(str(p) == str(seq))
+        print(str(p.copy().reverse_complement()) == str(seq))
+        # assert str(p) == str(seq) or str(p.copy().reverse_complement()) == str(seq)

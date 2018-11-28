@@ -76,10 +76,10 @@ class Reaction(object):
         for s in sequences:
             G.add_node(s.global_id, sequence=s)
         if bind_reverse_complement:
-            sequences = [s.copy() for s in sequences] + [s.copy().reverse_complement() for s in sequences]
+            sequences = [s.copy() for s in sequences] + [s.copy().reverse_complement() for s in sequences[:]]
         seq_pairs = itertools.product(sequences, repeat=2)
         for s1, s2 in seq_pairs:
-            for binding in s1.anneal_forward(s2):
+            for binding in s1.anneal_forward(s2, min_bases=min_bases):
                 if not (binding.span[0] == 0 and binding.span[-1] == len(s1) - 1):
                     G.add_edge(s2.global_id, s1.global_id, template=s1, primer=s2, binding=binding)
         return G
@@ -108,7 +108,7 @@ class Reaction(object):
     @classmethod
     def path_to_edge_data(cls, G, path, cyclic):
         if cyclic:
-            path_pairs = zip(path, path + [path[0]])
+            path_pairs = zip(path, path[1:] + [path[0]])
         else:
             path_pairs = zip(path[:-1], path[1:])
         edges = []
@@ -117,26 +117,62 @@ class Reaction(object):
         return edges
 
     @classmethod
+    def path_to_product(self, path, G, cyclic=False):
+        prev_template_end = None
+
+        node_pairs = []
+        overhangs = []
+
+        for i, data in enumerate(self.path_to_edge_data(G, path, cyclic)):
+            binding = data['binding']
+
+            # use the previous template and this query should refer to the same sequence
+            node_pairs.append((prev_template_end, binding.query_start.prev()))
+
+            # the next segment start is the template start
+            prev_template_end = binding.end.next()
+            overhangs.append(binding.template_anneal)
+
+        if not cyclic:
+            node_pairs.append((prev_template_end, None))
+            overhangs.append(Sequence())
+        else:
+            pass
+            node_pairs[0] = (prev_template_end, node_pairs[0][1])
+            overhangs = [overhangs[-1]] + overhangs[:-1]
+        amplified_sequences = [Sequence.new_slice(*pair) for pair in node_pairs]
+
+        product = Sequence()
+        if not cyclic:
+            zipped = zip(amplified_sequences, overhangs)
+        else:
+            zipped = zip(overhangs, amplified_sequences)
+        for s1, s2 in zipped:
+            product += s1 + s2
+        if cyclic:
+            product.circularize()
+        return product
+
+    @classmethod
     def linear_assemblies(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES):
         G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases)
         linear_paths = cls.linear_paths(G)
         if not linear_paths:
             return []
-
+        products = []
         for path in linear_paths:
-            prev_query_end = None
-            node_pairs = []
-            overhangs = []
-            for i, data in enumerate(cls.path_to_edge_data(G, path, False)):
-                binding = data['binding']
-                node_pairs.append((prev_query_end, binding.query_start))
-                prev_query_end = binding.query_end
-                overhangs.append(binding.template_anneal)
-            node_pairs.append((prev_query_end, None))
-            overhangs.append(Sequence())
+            products.append(cls.path_to_product(path, G))
+        return products
 
-            amplified_sequences = [Sequence.new_slice(*pair) for pair in node_pairs]
-
-            import functools
-            product = functools.reduce(lambda x, y: x + y, zip(amplified_sequences, overhangs))
-            print(len(product))
+    @classmethod
+    def cyclic_assemblies(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES):
+        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases)
+        cyclic_paths = cls.cyclic_paths(G)
+        if not cyclic_paths:
+            return []
+        products = []
+        for path in cyclic_paths:
+            mn = path.index(min(path))
+            cyclic_path = path[mn:] + path[:mn]
+            products.append(cls.path_to_product(cyclic_path, G, cyclic=True))
+        return products
