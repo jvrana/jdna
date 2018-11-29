@@ -48,7 +48,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            python -m pytest --ignore=archived
+            python -m pytest --ignore=tests/archived
 
       - store_artifacts:
           path: test-reports
