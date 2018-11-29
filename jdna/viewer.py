@@ -2,7 +2,6 @@ import functools
 import itertools
 from networkx import nx
 from collections import OrderedDict
-import re
 
 class StringColumn(object):
     """Class for managing string columns"""
@@ -16,46 +15,7 @@ class StringColumn(object):
             max_length = max([len(s) for s in strings])
             self._length = max_length
             for s in strings:
-                self.add_string(self.right_fill(s))
-
-    @staticmethod
-    def condense_rows(rows):
-        string_len = max(len(r) for r in rows)
-        words = []
-        index = 0
-        for row in rows:
-            for match in re.finditer("([^\s]+)", row):
-                words.append((match.start(), match.end(), match.group(1), index))
-                index += 1
-        print(words)
-        G = nx.Graph()
-        for n1, n2 in itertools.combinations(words, 2):
-            if n1[0] < n2[0] or n1[0] > n2[1]:
-                if n2[0] < n1[0] or n2[0] > n1[1]:
-                    if n1[1] < n2[0]:
-                        G.add_edge(n1[-1], n2[-1])
-                    else:
-                        G.add_edge(n2[-1], n1[-1])
-
-        subgraph = G.subgraph(G.nodes)
-        cliques = []
-        while len(subgraph):
-            max_clique = list(nx.find_cliques(subgraph))[0]
-            cliques.append(max_clique)
-            print(max_clique)
-            remaining = set(subgraph.nodes).difference(set(max_clique))
-            subgraph = G.subgraph(list(remaining))
-
-        condensed_rows = []
-        for c in cliques:
-            mynodes = [words[s] for s in c]
-            mynodes = sorted(mynodes, key=lambda x: x[1])
-            s = [' '] * string_len
-            for n in mynodes:
-                for i, char in zip(range(n[0], n[1]), n[2]):
-                    s[i] = char
-            condensed_rows.append(''.join(s))
-        return condensed_rows
+                self.append_string(self.right_fill(s))
 
     @property
     def length(self):
@@ -87,7 +47,7 @@ class StringColumn(object):
             self._length = len(new_string)
         self._strings.insert(0, self.right_fill(new_string))
 
-    def add_string(self, new_string):
+    def append_string(self, new_string):
         if len(new_string) > self.length:
             self._length = len(new_string)
         self._strings.append(self.right_fill(new_string))
@@ -95,6 +55,13 @@ class StringColumn(object):
     def add_prefix(self, prefix):
         for i, s in self.strings:
             self.strings[i] = prefix + self.strings[i]
+
+    def stack(self, *others):
+        sc = self[:]
+        for other in others:
+            for string in other.strings:
+                sc.append_string(string)
+        return sc
 
     def __contains__(self, item):
         return any([item in s for s in self.strings])
@@ -106,20 +73,20 @@ class StringColumn(object):
         diff = len(sc.strings) - len(other.strings)
         if diff > 0:
             for i in range(diff):
-                other.add_string('')
+                other.prepend_string('')
         elif diff < 0:
             for i in range(-diff):
-                sc.add_string('')
+                sc.prepend_string('')
 
         new_sc = StringColumn([])
         for this_string, other_string in zip(sc.strings, other.strings):
-            new_sc.prepend_string(this_string + other_string)
+            new_sc.append_string(this_string + other_string)
         return new_sc
 
     def copy(self):
         return self.__copy__()
 
-    def strip(self):
+    def strip_indices(self):
         n1 = 0
         n2 = 0
         for x in self[:]:
@@ -132,10 +99,11 @@ class StringColumn(object):
                 n2 += 1
             else:
                 break
-        if n2 == 0:
-            return self[n1:]
-        else:
-            return self[n1:-n2]
+        return n1, len(self) - n2
+
+    def strip(self):
+        n1, n2 = self.strip_indices()
+        return self[n1:n2]
 
     def __copy__(self):
         return self.__class__(self.strings)
@@ -143,6 +111,15 @@ class StringColumn(object):
     def __getitem__(self, key):
         strings = [s.__getitem__(key) for s in self.strings]
         return self.__class__(strings)
+
+    #     def __setitem__(self, key, items):
+    #         if not len(items) == len(self.strings):
+    #             raise TypeError("Value must have {} items".format(len(self.strings)))
+    #         for string, item in zip(self.strings, items):
+    #             string[key] = item
+
+    def __eq__(self, other):
+        return str(self) == str(other)
 
     def __iter__(self):
         return zip(*self.strings)
@@ -155,6 +132,80 @@ class StringColumn(object):
 
     def __repr__(self):
         return str(self)
+
+    @classmethod
+    def condense(cls, rows):
+        """
+        Condense a list of :class:`StringColumn` into the minimum number of StringColumns comprising of columns stripped
+        of white space. Briefly, this is similar to the following procedure:
+
+        .. code-block::
+
+            input = [
+                'label         ',
+                '       label2 ',
+                '      label3  '
+            ]
+
+            # >> CONDENSE
+
+            output = [
+                'label  label2 ',
+                '      label3  '
+            ]
+
+        :param rows:
+        :type rows:
+        :return:
+        :rtype:
+        """
+        segments = []
+        indexed_segments = []
+        previous_end = 0
+        for row in rows:
+            start, end = row.strip_indices()
+            word = (start, end, row.strip())
+            if word not in segments:
+                segments.append(tuple(list(word)))
+                indexed_segments.append((start, end, row.strip(), previous_end))
+                previous_end += 1
+
+        # create a graph of non-overlapping segments
+        nonoverlap_graph = nx.Graph()
+        for w in indexed_segments:
+            nonoverlap_graph.add_node(w[-1])
+        for segment1, segment2 in itertools.combinations(indexed_segments, 2):
+            start1, end1, _, index1 = segment1
+            start2, end2, _, index2 = segment2
+            if start1 < start2 or start1 > end2:
+                if start2 < start1 or start2 > end1:
+                    if end1 < start2:
+                        nonoverlap_graph.add_edge(index1, index2)
+                    else:
+                        nonoverlap_graph.add_edge(index2, index1)
+
+        # find minimum number of cliques that covers the graph (clique covering)
+        subgraph = nonoverlap_graph.subgraph(nonoverlap_graph.nodes)
+        cliques = []
+        while len(subgraph):
+            max_clique = list(nx.find_cliques(subgraph))[0]
+            cliques.append(max_clique)
+            remaining = set(subgraph.nodes).difference(set(max_clique))
+            subgraph = nonoverlap_graph.subgraph(list(remaining))
+
+        condensed_rows = []
+        for clique in cliques:
+            string_column = cls()
+            clique_segments = [indexed_segments[s] for s in clique]
+            clique_segments = sorted(clique_segments, key=lambda seg: seg[1])
+
+            previous_end = 0
+            for segment in clique_segments:
+                start, end, seg_str_col, _ = segment
+                string_column += seg_str_col.indent(start - previous_end)
+                previous_end = end
+            condensed_rows.append(string_column)
+        return condensed_rows
 
 
 def chunkify(iterable, n):
@@ -268,7 +319,8 @@ class SequenceRow(object):
 
     @property
     def annotation_lines(self):
-        return [str(a.indent(self.indent)) for a in self.annotations]
+        condensed = StringColumn.condense(self.annotations)
+        return [str(a.indent(self.indent)) for a in condensed]
 
     @staticmethod
     def make_annotation(label, span, fill='*'):
@@ -290,10 +342,10 @@ class SequenceRow(object):
         if fill.strip() == '':
             raise Exception("Fill cannot be whitespace")
         sc = StringColumn()
-        if len(label) > span:
-            sc.add_string("|<{0:{fill}{align}{indent}}".format(label, fill=' ', align='^', indent=span))
+        if len(label) + 1 > span:
+            sc.append_string("|<{0:{fill}{align}{indent}}".format(label, fill=' ', align='^', indent=span))
             label = fill * span
-        sc.add_string("{0:{fill}{align}{indent}}".format(label, fill=fill, align='^', indent=span))
+        sc.append_string("{0:{fill}{align}{indent}}".format(label, fill=fill, align='^', indent=span))
         return sc
 
     def absolute_annotate(self, start, end, fill, label):
