@@ -637,10 +637,13 @@ class Sequence(DoubleLinkedList):
             'annotations': annotations
         }
 
-    def load(self, data):
-        sequence = Sequence(data['bases'], name=data['name'])
+    @classmethod
+    def load(cls, data):
+        sequence = cls(data['bases'], name=data['name'])
         for a in data['annotations']:
             sequence.annotate(a['start'], a['end'], a['name'], a['type'], a['color'])
+        sequence.cyclic = data['isCircular']
+        return sequence
 
     def __repr__(self):
         max_width = 30

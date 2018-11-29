@@ -457,6 +457,8 @@ def test_to_json():
     s.annotate(30, 100, 'GFP')
     s.view().print()
     print(s.json())
+
+    Sequence.load(s.json())
     # assert not s1.compare(s2 + Sequence("A"))
 #
 # @pytest.mark.parametrize('reverse_complement', [False, True])
