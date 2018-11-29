@@ -1,9 +1,12 @@
 -i https://pypi.org/simple
 biopython==1.72
+decorator==4.3.0
+networkx==2.2
 numpy==1.15.4
+primer3-py==0.5.7
 -i https://pypi.org/simple
 alabaster==0.7.12
-astroid==2.0.4
+astroid==2.1.0
 atomicwrites==1.2.1
 attrs==18.2.0
 babel==2.6.0
@@ -26,11 +29,11 @@ py==1.7.0
 pyflakes==2.0.0
 pygal==2.4.0
 pygaljs==1.0.1
-pygments==2.2.0
-pylint==2.1.1
+pygments==2.3.0
+pylint==2.2.2
 pyparsing==2.3.0
 pytest-benchmark==3.1.1
-pytest==4.0.0
+pytest==4.0.1
 pytz==2018.7
 requests==2.20.1
 six==1.11.0

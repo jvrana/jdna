@@ -233,5 +233,5 @@ def test_cyclic_assemblies(seq, generate_sequences, reverse_complement):
         expected = seq.copy().circularize()
         rc_expected = expected.copy().reverse_complement()
         g = [p.compare(expected), p.compare(rc_expected)]
-        a.align()
         assert any(g)
+        print(a)

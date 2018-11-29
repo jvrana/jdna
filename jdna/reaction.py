@@ -2,12 +2,13 @@
 Simulate molecular reactions
 """
 
+import itertools
+from collections import namedtuple
+
+import networkx as nx
+
 from jdna.sequence import Sequence, SequenceFlags
 from jdna.viewer import SequenceViewer
-from collections import namedtuple
-import networkx as nx
-import itertools
-
 
 class ReactionException(Exception):
     """Generic reaction exception"""
@@ -23,9 +24,12 @@ BindingEvent = namedtuple("BindingEvent", ["template", "primer", "position"])
 class Assembly(object):
 
     def __init__(self, templates, overhangs, cyclic):
-        self.templates = templates
-        self.overhangs = overhangs
+        self.templates = [t.copy() for t in templates]
+        self.overhangs = [o.copy() for o in overhangs]
         self.cyclic = cyclic
+
+    def tms(self):
+        return [round(o.tm(), 2) for o in self.overhangs]
 
     @property
     def product(self):
@@ -40,26 +44,47 @@ class Assembly(object):
             product.circularize()
         return product
 
-    def align(self):
+    def view(self):
         seqs = []
         positions = [0]
         pos = 0
         overhangs = self.overhangs[:]
+        for o in overhangs:
+            o.annotate(0, 19, "Tm: {}°C".format(round(o.tm(), 1)))
         if self.cyclic:
             overhangs.append(overhangs[0])
         else:
             overhangs.append(Sequence())
         for i, t in enumerate(self.templates):
-            seq = overhangs[0] + t + overhangs[i+1]
-            seqs.append(overhangs[i] + t + overhangs[i+1])
-            pos += len(seq) - len(overhangs[i+1])
+            seq = overhangs[0] + t + overhangs[i + 1]
+            seqs.append(overhangs[i] + t + overhangs[i + 1])
+            pos += len(seq) - len(overhangs[i + 1])
             positions.append(pos)
 
         aligned_seqs = []
         for p, s in zip(positions, seqs):
-            aligned_seqs.append(' '*p + str(s) + ' '*(positions[-1]-len(s)-p))
-        viewer = SequenceViewer(aligned_seqs)
-        print(aligned_seqs)
+            aligned_seqs.append(Sequence('-' * p) + s)
+
+        mx = max([len(s) for s in aligned_seqs])
+        for i, s in enumerate(aligned_seqs):
+            diff = mx - len(s)
+            aligned_seqs[i] = aligned_seqs[i] + Sequence('-' * diff)
+
+        viewer = SequenceViewer(aligned_seqs, sequence_labels=['({i}) {index}'.format(i=i, index="{index}") for i in
+                                                               range(len(aligned_seqs))])
+        for seq in aligned_seqs:
+            Sequence._apply_features_to_view(seq, viewer)
+        viewer.metadata['Num Fragments'] = len(self.templates)
+        viewer.metadata['Overhang Tms (°C)'] = ', '.join([str(x) for x in self.tms()])
+        viewer.metadata['Overhang Lengths (bp)'] = ', '.join([str(len(x)) for x in self.overhangs])
+        viewer.metadata['Length'] = "{}bp".format(len(self.product))
+        return viewer
+
+    def print(self):
+        self.view().print()
+
+    def __str__(self):
+        return str(self.view())
 
 
 class Reaction(object):
@@ -81,9 +106,10 @@ class Reaction(object):
                 raise Exception("Direction {} not recognized".format(bind.direction))
 
         if not forward_bindings or not reverse_bindings:
-            raise PCRException("Some primers did not bind. Number of forward bindings: {}. Number of rev bindings: {}".format(
-                len(forward_bindings), len(reverse_bindings)
-            ))
+            raise PCRException(
+                "Some primers did not bind. Number of forward bindings: {}. Number of rev bindings: {}".format(
+                    len(forward_bindings), len(reverse_bindings)
+                ))
         products = []
         for fwd, rev in itertools.product(forward_bindings, reverse_bindings):
             overhang1 = fwd.five_prime_overhang
@@ -105,12 +131,13 @@ class Reaction(object):
         bindings = []
         for s1, s2 in pairs:
             for binding in s1.dsanneal(s2, min_bases=min_bases):
-                if not (binding.span[0] == 0 and binding.span[-1] == len(s1)-1):
+                if not (binding.span[0] == 0 and binding.span[-1] == len(s1) - 1):
                     bindings.append(BindingEvent(s1, s2, binding))
         return bindings
 
     @classmethod
-    def interaction_graph(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, bind_reverse_complement=False, depth=None):
+    def interaction_graph(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, bind_reverse_complement=False,
+                          depth=None):
         G = nx.DiGraph()
         if bind_reverse_complement:
             sequences = [s.copy() for s in sequences] + [s.copy().reverse_complement() for s in sequences[:]]
@@ -203,9 +230,9 @@ class Reaction(object):
         fwd = nodes[:len(sequences)]
         rev = nodes[len(sequences):]
         fpriority = list(range(len(fwd)))
-        rpriority = list(range(len(fwd), len(fwd)*2))
+        rpriority = list(range(len(fwd), len(fwd) * 2))
         priority_rank = fpriority + rpriority[1:] + [rpriority[0]]
-        node_priority = dict(zip(fwd+rev, priority_rank))
+        node_priority = dict(zip(fwd + rev, priority_rank))
 
         cyclic_paths = cls.cyclic_paths(G)
         if not cyclic_paths:

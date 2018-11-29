@@ -13,7 +13,7 @@ from jdna.utils import random_color
 from jdna.alphabet import DNA, UnambiguousDNA, AmbiguousDNA
 from jdna.format import format_sequence
 from jdna.viewer import SequenceViewer
-
+import primer3
 
 class SequenceFlags(IntFlag):
     FORWARD = 1
@@ -578,6 +578,12 @@ class Sequence(DoubleLinkedList):
             viewer = SequenceViewer([a[0], mid, a[1]], name="Alignment")
             viewer.print()
 
+    @classmethod
+    def _apply_features_to_view(cls, sequence, view):
+        for feature, positions in sequence.feature_positions().items():
+            for pos in positions:
+                view.annotate(pos[0], pos[1], label=feature.name, direction=None)
+
     def view(self, indent=10, width=85, spacer=None, include_complement=False, include_annotations=True):
 
         if indent is None:
@@ -596,13 +602,14 @@ class Sequence(DoubleLinkedList):
                 spacer = ''
         viewer = SequenceViewer(seqs, indent=indent, width=width, spacer=spacer)
         if include_annotations:
-            for feature, positions in self.feature_positions().items():
-                for pos in positions:
-                    viewer.annotate(pos[0], pos[1], label=feature.name, direction=None)
+            self._apply_features_to_view(self, viewer)
         return viewer
 
     def print(self, indent=None, width=None, spacer=None, include_complement=False):
         self.view(indent=indent, width=width, spacer=spacer, include_complement=include_complement).print()
+
+    def tm(self):
+        return primer3.calcTm(str(self).upper())
 
     def __repr__(self):
         max_width = 30
