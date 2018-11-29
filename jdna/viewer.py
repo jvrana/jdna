@@ -9,7 +9,7 @@ class StringColumn(object):
 
     FILL = ' '
 
-    def __init__(self, strings):
+    def __init__(self, strings=None):
         self._strings = []
         self._length = 0
         if strings:
@@ -95,6 +95,9 @@ class StringColumn(object):
     def add_prefix(self, prefix):
         for i, s in self.strings:
             self.strings[i] = prefix + self.strings[i]
+
+    def __contains__(self, item):
+        return any([item in s for s in self.strings])
 
     def __add__(self, other):
         if isinstance(other, str):
@@ -265,10 +268,7 @@ class SequenceRow(object):
 
     @property
     def annotation_lines(self):
-        annotations = []
-        for a in self.annotations:
-            annotations.append(indent(a, self.indent))
-        return annotations
+        return [str(a.indent(self.indent)) for a in self.annotations]
 
     @staticmethod
     def make_annotation(label, span, fill='*'):
@@ -289,11 +289,12 @@ class SequenceRow(object):
             raise Exception("Fill '{}' must be a single character long, not {} characters".format(fill, len(fill)))
         if fill.strip() == '':
             raise Exception("Fill cannot be whitespace")
+        sc = StringColumn()
         if len(label) > span:
-            s += "|<{0:{fill}{align}{indent}}\n".format(label, fill=' ', align='^', indent=span)
+            sc.add_string("|<{0:{fill}{align}{indent}}".format(label, fill=' ', align='^', indent=span))
             label = fill * span
-        s += "{0:{fill}{align}{indent}}".format(label, fill=fill, align='^', indent=span)
-        return s
+        sc.add_string("{0:{fill}{align}{indent}}".format(label, fill=fill, align='^', indent=span))
+        return sc
 
     def absolute_annotate(self, start, end, fill, label):
         """
@@ -312,11 +313,8 @@ class SequenceRow(object):
         :rtype: None
         """
         span = end - start + 1
-        annotation = self.make_annotation(label, span, fill)
-        annotation_lines = [' '*start + a for a in annotation.split('\n')]
-        self.annotations.append(
-            '\n'.join(annotation_lines)
-        )
+        annotation = self.make_annotation(label, span, fill).indent(start)
+        self.annotations.append(annotation)
 
     def annotate(self, start, end, fill, label=''):
         """
