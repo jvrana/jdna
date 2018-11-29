@@ -12,7 +12,7 @@ from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
 from jdna.utils import random_color
 from jdna.alphabet import DNA, UnambiguousDNA, AmbiguousDNA
 from jdna.format import format_sequence
-from jdna.viewer import SequenceViewer
+from jdna.viewer import SequenceViewer, ViewerAnnotationFlag
 import primer3
 
 class SequenceFlags(IntFlag):
@@ -24,8 +24,10 @@ class SequenceFlags(IntFlag):
 
 class Feature(object):
 
-    def __init__(self, name, type='misc feature', strand=SequenceFlags.FORWARD, color=None):
+    def __init__(self, name, type=None, strand=SequenceFlags.FORWARD, color=None):
         self.name = name
+        if type is None:
+            type = 'misc'
         self.type = type
         self.strand = strand
         if color is None:
@@ -464,15 +466,13 @@ class Sequence(DoubleLinkedList):
                 found.append(feature)
         return found
 
-    def create_feature(self, start, end, name, feature_type):
-        f = Feature(name, feature_type)
+    def create_feature(self, start, end, name, feature_type, color=None):
+        f = Feature(name, feature_type, color)
         self.add_feature(start, end, f)
         return f
 
-    def annotate(self, start, end, name, feature_type=None):
-        if feature_type is None:
-            feature_type = 'misc'
-        return self.create_feature(start, end, name, feature_type)
+    def annotate(self, start, end, name, feature_type=None, color=None):
+        return self.create_feature(start, end, name, feature_type, color)
 
     def complement(self):
         curr = self.head
@@ -582,7 +582,12 @@ class Sequence(DoubleLinkedList):
     def _apply_features_to_view(cls, sequence, view):
         for feature, positions in sequence.feature_positions().items():
             for pos in positions:
-                view.annotate(pos[0], pos[1], label=feature.name, direction=None)
+                direction = None
+                if feature.strand == SequenceFlags.FORWARD:
+                    direction = ViewerAnnotationFlag.FORWARD
+                elif feature.strand == SequenceFlags.REVERSE:
+                    direction = ViewerAnnotationFlag.REVERSE
+                view.annotate(pos[0], pos[1], label=feature.name, direction=direction)
 
     def view(self, indent=10, width=85, spacer=None, include_complement=False, include_annotations=True):
 
@@ -631,6 +636,11 @@ class Sequence(DoubleLinkedList):
             'bases': str(self),
             'annotations': annotations
         }
+
+    def load(self, data):
+        sequence = Sequence(data['bases'], name=data['name'])
+        for a in data['annotations']:
+            sequence.annotate(a['start'], a['end'], a['name'], a['type'], a['color'])
 
     def __repr__(self):
         max_width = 30

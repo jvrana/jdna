@@ -277,7 +277,7 @@ def indent(string, indent):
 #     return prepend_lines(lines, labels, indent)
 
 
-class AnnotationFlag(object):
+class ViewerAnnotationFlag(object):
     """Flags for annotation directions"""
     FORWARD = ">"
     REVERSE = "<"
@@ -574,7 +574,7 @@ class SequenceViewer(object):
         :rtype: None
         """
         if direction is None:
-            direction = AnnotationFlag.BOTH
+            direction = ViewerAnnotationFlag.BOTH
         if label is None:
             label = ''
         for row in self.rows:
