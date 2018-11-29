@@ -1,0 +1,792 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>jdna.viewer &#8212; jdna 0.0.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><a href="" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#40583f; color:#4bd04b; position: absolute; top: 0; border: 0; left: 0; transform: scale(-1, 1);" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+<div>
+    <div>
+        <h1 align="center"><a href="../../index.html">jdna</a>
+        </h1>
+    </div>
+</div>
+
+<p align="center" class="sidebar-subtitle">version: <a href="">0.0.2</a></p>
+<div>
+
+</div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">jdna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/api_reference.html">API Reference</a></li>
+</ul>
+
+    
+  </div>
+</div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Module code</a></li>
+              
+              <li>jdna.viewer</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <h1>Source code for jdna.viewer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes to view sequences.</span>
+
+<span class="sd">The viewer can display sequences and annotations, as in the following:</span>
+
+<span class="sd">.. code::</span>
+
+
+<span class="sd">    &gt; &quot;Unnamed&quot; (550bp)</span>
+
+
+<span class="sd">                                                                ----------------GFP----------------</span>
+<span class="sd">                                                                |&lt;START</span>
+<span class="sd">                                                                ----      -----------RFP-----------</span>
+<span class="sd">    0         CCCAGGACTAGCGACTTTCCGTAACGCGACCTAACACCGGCCGTTCCTTCGAGCCAGGCAAATGTTACGTCACTTCCTTAGATTT</span>
+<span class="sd">              GGGTCCTGATCGCTGAAAGGCATTGCGCTGGATTGTGGCCGGCAAGGAAGCTCGGTCCGTTTACAATGCAGTGAAGGAATCTAAA</span>
+
+<span class="sd">              ------GFP------</span>
+<span class="sd">              -----------------------------------------RFP-----------------------------------------</span>
+<span class="sd">    85        TGAACAGCGCCGTACCCCGATATGATATTTAGATATATAGCAGTTACACTTGGGGTTGCTATGGACTTAGATCTGCTGTATGTTT</span>
+<span class="sd">              ACTTGTCGCGGCATGGGGCTATACTATAAATCTATATATCGTCAATGTGAACCCCAACGATACCTGAATCTAGACGACATACAAA</span>
+
+<span class="sd">              -----------------------------------------RFP-----------------------------------------</span>
+<span class="sd">    170       TCTTACCTTCCGCATCAGGGGACAATTCGCCAGTAGAATTCAGTTTGTGCGTGAGAACATAAGATTGAATCCCACGCAGGCACAA</span>
+<span class="sd">              AGAATGGAAGGCGTAGTCCCCTGTTAAGCGGTCATCTTAAGTCAAACACGCACTCTTGTATTCTAACTTAGGGTGCGTCCGTGTT</span>
+
+<span class="sd">              ---------------------RFP----------------------</span>
+<span class="sd">    255       GCAGGGCGGGCAGACTCTATAGGTCCTAAGACCCTGAGACTGCGTCCTCAAGATACAGGTTAACAATCCCCGTATGGAGCCGTTC</span>
+<span class="sd">              CGTCCCGCCCGTCTGAGATATCCAGGATTCTGGGACTCTGACGCAGGAGTTCTATGTCCAATTGTTAGGGGCATACCTCGGCAAG</span>
+
+<span class="sd">    340       TTAGCATGACCCGACAGGTGGGCTTGGCTCGCGTAAGTTGAGTGTTGCAGATACCTGCTGCTGCGCGGTCTAGGGGGAATCGCCG</span>
+<span class="sd">              AATCGTACTGGGCTGTCCACCCGAACCGAGCGCATTCAACTCACAACGTCTATGGACGACGACGCGCCAGATCCCCCTTAGCGGC</span>
+
+<span class="sd">    425       ATTTTGACGTAGGATCGGTAATGGGCAGTAAACCCGCAACTATTTTCAGCACCAGATGCAAGTTTCCCTAGAAAGCGTCATGGTT</span>
+<span class="sd">              TAAAACTGCATCCTAGCCATTACCCGTCATTTGGGCGTTGATAAAAGTCGTGGTCTACGTTCAAAGGGATCTTTCGCAGTACCAA</span>
+
+<span class="sd">    510       TGCAATCTCCTTAGGTCACAGCAAACATAGCAGCCCCTGT</span>
+<span class="sd">              ACGTTAGAGGAATCCAGTGTCGTTTGTATCGTCGGGGACA</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">networkx</span> <span class="k">import</span> <span class="n">nx</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+
+
+<div class="viewcode-block" id="StringColumn"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.StringColumn">[docs]</a><span class="k">class</span> <span class="nc">StringColumn</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for managing string columns&quot;&quot;&quot;</span>
+
+    <span class="n">FILL</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strings</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        StringColumn constructor.</span>
+
+<span class="sd">        :param strings: list of strings</span>
+<span class="sd">        :type strings: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">strings</span><span class="p">:</span>
+            <span class="n">max_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">strings</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">=</span> <span class="n">max_length</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">strings</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">append_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right_fill</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">strings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strings</span><span class="p">[:]</span>
+
+    <span class="k">def</span> <span class="nf">indent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="n">sc_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sc_copy</span><span class="o">.</span><span class="n">strings</span><span class="p">):</span>
+            <span class="n">sc_copy</span><span class="o">.</span><span class="n">_strings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sc_copy</span><span class="o">.</span><span class="n">FILL</span> <span class="o">*</span> <span class="n">num</span> <span class="o">+</span> <span class="n">sc_copy</span><span class="o">.</span><span class="n">_strings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">sc_copy</span><span class="o">.</span><span class="n">_length</span> <span class="o">+=</span> <span class="n">num</span>
+        <span class="k">return</span> <span class="n">sc_copy</span>
+
+    <span class="k">def</span> <span class="nf">indent_right</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="n">sc_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sc_copy</span><span class="o">.</span><span class="n">strings</span><span class="p">):</span>
+            <span class="n">sc_copy</span><span class="o">.</span><span class="n">_strings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sc_copy</span><span class="o">.</span><span class="n">_strings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">sc_copy</span><span class="o">.</span><span class="n">FILL</span> <span class="o">*</span> <span class="n">num</span>
+        <span class="n">sc_copy</span><span class="o">.</span><span class="n">_length</span> <span class="o">+=</span> <span class="n">num</span>
+        <span class="k">return</span> <span class="n">sc_copy</span>
+
+    <span class="k">def</span> <span class="nf">right_fill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">string</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">FILL</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">prepend_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_string</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_string</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_string</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_strings</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_fill</span><span class="p">(</span><span class="n">new_string</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">append_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_string</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_string</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_string</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right_fill</span><span class="p">(</span><span class="n">new_string</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">add_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">others</span><span class="p">):</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[:]</span>
+        <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="n">others</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">string</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">strings</span><span class="p">:</span>
+                <span class="n">sc</span><span class="o">.</span><span class="n">append_string</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sc</span>
+
+    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">([</span><span class="n">item</span> <span class="ow">in</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">other</span> <span class="o">=</span> <span class="n">StringColumn</span><span class="p">([</span><span class="n">other</span><span class="p">])</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">StringColumn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">)</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sc</span><span class="o">.</span><span class="n">strings</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">strings</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">diff</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">diff</span><span class="p">):</span>
+                <span class="n">other</span><span class="o">.</span><span class="n">prepend_string</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">diff</span><span class="p">):</span>
+                <span class="n">sc</span><span class="o">.</span><span class="n">prepend_string</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="n">new_sc</span> <span class="o">=</span> <span class="n">StringColumn</span><span class="p">([])</span>
+        <span class="k">for</span> <span class="n">this_string</span><span class="p">,</span> <span class="n">other_string</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sc</span><span class="o">.</span><span class="n">strings</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">strings</span><span class="p">):</span>
+            <span class="n">new_sc</span><span class="o">.</span><span class="n">append_string</span><span class="p">(</span><span class="n">this_string</span> <span class="o">+</span> <span class="n">other_string</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_sc</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">strip_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">n1</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n2</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[:]:</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">_x</span> <span class="o">==</span> <span class="s1">&#39; &#39;</span> <span class="k">for</span> <span class="n">_x</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]):</span>
+                <span class="n">n1</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">_x</span> <span class="o">==</span> <span class="s1">&#39; &#39;</span> <span class="k">for</span> <span class="n">_x</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]):</span>
+                <span class="n">n2</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">n1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-</span> <span class="n">n2</span>
+
+    <span class="k">def</span> <span class="nf">strip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip_indices</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">n1</span><span class="p">:</span><span class="n">n2</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">strings</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+
+    <span class="c1">#     def __setitem__(self, key, items):</span>
+    <span class="c1">#         if not len(items) == len(self.strings):</span>
+    <span class="c1">#             raise TypeError(&quot;Value must have {} items&quot;.format(len(self.strings)))</span>
+    <span class="c1">#         for string, item in zip(self.strings, items):</span>
+    <span class="c1">#             string[key] = item</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StringColumn.condense"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.StringColumn.condense">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">condense</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rows</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Condense a list of :class:`StringColumn` into the minimum number of StringColumns comprising of columns stripped</span>
+<span class="sd">        of white space. Briefly, this is similar to the following procedure:</span>
+
+<span class="sd">        .. code-block::</span>
+
+<span class="sd">            input = [</span>
+<span class="sd">                &#39;label         &#39;,</span>
+<span class="sd">                &#39;       label2 &#39;,</span>
+<span class="sd">                &#39;      label3  &#39;</span>
+<span class="sd">            ]</span>
+
+<span class="sd">            # &gt;&gt; CONDENSE</span>
+
+<span class="sd">            output = [</span>
+<span class="sd">                &#39;label  label2 &#39;,</span>
+<span class="sd">                &#39;      label3  &#39;</span>
+<span class="sd">            ]</span>
+
+<span class="sd">        :param rows:</span>
+<span class="sd">        :type rows:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        :rtype:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">segments</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">indexed_segments</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">previous_end</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">strip_indices</span><span class="p">()</span>
+            <span class="n">word</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">:</span>
+                <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">word</span><span class="p">)))</span>
+                <span class="n">indexed_segments</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">previous_end</span><span class="p">))</span>
+                <span class="n">previous_end</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># create a graph of non-overlapping segments</span>
+        <span class="n">nonoverlap_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">indexed_segments</span><span class="p">:</span>
+            <span class="n">nonoverlap_graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">segment1</span><span class="p">,</span> <span class="n">segment2</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">indexed_segments</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">start1</span><span class="p">,</span> <span class="n">end1</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">index1</span> <span class="o">=</span> <span class="n">segment1</span>
+            <span class="n">start2</span><span class="p">,</span> <span class="n">end2</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">index2</span> <span class="o">=</span> <span class="n">segment2</span>
+            <span class="k">if</span> <span class="n">start1</span> <span class="o">&lt;</span> <span class="n">start2</span> <span class="ow">or</span> <span class="n">start1</span> <span class="o">&gt;</span> <span class="n">end2</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">start2</span> <span class="o">&lt;</span> <span class="n">start1</span> <span class="ow">or</span> <span class="n">start2</span> <span class="o">&gt;</span> <span class="n">end1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">end1</span> <span class="o">&lt;</span> <span class="n">start2</span><span class="p">:</span>
+                        <span class="n">nonoverlap_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">nonoverlap_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">index2</span><span class="p">,</span> <span class="n">index1</span><span class="p">)</span>
+
+        <span class="c1"># find minimum number of cliques that covers the graph (clique covering)</span>
+        <span class="n">subgraph</span> <span class="o">=</span> <span class="n">nonoverlap_graph</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">nonoverlap_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="n">cliques</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">subgraph</span><span class="p">):</span>
+            <span class="n">max_clique</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">find_cliques</span><span class="p">(</span><span class="n">subgraph</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">cliques</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_clique</span><span class="p">)</span>
+            <span class="n">remaining</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">subgraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">max_clique</span><span class="p">))</span>
+            <span class="n">subgraph</span> <span class="o">=</span> <span class="n">nonoverlap_graph</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">remaining</span><span class="p">))</span>
+
+        <span class="n">condensed_rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">clique</span> <span class="ow">in</span> <span class="n">cliques</span><span class="p">:</span>
+            <span class="n">string_column</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+            <span class="n">clique_segments</span> <span class="o">=</span> <span class="p">[</span><span class="n">indexed_segments</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">clique</span><span class="p">]</span>
+            <span class="n">clique_segments</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">clique_segments</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">seg</span><span class="p">:</span> <span class="n">seg</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">previous_end</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">clique_segments</span><span class="p">:</span>
+                <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">seg_str_col</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">segment</span>
+                <span class="n">string_column</span> <span class="o">+=</span> <span class="n">seg_str_col</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">start</span> <span class="o">-</span> <span class="n">previous_end</span><span class="p">)</span>
+                <span class="n">previous_end</span> <span class="o">=</span> <span class="n">end</span>
+            <span class="n">condensed_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string_column</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">condensed_rows</span></div></div>
+
+
+<div class="viewcode-block" id="chunkify"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.chunkify">[docs]</a><span class="k">def</span> <span class="nf">chunkify</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Break an interable into chunks of size at most &#39;n&#39;&quot;&quot;&quot;</span>
+    <span class="n">chunk</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">iterable</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">chunk</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">chunk</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">chunk</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">chunk</span></div>
+
+
+<div class="viewcode-block" id="to_lines"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.to_lines">[docs]</a><span class="k">def</span> <span class="nf">to_lines</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Converts a string to lines of length &lt;= width&quot;&quot;&quot;</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">),</span> <span class="n">width</span><span class="p">):</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">width</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">lines</span></div>
+
+
+<div class="viewcode-block" id="prepend_lines"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.prepend_lines">[docs]</a><span class="k">def</span> <span class="nf">prepend_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">label_iterable</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;&lt;&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepend lines with a label</span>
+
+<span class="sd">    :param lines: lines to prepend</span>
+<span class="sd">    :type lines: list</span>
+<span class="sd">    :param indent: number of spaces between start of label and start of line</span>
+<span class="sd">    :type indent: int</span>
+<span class="sd">    :param fill: default &#39; &#39;</span>
+<span class="sd">    :type fill: what to fill the spaces</span>
+<span class="sd">    :param align: either left &quot;&lt;&quot;, center &quot;^&quot; or right &quot;&gt;&quot;</span>
+<span class="sd">    :type align: string</span>
+<span class="sd">    :return: new prepended lines</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prepend_pattern</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="s2">&quot;{0:</span><span class="si">{fill}{align}{indent}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">fill</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">)</span>
+    <span class="n">new_lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">label_iterable</span><span class="p">,</span> <span class="n">lines</span><span class="p">):</span>
+        <span class="n">new_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prepend_pattern</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">line</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">new_lines</span></div>
+
+
+<div class="viewcode-block" id="indent"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.indent">[docs]</a><span class="k">def</span> <span class="nf">indent</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">indent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Indent lines&quot;&quot;&quot;</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">new_lines</span> <span class="o">=</span> <span class="n">prepend_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">),</span> <span class="n">indent</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_lines</span><span class="p">)</span></div>
+
+<span class="c1"># def set_indent(lines, indent):</span>
+<span class="c1">#     &quot;&quot;&quot;Reset the indent of lines&quot;&quot;&quot;</span>
+<span class="c1">#     return indent([l.lstrip() for l in lines], indent)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def enumerate_lines(lines, indent):</span>
+<span class="c1">#     &quot;&quot;&quot;Enumerate lines&quot;&quot;&quot;</span>
+<span class="c1">#     labels = range(len(lines))</span>
+<span class="c1">#     return prepend_lines(lines, labels, indent)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def accumulate_length_of_lines(lines, indent):</span>
+<span class="c1">#     labels = itertools.accumulate([len(l.strip(&#39;\n&#39;)) for l in lines], operator.add)</span>
+<span class="c1">#     return prepend_lines(lines, labels, indent)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def accumulate_length_of_first_line(lines, indent):</span>
+<span class="c1">#     labels = itertools.accumulate([len(l.split(&#39;\n&#39;)[0].strip(&#39;\n&#39;)) for l in lines], operator.add)</span>
+<span class="c1">#     return prepend_lines(lines, labels, indent)</span>
+
+
+<div class="viewcode-block" id="ViewerAnnotationFlag"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.ViewerAnnotationFlag">[docs]</a><span class="k">class</span> <span class="nc">ViewerAnnotationFlag</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Flags for annotation directions&quot;&quot;&quot;</span>
+
+    <span class="n">FORWARD</span> <span class="o">=</span> <span class="s2">&quot;&gt;&quot;</span>
+    <span class="n">REVERSE</span> <span class="o">=</span> <span class="s2">&quot;&lt;&quot;</span>
+    <span class="n">BOTH</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span></div>
+
+
+<div class="viewcode-block" id="SequenceRow"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceRow">[docs]</a><span class="k">class</span> <span class="nc">SequenceRow</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A row in a :class:`SequenceViewer` instance. Can be comprised of multiple sequences (i.e. lines)</span>
+<span class="sd">    and can be annotated with &#39;features&#39;.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SequenceRow constructor</span>
+
+<span class="sd">        :param lines: list of lines to display. Lengths of all lines must all be equivalent.</span>
+<span class="sd">        :type lines: list</span>
+<span class="sd">        :param labels: list of labels to apply to each line</span>
+<span class="sd">        :type labels: list</span>
+<span class="sd">        :param indent: indent to apply to the lines</span>
+<span class="sd">        :type indent: string</span>
+<span class="sd">        :param start: start bp of this row</span>
+<span class="sd">        :type start: int</span>
+<span class="sd">        :param end: end bp of this row</span>
+<span class="sd">        :type end: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lengths</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cannot format rows that have different lengths&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span> <span class="o">=</span> <span class="n">lines</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">=</span> <span class="n">indent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">lines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">prepend_lines</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lines</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">annotation_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">condensed</span> <span class="o">=</span> <span class="n">StringColumn</span><span class="o">.</span><span class="n">condense</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="p">))</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">condensed</span><span class="p">]</span>
+
+<div class="viewcode-block" id="SequenceRow.make_annotation"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceRow.make_annotation">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">make_annotation</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">span</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make an annotation with &#39;label&#39; spanning inclusive base pairs indices &#39;span&#39;</span>
+
+<span class="sd">        :param label: annotation label</span>
+<span class="sd">        :type label: basestring</span>
+<span class="sd">        :param span: the start and end (inclusive) of the annotation</span>
+<span class="sd">        :type span: tuple</span>
+<span class="sd">        :param fill: what to fill whitespace with</span>
+<span class="sd">        :type fill: basestring</span>
+<span class="sd">        :return:</span>
+<span class="sd">        :rtype:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fill</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Fill &#39;</span><span class="si">{}</span><span class="s2">&#39; must be a single character long, not </span><span class="si">{}</span><span class="s2"> characters&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fill</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fill</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">fill</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Fill cannot be whitespace&quot;</span><span class="p">)</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">StringColumn</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">span</span><span class="p">:</span>
+            <span class="n">sc</span><span class="o">.</span><span class="n">append_string</span><span class="p">(</span><span class="s2">&quot;|&lt;{0:</span><span class="si">{fill}{align}{indent}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;^&#39;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">span</span><span class="p">))</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">fill</span> <span class="o">*</span> <span class="n">span</span>
+        <span class="n">sc</span><span class="o">.</span><span class="n">append_string</span><span class="p">(</span><span class="s2">&quot;{0:</span><span class="si">{fill}{align}{indent}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">fill</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;^&#39;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">span</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">sc</span></div>
+
+<div class="viewcode-block" id="SequenceRow.absolute_annotate"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceRow.absolute_annotate">[docs]</a>    <span class="k">def</span> <span class="nf">absolute_annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applyt annotation to this row using absolute start and ends for</span>
+<span class="sd">        THIS row.</span>
+
+<span class="sd">        :param start: inclusive start</span>
+<span class="sd">        :type start: int</span>
+<span class="sd">        :param end: inclusive end</span>
+<span class="sd">        :type end: int</span>
+<span class="sd">        :param fill: what to fill whitespace with</span>
+<span class="sd">        :type fill: basestring</span>
+<span class="sd">        :param label: annotation label</span>
+<span class="sd">        :type label: basestring</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">span</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">annotation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_annotation</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">span</span><span class="p">,</span> <span class="n">fill</span><span class="p">)</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">annotation</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SequenceRow.annotate"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceRow.annotate">[docs]</a>    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Annotate the sequence row. If &#39;start&#39; or &#39;end&#39; is beyond,</span>
+<span class="sd">        the expected start or end for this row, the annotation will</span>
+<span class="sd">        automatically be truncated.</span>
+
+<span class="sd">        :param start: inclusive start</span>
+<span class="sd">        :type start: int</span>
+<span class="sd">        :param end: inclusive end</span>
+<span class="sd">        :type end: int</span>
+<span class="sd">        :param fill: what to fill whitespace with</span>
+<span class="sd">        :type fill:</span>
+<span class="sd">        :param label: optional label to apply to the annotation</span>
+<span class="sd">        :type label: basestring</span>
+<span class="sd">        :return:</span>
+<span class="sd">        :rtype:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">start</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">absolute_annotate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SequenceRow.in_bounds"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceRow.in_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">in_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the index &#39;x&#39; is in between row start and end (inclusive)</span>
+
+<span class="sd">        :param x: index</span>
+<span class="sd">        :type x: int</span>
+<span class="sd">        :return: if in bounds</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span></div>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotation_lines</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">)</span></div>
+
+<span class="c1">#</span>
+<span class="c1"># class SequenceLabel(object):</span>
+<span class="c1">#</span>
+<span class="c1">#     def __init__(self, indent, label=None, pattern=None, indexer=None):</span>
+<span class="c1">#         self.indent = indent</span>
+<span class="c1">#         self.index = 0</span>
+<span class="c1">#         self.label = label</span>
+<span class="c1">#         if pattern is None:</span>
+<span class="c1">#             pattern = &quot;{label} {index}&quot;</span>
+<span class="c1">#         self.pattern = pattern</span>
+<span class="c1">#         self.indexer = indexer</span>
+<span class="c1">#</span>
+<span class="c1">#     def indexers(self):</span>
+<span class="c1">#         return {</span>
+<span class="c1">#             &quot;line_length&quot;: lambda x: self.index + len(x),</span>
+<span class="c1">#             &quot;enumerate&quot;: lambda x: x + 1</span>
+<span class="c1">#         }</span>
+<span class="c1">#</span>
+<span class="c1">#     def enumerate(self, line):</span>
+<span class="c1">#         if self.indexer:</span>
+<span class="c1">#             self.index += self.indexer(line)</span>
+<span class="c1">#</span>
+<span class="c1">#     def __str__(self):</span>
+<span class="c1">#         label = self.patter.format(index=self.index, label=self.label)</span>
+<span class="c1">#         return &quot;{0:{fill}{align}{indent}&quot;.format(label, fill=&#39; &#39;, align=&#39;&lt;&#39;, indent=self.indent)</span>
+
+
+<div class="viewcode-block" id="SequenceViewer"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceViewer">[docs]</a><span class="k">class</span> <span class="nc">SequenceViewer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class that views longs sets of sequences.&quot;&quot;&quot;</span>
+
+    <span class="k">class</span> <span class="nc">DEFAULTS</span><span class="p">:</span>
+        <span class="n">METADATA_INDENT</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">INDENT</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">SPACER</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">WIDTH</span> <span class="o">=</span> <span class="mi">85</span>
+        <span class="n">NAME</span> <span class="o">=</span> <span class="s1">&#39;Unnamed&#39;</span>
+        <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequences</span><span class="p">,</span>
+                 <span class="n">sequence_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">indent</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">INDENT</span><span class="p">,</span>
+                 <span class="n">width</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">WIDTH</span><span class="p">,</span>
+                 <span class="n">spacer</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">SPACER</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span>
+                 <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                 <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SequenceViewer constructor</span>
+
+<span class="sd">        :param sequences: list of sequences to view</span>
+<span class="sd">        :type sequences: list</span>
+<span class="sd">        :param sequence_labels: optional labels to apply to sequence. Include the &#39;{index}&#39; to enumerate the base pairs.</span>
+<span class="sd">        :type sequence_labels: list</span>
+<span class="sd">        :param indent: spacing before start of string and start of base pairs</span>
+<span class="sd">        :type indent: int</span>
+<span class="sd">        :param width: width of the view window for the sequences (e.g. width=100 would mean rows of at most len 100</span>
+<span class="sd">                        characters</span>
+<span class="sd">        :type width: string</span>
+<span class="sd">        :param spacer: string to apply inbetween rows (default is newline)</span>
+<span class="sd">        :type spacer: string</span>
+<span class="sd">        :param name: optional name for this viewer, to be displayed in the header</span>
+<span class="sd">        :type name: basestring</span>
+<span class="sd">        :param description: optional description for this viewer</span>
+<span class="sd">        :type description: basestring</span>
+<span class="sd">        :param metadata: optional metadata to display in the header</span>
+<span class="sd">        :type metadata: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sequences</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="n">seq_lens</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq_lens</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Sequence must be same length but found lengths </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sequences</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">sequence_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sequence_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">{index}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sequences</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sequence_labels</span> <span class="o">=</span> <span class="n">sequence_labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span> <span class="o">=</span> <span class="n">indent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spacer</span> <span class="o">=</span> <span class="n">spacer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_rows</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">NAME</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;Description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">DESCRIPTION</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequences</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;cyclic&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;Cyclic&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequences</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cyclic</span>
+        <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the formatted header and metadata&quot;&quot;&quot;</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{key}</span><span class="s1">: </span><span class="si">{val}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">indent</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">METADATA_INDENT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&gt; </span><span class="se">\&quot;</span><span class="si">{name}</span><span class="se">\&quot;</span><span class="s2"> (</span><span class="si">{length}</span><span class="s2">bp)</span><span class="se">\n</span><span class="si">{metadata}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span>
+
+    <span class="nd">@width</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="n">w</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">spacer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spacer</span>
+
+    <span class="nd">@spacer</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">spacer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spacer</span> <span class="o">=</span> <span class="n">s</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">indent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span>
+
+    <span class="nd">@indent</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">indent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span> <span class="o">=</span> <span class="n">i</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sequences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sequences</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_rows</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span>
+
+<div class="viewcode-block" id="SequenceViewer.create_rows"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceViewer.create_rows">[docs]</a>    <span class="k">def</span> <span class="nf">create_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create :class:`SequenceRow` instances for the set of sequences&quot;&quot;&quot;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">seq</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequences</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">to_lines</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">seq</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">interleafed</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">lines</span><span class="p">))</span>
+        <span class="n">chunks</span> <span class="o">=</span> <span class="n">chunkify</span><span class="p">(</span><span class="n">interleafed</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequences</span><span class="p">))</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sequence_labels</span><span class="p">]</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SequenceRow</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))))</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">rows</span></div>
+
+<div class="viewcode-block" id="SequenceViewer.annotate"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceViewer.annotate">[docs]</a>    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Annotates this viewer object starting from &#39;start&#39; to &#39;end&#39; inclusively.</span>
+
+<span class="sd">        :param start: inclusive start</span>
+<span class="sd">        :type start: int</span>
+<span class="sd">        :param end: inclusive end</span>
+<span class="sd">        :type end: int</span>
+<span class="sd">        :param label: optional label to apply to the annotation</span>
+<span class="sd">        :type label: basestring</span>
+<span class="sd">        :param direction: the direction of the annotation (&#39;&lt;&#39;, &#39;&gt;&#39;, &#39;^&#39;) to fill in whitespace</span>
+<span class="sd">        :type direction: string</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">ViewerAnnotationFlag</span><span class="o">.</span><span class="n">BOTH</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">end</span> <span class="o">&gt;=</span> <span class="n">row</span><span class="o">.</span><span class="n">start</span> <span class="ow">and</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">row</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">direction</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequences</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">spacer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spacer</span>
+        <span class="k">if</span> <span class="n">spacer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">spacer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{header}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spacer</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+
+
+
+
+</pre></div>
+
+          </div>
+            
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2017, University of Washington. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

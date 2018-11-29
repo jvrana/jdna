@@ -42,7 +42,7 @@ import functools
 import itertools
 from networkx import nx
 from collections import OrderedDict
-
+from jdna.utils import colored
 
 class StringColumn(object):
     """Class for managing string columns"""
@@ -116,7 +116,10 @@ class StringColumn(object):
     def __add__(self, other):
         if isinstance(other, str):
             other = StringColumn([other])
-        sc = StringColumn(self.strings)
+        else:
+            other = other.copy()
+        sc = self.copy()
+
         diff = len(sc.strings) - len(other.strings)
         if diff > 0:
             for i in range(diff):
@@ -125,10 +128,15 @@ class StringColumn(object):
             for i in range(-diff):
                 sc.prepend_string('')
 
-        new_sc = StringColumn([])
+        new_sc = self.copy_empty()
         for this_string, other_string in zip(sc.strings, other.strings):
             new_sc.append_string(this_string + other_string)
         return new_sc
+
+    def copy_empty(self):
+        sc_copy = self.copy()
+        sc_copy._strings = []
+        return sc_copy
 
     def copy(self):
         return self.__copy__()
@@ -157,7 +165,8 @@ class StringColumn(object):
 
     def __getitem__(self, key):
         strings = [s.__getitem__(key) for s in self.strings]
-        return self.__class__(strings)
+        string_col = self.__class__(strings)
+        return string_col
 
     #     def __setitem__(self, key, items):
     #         if not len(items) == len(self.strings):
@@ -175,7 +184,8 @@ class StringColumn(object):
         return self.length
 
     def __str__(self):
-        return '\n'.join(self.strings)
+        s = '\n'.join(self.strings)
+        return s
 
     def __repr__(self):
         return str(self)
@@ -371,7 +381,7 @@ class SequenceRow(object):
         return [str(a.indent(self.indent)) for a in condensed]
 
     @staticmethod
-    def make_annotation(label, span, fill='*'):
+    def make_annotation(label, span, fill='*', color=None):
         """
         Make an annotation with 'label' spanning inclusive base pairs indices 'span'
 
@@ -394,9 +404,10 @@ class SequenceRow(object):
             sc.append_string("|<{0:{fill}{align}{indent}}".format(label, fill=' ', align='^', indent=span))
             label = fill * span
         sc.append_string("{0:{fill}{align}{indent}}".format(label, fill=fill, align='^', indent=span))
+        sc.color = color
         return sc
 
-    def absolute_annotate(self, start, end, fill, label):
+    def absolute_annotate(self, start, end, fill, label, color=None):
         """
         Applyt annotation to this row using absolute start and ends for
         THIS row.
@@ -413,10 +424,10 @@ class SequenceRow(object):
         :rtype: None
         """
         span = end - start + 1
-        annotation = self.make_annotation(label, span, fill).indent(start)
+        annotation = self.make_annotation(label, span, fill, color=color).indent(start)
         self.annotations.append(annotation)
 
-    def annotate(self, start, end, fill, label=''):
+    def annotate(self, start, end, fill, label='', color=None):
         """
         Annotate the sequence row. If 'start' or 'end' is beyond,
         the expected start or end for this row, the annotation will
@@ -435,7 +446,7 @@ class SequenceRow(object):
         """
         s = max(start - self.start, 0)
         e = min(end - self.start, len(self)-1)
-        return self.absolute_annotate(s, e, fill, label)
+        return self.absolute_annotate(s, e, fill, label, color=color)
 
     def in_bounds(self, x):
         """
@@ -608,7 +619,7 @@ class SequenceViewer(object):
             index += len(chunk[0])
         return rows
 
-    def annotate(self, start, end, label=None, direction=None):
+    def annotate(self, start, end, label=None, direction=None, color=None):
         """
         Annotates this viewer object starting from 'start' to 'end' inclusively.
 
@@ -629,7 +640,7 @@ class SequenceViewer(object):
             label = ''
         for row in self.rows:
             if end >= row.start and start <= row.end:
-                row.annotate(start, end, label=label, fill=str(direction))
+                row.annotate(start, end, label=label, fill=str(direction), color=color)
 
     def print(self):
         print(str(self))

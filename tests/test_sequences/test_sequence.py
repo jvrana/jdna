@@ -265,7 +265,8 @@ def test_chop(test_str):
     1,
     10,
     100,
-    2000
+    2000,
+    10000
 ])
 def test_random(length):
     if length == 0:
@@ -284,6 +285,7 @@ def test_random(length):
 def test_repr(length):
     seq = Sequence.random(length)
     print(seq.__repr__())
+
 
 def test_find_iter_complementary():
     seq = Sequence("CTACAAATTTTACACAGTGGGACGGGCCA")
@@ -419,8 +421,6 @@ def test_viewer():
     view.annotate(100, 150)
     view.annotate(110, 160)
     view.print()
-    s.view().print()
-
 
 def test_viewer_annotate():
     s = Sequence.random(550)
@@ -431,7 +431,9 @@ def test_viewer_annotate():
 
 
 def test_print():
-    Sequence.random(550).print(include_complement=True)
+    s = Sequence.random(550)
+    s.annotate(100, 200, 'GFP', color="#0cba45")
+    s.print(include_complement=True)
 
 
 def test_align():

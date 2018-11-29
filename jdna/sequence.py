@@ -487,7 +487,7 @@ class Sequence(DoubleLinkedList):
         :rtype: Feature
         """
         feature_nts = list(self.inclusive_range(start, end))
-        if feature_nts[-1] is not self[end]:
+        if end and feature_nts[-1] is not self[end]:
             if not self.cyclic:
                 raise IndexError("Cannot add feature to {} to linear dna with bounds {}".format(
                     (start, end),
@@ -557,6 +557,8 @@ class Sequence(DoubleLinkedList):
 
     def complement(self):
         """Complement the sequence in place"""
+        if self.is_empty():
+            return self
         curr = self.head
         visited = set()
         while curr and curr not in visited:
@@ -696,7 +698,7 @@ class Sequence(DoubleLinkedList):
                     direction = ViewerAnnotationFlag.FORWARD
                 elif feature.strand == SequenceFlags.REVERSE:
                     direction = ViewerAnnotationFlag.REVERSE
-                view.annotate(pos[0], pos[1], label=feature.name, direction=direction)
+                view.annotate(pos[0], pos[1], label=feature.name, direction=direction, color=feature.color)
 
     def view(self, indent=10, width=85, spacer=None, include_complement=False, include_annotations=True):
         """
@@ -839,7 +841,7 @@ class Sequence(DoubleLinkedList):
             for start, end in positions:
                 annotations.append({
                     'start': start,
-                    'end': end,
+                    'end': end+1,
                     'name': feature.name,
                     'color': feature.color,
                     'type': feature.type
@@ -857,9 +859,9 @@ class Sequence(DoubleLinkedList):
     def load(cls, data):
         """Load a sequence from a json formatted dictionary"""
         sequence = cls(data['bases'], name=data['name'])
-        for a in data['annotations']:
-            sequence.annotate(a['start'], a['end'], a['name'], a['type'], a['color'])
         sequence.cyclic = data['isCircular']
+        for a in data['annotations']:
+            sequence.annotate(a['start'], a['end']-1, a['name'], a['type'], a['color'])
         return sequence
 
     def __repr__(self):

@@ -86,8 +86,8 @@ class Node(object):
         """
         next_node = next(self)
         if next_node is not None:
-            next_node.__assign_prev(None)
-        self.__assign_next(None)
+            next_node.__prev = None
+        self.__next = None
         return next_node
 
     def cut_prev(self):
@@ -99,8 +99,8 @@ class Node(object):
         """
         prev_node = self.prev()
         if prev_node is not None:
-            prev_node.__assign_next(None)
-        self.__assign_prev(None)
+            prev_node.__next = None
+        self.__prev = None
         return prev_node
 
     def _break_connections(self):
@@ -138,13 +138,7 @@ class Node(object):
         temp = self.__next
         self.__next = self.__prev
         self.__prev = temp
-
-    def __assign_next(self, node):
-        self.__next = node
-
-    def __assign_prev(self, node):
-        self.__prev = node
-
+        
     def set_next(self, node):
         """
         Set the next node
@@ -155,8 +149,8 @@ class Node(object):
         :rtype:
         """
         if node is not None:
-            node.__assign_prev(self)
-        self.__assign_next(node)
+            node.__prev = self
+        self.__next = node
 
     def set_prev(self, node):
         """
@@ -168,8 +162,8 @@ class Node(object):
         :rtype:
         """
         if node is not None:
-            node.__assign_next(self)
-        self.__assign_prev(node)
+            node.__next = self
+        self.__prev = node
 
     def has_next(self):
         return self.__next is not None
@@ -430,7 +424,7 @@ class DoubleLinkedList(object):
 
     def __init__(self, data=None, first=None):
         """
-        linked list constructo
+        linked list construction
 
         :param data: iterable data
         :type data: iterable
@@ -489,6 +483,7 @@ class DoubleLinkedList(object):
     def tail(self):
         return self.head.find_last()
 
+    # TODO: This method is inefficient, but can probably be managed more manually (i.e. anytime a manipulation occurs)
     @property
     def cyclic(self):
         if self.is_empty():
@@ -542,7 +537,7 @@ class DoubleLinkedList(object):
         for index, n in enumerate(self):
             if index == i:
                 return n
-        raise LinkedListIndexError("There is no node at index '{}'. There are only {} nodes.".format(i, index))
+        raise LinkedListIndexError("There is no node at index '{}'. There are {} nodes.".format(i, len(self)))
 
     def cut(self, i, cut_prev=True):
         if isinstance(i, tuple):
@@ -893,7 +888,7 @@ class DoubleLinkedList(object):
             return self.empty_iterator()
 
     def inclusive_range(self, i, j):
-        """Return generator for inclusive nodes between index i and j"""
+        """Return generator for inclusive nodes between index i and j. If i is None, assume i is the head node."""
         start = self.get(i)
         if start is None:
             start = self.head
@@ -907,7 +902,7 @@ class DoubleLinkedList(object):
             if n is stop:
                 stop_hit = True
         if stop is not None and not stop_hit:
-            raise LinkedListIndexError("Inclusive indices {} out of bounds".format([i,j]))
+            raise LinkedListIndexError("Inclusive indices {} out of bounds".format((i,j)))
 
     def index_of(self, node):
         for i, n in enumerate(self):

@@ -118,15 +118,18 @@ class Assembly(object):
         pos = 0
         junctions = self.junctions[:]
         for jxn in junctions:
-            jxn.annotate(0, len(jxn)-1, "Tm: {}°C".format(round(jxn.tm(), 1)))
+            jxn.annotate(None, None, "Tm: {}°C".format(round(jxn.tm(), 1)))
         if self.cyclic:
             junctions.append(junctions[0])
         else:
-            junctions.append(Sequence())
+            junctions = [Sequence()] + junctions
+        for j in junctions:
+            print(j)
         for i, t in enumerate(self.templates):
-            seq = junctions[0] + t + junctions[i + 1]
-            seqs.append(junctions[i] + t + junctions[i + 1])
+            seq = junctions[i] + t + junctions[i + 1]
+            seqs.append(seq)
             pos += len(seq) - len(junctions[i + 1])
+            print(len(junctions[i+1]))
             positions.append(pos)
 
         aligned_seqs = []
@@ -150,6 +153,7 @@ class Assembly(object):
         viewer.metadata['Junction ΔG (hairpin)'] = self.format_array(self.deltaG_hairpins())
         viewer.metadata['Competing ΔG'] = self.format_float_array(self.competing_deltaGs())
         viewer.metadata['Product length (bp)'] = "{}".format(len(self.product))
+        print(self.product)
         return viewer
 
     @staticmethod
@@ -283,7 +287,7 @@ class Reaction(object):
 
     @classmethod
     def interaction_graph(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, bind_reverse_complement=False,
-                          depth=None):
+                          max_bases=None):
         """Make an interaction graph from a list of sequences"""
         G = nx.DiGraph()
         if bind_reverse_complement:
@@ -292,7 +296,7 @@ class Reaction(object):
             G.add_node(s.global_id, sequence=s)
         seq_pairs = itertools.product(sequences, repeat=2)
         for s1, s2 in seq_pairs:
-            for binding in s1.anneal_forward(s2, min_bases=min_bases, depth=depth):
+            for binding in s1.anneal_forward(s2, min_bases=min_bases, depth=max_bases):
                 if not (binding.span[0] == 0 and binding.span[-1] == len(s1) - 1):
                     G.add_edge(s2.global_id, s1.global_id, template=s1, primer=s2, binding=binding)
         return G
@@ -373,7 +377,7 @@ class Reaction(object):
         :return: list of Assembly instances. Sequence can be accessed using `assembly.product`
         :rtype: list
         """
-        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases, depth=max_bases)
+        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases, max_bases=max_bases)
         linear_paths = cls.linear_paths(G)
         if not linear_paths:
             return []
@@ -398,7 +402,7 @@ class Reaction(object):
         :return: list of Assembly instances. Sequence can be accessed using `assembly.product`
         :rtype: list
         """
-        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases, depth=max_bases)
+        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases, max_bases=max_bases)
 
         nodes = list(G.nodes)
         fwd = nodes[:len(sequences)]
