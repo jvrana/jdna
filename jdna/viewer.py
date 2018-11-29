@@ -1,5 +1,157 @@
 import functools
+import itertools
+from networkx import nx
 from collections import OrderedDict
+import re
+
+class StringColumn(object):
+    """Class for managing string columns"""
+
+    FILL = ' '
+
+    def __init__(self, strings):
+        self._strings = []
+        self._length = 0
+        if strings:
+            max_length = max([len(s) for s in strings])
+            self._length = max_length
+            for s in strings:
+                self.add_string(self.right_fill(s))
+
+    @staticmethod
+    def condense_rows(rows):
+        string_len = max(len(r) for r in rows)
+        words = []
+        index = 0
+        for row in rows:
+            for match in re.finditer("([^\s]+)", row):
+                words.append((match.start(), match.end(), match.group(1), index))
+                index += 1
+        print(words)
+        G = nx.Graph()
+        for n1, n2 in itertools.combinations(words, 2):
+            if n1[0] < n2[0] or n1[0] > n2[1]:
+                if n2[0] < n1[0] or n2[0] > n1[1]:
+                    if n1[1] < n2[0]:
+                        G.add_edge(n1[-1], n2[-1])
+                    else:
+                        G.add_edge(n2[-1], n1[-1])
+
+        subgraph = G.subgraph(G.nodes)
+        cliques = []
+        while len(subgraph):
+            max_clique = list(nx.find_cliques(subgraph))[0]
+            cliques.append(max_clique)
+            print(max_clique)
+            remaining = set(subgraph.nodes).difference(set(max_clique))
+            subgraph = G.subgraph(list(remaining))
+
+        condensed_rows = []
+        for c in cliques:
+            mynodes = [words[s] for s in c]
+            mynodes = sorted(mynodes, key=lambda x: x[1])
+            s = [' '] * string_len
+            for n in mynodes:
+                for i, char in zip(range(n[0], n[1]), n[2]):
+                    s[i] = char
+            condensed_rows.append(''.join(s))
+        return condensed_rows
+
+    @property
+    def length(self):
+        return self._length
+
+    @property
+    def strings(self):
+        return self._strings[:]
+
+    def indent(self, num):
+        sc_copy = self.copy()
+        for i, s in enumerate(sc_copy.strings):
+            sc_copy._strings[i] = sc_copy.FILL * num + sc_copy._strings[i]
+        sc_copy._length += num
+        return sc_copy
+
+    def indent_right(self, num):
+        sc_copy = self.copy()
+        for i, s in enumerate(sc_copy.strings):
+            sc_copy._strings[i] = sc_copy._strings[i] + sc_copy.FILL * num
+        sc_copy._length += num
+        return sc_copy
+
+    def right_fill(self, string):
+        return string + self.FILL * (self.length - len(string))
+
+    def prepend_string(self, new_string):
+        if len(new_string) > self.length:
+            self._length = len(new_string)
+        self._strings.insert(0, self.right_fill(new_string))
+
+    def add_string(self, new_string):
+        if len(new_string) > self.length:
+            self._length = len(new_string)
+        self._strings.append(self.right_fill(new_string))
+
+    def add_prefix(self, prefix):
+        for i, s in self.strings:
+            self.strings[i] = prefix + self.strings[i]
+
+    def __add__(self, other):
+        if isinstance(other, str):
+            other = StringColumn([other])
+        sc = StringColumn(self.strings)
+        diff = len(sc.strings) - len(other.strings)
+        if diff > 0:
+            for i in range(diff):
+                other.add_string('')
+        elif diff < 0:
+            for i in range(-diff):
+                sc.add_string('')
+
+        new_sc = StringColumn([])
+        for this_string, other_string in zip(sc.strings, other.strings):
+            new_sc.prepend_string(this_string + other_string)
+        return new_sc
+
+    def copy(self):
+        return self.__copy__()
+
+    def strip(self):
+        n1 = 0
+        n2 = 0
+        for x in self[:]:
+            if all([_x == ' ' for _x in x]):
+                n1 += 1
+            else:
+                break
+        for x in self[::-1]:
+            if all([_x == ' ' for _x in x]):
+                n2 += 1
+            else:
+                break
+        if n2 == 0:
+            return self[n1:]
+        else:
+            return self[n1:-n2]
+
+    def __copy__(self):
+        return self.__class__(self.strings)
+
+    def __getitem__(self, key):
+        strings = [s.__getitem__(key) for s in self.strings]
+        return self.__class__(strings)
+
+    def __iter__(self):
+        return zip(*self.strings)
+
+    def __len__(self):
+        return self.length
+
+    def __str__(self):
+        return '\n'.join(self.strings)
+
+    def __repr__(self):
+        return str(self)
 
 
 def chunkify(iterable, n):
@@ -190,7 +342,7 @@ class SequenceRow(object):
     def in_bounds(self, x):
         """
         Checks if the index 'x' is in between row start and end (inclusive)
-        
+
         :param x: index
         :type x: int
         :return: if in bounds
