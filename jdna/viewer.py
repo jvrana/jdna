@@ -141,7 +141,7 @@ class SequenceViewer(object):
         assert isinstance(sequences, list)
         seq_lens = set([len(s) for s in sequences])
         if len(seq_lens) > 1:
-            raise Exception("Sequence must be same length")
+            raise Exception("Sequence must be same length but found lengths {}".format([len(s) for s in sequences]))
         self._sequences = [str(s) for s in sequences]
         self._indent = indent
         self._width = width

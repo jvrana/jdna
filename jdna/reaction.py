@@ -2,17 +2,12 @@
 Simulate molecular reactions
 """
 
-# import itertools
-# import warnings
-# from collections import defaultdict
-# from copy import copy
-# from jdna.sequence import Sequence
-# from jdna.graph import Graph
-
 from jdna.sequence import Sequence, SequenceFlags
+from jdna.viewer import SequenceViewer
 from collections import namedtuple
 import networkx as nx
 import itertools
+
 
 class ReactionException(Exception):
     """Generic reaction exception"""
@@ -21,15 +16,50 @@ class ReactionException(Exception):
 class PCRException(ReactionException):
     """Exception with pcr"""
 
+
 BindingEvent = namedtuple("BindingEvent", ["template", "primer", "position"])
 
 
 class Assembly(object):
 
-    def __init__(self, product, templates, overhangs):
-        self.product = product
-        self.template = templates
+    def __init__(self, templates, overhangs, cyclic):
+        self.templates = templates
         self.overhangs = overhangs
+        self.cyclic = cyclic
+
+    @property
+    def product(self):
+        product = Sequence()
+        if not self.cyclic:
+            zipped = zip(self.templates, self.overhangs)
+        else:
+            zipped = zip(self.overhangs, self.templates)
+        for s1, s2 in zipped:
+            product += s1 + s2
+        if self.cyclic:
+            product.circularize()
+        return product
+
+    def align(self):
+        seqs = []
+        positions = [0]
+        pos = 0
+        overhangs = self.overhangs[:]
+        if self.cyclic:
+            overhangs.append(overhangs[0])
+        else:
+            overhangs.append(Sequence())
+        for i, t in enumerate(self.templates):
+            seq = overhangs[0] + t + overhangs[i+1]
+            seqs.append(overhangs[i] + t + overhangs[i+1])
+            pos += len(seq) - len(overhangs[i+1])
+            positions.append(pos)
+
+        aligned_seqs = []
+        for p, s in zip(positions, seqs):
+            aligned_seqs.append(' '*p + str(s) + ' '*(positions[-1]-len(s)-p))
+        viewer = SequenceViewer(aligned_seqs)
+        print(aligned_seqs)
 
 
 class Reaction(object):
@@ -151,16 +181,7 @@ class Reaction(object):
             overhangs = [overhangs[-1]] + overhangs[:-1]
         amplified_sequences = [Sequence.new_slice(*pair) for pair in node_pairs]
 
-        product = Sequence()
-        if not cyclic:
-            zipped = zip(amplified_sequences, overhangs)
-        else:
-            zipped = zip(overhangs, amplified_sequences)
-        for s1, s2 in zipped:
-            product += s1 + s2
-        if cyclic:
-            product.circularize()
-        return Assembly(product, amplified_sequences, overhangs)
+        return Assembly(amplified_sequences, overhangs, cyclic)
 
     @classmethod
     def linear_assemblies(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, depth=None):
