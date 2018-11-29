@@ -298,9 +298,11 @@ class Node(object):
     def __next__(self):
         return self.next()
 
+    def copy(self):
+        return self.__class__(self.data)
+
     def __copy__(self):
-        copied = type(self)(self.data)
-        return copied
+        return self.copy()
 
     def __deepcopy__(self, memo):
         raise NotImplementedError("copy.deepcopy not implemented with class"
@@ -466,6 +468,7 @@ class DoubleLinkedList(object):
 
     @property
     def head(self):
+        return self._head
         if self.is_empty():
             return self._head
         if self.cyclic:
@@ -522,6 +525,7 @@ class DoubleLinkedList(object):
     def linearize(self, i=0):
         this_i = self.get(i)
         this_i.cut_prev()
+        self.head = this_i
         return self
 
     @property
@@ -799,10 +803,14 @@ class DoubleLinkedList(object):
         return LinkedListMatch.batch_create(template_nodes, query_nodes, self, query)
 
     def reverse(self):
-        for s in self.nodes:
+        if self.is_empty():
+            return self
+        nodes = self.nodes
+        for s in nodes:
             s.swap()
-        if self.cyclic:
-            self.reindex(1)
+        self.head = nodes[-1]
+        # if self.cyclic:
+        #     self.reindex(1)
         return self
 
     def fuse_in_place(self, seq):
@@ -998,11 +1006,17 @@ class DoubleLinkedList(object):
         return item in self.all_nodes()
 
     def __copy__(self):
-        copied = type(self)('X')
-        copied.__dict__.update(self.__dict__)
-        copied.initialize(str(self))
+        head = None
+        prev = None
+        for n in self.nodes:
+            new_node = n.copy()
+            if head is None:
+                head = new_node
+            new_node.set_prev(prev)
+            prev = new_node
+        copied = type(self)(first=head)
         if self.cyclic:
-            copied.circularize()
+            copied.cyclic = self.cyclic
         return copied
 
     def __deepcopy__(self, memo):

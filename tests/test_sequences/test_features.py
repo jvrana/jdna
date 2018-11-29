@@ -35,11 +35,11 @@ class TestFeatureProperties(object):
         assert fpos[f2] == [[2, len(test_str) - 2]]
         assert fpos[f3] == [[3, len(test_str) - 3]]
 
-    def test_feature_has_nodes(self, basic_feature):
-        print(basic_feature.nodes)
+    # def test_feature_has_nodes(self, basic_feature):
+    #     print(basic_feature.nodes)
 
-    def test_feature_has_segments(self, basic_feature):
-        print(basic_feature.segments)
+    # def test_feature_has_segments(self, basic_feature):
+    #     print(basic_feature.segments)
 
     def test_basic_feature_name(self, basic_feature):
         assert basic_feature.name == 'feature'
@@ -86,8 +86,8 @@ class TestFeatureManipulations(object):
         assert dict(fragments[0].feature_positions()) == {feature: [[s, c - 1]]}
         assert dict(fragments[1].feature_positions()) == {feature: [[0, e - c]]}
 
-        print(feature.segments())
-        assert len(feature.segments()) == 2
+        # print(feature.segments())
+        # assert len(feature.segments()) == 2
 
     def test_feature_fusion(self, test_seq):
         f1 = Feature(name='myfeature', type='myfeature')

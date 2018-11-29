@@ -36,7 +36,7 @@ class Feature(object):
         if color is None:
             color = random_color()
         self.color = color
-        self._nodes = set()
+        # self._nodes = set()
 
     def __str__(self):
         return '{} {}'.format(self.name, self.type)
@@ -47,12 +47,12 @@ class Feature(object):
     def __copy__(self):
         return self.__class__(self.name, self.type, self.strand, self.color)
 
-    @property
-    def nodes(self):
-        return self._nodes
-
-    def segments(self):
-        return Sequence.segments(self.nodes)
+    # @property
+    # def nodes(self):
+    #     return self._nodes
+    #
+    # def segments(self):
+    #     return Sequence.segments(self.nodes)
         # visited = set()
         # pairs = set()
         # stop = lambda x: x not in self._nodes
@@ -73,13 +73,14 @@ class Feature(object):
         return False
 
     def _bind(self, nodes):
-        for n in nodes:
-            self._nodes.add(n)
+        pass
+        # for n in nodes:
+        #     self._nodes.add(n)
 
-    def _unbind(self, nodes):
-        for n in nodes:
-            if n in self._nodes:
-                self._nodes.remove(n)
+    # def _unbind(self, nodes):
+    #     for n in nodes:
+    #         if n in self._nodes:
+    #             self._nodes.remove(n)
 
 
 class BindPos(LinkedListMatch):
@@ -239,11 +240,11 @@ class Nucleotide(Node):
 
     def add_feature(self, feature):
         self.features.add(feature)
-        feature._bind([self])
+        # feature._bind([self])
 
     def remove_feature(self, feature):
         self.features.remove(feature)
-        feature._unbind([self])
+        # feature._unbind([self])
 
     def feature_fwd(self, feature):
         stop = lambda x: feature not in x.features
@@ -370,11 +371,10 @@ class Nucleotide(Node):
                 for n in frag2:
                     n.replace_feature(f, f2)
 
-    def __copy__(self):
-        copied = super(Nucleotide, self).__copy__()
+    def copy(self):
+        copied = super(Nucleotide, self).copy()
         copied._features = deepcopy(self.features)
         return copied
-
 
 class Sequence(DoubleLinkedList):
     """Represents a biological sequence as a double linked list. Can be annotated with features."""
@@ -587,11 +587,12 @@ class Sequence(DoubleLinkedList):
         return fragments
 
     def __copy__(self):
-        feature_positions = self.feature_positions()
         copied = super(Sequence, self).__copy__()
         copied._global_id = next(self.counter)
-        for feature, positions in feature_positions.items():
-            copied.add_multipart_feature(positions, copy(feature))
+        copied.name = self.name
+        # feature_positions = self.feature_positions()
+        # for feature, positions in feature_positions.items():
+        #     copied.add_multipart_feature(positions, copy(feature))
         return copied
 
     # def anneal_to_bottom_strand(self, other, min_bases=10):
