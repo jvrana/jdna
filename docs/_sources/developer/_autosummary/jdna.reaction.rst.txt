@@ -13,6 +13,7 @@ jdna.reaction
 
    .. autosummary::
    
+      Assembly
       BindingEvent
       Reaction
    

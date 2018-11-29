@@ -9,6 +9,8 @@ import networkx as nx
 
 from jdna.sequence import Sequence, SequenceFlags
 from jdna.viewer import SequenceViewer
+import primer3
+from decimal import Decimal
 
 class ReactionException(Exception):
     """Generic reaction exception"""
@@ -50,7 +52,7 @@ class Assembly(object):
         pos = 0
         overhangs = self.overhangs[:]
         for o in overhangs:
-            o.annotate(0, 19, "Tm: {}°C".format(round(o.tm(), 1)))
+            o.annotate(0, len(o)-1, "Tm: {}°C".format(round(o.tm(), 1)))
         if self.cyclic:
             overhangs.append(overhangs[0])
         else:
@@ -77,8 +79,48 @@ class Assembly(object):
         viewer.metadata['Num Fragments'] = len(self.templates)
         viewer.metadata['Overhang Tms (°C)'] = ', '.join([str(x) for x in self.tms()])
         viewer.metadata['Overhang Lengths (bp)'] = ', '.join([str(len(x)) for x in self.overhangs])
+        viewer.metadata['Overhang ΔG'] = self.format_float_array(self.deltaGs())
+        viewer.metadata['Overhang ΔG (hairpin)'] = self.format_array(self.deltaG_hairpins())
+        viewer.metadata['Competing ΔG'] = self.format_float_array(self.competing_deltaGs())
         viewer.metadata['Length'] = "{}bp".format(len(self.product))
         return viewer
+
+    @staticmethod
+    def format_array(arr):
+        return ', '.join([str(x) for x in arr])
+
+    @staticmethod
+    def format_float_array(arr):
+        return ', '.join([
+            "{:.2e}".format(Decimal(float(x))) for x in arr
+        ])
+
+    def deltaG_hairpins(self):
+        gs = []
+        for o in self.overhangs:
+            fwd = primer3.calcHairpin(str(o).upper()).dg
+            rev = primer3.calcHairpin(str(o.copy().rc()).upper()).dg
+            gs.append((fwd, rev))
+        return gs
+
+    def deltaGs(self):
+        return [primer3.calcHeterodimer(str(o).upper(), str(o.copy().reverse_complement()).upper()).dg for o in self.overhangs]
+
+    def competing_deltaGs(self):
+        gs = []
+        for o in self.overhangs:
+            total = 0
+            total += primer3.calcHairpin(str(o).upper()).dg
+            total += primer3.calcHairpin(str(o.copy().rc()).upper()).dg
+            others = self.overhangs[:]
+            others.remove(o)
+            for other in others:
+                dg1 = primer3.calcHeterodimer(str(o).upper(), str(other.copy().rc()).upper()).dg
+                dg2 = primer3.calcHeterodimer(str(o).upper(), str(other).upper()).dg
+                total += dg1
+                total += dg2
+            gs.append(total)
+        return gs
 
     def print(self):
         self.view().print()

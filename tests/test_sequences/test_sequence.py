@@ -450,6 +450,13 @@ def test_compare():
     assert not s1.compare(s3)
     assert not s2.compare(s3)
 
+
+def test_to_json():
+    s = Sequence.random(300)
+    s.annotate(20,22, 'ATG')
+    s.annotate(30, 100, 'GFP')
+    s.view().print()
+    print(s.json())
     # assert not s1.compare(s2 + Sequence("A"))
 #
 # @pytest.mark.parametrize('reverse_complement', [False, True])

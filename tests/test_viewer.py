@@ -1,6 +1,6 @@
 import pytest
 from jdna import format, Sequence
-from jdna.viewer import SequenceViewer, AnnotationFlag
+from jdna.viewer import SequenceViewer, ViewerAnnotationFlag
 
 
 def test_viewer():
@@ -42,14 +42,14 @@ def test_num_annotations(positions, expected_num_annotations):
     viewer.print()
 
 @pytest.mark.parametrize('start,end,rows,direction,fill', [
-    # (50, 70, [0], AnnotationFlag.BOTH, "^"),
-    # (50, 70, [0], None, "^"),
-    # (80, 99, [0], AnnotationFlag.BOTH, "^"),
-    pytest.param(80, 100, [0, 1], AnnotationFlag.BOTH, "^", id='annotation spans 2 rows'),
-    # pytest.param(80, 200, [0, 1, 2], AnnotationFlag.BOTH, "^", id='annotation spans 3 rows'),
-    # (50, 70, [0], AnnotationFlag.FORWARD, ">"),
-    # (50, 70, [0], AnnotationFlag.REVERSE, "<"),
-    # (500, 699, [], AnnotationFlag.REVERSE, "<"),
+    (50, 70, [0], ViewerAnnotationFlag.BOTH, '-'),
+    (50, 70, [0], None, '-'),
+    (80, 99, [0], ViewerAnnotationFlag.BOTH, '-'),
+    pytest.param(80, 100, [0, 1], ViewerAnnotationFlag.BOTH, '-', id='annotation spans 2 rows'),
+    pytest.param(80, 200, [0, 1, 2], ViewerAnnotationFlag.BOTH, '-', id='annotation spans 3 rows'),
+    (50, 70, [0], ViewerAnnotationFlag.FORWARD, '>'),
+    (50, 70, [0], ViewerAnnotationFlag.REVERSE, '<'),
+    (500, 699, [], ViewerAnnotationFlag.REVERSE, '<'),
 ])
 def test_annotate_viewer_with_fill(start, end, rows, direction, fill):
     viewer = SequenceViewer([Sequence.random(500)], width=100)
@@ -66,10 +66,10 @@ def test_annotate_viewer_with_fill(start, end, rows, direction, fill):
 
 
 @pytest.mark.parametrize('start,end,label,expected_labels,no_labels', [
-    (0, 50, 'mylabel', ['mylabel', '^'], []),
-    (0, 2, 'mylabel', ['^', '|<mylabel'], []),
+    (0, 50, 'mylabel', ['mylabel', '-'], []),
+    (0, 2, 'mylabel', ['-', '|<mylabel'], []),
     (0, 5, 'mylabel', ['|<mylabel'], []),
-    (0, 6, 'mylabel', ['mylabel'], ['|<']),
+    (0, 7, 'mylabel', ['mylabel'], ['|<']),
     (2, 6, 'mylabel', ['|<mylabel'], []),
 ])
 def test_annotate_viewer_with_label(start, end, label, expected_labels, no_labels):

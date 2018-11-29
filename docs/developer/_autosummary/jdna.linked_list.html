@@ -199,6 +199,24 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="jdna.linked_list.DoubleLinkedList.compare">
+<code class="descname">compare</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.compare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compares two linked lists. If both are cyclic, will attempt to reindex</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> (<a class="reference internal" href="#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – other linked list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">whether sequence data is equivalent</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="jdna.linked_list.DoubleLinkedList.copy_slice">
 <code class="descname">copy_slice</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.copy_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.copy_slice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy of the sequence between ‘start’ and ‘end’ nodes. If start is None,
@@ -214,7 +232,7 @@ If both start and end are None return None.</p>
 
 <dl class="method">
 <dt id="jdna.linked_list.DoubleLinkedList.find_iter">
-<code class="descname">find_iter</code><span class="sig-paren">(</span><em>query</em>, <em>min_query_length=None</em>, <em>direction=&lt;Direction.FORWARD: 1&gt;</em>, <em>protocol=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.find_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.find_iter" title="Permalink to this definition">¶</a></dt>
+<code class="descname">find_iter</code><span class="sig-paren">(</span><em>query</em>, <em>min_query_length=None</em>, <em>direction=&lt;Direction.FORWARD: 1&gt;</em>, <em>protocol=None</em>, <em>depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/linked_list.html#DoubleLinkedList.find_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.linked_list.DoubleLinkedList.find_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iteratively finds positions that match the query.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

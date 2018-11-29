@@ -235,3 +235,10 @@ def test_cyclic_assemblies(seq, generate_sequences, reverse_complement):
         g = [p.compare(expected), p.compare(rc_expected)]
         assert any(g)
         print(a)
+
+
+def test_cyclic_assemblies_num_fragments(seq, generate_sequences):
+    sequences = generate_sequences(10, cyclic=True, overhang=30)
+    assemblies = Reaction.cyclic_assemblies(sequences, depth=50)
+    for a in assemblies:
+        print(a)
