@@ -4,10 +4,10 @@ misc utilities
 
 import random
 import webcolors
-from colorama import Fore, Style
+from colorama import Fore, Style, Back
 
 colors_rgb = {}
-for c in  vars(Fore):
+for c in vars(Fore):
     try:
         colors_rgb[c] = webcolors.name_to_rgb(c)
     except:
@@ -37,12 +37,29 @@ def hex_to_color_name(h):
 
 def colored(text, hex_color):
     """Return colored text"""
-    color_name = hex_to_color_name(hex_color)
-    return "{color}{text}{end}".format(
+    try:
+        color_name = hex_to_color_name(hex_color)
+    except ValueError:
+        color_name = hex_color
+    s = "{color}{text}{end}".format(
         color=getattr(Fore, color_name.upper()),
         text=text,
         end=Style.RESET_ALL
     )
+    return s
+
+def background(text, hex_color):
+    """Return colored text"""
+    try:
+        color_name = hex_to_color_name(hex_color)
+    except ValueError:
+        color_name = hex_color
+    s = "{color}{text}{end}".format(
+        color=getattr(Back, color_name.upper()),
+        text=text,
+        end=Style.RESET_ALL
+    )
+    return s
 
 def random_color():
     rgb = [int(random.random() * 255) for x in range(3)]

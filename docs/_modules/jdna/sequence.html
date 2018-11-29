@@ -15,7 +15,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>jdna.sequence &#8212; jdna 0.0.2 documentation</title>
+    <title>jdna.sequence &#8212; jdna 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>
@@ -57,7 +57,7 @@
     </div>
 </div>
 
-<p align="center" class="sidebar-subtitle">version: <a href="">0.0.2</a></p>
+<p align="center" class="sidebar-subtitle">version: <a href="">0.0.3</a></p>
 <div>
 
 </div>
@@ -146,7 +146,7 @@
         <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">color</span> <span class="o">=</span> <span class="n">random_color</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="c1"># self._nodes = set()</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
@@ -157,12 +157,12 @@
     <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">strand</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">)</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span>
-
-    <span class="k">def</span> <span class="nf">segments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Sequence</span><span class="o">.</span><span class="n">segments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="c1"># @property</span>
+    <span class="c1"># def nodes(self):</span>
+    <span class="c1">#     return self._nodes</span>
+    <span class="c1">#</span>
+    <span class="c1"># def segments(self):</span>
+    <span class="c1">#     return Sequence.segments(self.nodes)</span>
         <span class="c1"># visited = set()</span>
         <span class="c1"># pairs = set()</span>
         <span class="c1"># stop = lambda x: x not in self._nodes</span>
@@ -183,13 +183,14 @@
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">pass</span></div>
+        <span class="c1"># for n in nodes:</span>
+        <span class="c1">#     self._nodes.add(n)</span>
 
-    <span class="k">def</span> <span class="nf">_unbind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">n</span><span class="p">)</span></div>
+    <span class="c1"># def _unbind(self, nodes):</span>
+    <span class="c1">#     for n in nodes:</span>
+    <span class="c1">#         if n in self._nodes:</span>
+    <span class="c1">#             self._nodes.remove(n)</span>
 
 
 <div class="viewcode-block" id="BindPos"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.BindPos">[docs]</a><span class="k">class</span> <span class="nc">BindPos</span><span class="p">(</span><span class="n">LinkedListMatch</span><span class="p">):</span>
@@ -349,11 +350,11 @@
 
     <span class="k">def</span> <span class="nf">add_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
-        <span class="n">feature</span><span class="o">.</span><span class="n">_bind</span><span class="p">([</span><span class="bp">self</span><span class="p">])</span>
+        <span class="c1"># feature._bind([self])</span>
 
     <span class="k">def</span> <span class="nf">remove_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
-        <span class="n">feature</span><span class="o">.</span><span class="n">_unbind</span><span class="p">([</span><span class="bp">self</span><span class="p">])</span>
+        <span class="c1"># feature._unbind([self])</span>
 
     <span class="k">def</span> <span class="nf">feature_fwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
         <span class="n">stop</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">feature</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">features</span>
@@ -371,7 +372,7 @@
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">f</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remove_overlapping_features</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">get_feature_span</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
@@ -480,11 +481,11 @@
                 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">frag2</span><span class="p">:</span>
                     <span class="n">n</span><span class="o">.</span><span class="n">replace_feature</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">copied</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Nucleotide</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
-        <span class="n">copied</span><span class="o">.</span><span class="n">_features</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">copied</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Nucleotide</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+            <span class="n">copied</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">copied</span></div>
-
 
 <div class="viewcode-block" id="Sequence"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence">[docs]</a><span class="k">class</span> <span class="nc">Sequence</span><span class="p">(</span><span class="n">DoubleLinkedList</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a biological sequence as a double linked list. Can be annotated with features.&quot;&quot;&quot;</span>
@@ -597,7 +598,7 @@
 <span class="sd">        :rtype: Feature</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">feature_nts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inclusive_range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">feature_nts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">[</span><span class="n">end</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">end</span> <span class="ow">and</span> <span class="n">feature_nts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">[</span><span class="n">end</span><span class="p">]:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Cannot add feature to </span><span class="si">{}</span><span class="s2"> to linear dna with bounds </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">),</span>
@@ -667,6 +668,8 @@
 
 <div class="viewcode-block" id="Sequence.complement"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.complement">[docs]</a>    <span class="k">def</span> <span class="nf">complement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Complement the sequence in place&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span>
         <span class="n">curr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span>
         <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">while</span> <span class="n">curr</span> <span class="ow">and</span> <span class="n">curr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
@@ -695,11 +698,12 @@
         <span class="k">return</span> <span class="n">fragments</span>
 
     <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">feature_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_positions</span><span class="p">()</span>
         <span class="n">copied</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Sequence</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
         <span class="n">copied</span><span class="o">.</span><span class="n">_global_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">feature</span><span class="p">,</span> <span class="n">positions</span> <span class="ow">in</span> <span class="n">feature_positions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">copied</span><span class="o">.</span><span class="n">add_multipart_feature</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">copy</span><span class="p">(</span><span class="n">feature</span><span class="p">))</span>
+        <span class="n">copied</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="c1"># feature_positions = self.feature_positions()</span>
+        <span class="c1"># for feature, positions in feature_positions.items():</span>
+        <span class="c1">#     copied.add_multipart_feature(positions, copy(feature))</span>
         <span class="k">return</span> <span class="n">copied</span>
 
     <span class="c1"># def anneal_to_bottom_strand(self, other, min_bases=10):</span>
@@ -806,7 +810,7 @@
                     <span class="n">direction</span> <span class="o">=</span> <span class="n">ViewerAnnotationFlag</span><span class="o">.</span><span class="n">FORWARD</span>
                 <span class="k">elif</span> <span class="n">feature</span><span class="o">.</span><span class="n">strand</span> <span class="o">==</span> <span class="n">SequenceFlags</span><span class="o">.</span><span class="n">REVERSE</span><span class="p">:</span>
                     <span class="n">direction</span> <span class="o">=</span> <span class="n">ViewerAnnotationFlag</span><span class="o">.</span><span class="n">REVERSE</span>
-                <span class="n">view</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">feature</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">)</span>
+                <span class="n">view</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">feature</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">feature</span><span class="o">.</span><span class="n">color</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Sequence.view"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.view">[docs]</a>    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">85</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_complement</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -949,7 +953,7 @@
             <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
                 <span class="n">annotations</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
                     <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
-                    <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">end</span><span class="p">,</span>
+                    <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">end</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
                     <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">feature</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">feature</span><span class="o">.</span><span class="n">color</span><span class="p">,</span>
                     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">feature</span><span class="o">.</span><span class="n">type</span>
@@ -967,9 +971,9 @@
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Load a sequence from a json formatted dictionary&quot;&quot;&quot;</span>
         <span class="n">sequence</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;bases&#39;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]:</span>
-            <span class="n">sequence</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">])</span>
         <span class="n">sequence</span><span class="o">.</span><span class="n">cyclic</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;isCircular&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]:</span>
+            <span class="n">sequence</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">sequence</span></div>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -997,7 +1001,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>

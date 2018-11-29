@@ -1,6 +1,8 @@
 -i https://pypi.org/simple
 biopython==1.72
+colorama==0.4.1
 decorator==4.3.0
 networkx==2.2
 numpy==1.15.4
 primer3-py==0.5.7
+webcolors==1.8.1

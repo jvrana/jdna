@@ -9,6 +9,8 @@ jdna.utils
 
    .. autosummary::
    
+      colored
+      hex_to_color_name
       random_color
       rgb_to_hex
    
