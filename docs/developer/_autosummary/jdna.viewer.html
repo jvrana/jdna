@@ -15,7 +15,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>jdna.viewer &#8212; jdna 0.0.2 documentation</title>
+    <title>jdna.viewer &#8212; jdna 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="jdna.alphabet.html" title="jdna.alphabet"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api_reference.html" accesskey="U">API Reference</a> &#187;</li> 
       </ul>
     </div>
@@ -65,7 +65,7 @@
     </div>
 </div>
 
-<p align="center" class="sidebar-subtitle">version: <a href="">0.0.2</a></p>
+<p align="center" class="sidebar-subtitle">version: <a href="">0.0.3</a></p>
 <div>
 
 </div>
@@ -220,7 +220,7 @@ and can be annotated with ‘features’.</p>
 </table>
 <dl class="method">
 <dt id="jdna.viewer.SequenceRow.absolute_annotate">
-<code class="descname">absolute_annotate</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>fill</em>, <em>label</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/viewer.html#SequenceRow.absolute_annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.viewer.SequenceRow.absolute_annotate" title="Permalink to this definition">¶</a></dt>
+<code class="descname">absolute_annotate</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>fill</em>, <em>label</em>, <em>color=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/viewer.html#SequenceRow.absolute_annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.viewer.SequenceRow.absolute_annotate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applyt annotation to this row using absolute start and ends for
 THIS row.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -247,7 +247,7 @@ THIS row.</p>
 
 <dl class="method">
 <dt id="jdna.viewer.SequenceRow.annotate">
-<code class="descname">annotate</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>fill</em>, <em>label=''</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/viewer.html#SequenceRow.annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.viewer.SequenceRow.annotate" title="Permalink to this definition">¶</a></dt>
+<code class="descname">annotate</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>fill</em>, <em>label=''</em>, <em>color=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/viewer.html#SequenceRow.annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.viewer.SequenceRow.annotate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Annotate the sequence row. If ‘start’ or ‘end’ is beyond,
 the expected start or end for this row, the annotation will
 automatically be truncated.</p>
@@ -293,7 +293,7 @@ automatically be truncated.</p>
 
 <dl class="staticmethod">
 <dt id="jdna.viewer.SequenceRow.make_annotation">
-<em class="property">static </em><code class="descname">make_annotation</code><span class="sig-paren">(</span><em>label</em>, <em>span</em>, <em>fill='*'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/viewer.html#SequenceRow.make_annotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.viewer.SequenceRow.make_annotation" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">make_annotation</code><span class="sig-paren">(</span><em>label</em>, <em>span</em>, <em>fill='*'</em>, <em>color=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/viewer.html#SequenceRow.make_annotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.viewer.SequenceRow.make_annotation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make an annotation with ‘label’ spanning inclusive base pairs indices ‘span’</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -345,7 +345,7 @@ characters</li>
 </table>
 <dl class="method">
 <dt id="jdna.viewer.SequenceViewer.annotate">
-<code class="descname">annotate</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>label=None</em>, <em>direction=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/viewer.html#SequenceViewer.annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.viewer.SequenceViewer.annotate" title="Permalink to this definition">¶</a></dt>
+<code class="descname">annotate</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>label=None</em>, <em>direction=None</em>, <em>color=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/viewer.html#SequenceViewer.annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.viewer.SequenceViewer.annotate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Annotates this viewer object starting from ‘start’ to ‘end’ inclusively.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -504,7 +504,7 @@ of white space. Briefly, this is similar to the following procedure:</p>
         <li class="right" >
           <a href="jdna.alphabet.html" title="jdna.alphabet"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api_reference.html" >API Reference</a> &#187;</li> 
       </ul>
     </div>

@@ -15,7 +15,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>jdna.viewer &#8212; jdna 0.0.2 documentation</title>
+    <title>jdna.viewer &#8212; jdna 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>
@@ -57,7 +57,7 @@
     </div>
 </div>
 
-<p align="center" class="sidebar-subtitle">version: <a href="">0.0.2</a></p>
+<p align="center" class="sidebar-subtitle">version: <a href="">0.0.3</a></p>
 <div>
 
 </div>
@@ -152,7 +152,7 @@
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">from</span> <span class="nn">networkx</span> <span class="k">import</span> <span class="n">nx</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
-
+<span class="kn">from</span> <span class="nn">jdna.utils</span> <span class="k">import</span> <span class="n">colored</span>
 
 <div class="viewcode-block" id="StringColumn"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.StringColumn">[docs]</a><span class="k">class</span> <span class="nc">StringColumn</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class for managing string columns&quot;&quot;&quot;</span>
@@ -226,7 +226,10 @@
     <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">other</span> <span class="o">=</span> <span class="n">StringColumn</span><span class="p">([</span><span class="n">other</span><span class="p">])</span>
-        <span class="n">sc</span> <span class="o">=</span> <span class="n">StringColumn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
         <span class="n">diff</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sc</span><span class="o">.</span><span class="n">strings</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">strings</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">diff</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">diff</span><span class="p">):</span>
@@ -235,10 +238,15 @@
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">diff</span><span class="p">):</span>
                 <span class="n">sc</span><span class="o">.</span><span class="n">prepend_string</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 
-        <span class="n">new_sc</span> <span class="o">=</span> <span class="n">StringColumn</span><span class="p">([])</span>
+        <span class="n">new_sc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_empty</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">this_string</span><span class="p">,</span> <span class="n">other_string</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sc</span><span class="o">.</span><span class="n">strings</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">strings</span><span class="p">):</span>
             <span class="n">new_sc</span><span class="o">.</span><span class="n">append_string</span><span class="p">(</span><span class="n">this_string</span> <span class="o">+</span> <span class="n">other_string</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_sc</span>
+
+    <span class="k">def</span> <span class="nf">copy_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sc_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">sc_copy</span><span class="o">.</span><span class="n">_strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">sc_copy</span>
 
     <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
@@ -267,7 +275,8 @@
 
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="n">strings</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+        <span class="n">string_col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">string_col</span>
 
     <span class="c1">#     def __setitem__(self, key, items):</span>
     <span class="c1">#         if not len(items) == len(self.strings):</span>
@@ -285,7 +294,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strings</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -481,7 +491,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="p">))</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">condensed</span><span class="p">]</span>
 
 <div class="viewcode-block" id="SequenceRow.make_annotation"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceRow.make_annotation">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">make_annotation</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">span</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">make_annotation</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">span</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make an annotation with &#39;label&#39; spanning inclusive base pairs indices &#39;span&#39;</span>
 
@@ -504,9 +514,10 @@
             <span class="n">sc</span><span class="o">.</span><span class="n">append_string</span><span class="p">(</span><span class="s2">&quot;|&lt;{0:</span><span class="si">{fill}{align}{indent}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;^&#39;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">span</span><span class="p">))</span>
             <span class="n">label</span> <span class="o">=</span> <span class="n">fill</span> <span class="o">*</span> <span class="n">span</span>
         <span class="n">sc</span><span class="o">.</span><span class="n">append_string</span><span class="p">(</span><span class="s2">&quot;{0:</span><span class="si">{fill}{align}{indent}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">fill</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;^&#39;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">span</span><span class="p">))</span>
+        <span class="n">sc</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
         <span class="k">return</span> <span class="n">sc</span></div>
 
-<div class="viewcode-block" id="SequenceRow.absolute_annotate"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceRow.absolute_annotate">[docs]</a>    <span class="k">def</span> <span class="nf">absolute_annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<div class="viewcode-block" id="SequenceRow.absolute_annotate"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceRow.absolute_annotate">[docs]</a>    <span class="k">def</span> <span class="nf">absolute_annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applyt annotation to this row using absolute start and ends for</span>
 <span class="sd">        THIS row.</span>
@@ -523,10 +534,10 @@
 <span class="sd">        :rtype: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">span</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">annotation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_annotation</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">span</span><span class="p">,</span> <span class="n">fill</span><span class="p">)</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">annotation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_annotation</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">span</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">annotation</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SequenceRow.annotate"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceRow.annotate">[docs]</a>    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="SequenceRow.annotate"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceRow.annotate">[docs]</a>    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Annotate the sequence row. If &#39;start&#39; or &#39;end&#39; is beyond,</span>
 <span class="sd">        the expected start or end for this row, the annotation will</span>
@@ -545,7 +556,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">start</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">e</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">absolute_annotate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">absolute_annotate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SequenceRow.in_bounds"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceRow.in_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">in_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -718,7 +729,7 @@
             <span class="n">index</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">rows</span></div>
 
-<div class="viewcode-block" id="SequenceViewer.annotate"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceViewer.annotate">[docs]</a>    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SequenceViewer.annotate"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.SequenceViewer.annotate">[docs]</a>    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Annotates this viewer object starting from &#39;start&#39; to &#39;end&#39; inclusively.</span>
 
@@ -739,7 +750,7 @@
             <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">end</span> <span class="o">&gt;=</span> <span class="n">row</span><span class="o">.</span><span class="n">start</span> <span class="ow">and</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">row</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
-                <span class="n">row</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">direction</span><span class="p">))</span></div>
+                <span class="n">row</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">direction</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
@@ -775,7 +786,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
