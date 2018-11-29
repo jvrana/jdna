@@ -15,7 +15,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>jdna.reaction &#8212; jdna 0.0.1 documentation</title>
+    <title>jdna.reaction &#8212; jdna 0.0.2 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="jdna.graph" href="jdna.graph.html" />
-    <link rel="prev" title="jdna.alphabet" href="jdna.alphabet.html" />
+    <link rel="next" title="jdna.utils" href="jdna.utils.html" />
+    <link rel="prev" title="jdna.viewer" href="jdna.viewer.html" />
   
    
 
@@ -41,12 +41,12 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="jdna.graph.html" title="jdna.graph"
+          <a href="jdna.utils.html" title="jdna.utils"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="jdna.alphabet.html" title="jdna.alphabet"
+          <a href="jdna.viewer.html" title="jdna.viewer"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api_reference.html" accesskey="U">API Reference</a> &#187;</li> 
       </ul>
     </div>
@@ -65,7 +65,7 @@
     </div>
 </div>
 
-<p align="center" class="sidebar-subtitle">version: <a href="">0.0.1</a></p>
+<p align="center" class="sidebar-subtitle">version: <a href="">0.0.2</a></p>
 <div>
 
 </div>
@@ -78,7 +78,6 @@
     
       <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">jdna</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../api_reference.html#modules">Modules</a></li>
@@ -129,8 +128,8 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">Assembly</span></code>(templates,&nbsp;overhangs,&nbsp;cyclic)</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#jdna.reaction.Assembly" title="jdna.reaction.Assembly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Assembly</span></code></a>(templates,&nbsp;junctions,&nbsp;cyclic)</td>
+<td>Stores a DNA assembly.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#jdna.reaction.BindingEvent" title="jdna.reaction.BindingEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BindingEvent</span></code></a>(template,&nbsp;primer,&nbsp;position)</td>
 <td>Create new instance of BindingEvent(template, primer, position)</td>
@@ -155,6 +154,124 @@
 </tr>
 </tbody>
 </table>
+<dl class="class">
+<dt id="jdna.reaction.Assembly">
+<em class="property">class </em><code class="descclassname">jdna.reaction.</code><code class="descname">Assembly</code><span class="sig-paren">(</span><em>templates</em>, <em>junctions</em>, <em>cyclic</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/reaction.html#Assembly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.reaction.Assembly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Stores a DNA assembly.</p>
+<p>Assembly can be printed to display relevant assembly information:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">assembly</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; &quot;Unnamed&quot; (320bp)
+  Cyclic: True
+  Num Fragments: 4
+  Overhang Tms (°C): 53.65, 53.79, 54.96, 56.37
+  Junction Lengths (bp): 20, 20, 20, 20
+  Junction ΔG: -1.91e+4, -1.93e+4, -1.98e+4, -2.05e+4
+  Junction ΔG (hairpin): (0.0, 232.50050218543765), (203.8205043739763, -84.3344956260189), (0.0, -60.91449781456504), (-1026.7134934374844, -622.0224934343823)
+  Competing ΔG: -2.18e+4, -2.11e+4, -1.92e+4, -2.01e+4
+  Product length (bp): 300
+
+          -----Tm: 53.7°C-----
+(0) 0     TTGACGACAGTGGCTATCCCCTGTTGCTAGGCACGGTGATATATCAGCCC
+(1) 0     --------------------------------------------------
+(2) 0     --------------------------------------------------
+(3) 0     --------------------------------------------------
+
+                                   -----Tm: 53.8°C-----
+(0) 50    ATAGGGCCGGATCAACGTAGTTTGATCGTAGCTGTTCCGTCAGTC-----
+(1) 50    -------------------------TCGTAGCTGTTCCGTCAGTCAGTGC
+(2) 50    --------------------------------------------------
+(3) 50    --------------------------------------------------
+
+(0) 100   --------------------------------------------------
+(1) 100   CGATGCCAGTCTACTGCTTTTCGCCCAGGGGGACACCTGACACTATGTTA
+(2) 100   --------------------------------------------------
+(3) 100   --------------------------------------------------
+
+          -----Tm: 55.0°C-----
+(0) 150   --------------------------------------------------
+(1) 150   TGCCAAGCTCACGTTTCACA------------------------------
+(2) 150   TGCCAAGCTCACGTTTCACAAGGCAGATTAAATAAGACTGAAACATTTGG
+(3) 150   --------------------------------------------------
+
+                                   -----Tm: 56.4°C-----
+(0) 200   --------------------------------------------------
+(1) 200   --------------------------------------------------
+(2) 200   TGGAGGCGCGAGTCTTGCCCTTAGGCAGACCTGTTCGAGGGCGAA-----
+(3) 200   -------------------------CAGACCTGTTCGAGGGCGAAAAACG
+
+(0) 250   --------------------------------------------------
+(1) 250   --------------------------------------------------
+(2) 250   --------------------------------------------------
+(3) 250   CCGAAGTCACATAGCGGCATGTTAGGTAGCTGTACACCCGTACTGCTACA
+</pre></div>
+</div>
+<p>Assembly constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>templates</strong> (<em>list</em>) – list of templates</li>
+<li><strong>junctions</strong> (<em>list</em>) – list of junctions</li>
+<li><strong>cyclic</strong> (<em>bool</em>) – whether assembly is cyclic</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="jdna.reaction.Assembly.print">
+<code class="descname">print</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/reaction.html#Assembly.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.reaction.Assembly.print" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the assembly.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; &quot;Unnamed&quot; (320bp)
+      Num Fragments: 4
+      Overhang Tms (°C): 61.49, 58.37, 54.72, 45.91
+      Junction Lengths (bp): 20, 20, 20, 20
+      Junction ΔG: -2.30e+4, -2.18e+4, -1.97e+4, -1.54e+4
+      Junction ΔG (hairpin): (-1542.5069956260231, -1787.4319956260224), (-1832.7404978145642, -708.4919956260237), (0.0, 0.0), (0.0, 0.0)
+      Competing ΔG: -3.39e+4, -2.43e+4, -2.19e+4, -1.33e+4
+      Length: 300bp
+
+                                                                                         |&lt;Tm: 58.4°C
+              -----Tm: 61.5°C-----                                                       ----------
+    (0) 0     TGCTCGGCGAAGGGCCTGACAAGACCACTTCGTACCCTTTGTAACGTGACTTCTGTGAATCGATGGCGGATGTTGCTTGTGACGC
+    (1) 0     ---------------------------------------------------------------------------CTTGTGACGC
+    (2) 0     -------------------------------------------------------------------------------------
+    (3) 0     -------------------------------------------------------------------------------------
+
+              |&lt;Tm: 58.4°C
+              ----------                                                       -----Tm: 54.7°C-----
+    (0) 85    ACCCGTAGCG---------------------------------------------------------------------------
+    (1) 85    ACCCGTAGCGACATAACCGCCTTATTCCCACTTGTTTGGGGAGGCAAGTTTTGTAGTAGCCATTCTAATCCCGTTTTCTCCGCCG
+    (2) 85    -----------------------------------------------------------------TAATCCCGTTTTCTCCGCCG
+    (3) 85    -------------------------------------------------------------------------------------
+
+                                                                     -----Tm: 45.9°C-----
+    (0) 170   -------------------------------------------------------------------------------------
+    (1) 170   -------------------------------------------------------------------------------------
+    (2) 170   CTTGTTCAGCTTGATGTGTTGGAACAGCAAGTTTATTTTAGGGTGTCAGGAGGGGGAGGTCCTCTAGTATTAAGC----------
+    (3) 170   -------------------------------------------------------GAGGTCCTCTAGTATTAAGCACCGGCCAAG
+
+                                                           -----Tm: 61.5°C-----
+    (0) 255   -----------------------------------------------------------------
+    (1) 255   -----------------------------------------------------------------
+    (2) 255   -----------------------------------------------------------------
+    (3) 255   GCGGCACGGACGCCACTAGAAGGGAGGCGTTCATAGCGAGTCCTTTGCTCGGCGAAGGGCCTGAC
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.reaction.Assembly.tms">
+<code class="descname">tms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/reaction.html#Assembly.tms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.reaction.Assembly.tms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the tms of the junctions</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="class">
 <dt id="jdna.reaction.BindingEvent">
 <em class="property">class </em><code class="descclassname">jdna.reaction.</code><code class="descname">BindingEvent</code><span class="sig-paren">(</span><em>template</em>, <em>primer</em>, <em>position</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.reaction.BindingEvent" title="Permalink to this definition">¶</a></dt>
@@ -245,11 +362,11 @@ set self.__traceback__ to tb and return self.</p>
   <div class="footer-relations">
     
       <div class="pull-left">
-        <a class="btn btn-default" href="jdna.alphabet.html" title="previous chapter (use the left arrow)">jdna.alphabet</a>
+        <a class="btn btn-default" href="jdna.viewer.html" title="previous chapter (use the left arrow)">jdna.viewer</a>
       </div>
     
       <div class="pull-right">
-        <a class="btn btn-default" href="jdna.graph.html" title="next chapter (use the right arrow)">jdna.graph</a>
+        <a class="btn btn-default" href="jdna.utils.html" title="next chapter (use the right arrow)">jdna.utils</a>
       </div>
     </div>
     <div class="clearer"></div>
@@ -267,12 +384,12 @@ set self.__traceback__ to tb and return self.</p>
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="jdna.graph.html" title="jdna.graph"
+          <a href="jdna.utils.html" title="jdna.utils"
              >next</a> |</li>
         <li class="right" >
-          <a href="jdna.alphabet.html" title="jdna.alphabet"
+          <a href="jdna.viewer.html" title="jdna.viewer"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api_reference.html" >API Reference</a> &#187;</li> 
       </ul>
     </div>

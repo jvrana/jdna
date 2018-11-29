@@ -254,10 +254,10 @@ def test_cyclic_reverse_complement():
 def test_chop(test_str):
     seq = Sequence(test_str)
     for i in range(len(seq)):
-        assert str(seq.chop_off_fiveprime(i)) == str(seq)[i:]
+        assert str(seq.left_trim(i)) == str(seq)[i:]
 
     for i in range(len(seq)):
-        assert str(seq.chop_off_threeprime(i)) == str(seq)[:i + 1]
+        assert str(seq.right_trim(i)) == str(seq)[:i + 1]
 
 
 @pytest.mark.parametrize('length', [

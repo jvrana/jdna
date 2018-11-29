@@ -4,6 +4,7 @@ misc utilities
 
 import random
 
+
 def rgb_to_hex(r, g, b):
     def clamp(x):
         return max(0, min(x, 255))

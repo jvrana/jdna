@@ -16,6 +16,8 @@ from jdna.viewer import SequenceViewer, ViewerAnnotationFlag
 import primer3
 
 class SequenceFlags(IntFlag):
+    """Constants/Flags for sequences."""
+
     FORWARD = 1
     REVERSE = -1
     TOP = 1
@@ -23,6 +25,7 @@ class SequenceFlags(IntFlag):
 
 
 class Feature(object):
+    """An annotation for a sequence."""
 
     def __init__(self, name, type=None, strand=SequenceFlags.FORWARD, color=None):
         self.name = name
@@ -172,11 +175,18 @@ class BindPos(LinkedListMatch):
 
 
 class Nucleotide(Node):
+    """Represents a biological nucleotide. Serves a :class:`Node` in teh :class:`Sequence` object."""
 
     __slots__ = ['data', '__next', '__prev', '_features']
 
 
     def __init__(self, base):
+        """
+        Nucleotide constructor
+
+        :param base: base as a single character string
+        :type base: basestring
+        """
         super(Nucleotide, self).__init__(base)
         self._features = set()
 
@@ -367,14 +377,27 @@ class Nucleotide(Node):
 
 
 class Sequence(DoubleLinkedList):
+    """Represents a biological sequence as a double linked list. Can be annotated with features."""
 
     class DEFAULTS(object):
+        """Sequence defaults"""
         MIN_ANNEAL_BASES = 13
     
     NODE_CLASS = Nucleotide
     counter = itertools.count()
 
     def __init__(self, sequence=None, first=None, name=None, description=''):
+        """
+
+        :param sequence: sequence string
+        :type sequence: basestring
+        :param first: optional first Nucleotide to use as the 'head' to this Sequence
+        :type first: Nucleotide
+        :param name: optional name of the sequence
+        :type name: basestring
+        :param description: optional description of the sequence
+        :type description: basestring
+        """
         super(Sequence, self).__init__(data=sequence, first=first)
         self.name = name
         self.description = description
@@ -396,12 +419,27 @@ class Sequence(DoubleLinkedList):
 
     @property
     def features(self):
+        """
+        Returns set of features contained in sequence.
+
+        :return: set of features in this sequence
+        :rtype: set
+        """
         features_set = set()
         for i, n in enumerate(self):
             features_set.update(n.features)
         return features_set
 
     def feature_positions(self, with_nodes=False):
+        """
+        Return a list of feature positions.
+
+        :param with_nodes: if True, will return a tuple composed of a feature to position dictionary and a feature to
+                            start and end node. If False, will just return a feature to position dictionary
+        :type with_nodes: bool
+        :return: feature positions dictionary OR tuple of feature positions dictionary and feature node dictionary
+        :rtype: tuple
+        """
         index = 0
         feature_pos = defaultdict(list)
         feature_nodes = defaultdict(list)
@@ -435,46 +473,90 @@ class Sequence(DoubleLinkedList):
     def feature_nodes(self):
         return self.feature_positions(with_nodes=True)[-1]
 
-    def add_feature(self, i, j, feature):
-        feature_nts = list(self.inclusive_range(i, j))
-        if feature_nts[-1] is not self[j]:
+    def add_feature(self, start, end, feature):
+        """
+        Add a feature to the start and end positions (inclusive)
+
+        :param start: start
+        :type start: int
+        :param end: end (inclusive)
+        :type end: int
+        :param feature: the feature to add
+        :type feature: Feature
+        :return: the added feature
+        :rtype: Feature
+        """
+        feature_nts = list(self.inclusive_range(start, end))
+        if feature_nts[-1] is not self[end]:
             if not self.cyclic:
                 raise IndexError("Cannot add feature to {} to linear dna with bounds {}".format(
-                    (i, j),
+                    (start, end),
                     (0, len(self))
                 ))
             else:
                 raise IndexError("Cannot add feature to {}".format(
-                    (i, j)
+                    (start, end)
                 ))
-        for n in self.inclusive_range(i, j):
+        for n in self.inclusive_range(start, end):
             n.add_feature(feature)
         return feature
 
     def add_multipart_feature(self, positions, feature):
+        """
+        Add a multi-part feature (i.e. a disjointed feature)
+
+        :param positions: list of start and ends as tuples ([(1,100), (110,200)]
+        :type positions: list
+        :param feature: the feature to add
+        :type feature: Feature
+        :return: the added feature
+        :rtype: Feature
+        """
         for i, j in positions:
             self.add_feature(i, j, feature)
         return feature
 
-    def print_features(self):
-        raise NotImplementedError()
+    # def print_features(self):
+    #     raise NotImplementedError()
 
     def find_feature_by_name(self, name):
+        """
+        Find features by name
+
+        :param name: feature name
+        :type name: basestring
+        :return: list of features
+        :rtype: list
+        """
         found = []
         for feature in self.feature_positions():
             if feature.name == name:
                 found.append(feature)
         return found
 
-    def create_feature(self, start, end, name, feature_type, color=None):
+    def annotate(self, start, end, name, feature_type=None, color=None):
+        """
+        Annotate a regions
+
+        :param start: start
+        :type start: int
+        :param end: end (inclusive)
+        :type end: end
+        :param name: feature name
+        :type name: basestring
+        :param feature_type: feature type (default=misc)
+        :type feature_type: basestring
+        :param color: optional feature color
+        :type color: basestring
+        :return: new feature
+        :rtype: Feature
+        """
         f = Feature(name, feature_type, color)
         self.add_feature(start, end, f)
         return f
 
-    def annotate(self, start, end, name, feature_type=None, color=None):
-        return self.create_feature(start, end, name, feature_type, color)
-
     def complement(self):
+        """Complement the sequence in place"""
         curr = self.head
         visited = set()
         while curr and curr not in visited:
@@ -484,30 +566,23 @@ class Sequence(DoubleLinkedList):
         return self
 
     def c(self):
+        """Complement the sequence in place"""
         return self.complement()
 
     def reverse_complement(self):
+        """Reverse complement the sequence in place"""
         self.reverse()
         self.complement()
         return self
 
     def rc(self):
+        """Reverse complement the sequence in place"""
         return self.reverse_complement()
 
     def cut(self, i, cut_prev=True):
         fragments = super(Sequence, self).cut(i, cut_prev)
         fragments = [Sequence(first=f.head) for f in fragments]
         return fragments
-
-    def chop_off_fiveprime(self, i):
-        if self.cyclic:
-            raise IndexError('Cannot chop a cyclic sequence.')
-        return self.cut(i)[-1]
-
-    def chop_off_threeprime(self, i):
-        if self.cyclic:
-            raise IndexError('Cannot chop a cyclic sequence.')
-        return self.cut(i, cut_prev=False)[0]
 
     def __copy__(self):
         feature_positions = self.feature_positions()
@@ -530,12 +605,14 @@ class Sequence(DoubleLinkedList):
     #         yield match
 
     def anneal_forward(self, other, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
+        """Anneal a sequence in the forward direction"""
         for match in self.find_iter(other, min_query_length=min_bases,
                                     direction=self.Direction.REVERSE,
                                     depth=depth):
             yield BindPos.from_match(match, self, other, direction=self.Direction.FORWARD)
 
     def anneal_reverse(self, other, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
+        """Anneal a sequence in the reverse direction"""
         for match in self.find_iter(other,
                                     min_query_length=min_bases,
                                     direction=(1, -1),
@@ -563,10 +640,42 @@ class Sequence(DoubleLinkedList):
         return format_sequence(str(self), width=width, spacer=spacer)
 
     def pairwise(self, other):
-        alignments = pairwise2.align.globalxx(str(self), str(other))
+        """
+        Perform a pairwise alignment using BioPython.
+
+        :param other: the other sequence
+        :type other: Sequence | basestring
+        :return: list of alignments (tuples)
+        :rtype: list
+        """
+        alignments = pairwise2.align.globalxx(str(self).upper(), str(other).upper())
         return alignments
 
     def print_alignment(self, other, max=1):
+        """
+        Print an alignment with another sequence as a view object. Output will be similar
+        to the following:
+
+        .. code::
+
+            > "Alignment" (170bp)
+
+
+            0         G-GC---G---G----G-C-------------G-TG-----A-T----T---------T--T---ATGTTCATGGACGCCCGGGT
+                      | ||   |   |    | |             | ||     | |    |         |  |   ||||||||||||||||||||
+                      GAGCCACGCACGTCCCGGCATATTAACTCCAAGCTGGTTCTACTCGGCTGGGCGGGCGTGATTTTATGTTCATGGACGCCCGGGT
+
+            85        ATCAAGGCAGCGGCTCACGCCTCTCCACGCGG--GACAG--GTGAAC--TATC--C-G-ACTAGG---TATCAA-----AG--AC
+                      |||||||||||||||   |  | |    | ||  || ||  | |||   |||   | | |  |||   | || |     ||  |
+                      ATCAAGGCAGCGGCT---G--T-T----G-GGCAGA-AGAAG-GAA-AATAT-ATCAGGA--AGGCCGT-TC-AGGTTTAGGGA-
+
+        :param other: the other sequence
+        :type other: Sequence | basestring
+        :param max: maximum number of alignments to display (default=1)
+        :type max: int
+        :return: None
+        :rtype: None
+        """
         alignments = self.pairwise(other)
         for a in alignments[:max]:
             mid = ''
@@ -590,7 +699,57 @@ class Sequence(DoubleLinkedList):
                 view.annotate(pos[0], pos[1], label=feature.name, direction=direction)
 
     def view(self, indent=10, width=85, spacer=None, include_complement=False, include_annotations=True):
+        """
+        Create a :class:`SequenceViewer` instance from this sequence. Printing the view object with
+        annotations and complement will produce an output similar to the following:
 
+        .. code::
+
+
+            > "Unnamed" (550bp)
+
+
+                                                                        ----------------GFP----------------
+                                                                        |<START
+                                                                        ----      -----------RFP-----------
+            0         CCCAGGACTAGCGACTTTCCGTAACGCGACCTAACACCGGCCGTTCCTTCGAGCCAGGCAAATGTTACGTCACTTCCTTAGATTT
+                      GGGTCCTGATCGCTGAAAGGCATTGCGCTGGATTGTGGCCGGCAAGGAAGCTCGGTCCGTTTACAATGCAGTGAAGGAATCTAAA
+
+                      ------GFP------
+                      -----------------------------------------RFP-----------------------------------------
+            85        TGAACAGCGCCGTACCCCGATATGATATTTAGATATATAGCAGTTACACTTGGGGTTGCTATGGACTTAGATCTGCTGTATGTTT
+                      ACTTGTCGCGGCATGGGGCTATACTATAAATCTATATATCGTCAATGTGAACCCCAACGATACCTGAATCTAGACGACATACAAA
+
+                      -----------------------------------------RFP-----------------------------------------
+            170       TCTTACCTTCCGCATCAGGGGACAATTCGCCAGTAGAATTCAGTTTGTGCGTGAGAACATAAGATTGAATCCCACGCAGGCACAA
+                      AGAATGGAAGGCGTAGTCCCCTGTTAAGCGGTCATCTTAAGTCAAACACGCACTCTTGTATTCTAACTTAGGGTGCGTCCGTGTT
+
+                      ---------------------RFP----------------------
+            255       GCAGGGCGGGCAGACTCTATAGGTCCTAAGACCCTGAGACTGCGTCCTCAAGATACAGGTTAACAATCCCCGTATGGAGCCGTTC
+                      CGTCCCGCCCGTCTGAGATATCCAGGATTCTGGGACTCTGACGCAGGAGTTCTATGTCCAATTGTTAGGGGCATACCTCGGCAAG
+
+            340       TTAGCATGACCCGACAGGTGGGCTTGGCTCGCGTAAGTTGAGTGTTGCAGATACCTGCTGCTGCGCGGTCTAGGGGGAATCGCCG
+                      AATCGTACTGGGCTGTCCACCCGAACCGAGCGCATTCAACTCACAACGTCTATGGACGACGACGCGCCAGATCCCCCTTAGCGGC
+
+            425       ATTTTGACGTAGGATCGGTAATGGGCAGTAAACCCGCAACTATTTTCAGCACCAGATGCAAGTTTCCCTAGAAAGCGTCATGGTT
+                      TAAAACTGCATCCTAGCCATTACCCGTCATTTGGGCGTTGATAAAAGTCGTGGTCTACGTTCAAAGGGATCTTTCGCAGTACCAA
+
+            510       TGCAATCTCCTTAGGTCACAGCAAACATAGCAGCCCCTGT
+                      ACGTTAGAGGAATCCAGTGTCGTTTGTATCGTCGGGGACA
+
+        :param indent: indent between left column and base pairs view windo
+        :type indent: int
+        :param width: width of the view window
+        :type width: int
+        :param spacer: string to intersperse between sequence rows (default is newline)
+        :type spacer: basestring
+        :param include_complement: whether to include the complementary strand in the view
+        :type include_complement: bool
+        :param include_annotations: whether to include annotations/features in the view instance
+        :type include_annotations: bool
+        :return: the viewer object
+        :rtype: SequenceViewer
+        """
         if indent is None:
             indent = 10
 
@@ -611,13 +770,70 @@ class Sequence(DoubleLinkedList):
         return viewer
 
     def print(self, indent=None, width=None, spacer=None, include_complement=False):
+        """
+         Create and print a :class:`SequenceViewer` instance from this sequence. Printing the view object
+         with annotations and complement will produce an output similar to the following:
+
+         .. code::
+
+
+             > "Unnamed" (550bp)
+
+
+                                                                         ----------------GFP----------------
+                                                                         |<START
+                                                                         ----      -----------RFP-----------
+             0         CCCAGGACTAGCGACTTTCCGTAACGCGACCTAACACCGGCCGTTCCTTCGAGCCAGGCAAATGTTACGTCACTTCCTTAGATTT
+                       GGGTCCTGATCGCTGAAAGGCATTGCGCTGGATTGTGGCCGGCAAGGAAGCTCGGTCCGTTTACAATGCAGTGAAGGAATCTAAA
+
+                       ------GFP------
+                       -----------------------------------------RFP-----------------------------------------
+             85        TGAACAGCGCCGTACCCCGATATGATATTTAGATATATAGCAGTTACACTTGGGGTTGCTATGGACTTAGATCTGCTGTATGTTT
+                       ACTTGTCGCGGCATGGGGCTATACTATAAATCTATATATCGTCAATGTGAACCCCAACGATACCTGAATCTAGACGACATACAAA
+
+                       -----------------------------------------RFP-----------------------------------------
+             170       TCTTACCTTCCGCATCAGGGGACAATTCGCCAGTAGAATTCAGTTTGTGCGTGAGAACATAAGATTGAATCCCACGCAGGCACAA
+                       AGAATGGAAGGCGTAGTCCCCTGTTAAGCGGTCATCTTAAGTCAAACACGCACTCTTGTATTCTAACTTAGGGTGCGTCCGTGTT
+
+                       ---------------------RFP----------------------
+             255       GCAGGGCGGGCAGACTCTATAGGTCCTAAGACCCTGAGACTGCGTCCTCAAGATACAGGTTAACAATCCCCGTATGGAGCCGTTC
+                       CGTCCCGCCCGTCTGAGATATCCAGGATTCTGGGACTCTGACGCAGGAGTTCTATGTCCAATTGTTAGGGGCATACCTCGGCAAG
+
+             340       TTAGCATGACCCGACAGGTGGGCTTGGCTCGCGTAAGTTGAGTGTTGCAGATACCTGCTGCTGCGCGGTCTAGGGGGAATCGCCG
+                       AATCGTACTGGGCTGTCCACCCGAACCGAGCGCATTCAACTCACAACGTCTATGGACGACGACGCGCCAGATCCCCCTTAGCGGC
+
+             425       ATTTTGACGTAGGATCGGTAATGGGCAGTAAACCCGCAACTATTTTCAGCACCAGATGCAAGTTTCCCTAGAAAGCGTCATGGTT
+                       TAAAACTGCATCCTAGCCATTACCCGTCATTTGGGCGTTGATAAAAGTCGTGGTCTACGTTCAAAGGGATCTTTCGCAGTACCAA
+
+             510       TGCAATCTCCTTAGGTCACAGCAAACATAGCAGCCCCTGT
+                       ACGTTAGAGGAATCCAGTGTCGTTTGTATCGTCGGGGACA
+
+         :param indent: indent between left column and base pairs view windo
+         :type indent: int
+         :param width: width of the view window
+         :type width: int
+         :param spacer: string to intersperse between sequence rows (default is newline)
+         :type spacer: basestring
+         :param include_complement: whether to include the complementary strand in the view
+         :type include_complement: bool
+         :param include_annotations: whether to include annotations/features in the view instance
+         :type include_annotations: bool
+         :return: the viewer object
+         :rtype: SequenceViewer
+         """
         self.view(indent=indent, width=width, spacer=spacer, include_complement=include_complement).print()
 
     def tm(self):
+        """
+        Calculate the Tm of this sequence using primer3 defaults
+
+        :return: the tm of the sequence
+        :rtype: float
+        """
         return primer3.calcTm(str(self).upper())
 
     def json(self):
-
+        """Print sequence to a json dictionary"""
         annotations = []
         for feature, positions in self.feature_positions().items():
             for start, end in positions:
@@ -639,6 +855,7 @@ class Sequence(DoubleLinkedList):
 
     @classmethod
     def load(cls, data):
+        """Load a sequence from a json formatted dictionary"""
         sequence = cls(data['bases'], name=data['name'])
         for a in data['annotations']:
             sequence.annotate(a['start'], a['end'], a['name'], a['type'], a['color'])

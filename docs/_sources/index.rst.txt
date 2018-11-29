@@ -8,9 +8,6 @@ jdna
 
 A Python DNA sequence editor that represents sequences as a linked list.
 
-Getting Started
----------------
-
 Indices and tables
 ------------------
 
@@ -22,7 +19,6 @@ Indices and tables
    :maxdepth: 4
 
    self
-   overview
    quickstart
    developer/api_reference
 

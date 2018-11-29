@@ -15,7 +15,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>jdna.sequence &#8212; jdna 0.0.1 documentation</title>
+    <title>jdna.sequence &#8212; jdna 0.0.2 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>
@@ -57,7 +57,7 @@
     </div>
 </div>
 
-<p align="center" class="sidebar-subtitle">version: <a href="">0.0.1</a></p>
+<p align="center" class="sidebar-subtitle">version: <a href="">0.0.2</a></p>
 <div>
 
 </div>
@@ -70,7 +70,6 @@
     
       <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">jdna</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../developer/api_reference.html">API Reference</a></li>
 </ul>
@@ -127,13 +126,16 @@
 <span class="kn">import</span> <span class="nn">primer3</span>
 
 <div class="viewcode-block" id="SequenceFlags"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.SequenceFlags">[docs]</a><span class="k">class</span> <span class="nc">SequenceFlags</span><span class="p">(</span><span class="n">IntFlag</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Constants/Flags for sequences.&quot;&quot;&quot;</span>
+
     <span class="n">FORWARD</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">REVERSE</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">TOP</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">BOTTOM</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
 
 
-<span class="k">class</span> <span class="nc">Feature</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Feature"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Feature">[docs]</a><span class="k">class</span> <span class="nc">Feature</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An annotation for a sequence.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strand</span><span class="o">=</span><span class="n">SequenceFlags</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -187,7 +189,7 @@
     <span class="k">def</span> <span class="nf">_unbind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">n</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BindPos"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.BindPos">[docs]</a><span class="k">class</span> <span class="nc">BindPos</span><span class="p">(</span><span class="n">LinkedListMatch</span><span class="p">):</span>
@@ -283,11 +285,18 @@
 
 
 <div class="viewcode-block" id="Nucleotide"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide">[docs]</a><span class="k">class</span> <span class="nc">Nucleotide</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represents a biological nucleotide. Serves a :class:`Node` in teh :class:`Sequence` object.&quot;&quot;&quot;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;__next&#39;</span><span class="p">,</span> <span class="s1">&#39;__prev&#39;</span><span class="p">,</span> <span class="s1">&#39;_features&#39;</span><span class="p">]</span>
 
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Nucleotide constructor</span>
+
+<span class="sd">        :param base: base as a single character string</span>
+<span class="sd">        :type base: basestring</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Nucleotide</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_features</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
@@ -478,14 +487,27 @@
 
 
 <div class="viewcode-block" id="Sequence"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence">[docs]</a><span class="k">class</span> <span class="nc">Sequence</span><span class="p">(</span><span class="n">DoubleLinkedList</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represents a biological sequence as a double linked list. Can be annotated with features.&quot;&quot;&quot;</span>
 
-    <span class="k">class</span> <span class="nc">DEFAULTS</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-        <span class="n">MIN_ANNEAL_BASES</span> <span class="o">=</span> <span class="mi">13</span>
+<div class="viewcode-block" id="Sequence.DEFAULTS"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.DEFAULTS">[docs]</a>    <span class="k">class</span> <span class="nc">DEFAULTS</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sequence defaults&quot;&quot;&quot;</span>
+        <span class="n">MIN_ANNEAL_BASES</span> <span class="o">=</span> <span class="mi">13</span></div>
     
     <span class="n">NODE_CLASS</span> <span class="o">=</span> <span class="n">Nucleotide</span>
     <span class="n">counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param sequence: sequence string</span>
+<span class="sd">        :type sequence: basestring</span>
+<span class="sd">        :param first: optional first Nucleotide to use as the &#39;head&#39; to this Sequence</span>
+<span class="sd">        :type first: Nucleotide</span>
+<span class="sd">        :param name: optional name of the sequence</span>
+<span class="sd">        :type name: basestring</span>
+<span class="sd">        :param description: optional description of the sequence</span>
+<span class="sd">        :type description: basestring</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Sequence</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">sequence</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="n">first</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
@@ -507,12 +529,27 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns set of features contained in sequence.</span>
+
+<span class="sd">        :return: set of features in this sequence</span>
+<span class="sd">        :rtype: set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">features_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">features_set</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">features_set</span>
 
-    <span class="k">def</span> <span class="nf">feature_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">with_nodes</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Sequence.feature_positions"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.feature_positions">[docs]</a>    <span class="k">def</span> <span class="nf">feature_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">with_nodes</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of feature positions.</span>
+
+<span class="sd">        :param with_nodes: if True, will return a tuple composed of a feature to position dictionary and a feature to</span>
+<span class="sd">                            start and end node. If False, will just return a feature to position dictionary</span>
+<span class="sd">        :type with_nodes: bool</span>
+<span class="sd">        :return: feature positions dictionary OR tuple of feature positions dictionary and feature node dictionary</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">feature_pos</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="n">feature_nodes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
@@ -541,84 +578,121 @@
 
         <span class="k">if</span> <span class="n">with_nodes</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">feature_pos</span><span class="p">,</span> <span class="n">feature_nodes</span>
-        <span class="k">return</span> <span class="n">feature_pos</span>
+        <span class="k">return</span> <span class="n">feature_pos</span></div>
 
     <span class="k">def</span> <span class="nf">feature_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_positions</span><span class="p">(</span><span class="n">with_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">add_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
-        <span class="n">feature_nts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inclusive_range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">feature_nts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+<div class="viewcode-block" id="Sequence.add_feature"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.add_feature">[docs]</a>    <span class="k">def</span> <span class="nf">add_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a feature to the start and end positions (inclusive)</span>
+
+<span class="sd">        :param start: start</span>
+<span class="sd">        :type start: int</span>
+<span class="sd">        :param end: end (inclusive)</span>
+<span class="sd">        :type end: int</span>
+<span class="sd">        :param feature: the feature to add</span>
+<span class="sd">        :type feature: Feature</span>
+<span class="sd">        :return: the added feature</span>
+<span class="sd">        :rtype: Feature</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">feature_nts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inclusive_range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">feature_nts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">[</span><span class="n">end</span><span class="p">]:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Cannot add feature to </span><span class="si">{}</span><span class="s2"> to linear dna with bounds </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">),</span>
                     <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
                 <span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Cannot add feature to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+                    <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
                 <span class="p">))</span>
-        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inclusive_range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inclusive_range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
             <span class="n">n</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">feature</span>
+        <span class="k">return</span> <span class="n">feature</span></div>
 
-    <span class="k">def</span> <span class="nf">add_multipart_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+<div class="viewcode-block" id="Sequence.add_multipart_feature"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.add_multipart_feature">[docs]</a>    <span class="k">def</span> <span class="nf">add_multipart_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a multi-part feature (i.e. a disjointed feature)</span>
+
+<span class="sd">        :param positions: list of start and ends as tuples ([(1,100), (110,200)]</span>
+<span class="sd">        :type positions: list</span>
+<span class="sd">        :param feature: the feature to add</span>
+<span class="sd">        :type feature: Feature</span>
+<span class="sd">        :return: the added feature</span>
+<span class="sd">        :rtype: Feature</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">feature</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">feature</span>
+        <span class="k">return</span> <span class="n">feature</span></div>
 
-    <span class="k">def</span> <span class="nf">print_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+    <span class="c1"># def print_features(self):</span>
+    <span class="c1">#     raise NotImplementedError()</span>
 
-    <span class="k">def</span> <span class="nf">find_feature_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="Sequence.find_feature_by_name"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.find_feature_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">find_feature_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find features by name</span>
+
+<span class="sd">        :param name: feature name</span>
+<span class="sd">        :type name: basestring</span>
+<span class="sd">        :return: list of features</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">found</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_positions</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">feature</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
                 <span class="n">found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">found</span>
+        <span class="k">return</span> <span class="n">found</span></div>
 
-    <span class="k">def</span> <span class="nf">create_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Sequence.annotate"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.annotate">[docs]</a>    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">feature_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Annotate a regions</span>
+
+<span class="sd">        :param start: start</span>
+<span class="sd">        :type start: int</span>
+<span class="sd">        :param end: end (inclusive)</span>
+<span class="sd">        :type end: end</span>
+<span class="sd">        :param name: feature name</span>
+<span class="sd">        :type name: basestring</span>
+<span class="sd">        :param feature_type: feature type (default=misc)</span>
+<span class="sd">        :type feature_type: basestring</span>
+<span class="sd">        :param color: optional feature color</span>
+<span class="sd">        :type color: basestring</span>
+<span class="sd">        :return: new feature</span>
+<span class="sd">        :rtype: Feature</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">Feature</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">f</span>
+        <span class="k">return</span> <span class="n">f</span></div>
 
-    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">feature_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_feature</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">complement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Sequence.complement"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.complement">[docs]</a>    <span class="k">def</span> <span class="nf">complement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Complement the sequence in place&quot;&quot;&quot;</span>
         <span class="n">curr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span>
         <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">while</span> <span class="n">curr</span> <span class="ow">and</span> <span class="n">curr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
             <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
             <span class="n">curr</span><span class="o">.</span><span class="n">to_complement</span><span class="p">()</span>
             <span class="n">curr</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span>
+<div class="viewcode-block" id="Sequence.c"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.c">[docs]</a>    <span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Complement the sequence in place&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">reverse_complement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Sequence.reverse_complement"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.reverse_complement">[docs]</a>    <span class="k">def</span> <span class="nf">reverse_complement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reverse complement the sequence in place&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="k">def</span> <span class="nf">rc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse_complement</span><span class="p">()</span>
+<div class="viewcode-block" id="Sequence.rc"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.rc">[docs]</a>    <span class="k">def</span> <span class="nf">rc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reverse complement the sequence in place&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse_complement</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">cut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">cut_prev</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">fragments</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Sequence</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">cut_prev</span><span class="p">)</span>
         <span class="n">fragments</span> <span class="o">=</span> <span class="p">[</span><span class="n">Sequence</span><span class="p">(</span><span class="n">first</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">head</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fragments</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">fragments</span>
-
-    <span class="k">def</span> <span class="nf">chop_off_fiveprime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;Cannot chop a cyclic sequence.&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">i</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">chop_off_threeprime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;Cannot chop a cyclic sequence.&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">cut_prev</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">feature_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_positions</span><span class="p">()</span>
@@ -640,20 +714,22 @@
     <span class="c1">#                                 protocol=lambda x, y: x.complementary(y)):</span>
     <span class="c1">#         yield match</span>
 
-    <span class="k">def</span> <span class="nf">anneal_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">min_bases</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">MIN_ANNEAL_BASES</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Sequence.anneal_forward"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.anneal_forward">[docs]</a>    <span class="k">def</span> <span class="nf">anneal_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">min_bases</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">MIN_ANNEAL_BASES</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Anneal a sequence in the forward direction&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_iter</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">min_query_length</span><span class="o">=</span><span class="n">min_bases</span><span class="p">,</span>
                                     <span class="n">direction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Direction</span><span class="o">.</span><span class="n">REVERSE</span><span class="p">,</span>
                                     <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="n">BindPos</span><span class="o">.</span><span class="n">from_match</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Direction</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">BindPos</span><span class="o">.</span><span class="n">from_match</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Direction</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">anneal_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">min_bases</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">MIN_ANNEAL_BASES</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Sequence.anneal_reverse"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.anneal_reverse">[docs]</a>    <span class="k">def</span> <span class="nf">anneal_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">min_bases</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">MIN_ANNEAL_BASES</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Anneal a sequence in the reverse direction&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_iter</span><span class="p">(</span><span class="n">other</span><span class="p">,</span>
                                     <span class="n">min_query_length</span><span class="o">=</span><span class="n">min_bases</span><span class="p">,</span>
                                     <span class="n">direction</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
                                     <span class="n">protocol</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">complementary</span><span class="p">(</span><span class="n">y</span><span class="p">),</span>
                                     <span class="n">depth</span><span class="o">=</span><span class="n">depth</span>
                                     <span class="p">):</span>
-            <span class="k">yield</span> <span class="n">BindPos</span><span class="o">.</span><span class="n">from_match</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Direction</span><span class="o">.</span><span class="n">REVERSE</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">BindPos</span><span class="o">.</span><span class="n">from_match</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Direction</span><span class="o">.</span><span class="n">REVERSE</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Sequence.anneal"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.anneal">[docs]</a>    <span class="k">def</span> <span class="nf">anneal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ssDNA</span><span class="p">,</span> <span class="n">min_bases</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">MIN_ANNEAL_BASES</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Simulate annealing a single stranded piece of DNA to a double_stranded template&quot;&quot;&quot;</span>
@@ -673,11 +749,43 @@
     <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">format_sequence</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="n">spacer</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">pairwise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="n">alignments</span> <span class="o">=</span> <span class="n">pairwise2</span><span class="o">.</span><span class="n">align</span><span class="o">.</span><span class="n">globalxx</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">alignments</span>
+<div class="viewcode-block" id="Sequence.pairwise"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.pairwise">[docs]</a>    <span class="k">def</span> <span class="nf">pairwise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a pairwise alignment using BioPython.</span>
 
-    <span class="k">def</span> <span class="nf">print_alignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="sd">        :param other: the other sequence</span>
+<span class="sd">        :type other: Sequence | basestring</span>
+<span class="sd">        :return: list of alignments (tuples)</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">alignments</span> <span class="o">=</span> <span class="n">pairwise2</span><span class="o">.</span><span class="n">align</span><span class="o">.</span><span class="n">globalxx</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">alignments</span></div>
+
+<div class="viewcode-block" id="Sequence.print_alignment"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.print_alignment">[docs]</a>    <span class="k">def</span> <span class="nf">print_alignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print an alignment with another sequence as a view object. Output will be similar</span>
+<span class="sd">        to the following:</span>
+
+<span class="sd">        .. code::</span>
+
+<span class="sd">            &gt; &quot;Alignment&quot; (170bp)</span>
+
+
+<span class="sd">            0         G-GC---G---G----G-C-------------G-TG-----A-T----T---------T--T---ATGTTCATGGACGCCCGGGT</span>
+<span class="sd">                      | ||   |   |    | |             | ||     | |    |         |  |   ||||||||||||||||||||</span>
+<span class="sd">                      GAGCCACGCACGTCCCGGCATATTAACTCCAAGCTGGTTCTACTCGGCTGGGCGGGCGTGATTTTATGTTCATGGACGCCCGGGT</span>
+
+<span class="sd">            85        ATCAAGGCAGCGGCTCACGCCTCTCCACGCGG--GACAG--GTGAAC--TATC--C-G-ACTAGG---TATCAA-----AG--AC</span>
+<span class="sd">                      |||||||||||||||   |  | |    | ||  || ||  | |||   |||   | | |  |||   | || |     ||  |</span>
+<span class="sd">                      ATCAAGGCAGCGGCT---G--T-T----G-GGCAGA-AGAAG-GAA-AATAT-ATCAGGA--AGGCCGT-TC-AGGTTTAGGGA-</span>
+
+<span class="sd">        :param other: the other sequence</span>
+<span class="sd">        :type other: Sequence | basestring</span>
+<span class="sd">        :param max: maximum number of alignments to display (default=1)</span>
+<span class="sd">        :type max: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">alignments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pairwise</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alignments</span><span class="p">[:</span><span class="nb">max</span><span class="p">]:</span>
             <span class="n">mid</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -687,7 +795,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">mid</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span>
             <span class="n">viewer</span> <span class="o">=</span> <span class="n">SequenceViewer</span><span class="p">([</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mid</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Alignment&quot;</span><span class="p">)</span>
-            <span class="n">viewer</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+            <span class="n">viewer</span><span class="o">.</span><span class="n">print</span><span class="p">()</span></div>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_apply_features_to_view</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sequence</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
@@ -700,8 +808,58 @@
                     <span class="n">direction</span> <span class="o">=</span> <span class="n">ViewerAnnotationFlag</span><span class="o">.</span><span class="n">REVERSE</span>
                 <span class="n">view</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">feature</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">85</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_complement</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Sequence.view"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.view">[docs]</a>    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">85</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_complement</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a :class:`SequenceViewer` instance from this sequence. Printing the view object with</span>
+<span class="sd">        annotations and complement will produce an output similar to the following:</span>
 
+<span class="sd">        .. code::</span>
+
+
+<span class="sd">            &gt; &quot;Unnamed&quot; (550bp)</span>
+
+
+<span class="sd">                                                                        ----------------GFP----------------</span>
+<span class="sd">                                                                        |&lt;START</span>
+<span class="sd">                                                                        ----      -----------RFP-----------</span>
+<span class="sd">            0         CCCAGGACTAGCGACTTTCCGTAACGCGACCTAACACCGGCCGTTCCTTCGAGCCAGGCAAATGTTACGTCACTTCCTTAGATTT</span>
+<span class="sd">                      GGGTCCTGATCGCTGAAAGGCATTGCGCTGGATTGTGGCCGGCAAGGAAGCTCGGTCCGTTTACAATGCAGTGAAGGAATCTAAA</span>
+
+<span class="sd">                      ------GFP------</span>
+<span class="sd">                      -----------------------------------------RFP-----------------------------------------</span>
+<span class="sd">            85        TGAACAGCGCCGTACCCCGATATGATATTTAGATATATAGCAGTTACACTTGGGGTTGCTATGGACTTAGATCTGCTGTATGTTT</span>
+<span class="sd">                      ACTTGTCGCGGCATGGGGCTATACTATAAATCTATATATCGTCAATGTGAACCCCAACGATACCTGAATCTAGACGACATACAAA</span>
+
+<span class="sd">                      -----------------------------------------RFP-----------------------------------------</span>
+<span class="sd">            170       TCTTACCTTCCGCATCAGGGGACAATTCGCCAGTAGAATTCAGTTTGTGCGTGAGAACATAAGATTGAATCCCACGCAGGCACAA</span>
+<span class="sd">                      AGAATGGAAGGCGTAGTCCCCTGTTAAGCGGTCATCTTAAGTCAAACACGCACTCTTGTATTCTAACTTAGGGTGCGTCCGTGTT</span>
+
+<span class="sd">                      ---------------------RFP----------------------</span>
+<span class="sd">            255       GCAGGGCGGGCAGACTCTATAGGTCCTAAGACCCTGAGACTGCGTCCTCAAGATACAGGTTAACAATCCCCGTATGGAGCCGTTC</span>
+<span class="sd">                      CGTCCCGCCCGTCTGAGATATCCAGGATTCTGGGACTCTGACGCAGGAGTTCTATGTCCAATTGTTAGGGGCATACCTCGGCAAG</span>
+
+<span class="sd">            340       TTAGCATGACCCGACAGGTGGGCTTGGCTCGCGTAAGTTGAGTGTTGCAGATACCTGCTGCTGCGCGGTCTAGGGGGAATCGCCG</span>
+<span class="sd">                      AATCGTACTGGGCTGTCCACCCGAACCGAGCGCATTCAACTCACAACGTCTATGGACGACGACGCGCCAGATCCCCCTTAGCGGC</span>
+
+<span class="sd">            425       ATTTTGACGTAGGATCGGTAATGGGCAGTAAACCCGCAACTATTTTCAGCACCAGATGCAAGTTTCCCTAGAAAGCGTCATGGTT</span>
+<span class="sd">                      TAAAACTGCATCCTAGCCATTACCCGTCATTTGGGCGTTGATAAAAGTCGTGGTCTACGTTCAAAGGGATCTTTCGCAGTACCAA</span>
+
+<span class="sd">            510       TGCAATCTCCTTAGGTCACAGCAAACATAGCAGCCCCTGT</span>
+<span class="sd">                      ACGTTAGAGGAATCCAGTGTCGTTTGTATCGTCGGGGACA</span>
+
+<span class="sd">        :param indent: indent between left column and base pairs view windo</span>
+<span class="sd">        :type indent: int</span>
+<span class="sd">        :param width: width of the view window</span>
+<span class="sd">        :type width: int</span>
+<span class="sd">        :param spacer: string to intersperse between sequence rows (default is newline)</span>
+<span class="sd">        :type spacer: basestring</span>
+<span class="sd">        :param include_complement: whether to include the complementary strand in the view</span>
+<span class="sd">        :type include_complement: bool</span>
+<span class="sd">        :param include_annotations: whether to include annotations/features in the view instance</span>
+<span class="sd">        :type include_annotations: bool</span>
+<span class="sd">        :return: the viewer object</span>
+<span class="sd">        :rtype: SequenceViewer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">indent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">indent</span> <span class="o">=</span> <span class="mi">10</span>
 
@@ -719,16 +877,73 @@
         <span class="n">viewer</span> <span class="o">=</span> <span class="n">SequenceViewer</span><span class="p">(</span><span class="n">seqs</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="n">spacer</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">include_annotations</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_apply_features_to_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewer</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">viewer</span>
+        <span class="k">return</span> <span class="n">viewer</span></div>
 
-    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_complement</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="n">spacer</span><span class="p">,</span> <span class="n">include_complement</span><span class="o">=</span><span class="n">include_complement</span><span class="p">)</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+<div class="viewcode-block" id="Sequence.print"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_complement</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         Create and print a :class:`SequenceViewer` instance from this sequence. Printing the view object</span>
+<span class="sd">         with annotations and complement will produce an output similar to the following:</span>
 
-    <span class="k">def</span> <span class="nf">tm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">primer3</span><span class="o">.</span><span class="n">calcTm</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+<span class="sd">         .. code::</span>
 
-    <span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
+<span class="sd">             &gt; &quot;Unnamed&quot; (550bp)</span>
+
+
+<span class="sd">                                                                         ----------------GFP----------------</span>
+<span class="sd">                                                                         |&lt;START</span>
+<span class="sd">                                                                         ----      -----------RFP-----------</span>
+<span class="sd">             0         CCCAGGACTAGCGACTTTCCGTAACGCGACCTAACACCGGCCGTTCCTTCGAGCCAGGCAAATGTTACGTCACTTCCTTAGATTT</span>
+<span class="sd">                       GGGTCCTGATCGCTGAAAGGCATTGCGCTGGATTGTGGCCGGCAAGGAAGCTCGGTCCGTTTACAATGCAGTGAAGGAATCTAAA</span>
+
+<span class="sd">                       ------GFP------</span>
+<span class="sd">                       -----------------------------------------RFP-----------------------------------------</span>
+<span class="sd">             85        TGAACAGCGCCGTACCCCGATATGATATTTAGATATATAGCAGTTACACTTGGGGTTGCTATGGACTTAGATCTGCTGTATGTTT</span>
+<span class="sd">                       ACTTGTCGCGGCATGGGGCTATACTATAAATCTATATATCGTCAATGTGAACCCCAACGATACCTGAATCTAGACGACATACAAA</span>
+
+<span class="sd">                       -----------------------------------------RFP-----------------------------------------</span>
+<span class="sd">             170       TCTTACCTTCCGCATCAGGGGACAATTCGCCAGTAGAATTCAGTTTGTGCGTGAGAACATAAGATTGAATCCCACGCAGGCACAA</span>
+<span class="sd">                       AGAATGGAAGGCGTAGTCCCCTGTTAAGCGGTCATCTTAAGTCAAACACGCACTCTTGTATTCTAACTTAGGGTGCGTCCGTGTT</span>
+
+<span class="sd">                       ---------------------RFP----------------------</span>
+<span class="sd">             255       GCAGGGCGGGCAGACTCTATAGGTCCTAAGACCCTGAGACTGCGTCCTCAAGATACAGGTTAACAATCCCCGTATGGAGCCGTTC</span>
+<span class="sd">                       CGTCCCGCCCGTCTGAGATATCCAGGATTCTGGGACTCTGACGCAGGAGTTCTATGTCCAATTGTTAGGGGCATACCTCGGCAAG</span>
+
+<span class="sd">             340       TTAGCATGACCCGACAGGTGGGCTTGGCTCGCGTAAGTTGAGTGTTGCAGATACCTGCTGCTGCGCGGTCTAGGGGGAATCGCCG</span>
+<span class="sd">                       AATCGTACTGGGCTGTCCACCCGAACCGAGCGCATTCAACTCACAACGTCTATGGACGACGACGCGCCAGATCCCCCTTAGCGGC</span>
+
+<span class="sd">             425       ATTTTGACGTAGGATCGGTAATGGGCAGTAAACCCGCAACTATTTTCAGCACCAGATGCAAGTTTCCCTAGAAAGCGTCATGGTT</span>
+<span class="sd">                       TAAAACTGCATCCTAGCCATTACCCGTCATTTGGGCGTTGATAAAAGTCGTGGTCTACGTTCAAAGGGATCTTTCGCAGTACCAA</span>
+
+<span class="sd">             510       TGCAATCTCCTTAGGTCACAGCAAACATAGCAGCCCCTGT</span>
+<span class="sd">                       ACGTTAGAGGAATCCAGTGTCGTTTGTATCGTCGGGGACA</span>
+
+<span class="sd">         :param indent: indent between left column and base pairs view windo</span>
+<span class="sd">         :type indent: int</span>
+<span class="sd">         :param width: width of the view window</span>
+<span class="sd">         :type width: int</span>
+<span class="sd">         :param spacer: string to intersperse between sequence rows (default is newline)</span>
+<span class="sd">         :type spacer: basestring</span>
+<span class="sd">         :param include_complement: whether to include the complementary strand in the view</span>
+<span class="sd">         :type include_complement: bool</span>
+<span class="sd">         :param include_annotations: whether to include annotations/features in the view instance</span>
+<span class="sd">         :type include_annotations: bool</span>
+<span class="sd">         :return: the viewer object</span>
+<span class="sd">         :rtype: SequenceViewer</span>
+<span class="sd">         &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="n">spacer</span><span class="p">,</span> <span class="n">include_complement</span><span class="o">=</span><span class="n">include_complement</span><span class="p">)</span><span class="o">.</span><span class="n">print</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Sequence.tm"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.tm">[docs]</a>    <span class="k">def</span> <span class="nf">tm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the Tm of this sequence using primer3 defaults</span>
+
+<span class="sd">        :return: the tm of the sequence</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">primer3</span><span class="o">.</span><span class="n">calcTm</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Sequence.json"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.json">[docs]</a>    <span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print sequence to a json dictionary&quot;&quot;&quot;</span>
         <span class="n">annotations</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">feature</span><span class="p">,</span> <span class="n">positions</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_positions</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
@@ -746,12 +961,16 @@
             <span class="s1">&#39;length&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
             <span class="s1">&#39;bases&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
             <span class="s1">&#39;annotations&#39;</span><span class="p">:</span> <span class="n">annotations</span>
-        <span class="p">}</span>
+        <span class="p">}</span></div>
 
-    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="n">sequence</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;bases&#39;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="Sequence.load"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.load">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load a sequence from a json formatted dictionary&quot;&quot;&quot;</span>
+        <span class="n">sequence</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;bases&#39;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]:</span>
             <span class="n">sequence</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">])</span>
+        <span class="n">sequence</span><span class="o">.</span><span class="n">cyclic</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;isCircular&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">sequence</span></div>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">max_width</span> <span class="o">=</span> <span class="mi">30</span>
@@ -778,7 +997,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>

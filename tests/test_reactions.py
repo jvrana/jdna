@@ -42,7 +42,7 @@ def test_pcr(primer1_inset, primer2_inset, o1, o2, circular_template):
     if circular_template:
         template.reindex(int((len(template) - primer2_inset - primer1_inset)/2))
 
-    products = Reaction.pcr(template, p1, p2)
+    products = Reaction.pcr(template, [p1, p2])
     assert len(products) == 1
     expected_len = len(template) - primer1_inset - primer2_inset + o1 + o2
     assert len(products[0]) == expected_len, "Product should be {} long".format(expected_len)
@@ -84,17 +84,6 @@ def generate_sequences(seq):
         return sequences
     return generate_sequences
 
-
-def test_(generate_sequences):
-    seqs = generate_sequences(3, cyclic=False)
-    bindings = Reaction.anneal_sequences(seqs)
-    for b in bindings:
-        print()
-        print(b.primer.global_id)
-        print(b.template.global_id)
-        print(b.position)
-
-
 def test_anneal():
     template = Sequence.random(200)
 
@@ -107,34 +96,34 @@ def test_anneal():
         print(b)
 
 
-@pytest.mark.parametrize('cyclic', ['cyclic', False])
-@pytest.mark.parametrize('overhang_length', [20, 30, 15, 10])
-@pytest.mark.parametrize('num_fragments', [1, 3])
-@pytest.mark.parametrize('reverse_first', [False, 'reverse_first'])
-def test_anneal_sequences(seq, num_fragments, generate_sequences, cyclic, overhang_length, reverse_first):
-    cyclic = cyclic == 'cyclic'
-    reverse_first = reverse_first == 'reverse_first'
-    sequences = generate_sequences(num_fragments=num_fragments, cyclic=cyclic, overhang=overhang_length)
-
-    if reverse_first:
-        sequences[0].reverse_complement()
-    bindings = list(Reaction.anneal_sequences(sequences))
-
-    if overhang_length >= Sequence.DEFAULTS.MIN_ANNEAL_BASES:
-        assert len(bindings) == (num_fragments - int(not cyclic)) * 2
-    else:
-        assert len(bindings) == 0
-
-    for b in bindings:
-        assert b.position.span[1] - b.position.span[0] + 1 == overhang_length, "Length of overhang should be {}".format(overhang_length)
-
-    for i, b in enumerate(bindings):
-        if reverse_first:
-            if (cyclic and i in [0, 1]) or (not cyclic and i == 0):
-                assert str(b.position.template_anneal.reverse_complement()) in str(seq), \
-                'Reverse sequence ({}) {} not in sequence\n{}'.format(i, b.position.template_anneal.reverse_complement(), seq)
-        else:
-            assert str(b.position.template_anneal) in str(seq), 'Sequence ({}) {} not in template\n{}'.format(i, b.position.template_anneal, seq)
+# @pytest.mark.parametrize('cyclic', ['cyclic', False])
+# @pytest.mark.parametrize('overhang_length', [20, 30, 15, 10])
+# @pytest.mark.parametrize('num_fragments', [1, 3])
+# @pytest.mark.parametrize('reverse_first', [False, 'reverse_first'])
+# def test_anneal_sequences(seq, num_fragments, generate_sequences, cyclic, overhang_length, reverse_first):
+#     cyclic = cyclic == 'cyclic'
+#     reverse_first = reverse_first == 'reverse_first'
+#     sequences = generate_sequences(num_fragments=num_fragments, cyclic=cyclic, overhang=overhang_length)
+#
+#     if reverse_first:
+#         sequences[0].reverse_complement()
+#     bindings = list(Reaction.anneal_sequences(sequences))
+#
+#     if overhang_length >= Sequence.DEFAULTS.MIN_ANNEAL_BASES:
+#         assert len(bindings) == (num_fragments - int(not cyclic)) * 2
+#     else:
+#         assert len(bindings) == 0
+#
+#     for b in bindings:
+#         assert b.position.span[1] - b.position.span[0] + 1 == overhang_length, "Length of overhang should be {}".format(overhang_length)
+#
+#     for i, b in enumerate(bindings):
+#         if reverse_first:
+#             if (cyclic and i in [0, 1]) or (not cyclic and i == 0):
+#                 assert str(b.position.template_anneal.reverse_complement()) in str(seq), \
+#                 'Reverse sequence ({}) {} not in sequence\n{}'.format(i, b.position.template_anneal.reverse_complement(), seq)
+#         else:
+#             assert str(b.position.template_anneal) in str(seq), 'Sequence ({}) {} not in template\n{}'.format(i, b.position.template_anneal, seq)
 
 
 @pytest.mark.parametrize('cyclic', [pytest.param(False, id='linear'), pytest.param(True, id='circular'),])
@@ -224,7 +213,7 @@ def test_cyclic_assemblies(seq, generate_sequences, reverse_complement):
     for rc in reverse_complement:
         sequences[rc].reverse_complement()
 
-    assemblies = Reaction.cyclic_assemblies(sequences, depth=50)
+    assemblies = Reaction.cyclic_assemblies(sequences, max_bases=50)
 
     assert len(assemblies) == 2
     for a in assemblies:
@@ -234,11 +223,11 @@ def test_cyclic_assemblies(seq, generate_sequences, reverse_complement):
         rc_expected = expected.copy().reverse_complement()
         g = [p.compare(expected), p.compare(rc_expected)]
         assert any(g)
-        print(a)
+        a.print(width=50)
 
 
 def test_cyclic_assemblies_num_fragments(seq, generate_sequences):
     sequences = generate_sequences(10, cyclic=True, overhang=30)
-    assemblies = Reaction.cyclic_assemblies(sequences, depth=50)
+    assemblies = Reaction.cyclic_assemblies(sequences, max_bases=50)
     for a in assemblies:
         print(a)

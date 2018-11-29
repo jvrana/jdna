@@ -123,7 +123,7 @@ def test_gibsons_with_inversions():
 def test_gibson_feature_fusion():
 
     template = Sequence()
-    template.create_feature(0, len(template) - 1, 'feature', 'type')
+    template.annotate(0, len(template) - 1, 'feature', 'type')
     template.circularize()
 
     p1 = Sequence()

@@ -1,3 +1,7 @@
+"""
+class representing base pairs and their complements
+"""
+
 import random
 
 

@@ -23,6 +23,12 @@ class Node(object):
     __slots__ = ['data', '__next', '__prev']
 
     def __init__(self, data):
+        """
+        Node constructor. Stores a single piece of data.
+
+        :param data: data
+        :type data: any
+        """
         self.data = data
         self.__next = None
         self.__prev = None
@@ -423,6 +429,14 @@ class DoubleLinkedList(object):
     NODE_CLASS = Node
 
     def __init__(self, data=None, first=None):
+        """
+        linked list constructo
+
+        :param data: iterable data
+        :type data: iterable
+        :param first: first node
+        :type first: Node
+        """
         self._head = EmptyNode()
         if data is not None:
             self.initialize(data)
@@ -934,6 +948,16 @@ class DoubleLinkedList(object):
             return False
         else:
             return self == other
+
+    def left_trim(self, i):
+        if self.cyclic:
+            raise IndexError('Cannot chop a cyclic sequence.')
+        return self.cut(i)[-1]
+
+    def right_trim(self, i):
+        if self.cyclic:
+            raise IndexError('Cannot chop a cyclic sequence.')
+        return self.cut(i, cut_prev=False)[0]
 
     def __eq__(self, other):
         if self.cyclic != other.cyclic:

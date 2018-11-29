@@ -4,18 +4,14 @@
 jdna
 ==========
 
-Submodules
-==========
-
 .. autosummary::
     :toctree: _autosummary
 
     linked_list
     sequence
     alphabet
+    viewer
     reaction
-    graph
-    convert
     utils
 
 """
@@ -25,4 +21,5 @@ from jdna.linked_list import Node, DoubleLinkedList
 from jdna.alphabet import DNA, UnambiguousDNA, AmbiguousDNA
 from jdna.sequence import Feature, Sequence, Nucleotide
 from jdna.reaction import Reaction
+from jdna.viewer import SequenceViewer
 from jdna import convert

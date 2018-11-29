@@ -1,7 +1,48 @@
+"""
+Classes to view sequences.
+
+The viewer can display sequences and annotations, as in the following:
+
+.. code::
+
+
+    > "Unnamed" (550bp)
+
+
+                                                                ----------------GFP----------------
+                                                                |<START
+                                                                ----      -----------RFP-----------
+    0         CCCAGGACTAGCGACTTTCCGTAACGCGACCTAACACCGGCCGTTCCTTCGAGCCAGGCAAATGTTACGTCACTTCCTTAGATTT
+              GGGTCCTGATCGCTGAAAGGCATTGCGCTGGATTGTGGCCGGCAAGGAAGCTCGGTCCGTTTACAATGCAGTGAAGGAATCTAAA
+
+              ------GFP------
+              -----------------------------------------RFP-----------------------------------------
+    85        TGAACAGCGCCGTACCCCGATATGATATTTAGATATATAGCAGTTACACTTGGGGTTGCTATGGACTTAGATCTGCTGTATGTTT
+              ACTTGTCGCGGCATGGGGCTATACTATAAATCTATATATCGTCAATGTGAACCCCAACGATACCTGAATCTAGACGACATACAAA
+
+              -----------------------------------------RFP-----------------------------------------
+    170       TCTTACCTTCCGCATCAGGGGACAATTCGCCAGTAGAATTCAGTTTGTGCGTGAGAACATAAGATTGAATCCCACGCAGGCACAA
+              AGAATGGAAGGCGTAGTCCCCTGTTAAGCGGTCATCTTAAGTCAAACACGCACTCTTGTATTCTAACTTAGGGTGCGTCCGTGTT
+
+              ---------------------RFP----------------------
+    255       GCAGGGCGGGCAGACTCTATAGGTCCTAAGACCCTGAGACTGCGTCCTCAAGATACAGGTTAACAATCCCCGTATGGAGCCGTTC
+              CGTCCCGCCCGTCTGAGATATCCAGGATTCTGGGACTCTGACGCAGGAGTTCTATGTCCAATTGTTAGGGGCATACCTCGGCAAG
+
+    340       TTAGCATGACCCGACAGGTGGGCTTGGCTCGCGTAAGTTGAGTGTTGCAGATACCTGCTGCTGCGCGGTCTAGGGGGAATCGCCG
+              AATCGTACTGGGCTGTCCACCCGAACCGAGCGCATTCAACTCACAACGTCTATGGACGACGACGCGCCAGATCCCCCTTAGCGGC
+
+    425       ATTTTGACGTAGGATCGGTAATGGGCAGTAAACCCGCAACTATTTTCAGCACCAGATGCAAGTTTCCCTAGAAAGCGTCATGGTT
+              TAAAACTGCATCCTAGCCATTACCCGTCATTTGGGCGTTGATAAAAGTCGTGGTCTACGTTCAAAGGGATCTTTCGCAGTACCAA
+
+    510       TGCAATCTCCTTAGGTCACAGCAAACATAGCAGCCCCTGT
+              ACGTTAGAGGAATCCAGTGTCGTTTGTATCGTCGGGGACA
+"""
+
 import functools
 import itertools
 from networkx import nx
 from collections import OrderedDict
+
 
 class StringColumn(object):
     """Class for managing string columns"""
@@ -9,6 +50,12 @@ class StringColumn(object):
     FILL = ' '
 
     def __init__(self, strings=None):
+        """
+        StringColumn constructor.
+
+        :param strings: list of strings
+        :type strings: list
+        """
         self._strings = []
         self._length = 0
         if strings:
@@ -279,6 +326,7 @@ def indent(string, indent):
 
 class ViewerAnnotationFlag(object):
     """Flags for annotation directions"""
+
     FORWARD = ">"
     REVERSE = "<"
     BOTH = "-"
@@ -492,6 +540,8 @@ class SequenceViewer(object):
         self.metadata = OrderedDict()
         if description:
             self.metadata['Description'] = self.DEFAULTS.DESCRIPTION
+        if hasattr(self.sequences[0], 'cyclic'):
+            self.metadata['Cyclic'] = self.sequences[0].cyclic
         if metadata is not None:
             self.metadata.update(metadata)
 

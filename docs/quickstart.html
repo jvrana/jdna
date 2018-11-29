@@ -15,7 +15,7 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>Quickstart &#8212; jdna 0.0.1 documentation</title>
+    <title>Quickstart &#8212; jdna 0.0.2 documentation</title>
     <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css" />
@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API Reference" href="developer/api_reference.html" />
-    <link rel="prev" title="Overview" href="overview.html" />
+    <link rel="prev" title="jdna" href="index.html" />
   
    
 
@@ -44,9 +44,9 @@
           <a href="developer/api_reference.html" title="API Reference"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="overview.html" title="Overview"
+          <a href="index.html" title="jdna"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">jdna 0.0.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">jdna 0.0.2 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="container-wrapper">
@@ -64,7 +64,7 @@
     </div>
 </div>
 
-<p align="center" class="sidebar-subtitle">version: <a href="">0.0.1</a></p>
+<p align="center" class="sidebar-subtitle">version: <a href="">0.0.2</a></p>
 <div>
 
 </div>
@@ -77,12 +77,9 @@
     
       <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">jdna</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#opening-a-sesssion">Opening a sesssion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#finding-models">Finding models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#archiving-models">Archiving models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#registering-models">Registering models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developer/api_reference.html">API Reference</a></li>
@@ -121,17 +118,82 @@
             
   <div class="section" id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="opening-a-sesssion">
-<h2>Opening a sesssion<a class="headerlink" href="#opening-a-sesssion" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Just pull the repo and cd into the jdna directory.</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
+</pre></div>
 </div>
-<div class="section" id="finding-models">
-<h2>Finding models<a class="headerlink" href="#finding-models" title="Permalink to this headline">¶</a></h2>
+<p>or</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pipenv</span> <span class="n">install</span> <span class="o">.</span>
+</pre></div>
 </div>
-<div class="section" id="archiving-models">
-<h2>Archiving models<a class="headerlink" href="#archiving-models" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="registering-models">
-<h2>Registering models<a class="headerlink" href="#registering-models" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jdna</span> <span class="k">import</span> <span class="n">Sequence</span>
+
+<span class="n">seq</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="s2">&quot;AGTCAGTA&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">seq</span> <span class="o">=</span> <span class="n">Sequence</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">s1</span> <span class="o">=</span> <span class="n">Sequence</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reverse_complement</span><span class="p">()</span>
+
+<span class="n">s1</span><span class="o">.</span><span class="n">print_alignment</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">s1</span> <span class="o">=</span> <span class="n">Sequence</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">s1</span> <span class="o">=</span> <span class="n">Sequence</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">550</span><span class="p">)</span>
+<span class="n">s1</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;GFP&quot;</span><span class="p">)</span>
+<span class="c1"># ..</span>
+<span class="n">s1</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                                                            <span class="o">----------------</span><span class="n">GFP</span><span class="o">----------------</span>
+                                                            <span class="o">|&lt;</span><span class="n">START</span>
+                                                            <span class="o">----</span>      <span class="o">-----------</span><span class="n">RFP</span><span class="o">-----------</span>
+<span class="mi">0</span>         <span class="n">CCCAGGACTAGCGACTTTCCGTAACGCGACCTAACACCGGCCGTTCCTTCGAGCCAGGCAAATGTTACGTCACTTCCTTAGATTT</span>
+          <span class="n">GGGTCCTGATCGCTGAAAGGCATTGCGCTGGATTGTGGCCGGCAAGGAAGCTCGGTCCGTTTACAATGCAGTGAAGGAATCTAAA</span>
+
+          <span class="o">------</span><span class="n">GFP</span><span class="o">------</span>
+          <span class="o">-----------------------------------------</span><span class="n">RFP</span><span class="o">-----------------------------------------</span>
+<span class="mi">85</span>        <span class="n">TGAACAGCGCCGTACCCCGATATGATATTTAGATATATAGCAGTTACACTTGGGGTTGCTATGGACTTAGATCTGCTGTATGTTT</span>
+          <span class="n">ACTTGTCGCGGCATGGGGCTATACTATAAATCTATATATCGTCAATGTGAACCCCAACGATACCTGAATCTAGACGACATACAAA</span>
+
+          <span class="o">-----------------------------------------</span><span class="n">RFP</span><span class="o">-----------------------------------------</span>
+<span class="mi">170</span>       <span class="n">TCTTACCTTCCGCATCAGGGGACAATTCGCCAGTAGAATTCAGTTTGTGCGTGAGAACATAAGATTGAATCCCACGCAGGCACAA</span>
+          <span class="n">AGAATGGAAGGCGTAGTCCCCTGTTAAGCGGTCATCTTAAGTCAAACACGCACTCTTGTATTCTAACTTAGGGTGCGTCCGTGTT</span>
+
+          <span class="o">---------------------</span><span class="n">RFP</span><span class="o">----------------------</span>
+<span class="mi">255</span>       <span class="n">GCAGGGCGGGCAGACTCTATAGGTCCTAAGACCCTGAGACTGCGTCCTCAAGATACAGGTTAACAATCCCCGTATGGAGCCGTTC</span>
+          <span class="n">CGTCCCGCCCGTCTGAGATATCCAGGATTCTGGGACTCTGACGCAGGAGTTCTATGTCCAATTGTTAGGGGCATACCTCGGCAAG</span>
+
+<span class="mi">340</span>       <span class="n">TTAGCATGACCCGACAGGTGGGCTTGGCTCGCGTAAGTTGAGTGTTGCAGATACCTGCTGCTGCGCGGTCTAGGGGGAATCGCCG</span>
+          <span class="n">AATCGTACTGGGCTGTCCACCCGAACCGAGCGCATTCAACTCACAACGTCTATGGACGACGACGCGCCAGATCCCCCTTAGCGGC</span>
+
+<span class="mi">425</span>       <span class="n">ATTTTGACGTAGGATCGGTAATGGGCAGTAAACCCGCAACTATTTTCAGCACCAGATGCAAGTTTCCCTAGAAAGCGTCATGGTT</span>
+          <span class="n">TAAAACTGCATCCTAGCCATTACCCGTCATTTGGGCGTTGATAAAAGTCGTGGTCTACGTTCAAAGGGATCTTTCGCAGTACCAA</span>
+
+<span class="mi">510</span>       <span class="n">TGCAATCTCCTTAGGTCACAGCAAACATAGCAGCCCCTGT</span>
+          <span class="n">ACGTTAGAGGAATCCAGTGTCGTTTGTATCGTCGGGGACA</span>
+</pre></div>
+</div>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">s1</span> <span class="o">=</span> <span class="n">Sequence</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reverse_complement</span><span class="p">()</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">s1</span> <span class="o">+</span> <span class="n">s2</span><span class="p">[:</span><span class="mi">30</span><span class="p">]</span> <span class="o">+</span> <span class="n">s2</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:]</span> <span class="o">+</span> <span class="n">s2</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jdna</span> <span class="k">import</span> <span class="n">Reaction</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="n">Reaction</span><span class="o">.</span><span class="n">cyclic_assembly</span><span class="p">()</span>
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -141,7 +203,7 @@
   <div class="footer-relations">
     
       <div class="pull-left">
-        <a class="btn btn-default" href="overview.html" title="previous chapter (use the left arrow)">Overview</a>
+        <a class="btn btn-default" href="index.html" title="previous chapter (use the left arrow)">jdna</a>
       </div>
     
       <div class="pull-right">
@@ -166,9 +228,9 @@
           <a href="developer/api_reference.html" title="API Reference"
              >next</a> |</li>
         <li class="right" >
-          <a href="overview.html" title="Overview"
+          <a href="index.html" title="jdna"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">jdna 0.0.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">jdna 0.0.2 documentation</a> &#187;</li> 
       </ul>
     </div>
 <script type="text/javascript">

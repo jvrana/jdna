@@ -1,5 +1,5 @@
 import pytest
-from jdna import format, Sequence
+from jdna import Sequence
 from jdna.viewer import SequenceViewer, ViewerAnnotationFlag
 
 
