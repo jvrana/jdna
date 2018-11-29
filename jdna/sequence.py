@@ -383,6 +383,8 @@ class Sequence(DoubleLinkedList):
     class DEFAULTS(object):
         """Sequence defaults"""
         MIN_ANNEAL_BASES = 13
+        FOREGROUND_COLORS = ["blue", 'red']
+        BACKGROUND_COLORS = None
     
     NODE_CLASS = Nucleotide
     counter = itertools.count()
@@ -761,14 +763,16 @@ class Sequence(DoubleLinkedList):
             width = 85
 
         seqs = [self]
+        colors = self.DEFAULTS.FOREGROUND_COLORS[0]
         if include_complement:
             seqs.append(self.copy().complement())
+            colors = self.DEFAULTS.FOREGROUND_COLORS
         if spacer is None:
             if include_complement:
                 spacer = '\n'
             else:
                 spacer = ''
-        viewer = SequenceViewer(seqs, indent=indent, width=width, spacer=spacer)
+        viewer = SequenceViewer(seqs, indent=indent, width=width, spacer=spacer, foreground_colors=colors)
         if include_annotations:
             self._apply_features_to_view(self, viewer)
         return viewer

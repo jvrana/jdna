@@ -40,9 +40,12 @@ The viewer can display sequences and annotations, as in the following:
 
 import functools
 import itertools
-from networkx import nx
 from collections import OrderedDict
-from jdna.utils import colored
+
+from networkx import nx
+
+from jdna.utils import colored, background
+
 
 class StringColumn(object):
     """Class for managing string columns"""
@@ -310,8 +313,9 @@ def prepend_lines(lines, label_iterable, indent, fill=' ', align='<'):
 def indent(string, indent):
     """Indent lines"""
     lines = string.split("\n")
-    new_lines = prepend_lines(lines, ['']*len(lines), indent)
+    new_lines = prepend_lines(lines, [''] * len(lines), indent)
     return '\n'.join(new_lines)
+
 
 # def set_indent(lines, indent):
 #     """Reset the indent of lines"""
@@ -346,7 +350,7 @@ class SequenceRow(object):
     """A row in a :class:`SequenceViewer` instance. Can be comprised of multiple sequences (i.e. lines)
     and can be annotated with 'features'."""
 
-    def __init__(self, lines, labels, indent, start, end):
+    def __init__(self, lines, labels, indent, start, end, line_colors=None, line_backgrounds=None):
         """
         SequenceRow constructor
 
@@ -365,6 +369,12 @@ class SequenceRow(object):
         if len(lengths) > 1:
             raise Exception("Cannot format rows that have different lengths")
         self._lines = lines
+        if isinstance(line_colors, str):
+            line_colors = [line_colors] * len(lines)
+        if isinstance(line_backgrounds, str):
+            line_backgrounds = [line_backgrounds] * len(lines)
+        self.line_colors = line_colors
+        self.line_backgrounds = line_backgrounds
         self.labels = labels
         self.indent = indent
         self.start = start
@@ -373,7 +383,13 @@ class SequenceRow(object):
 
     @property
     def lines(self):
-        return prepend_lines(self._lines, self.labels, self.indent)
+        lines = self._lines[:]
+        if self.line_colors:
+            lines = [colored(line, color) for line, color in zip(lines, self.line_colors)]
+        if self.line_backgrounds:
+            lines = [background(line, color) for line, color in
+                     zip(lines, self.line_backgrounds)]
+        return prepend_lines(lines, self.labels, self.indent)
 
     @property
     def annotation_lines(self):
@@ -445,7 +461,7 @@ class SequenceRow(object):
         :rtype:
         """
         s = max(start - self.start, 0)
-        e = min(end - self.start, len(self)-1)
+        e = min(end - self.start, len(self) - 1)
         return self.absolute_annotate(s, e, fill, label, color=color)
 
     def in_bounds(self, x):
@@ -464,6 +480,7 @@ class SequenceRow(object):
 
     def __str__(self):
         return '\n'.join(self.annotation_lines + self.lines)
+
 
 #
 # class SequenceLabel(object):
@@ -502,9 +519,13 @@ class SequenceViewer(object):
         WIDTH = 85
         NAME = 'Unnamed'
         DESCRIPTION = ''
+        BACKGROUND_COLOR = None
+        FOREGROUND_COLOR = None
 
     def __init__(self, sequences,
                  sequence_labels=None,
+                 foreground_colors=DEFAULTS.FOREGROUND_COLOR,
+                 background_colors=DEFAULTS.BACKGROUND_COLOR,
                  indent=DEFAULTS.INDENT,
                  width=DEFAULTS.WIDTH,
                  spacer=DEFAULTS.SPACER,
@@ -539,7 +560,9 @@ class SequenceViewer(object):
 
         self._sequences = [str(s) for s in sequences]
         if sequence_labels is None:
-            sequence_labels = ["{index}"] + ['']*(len(sequences)-1)
+            sequence_labels = ["{index}"] + [''] * (len(sequences) - 1)
+        self.foreground_colors = foreground_colors
+        self.background_colors = background_colors
         self._sequence_labels = sequence_labels
         self._indent = indent
         self._width = width
@@ -615,7 +638,8 @@ class SequenceViewer(object):
         index = 0
         for chunk in chunks:
             labels = [str(l).format(index=index) for l in self._sequence_labels]
-            rows.append(SequenceRow(chunk, labels, self.indent, index, min(index + self.width - 1, len(self))))
+            rows.append(SequenceRow(chunk, labels, self.indent, index, min(index + self.width - 1, len(self)),
+                                    line_colors=self.foreground_colors, line_backgrounds=self.background_colors))
             index += len(chunk[0])
         return rows
 
@@ -655,8 +679,3 @@ class SequenceViewer(object):
         s = "{header}\n\n".format(header=self.header)
         s += '\n{}'.format(spacer).join([str(r) for r in self.rows])
         return s
-
-
-
-
-
