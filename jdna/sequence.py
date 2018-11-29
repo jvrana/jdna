@@ -611,6 +611,27 @@ class Sequence(DoubleLinkedList):
     def tm(self):
         return primer3.calcTm(str(self).upper())
 
+    def json(self):
+
+        annotations = []
+        for feature, positions in self.feature_positions().items():
+            for start, end in positions:
+                annotations.append({
+                    'start': start,
+                    'end': end,
+                    'name': feature.name,
+                    'color': feature.color,
+                    'type': feature.type
+                })
+
+        return {
+            'name': self.name,
+            'isCircular': self.cyclic,
+            'length': len(self),
+            'bases': str(self),
+            'annotations': annotations
+        }
+
     def __repr__(self):
         max_width = 30
         replace = '...'
