@@ -262,7 +262,7 @@ class Nucleotide(Node):
         for f in other.features:
             i = other.features[f]
             if f not in self.features:
-                self.add_feature(f, i)
+                self.add_feature(f)
         self._remove_overlapping_features()
 
     def get_feature_span(self, feature):
@@ -373,7 +373,8 @@ class Nucleotide(Node):
 
     def copy(self):
         copied = super(Nucleotide, self).copy()
-        copied._features = deepcopy(self.features)
+        for f in self.features:
+            copied.add_feature(f)
         return copied
 
 class Sequence(DoubleLinkedList):
