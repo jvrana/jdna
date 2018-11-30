@@ -14,7 +14,7 @@ from jdna.alphabet import DNA, UnambiguousDNA
 from jdna.format import format_sequence
 from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
 from jdna.utils import random_color
-from jdna.viewer import SequenceViewer, ViewerAnnotationFlag
+from jdna.viewer import SequenceViewer, ViewerAnnotationFlag, StringColumn
 
 
 class SequenceFlags(IntFlag):
@@ -110,12 +110,13 @@ class BindPos(LinkedListMatch):
         self.direction = direction
         self.strand = strand
 
-        self.anneal = query.copy_slice(*self.query_bounds)
 
         if self.direction == SequenceFlags.REVERSE:
+            self.anneal = query.copy_slice(*self.query_bounds[::-1])
             self.five_prime_overhang = query.new_slice(None, self.query_end.prev())
             self.three_prime_overhang = query.new_slice(self.query_start.next(), None)
         else:
+            self.anneal = query.copy_slice(*self.query_bounds)
             self.five_prime_overhang = query.new_slice(None, self.query_start.prev())
             self.three_prime_overhang = query.new_slice(self.query_end.next(), None)
         # self.anneal = self.primer[query_span[0]:query_span[1]+1]
@@ -388,6 +389,11 @@ class Sequence(DoubleLinkedList):
         FOREGROUND_COLORS = ["blue", 'red']
         BACKGROUND_COLORS = None
 
+
+    FORWARD = SequenceFlags.FORWARD
+    REVERSE = SequenceFlags.REVERSE
+    TOP = SequenceFlags.TOP
+    BOTTOM = SequenceFlags.BOTTOM
     NODE_CLASS = Nucleotide
     counter = itertools.count()
 
@@ -704,7 +710,22 @@ class Sequence(DoubleLinkedList):
                     direction = ViewerAnnotationFlag.FORWARD
                 elif feature.strand == SequenceFlags.REVERSE:
                     direction = ViewerAnnotationFlag.REVERSE
-                view.annotate(pos[0], pos[1], label=feature.name, direction=direction, background=feature.color)
+                view.annotate(pos[0], pos[1], label=feature.name, fill=direction, background=feature.color)
+
+    def view_bindings(self, bindings, view=None):
+        if view is None:
+            view = self.view(complement=True)
+        for b in bindings:
+            anneal = b.anneal
+            primer_sequence = b.five_prime_overhang + anneal + b.three_prime_overhang
+            annotation = StringColumn([str(primer_sequence),
+                                       ' ' * len(b.five_prime_overhang) + '|' * len(anneal) + ' ' * len(
+                                           b.three_prime_overhang)])
+            if b.direction == Sequence.FORWARD:
+                view.annotate(b.span[0], b.span[1], annotation)
+            if b.direction == Sequence.REVERSE:
+                view.annotate(b.span[0], b.span[1], annotation.flip()[::-1], top=False)
+        return view
 
     def view(self, indent=10, width=85, spacer=None, complement=False, features=True, **kwargs):
         """
@@ -779,6 +800,18 @@ class Sequence(DoubleLinkedList):
         if features:
             self._apply_features_to_view(self, viewer)
         return viewer
+
+    def upper(self):
+        copied = self
+        for n in copied:
+            n.data = n.data.upper()
+        return copied
+
+    def lower(self):
+        copied = self
+        for n in copied:
+            n.data = n.data.lower()
+        return copied
 
     def print(self, indent=None, width=None, spacer=None, complement=False, features=True, **kwargs):
         """

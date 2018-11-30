@@ -125,6 +125,7 @@ class StringColumn(object):
 
     def flip(self):
         self._strings = self._strings[::-1]
+        return self.copy()
 
     def right_fill(self, string):
         return string + self.fill * (self.length - self.string_length(string))
@@ -460,7 +461,7 @@ class SequenceRow(object):
         sc = StringColumn(color=color, background=background)
         if isinstance(label, str):
             if len(label) + 1 > span:
-                sc.append_string("|<" + label)
+                sc.append_string(label)
                 # sc.append_string("|<{0:{fill}{align}{indent}}".format(label, fill=' ', align='^', indent=span))
                 label = fill * span
             sc2 = StringColumn(fill=fill)
@@ -497,7 +498,7 @@ class SequenceRow(object):
         else:
             self.bottom_annotations.append(annotation)
 
-    def annotate(self, start, end, fill, label='', color=None, background=None, top=True):
+    def annotate(self, start, end, fill, label='', color=None, background=None, top=True, wrap=False):
         """
         Annotate the sequence row. If 'start' or 'end' is beyond,
         the expected start or end for this row, the annotation will
@@ -598,6 +599,13 @@ class SequenceViewer(object):
         :type sequences: list
         :param sequence_labels: optional labels to apply to sequence. Include the '{index}' to enumerate the base pairs.
         :type sequence_labels: list
+        :param foreground_colors: optional list base pair foreground colors (hex or common name) to apply to each sequence. If a string
+                                    is provided, color will be applied to all sequences. If provided with "RANDOM",
+                                    a random color will be assigned to each sequence.
+        :type foreground_colors: list
+        :param background_colors: optional list base pair background colors (hex or common name) to apply to each sequence.
+                                    Usage is analogous to `foreground_colors` parameter.
+        :type background_colors: list
         :param indent: spacing before start of string and start of base pairs
         :type indent: int
         :param width: width of the view window for the sequences (e.g. width=100 would mean rows of at most len 100
@@ -622,7 +630,7 @@ class SequenceViewer(object):
         self.annotations = []
 
         self.window = window
-        self._sequences = [str(s) for s in sequences]
+        self._sequences = tuple([str(s) for s in sequences])
         if sequence_labels is None:
             sequence_labels = ["{index}"] + [''] * (len(sequences) - 1)
 
@@ -649,12 +657,13 @@ class SequenceViewer(object):
             self.metadata.update(metadata)
 
     def set_window(self, start, end):
+        """Sets the inclusive viewing window"""
         self.window = (start, end)
         return self
 
     @property
     def sequences(self):
-        return self._sequences[:]
+        return list(self._sequences)
 
     @property
     def header(self):
@@ -665,10 +674,6 @@ class SequenceViewer(object):
 
     @property
     def rows(self):
-        return self.create_rows()
-
-    def create_rows(self):
-        """Create :class:`SequenceRow` instances for the set of sequences"""
         lines = []
         for seq in self.sequences:
             line = to_lines(str(seq)[self.window[0]:self.window[1]], width=self.width)
@@ -682,10 +687,10 @@ class SequenceViewer(object):
             rows.append(SequenceRow(chunk, labels, self.indent, index, min(index + self.width - 1, len(self)),
                                     line_colors=self.foreground_colors, line_backgrounds=self.background_colors))
             index += len(chunk[0])
-        self.annotate_rows(rows)
+        self._annotate_rows(rows)
         return rows
 
-    def annotate(self, start, end, label=None, direction=None, color=None, background=None):
+    def annotate(self, start, end, label=None, fill=None, color=None, background=None, top=True):
         """
         Annotates this viewer object starting from 'start' to 'end' inclusively.
 
@@ -694,40 +699,32 @@ class SequenceViewer(object):
         :param end: inclusive end
         :type end: int
         :param label: optional label to apply to the annotation
-        :type label: basestring
-        :param direction: the direction of the annotation ('<', '>', '^') to fill in whitespace
-        :type direction: string
+        :type label: basestring | StringColumn
+        :param fill: the fill character to use to (e.g. '<', '>', '^') to fill in whitespace
+        :type fill: string
+        :param color: the foreground color to apply to the annotation (hex or common name)
+        :type color: string
+        :param background: the foreground color to apply to the annotation (hex or common name)
+        :type background: string
         :return: None
         :rtype: None
         """
-        if direction is None:
-            direction = ViewerAnnotationFlag.BOTH
+        if fill is None:
+            fill = ViewerAnnotationFlag.BOTH
         if label is None:
             label = ''
         self.annotations.append(dict(
             start=start,
             end=end,
             label=label,
-            fill=str(direction),
+            fill=str(fill),
             color=color,
-            background=background
+            background=background,
+            top=top
         ))
 
-    def annotate_rows(self, rows):
-        """
-        Annotates this viewer object starting from 'start' to 'end' inclusively.
-
-        :param start: inclusive start
-        :type start: int
-        :param end: inclusive end
-        :type end: int
-        :param label: optional label to apply to the annotation
-        :type label: basestring
-        :param direction: the direction of the annotation ('<', '>', '^') to fill in whitespace
-        :type direction: string
-        :return: None
-        :rtype: None
-        """
+    def _annotate_rows(self, rows):
+        """Annotate the rows using the viewer's annotations"""
         for a in self.annotations:
             for row in rows:
                 if a['end'] >= row.start and a['start'] <= row.end:
