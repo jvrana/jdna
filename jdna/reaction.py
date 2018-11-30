@@ -141,8 +141,11 @@ class Assembly(object):
             diff = mx - len(s)
             aligned_seqs[i] = aligned_seqs[i] + Sequence('-' * diff)
 
-        viewer = SequenceViewer(aligned_seqs, *args, sequence_labels=['({i}) {index}'.format(i=i, index="{index}") for i in
-                                                               range(len(aligned_seqs))], **kwargs)
+        labels = ['({i}) {index}'.format(i=i, index="{index}") for i in range(len(aligned_seqs))]
+        viewer = SequenceViewer(aligned_seqs, *args,
+                                sequence_labels=labels,
+                                foreground_colors="RANDOM",
+                                **kwargs)
         for seq in aligned_seqs:
             Sequence._apply_features_to_view(seq, viewer)
         viewer.metadata['Cyclic'] = self.cyclic

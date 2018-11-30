@@ -427,13 +427,13 @@ def test_viewer_annotate():
     s.annotate(50, 99, "GFP")
     s.annotate(50, 53, 'START')
     s.annotate(60, 300, 'RFP')
-    s.view(spacer='\n', include_complement=True).print()
+    s.view(spacer='\n', complement=True).print()
 
 
 def test_print():
     s = Sequence.random(550)
     s.annotate(100, 200, 'GFP', color="#0cba45")
-    s.print(include_complement=True)
+    s.print(complement=True)
 
 
 def test_align():

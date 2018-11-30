@@ -4,16 +4,18 @@ Represent linear or circularized nucleotides
 
 import itertools
 from collections import defaultdict
-from copy import copy, deepcopy
+from copy import copy
 from enum import IntFlag
+
+import primer3
 from Bio import pairwise2
 
+from jdna.alphabet import DNA, UnambiguousDNA
+from jdna.format import format_sequence
 from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
 from jdna.utils import random_color
-from jdna.alphabet import DNA, UnambiguousDNA, AmbiguousDNA
-from jdna.format import format_sequence
-from jdna.viewer import SequenceViewer, ViewerAnnotationFlag
-import primer3
+from jdna.viewer import SequenceViewer, ViewerAnnotationFlag, StringColumn
+
 
 class SequenceFlags(IntFlag):
     """Constants/Flags for sequences."""
@@ -27,11 +29,13 @@ class SequenceFlags(IntFlag):
 class Feature(object):
     """An annotation for a sequence."""
 
-    def __init__(self, name, type=None, strand=SequenceFlags.FORWARD, color=None):
+    def __init__(self, name, type=None, strand=None, color=None):
         self.name = name
         if type is None:
             type = 'misc'
         self.type = type
+        if strand is None:
+            strand = SequenceFlags.FORWARD
         self.strand = strand
         if color is None:
             color = random_color()
@@ -39,7 +43,11 @@ class Feature(object):
         # self._nodes = set()
 
     def __str__(self):
-        return '{} {}'.format(self.name, self.type)
+        return "<Feature name='{name}' type='{tp}' color='{color}'".format(
+            name=self.name,
+            tp=self.type,
+            color=self.color
+        )
 
     def __repr__(self):
         return str(self)
@@ -53,19 +61,19 @@ class Feature(object):
     #
     # def segments(self):
     #     return Sequence.segments(self.nodes)
-        # visited = set()
-        # pairs = set()
-        # stop = lambda x: x not in self._nodes
-        # for n in self._nodes:
-        #     if n not in visited:
-        #         tail = n
-        #         for tail in n.fwd(stop_criteria=stop):
-        #             visited.add(tail)
-        #         head = n
-        #         for head in n.rev(stop_criteria=stop):
-        #             visited.add(head)
-        #         pairs.add((head, tail))
-        # return pairs
+    # visited = set()
+    # pairs = set()
+    # stop = lambda x: x not in self._nodes
+    # for n in self._nodes:
+    #     if n not in visited:
+    #         tail = n
+    #         for tail in n.fwd(stop_criteria=stop):
+    #             visited.add(tail)
+    #         head = n
+    #         for head in n.rev(stop_criteria=stop):
+    #             visited.add(head)
+    #         pairs.add((head, tail))
+    # return pairs
 
     def is_multipart(self):
         if len(self.segments) > 1:
@@ -108,12 +116,13 @@ class BindPos(LinkedListMatch):
         self.direction = direction
         self.strand = strand
 
-        self.anneal = query.copy_slice(*self.query_bounds)
 
         if self.direction == SequenceFlags.REVERSE:
+            self.anneal = query.copy_slice(*self.query_bounds[::-1])
             self.five_prime_overhang = query.new_slice(None, self.query_end.prev())
             self.three_prime_overhang = query.new_slice(self.query_start.next(), None)
         else:
+            self.anneal = query.copy_slice(*self.query_bounds)
             self.five_prime_overhang = query.new_slice(None, self.query_start.prev())
             self.three_prime_overhang = query.new_slice(self.query_end.next(), None)
         # self.anneal = self.primer[query_span[0]:query_span[1]+1]
@@ -144,10 +153,10 @@ class BindPos(LinkedListMatch):
         :rtype:
         """
         return cls(linked_list_match.template_bounds, linked_list_match.query_bounds,
-            template, query,
-            direction,
-            strand=strand
-        )
+                   template, query,
+                   direction,
+                   strand=strand
+                   )
 
     @property
     def template_anneal(self):
@@ -179,7 +188,6 @@ class Nucleotide(Node):
     """Represents a biological nucleotide. Serves a :class:`Node` in teh :class:`Sequence` object."""
 
     __slots__ = ['data', '__next', '__prev', '_features']
-
 
     def __init__(self, base):
         """
@@ -240,11 +248,10 @@ class Nucleotide(Node):
 
     def add_feature(self, feature):
         self.features.add(feature)
-        # feature._bind([self])
+        return feature
 
     def remove_feature(self, feature):
         self.features.remove(feature)
-        # feature._unbind([self])
 
     def feature_fwd(self, feature):
         stop = lambda x: feature not in x.features
@@ -377,6 +384,7 @@ class Nucleotide(Node):
             copied.add_feature(f)
         return copied
 
+
 class Sequence(DoubleLinkedList):
     """Represents a biological sequence as a double linked list. Can be annotated with features."""
 
@@ -385,7 +393,12 @@ class Sequence(DoubleLinkedList):
         MIN_ANNEAL_BASES = 13
         FOREGROUND_COLORS = ["blue", 'red']
         BACKGROUND_COLORS = None
-    
+
+
+    FORWARD = SequenceFlags.FORWARD
+    REVERSE = SequenceFlags.REVERSE
+    TOP = SequenceFlags.TOP
+    BOTTOM = SequenceFlags.BOTTOM
     NODE_CLASS = Nucleotide
     counter = itertools.count()
 
@@ -537,7 +550,7 @@ class Sequence(DoubleLinkedList):
                 found.append(feature)
         return found
 
-    def annotate(self, start, end, name, feature_type=None, color=None):
+    def annotate(self, start, end, name, feature_type=None, color=None, strand=None):
         """
         Annotate a regions
 
@@ -554,9 +567,7 @@ class Sequence(DoubleLinkedList):
         :return: new feature
         :rtype: Feature
         """
-        f = Feature(name, feature_type, color)
-        self.add_feature(start, end, f)
-        return f
+        return self.add_feature(start, end, Feature(name, feature_type, strand=strand, color=color))
 
     def complement(self):
         """Complement the sequence in place"""
@@ -702,9 +713,24 @@ class Sequence(DoubleLinkedList):
                     direction = ViewerAnnotationFlag.FORWARD
                 elif feature.strand == SequenceFlags.REVERSE:
                     direction = ViewerAnnotationFlag.REVERSE
-                view.annotate(pos[0], pos[1], label=feature.name, direction=direction, color=feature.color)
+                view.annotate(pos[0], pos[1], label=feature.name, fill=direction, background=feature.color)
 
-    def view(self, indent=10, width=85, spacer=None, include_complement=False, include_annotations=True):
+    def view_bindings(self, bindings, view=None):
+        if view is None:
+            view = self.view(complement=True)
+        for b in bindings:
+            anneal = b.anneal
+            primer_sequence = b.five_prime_overhang + anneal + b.three_prime_overhang
+            annotation = StringColumn([str(primer_sequence),
+                                       ' ' * len(b.five_prime_overhang) + '|' * len(anneal) + ' ' * len(
+                                           b.three_prime_overhang)])
+            if b.direction == Sequence.FORWARD:
+                view.annotate(b.span[0], b.span[1], annotation)
+            if b.direction == Sequence.REVERSE:
+                view.annotate(b.span[0], b.span[1], annotation.flip()[::-1], top=False)
+        return view
+
+    def view(self, indent=10, width=85, spacer=None, complement=False, features=True, **kwargs):
         """
         Create a :class:`SequenceViewer` instance from this sequence. Printing the view object with
         annotations and complement will produce an output similar to the following:
@@ -749,10 +775,10 @@ class Sequence(DoubleLinkedList):
         :type width: int
         :param spacer: string to intersperse between sequence rows (default is newline)
         :type spacer: basestring
-        :param include_complement: whether to include the complementary strand in the view
-        :type include_complement: bool
-        :param include_annotations: whether to include annotations/features in the view instance
-        :type include_annotations: bool
+        :param complement: whether to include the complementary strand in the view
+        :type complement: bool
+        :param features: whether to include annotations/features in the view instance
+        :type features: bool
         :return: the viewer object
         :rtype: SequenceViewer
         """
@@ -764,20 +790,33 @@ class Sequence(DoubleLinkedList):
 
         seqs = [self]
         colors = self.DEFAULTS.FOREGROUND_COLORS[0]
-        if include_complement:
+        if complement:
             seqs.append(self.copy().complement())
             colors = self.DEFAULTS.FOREGROUND_COLORS
         if spacer is None:
-            if include_complement:
+            if complement:
                 spacer = '\n'
             else:
                 spacer = ''
-        viewer = SequenceViewer(seqs, indent=indent, width=width, spacer=spacer, foreground_colors=colors)
-        if include_annotations:
+        viewer = SequenceViewer(seqs, name=self.name, description=self.description, indent=indent, width=width,
+                                spacer=spacer, foreground_colors=colors, **kwargs)
+        if features:
             self._apply_features_to_view(self, viewer)
         return viewer
 
-    def print(self, indent=None, width=None, spacer=None, include_complement=False):
+    def upper(self):
+        copied = self
+        for n in copied:
+            n.data = n.data.upper()
+        return copied
+
+    def lower(self):
+        copied = self
+        for n in copied:
+            n.data = n.data.lower()
+        return copied
+
+    def print(self, indent=None, width=None, spacer=None, complement=False, features=True, **kwargs):
         """
          Create and print a :class:`SequenceViewer` instance from this sequence. Printing the view object
          with annotations and complement will produce an output similar to the following:
@@ -822,14 +861,14 @@ class Sequence(DoubleLinkedList):
          :type width: int
          :param spacer: string to intersperse between sequence rows (default is newline)
          :type spacer: basestring
-         :param include_complement: whether to include the complementary strand in the view
-         :type include_complement: bool
+         :param complement: whether to include the complementary strand in the view
+         :type complement: bool
          :param include_annotations: whether to include annotations/features in the view instance
          :type include_annotations: bool
          :return: the viewer object
          :rtype: SequenceViewer
          """
-        self.view(indent=indent, width=width, spacer=spacer, include_complement=include_complement).print()
+        self.view(indent=indent, width=width, spacer=spacer, complement=complement, features=features, **kwargs).print()
 
     def tm(self):
         """
@@ -847,7 +886,7 @@ class Sequence(DoubleLinkedList):
             for start, end in positions:
                 annotations.append({
                     'start': start,
-                    'end': end+1,
+                    'end': end + 1,
                     'name': feature.name,
                     'color': feature.color,
                     'type': feature.type
@@ -866,16 +905,18 @@ class Sequence(DoubleLinkedList):
         """Load a sequence from a json formatted dictionary"""
         sequence = cls(data['bases'], name=data['name'])
         sequence.cyclic = data['isCircular']
+        sequence.name = data['name']
+        sequence.description = data.get('description', None)
         for a in data['annotations']:
-            sequence.annotate(a['start'], a['end']-1, a['name'], a['type'], a['color'])
+            sequence.annotate(a['start'], a['end'] - 1, a['name'], a['type'], a['color'])
         return sequence
 
     def __repr__(self):
         max_width = 30
         replace = '...'
-        display = int((max_width - len(replace))/2.0)
+        display = int((max_width - len(replace)) / 2.0)
         s = str(self)
-        if len(s) > display*2:
+        if len(s) > display * 2:
             # diff = display*2 - len(s)
             s = s[:display] + '...' + s[-display:]
         return "Sequence('{}')".format(s)

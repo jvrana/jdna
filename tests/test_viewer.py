@@ -53,8 +53,9 @@ def test_num_annotations(positions, expected_num_annotations):
 ])
 def test_annotate_viewer_with_fill(start, end, rows, direction, fill):
     viewer = SequenceViewer([Sequence.random(500)], width=100)
-    viewer.annotate(start, end, direction=direction)
+    viewer.annotate(start, end, fill=direction)
     viewer.name = "{}->{}".format(start, end)
+    viewer.print()
     if rows:
         assert fill in str(viewer)
     rows_with_fill = []
@@ -67,14 +68,14 @@ def test_annotate_viewer_with_fill(start, end, rows, direction, fill):
 
 @pytest.mark.parametrize('start,end,label,expected_labels,no_labels', [
     (0, 50, 'mylabel', ['mylabel', '-'], []),
-    (0, 2, 'mylabel', ['-', '|<mylabel'], []),
-    (0, 5, 'mylabel', ['|<mylabel'], []),
-    (0, 7, 'mylabel', ['mylabel'], ['|<']),
-    (2, 6, 'mylabel', ['|<mylabel'], []),
+    (0, 2, 'mylabel', ['-', 'mylabel'], []),
+    (0, 5, 'mylabel', ['mylabel'], []),
+    (0, 7, 'mylabel', ['mylabel'], []),
+    (2, 6, 'mylabel', ['mylabel'], []),
 ])
 def test_annotate_viewer_with_label(start, end, label, expected_labels, no_labels):
     viewer = SequenceViewer([Sequence.random(500)], width=100)
-    viewer.annotate(start, end, label=label)
+    viewer.annotate(start, end, label=label, background="blue")
     for expected_label in expected_labels:
         assert expected_label in str(viewer.rows[0])
     for no_label in no_labels:
