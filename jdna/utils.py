@@ -56,14 +56,7 @@ def colored(text, hex_color):
 
 def colored_background(text, hex_color):
     """Return colored text"""
-    try:
-        rgb = webcolors.hex_to_rgb(hex_color)
-    except ValueError:
-        rgb = webcolors.name_to_rgb(hex_color)
-    s = _colored(text, hex_color, Back)
-    if rgb.red + rgb.blue + rgb.green < (255*3/2.0):
-        colored(s, 'white')
-    return s
+    return _colored(text, hex_color, Back)
 
 def random_color():
     rgb = [int(random.random() * 255) for x in range(3)]

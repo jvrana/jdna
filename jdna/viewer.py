@@ -191,6 +191,7 @@ class StringColumn(object):
         return copied
 
     def __getitem__(self, key):
+        # strings = [self.remove_formatting(s) for s in self.strings]
         strings = [s.__getitem__(key) for s in self.strings]
         string_col = self.__class__(strings)
         return string_col
