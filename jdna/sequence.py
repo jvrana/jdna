@@ -6,14 +6,15 @@ import itertools
 from collections import defaultdict
 from copy import copy
 from enum import IntFlag
+
+import primer3
 from Bio import pairwise2
 
+from jdna.alphabet import DNA, UnambiguousDNA
+from jdna.format import format_sequence
 from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
 from jdna.utils import random_color
-from jdna.alphabet import DNA, UnambiguousDNA, AmbiguousDNA
-from jdna.format import format_sequence
 from jdna.viewer import SequenceViewer, ViewerAnnotationFlag
-import primer3
 
 
 class SequenceFlags(IntFlag):
@@ -54,19 +55,19 @@ class Feature(object):
     #
     # def segments(self):
     #     return Sequence.segments(self.nodes)
-        # visited = set()
-        # pairs = set()
-        # stop = lambda x: x not in self._nodes
-        # for n in self._nodes:
-        #     if n not in visited:
-        #         tail = n
-        #         for tail in n.fwd(stop_criteria=stop):
-        #             visited.add(tail)
-        #         head = n
-        #         for head in n.rev(stop_criteria=stop):
-        #             visited.add(head)
-        #         pairs.add((head, tail))
-        # return pairs
+    # visited = set()
+    # pairs = set()
+    # stop = lambda x: x not in self._nodes
+    # for n in self._nodes:
+    #     if n not in visited:
+    #         tail = n
+    #         for tail in n.fwd(stop_criteria=stop):
+    #             visited.add(tail)
+    #         head = n
+    #         for head in n.rev(stop_criteria=stop):
+    #             visited.add(head)
+    #         pairs.add((head, tail))
+    # return pairs
 
     def is_multipart(self):
         if len(self.segments) > 1:
@@ -145,10 +146,10 @@ class BindPos(LinkedListMatch):
         :rtype:
         """
         return cls(linked_list_match.template_bounds, linked_list_match.query_bounds,
-            template, query,
-            direction,
-            strand=strand
-        )
+                   template, query,
+                   direction,
+                   strand=strand
+                   )
 
     @property
     def template_anneal(self):
@@ -180,7 +181,6 @@ class Nucleotide(Node):
     """Represents a biological nucleotide. Serves a :class:`Node` in teh :class:`Sequence` object."""
 
     __slots__ = ['data', '__next', '__prev', '_features']
-
 
     def __init__(self, base):
         """
@@ -378,6 +378,7 @@ class Nucleotide(Node):
             copied.add_feature(f)
         return copied
 
+
 class Sequence(DoubleLinkedList):
     """Represents a biological sequence as a double linked list. Can be annotated with features."""
 
@@ -386,7 +387,7 @@ class Sequence(DoubleLinkedList):
         MIN_ANNEAL_BASES = 13
         FOREGROUND_COLORS = ["blue", 'red']
         BACKGROUND_COLORS = None
-    
+
     NODE_CLASS = Nucleotide
     counter = itertools.count()
 
@@ -705,7 +706,7 @@ class Sequence(DoubleLinkedList):
                     direction = ViewerAnnotationFlag.REVERSE
                 view.annotate(pos[0], pos[1], label=feature.name, direction=direction, background=feature.color)
 
-    def view(self, indent=10, width=85, spacer=None, include_complement=False, include_annotations=True):
+    def view(self, indent=10, width=85, spacer=None, complement=False, features=True, **kwargs):
         """
         Create a :class:`SequenceViewer` instance from this sequence. Printing the view object with
         annotations and complement will produce an output similar to the following:
@@ -750,10 +751,10 @@ class Sequence(DoubleLinkedList):
         :type width: int
         :param spacer: string to intersperse between sequence rows (default is newline)
         :type spacer: basestring
-        :param include_complement: whether to include the complementary strand in the view
-        :type include_complement: bool
-        :param include_annotations: whether to include annotations/features in the view instance
-        :type include_annotations: bool
+        :param complement: whether to include the complementary strand in the view
+        :type complement: bool
+        :param features: whether to include annotations/features in the view instance
+        :type features: bool
         :return: the viewer object
         :rtype: SequenceViewer
         """
@@ -765,20 +766,21 @@ class Sequence(DoubleLinkedList):
 
         seqs = [self]
         colors = self.DEFAULTS.FOREGROUND_COLORS[0]
-        if include_complement:
+        if complement:
             seqs.append(self.copy().complement())
             colors = self.DEFAULTS.FOREGROUND_COLORS
         if spacer is None:
-            if include_complement:
+            if complement:
                 spacer = '\n'
             else:
                 spacer = ''
-        viewer = SequenceViewer(seqs, name=self.name, description=self.description, indent=indent, width=width, spacer=spacer, foreground_colors=colors)
-        if include_annotations:
+        viewer = SequenceViewer(seqs, name=self.name, description=self.description, indent=indent, width=width,
+                                spacer=spacer, foreground_colors=colors, **kwargs)
+        if features:
             self._apply_features_to_view(self, viewer)
         return viewer
 
-    def print(self, indent=None, width=None, spacer=None, include_complement=False):
+    def print(self, indent=None, width=None, spacer=None, complement=False, features=True, **kwargs):
         """
          Create and print a :class:`SequenceViewer` instance from this sequence. Printing the view object
          with annotations and complement will produce an output similar to the following:
@@ -823,14 +825,14 @@ class Sequence(DoubleLinkedList):
          :type width: int
          :param spacer: string to intersperse between sequence rows (default is newline)
          :type spacer: basestring
-         :param include_complement: whether to include the complementary strand in the view
-         :type include_complement: bool
+         :param complement: whether to include the complementary strand in the view
+         :type complement: bool
          :param include_annotations: whether to include annotations/features in the view instance
          :type include_annotations: bool
          :return: the viewer object
          :rtype: SequenceViewer
          """
-        self.view(indent=indent, width=width, spacer=spacer, include_complement=include_complement).print()
+        self.view(indent=indent, width=width, spacer=spacer, complement=complement, features=features, **kwargs).print()
 
     def tm(self):
         """
@@ -848,7 +850,7 @@ class Sequence(DoubleLinkedList):
             for start, end in positions:
                 annotations.append({
                     'start': start,
-                    'end': end+1,
+                    'end': end + 1,
                     'name': feature.name,
                     'color': feature.color,
                     'type': feature.type
@@ -870,15 +872,15 @@ class Sequence(DoubleLinkedList):
         sequence.name = data['name']
         sequence.description = data.get('description', None)
         for a in data['annotations']:
-            sequence.annotate(a['start'], a['end']-1, a['name'], a['type'], a['color'])
+            sequence.annotate(a['start'], a['end'] - 1, a['name'], a['type'], a['color'])
         return sequence
 
     def __repr__(self):
         max_width = 30
         replace = '...'
-        display = int((max_width - len(replace))/2.0)
+        display = int((max_width - len(replace)) / 2.0)
         s = str(self)
-        if len(s) > display*2:
+        if len(s) > display * 2:
             # diff = display*2 - len(s)
             s = s[:display] + '...' + s[-display:]
         return "Sequence('{}')".format(s)

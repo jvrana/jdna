@@ -53,7 +53,7 @@ class StringColumn(object):
 
     FILL = ' '
 
-    def __init__(self, strings=None, color=None, background=None):
+    def __init__(self, strings=None, color=None, background=None, fill=None):
         """
         StringColumn constructor.
 
@@ -62,6 +62,9 @@ class StringColumn(object):
         """
         self._strings = []
         self._length = 0
+        if fill is None:
+            fill = self.FILL
+        self.fill = fill
         if strings:
             max_length = max([self.string_length(s) for s in strings])
             self._length = max_length
@@ -84,13 +87,15 @@ class StringColumn(object):
 
     @staticmethod
     def remove_formatting(string):
-        pattern = "\\\\x1b\[\d\dm"
-        return re.sub(pattern, '', string.__repr__())
+        pattern = '\\x1b\[\d\dm'
+        return re.sub(pattern, '', string)
 
     @classmethod
     def string_length(cls, string):
         """String length, ignoring terminal formatting"""
-        return len(cls.remove_formatting(string))
+        subbed = (cls.remove_formatting(string))
+        l = len(subbed)
+        return len(subbed)
 
     @property
     def strings(self):
@@ -99,19 +104,27 @@ class StringColumn(object):
     def indent(self, num):
         sc_copy = self.copy()
         for i, s in enumerate(sc_copy.strings):
-            sc_copy._strings[i] = sc_copy.FILL * num + sc_copy._strings[i]
+            sc_copy._strings[i] = self.fill * num + sc_copy._strings[i]
         sc_copy._length += num
         return sc_copy
 
     def indent_right(self, num):
         sc_copy = self.copy()
         for i, s in enumerate(sc_copy.strings):
-            sc_copy._strings[i] = sc_copy._strings[i] + sc_copy.FILL * num
+            sc_copy._strings[i] = sc_copy._strings[i] + self.fill * num
         sc_copy._length += num
         return sc_copy
 
+    def center(self, span):
+        diff = span - self.length
+        if diff > 0:
+            l = int(diff/2)
+            r = l + diff%2
+            return self.indent(l).indent_right(r)
+        return self.copy()
+
     def right_fill(self, string):
-        return string + self.FILL * (self.length - self.string_length(string))
+        return string + self.fill * (self.length - self.string_length(string))
 
     def prepend_string(self, new_string):
         if self.string_length(new_string) > self.length:
@@ -128,7 +141,7 @@ class StringColumn(object):
             self.strings[i] = prefix + self.strings[i]
 
     def stack(self, *others):
-        sc = self[:]
+        sc = self.copy()
         for other in others:
             for string in other.strings:
                 sc.append_string(string)
@@ -185,9 +198,7 @@ class StringColumn(object):
         return self[n1:n2]
 
     def __copy__(self):
-        copied = self.__class__(self.strings)
-        copied.color = self.color
-        copied.background = self.background
+        copied = self.__class__(self.strings, color=self.color, background=self.background, fill=self.fill)
         return copied
 
     def __getitem__(self, key):
@@ -444,11 +455,21 @@ class SequenceRow(object):
         if fill.strip() == '':
             raise Exception("Fill cannot be whitespace")
         sc = StringColumn(color=color, background=background)
-        if len(label) + 1 > span:
-            sc.append_string("|<{0:{fill}{align}{indent}}".format(label, fill=' ', align='^', indent=span))
-            label = fill * span
-        sc.append_string("{0:{fill}{align}{indent}}".format(label, fill=fill, align='^', indent=span))
-        return sc
+        if isinstance(label, str):
+            if len(label) + 1 > span:
+                sc.append_string("|<" + label)
+                # sc.append_string("|<{0:{fill}{align}{indent}}".format(label, fill=' ', align='^', indent=span))
+                label = fill * span
+            sc2 = StringColumn(fill=fill)
+            sc2.append_string(label)
+            return sc.stack(sc2.center(span))
+            # sc2.append_string("{0:{fill}{align}{indent}}".format(label, fill=fill, align='^', indent=span))
+        elif isinstance(label, StringColumn):
+            if len(label) > span:
+                sc = sc.stack(label)
+                return sc.stack(StringColumn([''], fill=fill).center(span))
+            label.fill = fill
+            return sc.stack(label.center(span))
 
     def absolute_annotate(self, start, end, fill, label, color=None, background=None):
         """
@@ -614,9 +635,7 @@ class SequenceViewer(object):
             self.metadata['Cyclic'] = self.sequences[0].cyclic
         if metadata is not None:
             self.metadata.update(metadata)
-
-    def set_window(self, start, end):
-        self.window = (start, end)
+        self.annotations = []
 
     def reset(self):
         self._rows = None
