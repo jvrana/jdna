@@ -29,11 +29,13 @@ class SequenceFlags(IntFlag):
 class Feature(object):
     """An annotation for a sequence."""
 
-    def __init__(self, name, type=None, strand=SequenceFlags.FORWARD, color=None):
+    def __init__(self, name, type=None, strand=None, color=None):
         self.name = name
         if type is None:
             type = 'misc'
         self.type = type
+        if strand is None:
+            strand = SequenceFlags.FORWARD
         self.strand = strand
         if color is None:
             color = random_color()
@@ -41,7 +43,11 @@ class Feature(object):
         # self._nodes = set()
 
     def __str__(self):
-        return '{} {}'.format(self.name, self.type)
+        return "<Feature name='{name}' type='{tp}' color='{color}'".format(
+            name=self.name,
+            tp=self.type,
+            color=self.color
+        )
 
     def __repr__(self):
         return str(self)
@@ -242,11 +248,10 @@ class Nucleotide(Node):
 
     def add_feature(self, feature):
         self.features.add(feature)
-        # feature._bind([self])
+        return feature
 
     def remove_feature(self, feature):
         self.features.remove(feature)
-        # feature._unbind([self])
 
     def feature_fwd(self, feature):
         stop = lambda x: feature not in x.features
@@ -545,7 +550,7 @@ class Sequence(DoubleLinkedList):
                 found.append(feature)
         return found
 
-    def annotate(self, start, end, name, feature_type=None, color=None):
+    def annotate(self, start, end, name, feature_type=None, color=None, strand=None):
         """
         Annotate a regions
 
@@ -562,9 +567,7 @@ class Sequence(DoubleLinkedList):
         :return: new feature
         :rtype: Feature
         """
-        f = Feature(name, feature_type, color)
-        self.add_feature(start, end, f)
-        return f
+        return self.add_feature(start, end, Feature(name, feature_type, strand=strand, color=color))
 
     def complement(self):
         """Complement the sequence in place"""

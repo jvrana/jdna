@@ -114,16 +114,18 @@
 
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">copy</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">IntFlag</span>
+
+<span class="kn">import</span> <span class="nn">primer3</span>
 <span class="kn">from</span> <span class="nn">Bio</span> <span class="k">import</span> <span class="n">pairwise2</span>
 
+<span class="kn">from</span> <span class="nn">jdna.alphabet</span> <span class="k">import</span> <span class="n">DNA</span><span class="p">,</span> <span class="n">UnambiguousDNA</span>
+<span class="kn">from</span> <span class="nn">jdna.format</span> <span class="k">import</span> <span class="n">format_sequence</span>
 <span class="kn">from</span> <span class="nn">jdna.linked_list</span> <span class="k">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">DoubleLinkedList</span><span class="p">,</span> <span class="n">LinkedListMatch</span>
 <span class="kn">from</span> <span class="nn">jdna.utils</span> <span class="k">import</span> <span class="n">random_color</span>
-<span class="kn">from</span> <span class="nn">jdna.alphabet</span> <span class="k">import</span> <span class="n">DNA</span><span class="p">,</span> <span class="n">UnambiguousDNA</span><span class="p">,</span> <span class="n">AmbiguousDNA</span>
-<span class="kn">from</span> <span class="nn">jdna.format</span> <span class="k">import</span> <span class="n">format_sequence</span>
-<span class="kn">from</span> <span class="nn">jdna.viewer</span> <span class="k">import</span> <span class="n">SequenceViewer</span><span class="p">,</span> <span class="n">ViewerAnnotationFlag</span>
-<span class="kn">import</span> <span class="nn">primer3</span>
+<span class="kn">from</span> <span class="nn">jdna.viewer</span> <span class="k">import</span> <span class="n">SequenceViewer</span><span class="p">,</span> <span class="n">ViewerAnnotationFlag</span><span class="p">,</span> <span class="n">StringColumn</span>
+
 
 <div class="viewcode-block" id="SequenceFlags"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.SequenceFlags">[docs]</a><span class="k">class</span> <span class="nc">SequenceFlags</span><span class="p">(</span><span class="n">IntFlag</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Constants/Flags for sequences.&quot;&quot;&quot;</span>
@@ -163,19 +165,19 @@
     <span class="c1">#</span>
     <span class="c1"># def segments(self):</span>
     <span class="c1">#     return Sequence.segments(self.nodes)</span>
-        <span class="c1"># visited = set()</span>
-        <span class="c1"># pairs = set()</span>
-        <span class="c1"># stop = lambda x: x not in self._nodes</span>
-        <span class="c1"># for n in self._nodes:</span>
-        <span class="c1">#     if n not in visited:</span>
-        <span class="c1">#         tail = n</span>
-        <span class="c1">#         for tail in n.fwd(stop_criteria=stop):</span>
-        <span class="c1">#             visited.add(tail)</span>
-        <span class="c1">#         head = n</span>
-        <span class="c1">#         for head in n.rev(stop_criteria=stop):</span>
-        <span class="c1">#             visited.add(head)</span>
-        <span class="c1">#         pairs.add((head, tail))</span>
-        <span class="c1"># return pairs</span>
+    <span class="c1"># visited = set()</span>
+    <span class="c1"># pairs = set()</span>
+    <span class="c1"># stop = lambda x: x not in self._nodes</span>
+    <span class="c1"># for n in self._nodes:</span>
+    <span class="c1">#     if n not in visited:</span>
+    <span class="c1">#         tail = n</span>
+    <span class="c1">#         for tail in n.fwd(stop_criteria=stop):</span>
+    <span class="c1">#             visited.add(tail)</span>
+    <span class="c1">#         head = n</span>
+    <span class="c1">#         for head in n.rev(stop_criteria=stop):</span>
+    <span class="c1">#             visited.add(head)</span>
+    <span class="c1">#         pairs.add((head, tail))</span>
+    <span class="c1"># return pairs</span>
 
     <span class="k">def</span> <span class="nf">is_multipart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -218,12 +220,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="n">direction</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strand</span> <span class="o">=</span> <span class="n">strand</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">anneal</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">copy_slice</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">query_bounds</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">SequenceFlags</span><span class="o">.</span><span class="n">REVERSE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">anneal</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">copy_slice</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">query_bounds</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">five_prime_overhang</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">new_slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_end</span><span class="o">.</span><span class="n">prev</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">three_prime_overhang</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">new_slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query_start</span><span class="o">.</span><span class="n">next</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">anneal</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">copy_slice</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">query_bounds</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">five_prime_overhang</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">new_slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_start</span><span class="o">.</span><span class="n">prev</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">three_prime_overhang</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">new_slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query_end</span><span class="o">.</span><span class="n">next</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
         <span class="c1"># self.anneal = self.primer[query_span[0]:query_span[1]+1]</span>
@@ -254,10 +257,10 @@
 <span class="sd">        :rtype:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">linked_list_match</span><span class="o">.</span><span class="n">template_bounds</span><span class="p">,</span> <span class="n">linked_list_match</span><span class="o">.</span><span class="n">query_bounds</span><span class="p">,</span>
-            <span class="n">template</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span>
-            <span class="n">direction</span><span class="p">,</span>
-            <span class="n">strand</span><span class="o">=</span><span class="n">strand</span>
-        <span class="p">)</span></div>
+                   <span class="n">template</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span>
+                   <span class="n">direction</span><span class="p">,</span>
+                   <span class="n">strand</span><span class="o">=</span><span class="n">strand</span>
+                   <span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">template_anneal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -289,7 +292,6 @@
     <span class="sd">&quot;&quot;&quot;Represents a biological nucleotide. Serves a :class:`Node` in teh :class:`Sequence` object.&quot;&quot;&quot;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;__next&#39;</span><span class="p">,</span> <span class="s1">&#39;__prev&#39;</span><span class="p">,</span> <span class="s1">&#39;_features&#39;</span><span class="p">]</span>
-
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -487,13 +489,21 @@
             <span class="n">copied</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">copied</span></div>
 
+
 <div class="viewcode-block" id="Sequence"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence">[docs]</a><span class="k">class</span> <span class="nc">Sequence</span><span class="p">(</span><span class="n">DoubleLinkedList</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a biological sequence as a double linked list. Can be annotated with features.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Sequence.DEFAULTS"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.DEFAULTS">[docs]</a>    <span class="k">class</span> <span class="nc">DEFAULTS</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Sequence defaults&quot;&quot;&quot;</span>
-        <span class="n">MIN_ANNEAL_BASES</span> <span class="o">=</span> <span class="mi">13</span></div>
-    
+        <span class="n">MIN_ANNEAL_BASES</span> <span class="o">=</span> <span class="mi">13</span>
+        <span class="n">FOREGROUND_COLORS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">]</span>
+        <span class="n">BACKGROUND_COLORS</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    <span class="n">FORWARD</span> <span class="o">=</span> <span class="n">SequenceFlags</span><span class="o">.</span><span class="n">FORWARD</span>
+    <span class="n">REVERSE</span> <span class="o">=</span> <span class="n">SequenceFlags</span><span class="o">.</span><span class="n">REVERSE</span>
+    <span class="n">TOP</span> <span class="o">=</span> <span class="n">SequenceFlags</span><span class="o">.</span><span class="n">TOP</span>
+    <span class="n">BOTTOM</span> <span class="o">=</span> <span class="n">SequenceFlags</span><span class="o">.</span><span class="n">BOTTOM</span>
     <span class="n">NODE_CLASS</span> <span class="o">=</span> <span class="n">Nucleotide</span>
     <span class="n">counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 
@@ -810,9 +820,24 @@
                     <span class="n">direction</span> <span class="o">=</span> <span class="n">ViewerAnnotationFlag</span><span class="o">.</span><span class="n">FORWARD</span>
                 <span class="k">elif</span> <span class="n">feature</span><span class="o">.</span><span class="n">strand</span> <span class="o">==</span> <span class="n">SequenceFlags</span><span class="o">.</span><span class="n">REVERSE</span><span class="p">:</span>
                     <span class="n">direction</span> <span class="o">=</span> <span class="n">ViewerAnnotationFlag</span><span class="o">.</span><span class="n">REVERSE</span>
-                <span class="n">view</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">feature</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">feature</span><span class="o">.</span><span class="n">color</span><span class="p">)</span>
+                <span class="n">view</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">feature</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">feature</span><span class="o">.</span><span class="n">color</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Sequence.view"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.view">[docs]</a>    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">85</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_complement</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">view_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bindings</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">view</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">complement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bindings</span><span class="p">:</span>
+            <span class="n">anneal</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">anneal</span>
+            <span class="n">primer_sequence</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">five_prime_overhang</span> <span class="o">+</span> <span class="n">anneal</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">three_prime_overhang</span>
+            <span class="n">annotation</span> <span class="o">=</span> <span class="n">StringColumn</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">primer_sequence</span><span class="p">),</span>
+                                       <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">five_prime_overhang</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">anneal</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span>
+                                           <span class="n">b</span><span class="o">.</span><span class="n">three_prime_overhang</span><span class="p">)])</span>
+            <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">Sequence</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">:</span>
+                <span class="n">view</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">annotation</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">Sequence</span><span class="o">.</span><span class="n">REVERSE</span><span class="p">:</span>
+                <span class="n">view</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">annotation</span><span class="o">.</span><span class="n">flip</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">view</span>
+
+<div class="viewcode-block" id="Sequence.view"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.view">[docs]</a>    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">85</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">complement</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a :class:`SequenceViewer` instance from this sequence. Printing the view object with</span>
 <span class="sd">        annotations and complement will produce an output similar to the following:</span>
@@ -857,10 +882,10 @@
 <span class="sd">        :type width: int</span>
 <span class="sd">        :param spacer: string to intersperse between sequence rows (default is newline)</span>
 <span class="sd">        :type spacer: basestring</span>
-<span class="sd">        :param include_complement: whether to include the complementary strand in the view</span>
-<span class="sd">        :type include_complement: bool</span>
-<span class="sd">        :param include_annotations: whether to include annotations/features in the view instance</span>
-<span class="sd">        :type include_annotations: bool</span>
+<span class="sd">        :param complement: whether to include the complementary strand in the view</span>
+<span class="sd">        :type complement: bool</span>
+<span class="sd">        :param features: whether to include annotations/features in the view instance</span>
+<span class="sd">        :type features: bool</span>
 <span class="sd">        :return: the viewer object</span>
 <span class="sd">        :rtype: SequenceViewer</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -871,19 +896,34 @@
             <span class="n">width</span> <span class="o">=</span> <span class="mi">85</span>
 
         <span class="n">seqs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">include_complement</span><span class="p">:</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">FOREGROUND_COLORS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">complement</span><span class="p">:</span>
             <span class="n">seqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">complement</span><span class="p">())</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">FOREGROUND_COLORS</span>
         <span class="k">if</span> <span class="n">spacer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">include_complement</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">complement</span><span class="p">:</span>
                 <span class="n">spacer</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">spacer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">viewer</span> <span class="o">=</span> <span class="n">SequenceViewer</span><span class="p">(</span><span class="n">seqs</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="n">spacer</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">include_annotations</span><span class="p">:</span>
+        <span class="n">viewer</span> <span class="o">=</span> <span class="n">SequenceViewer</span><span class="p">(</span><span class="n">seqs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+                                <span class="n">spacer</span><span class="o">=</span><span class="n">spacer</span><span class="p">,</span> <span class="n">foreground_colors</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">features</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_apply_features_to_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewer</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">viewer</span></div>
 
-<div class="viewcode-block" id="Sequence.print"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_complement</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">copied</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">copied</span><span class="p">:</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">copied</span>
+
+    <span class="k">def</span> <span class="nf">lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">copied</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">copied</span><span class="p">:</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">copied</span>
+
+<div class="viewcode-block" id="Sequence.print"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">complement</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Create and print a :class:`SequenceViewer` instance from this sequence. Printing the view object</span>
 <span class="sd">         with annotations and complement will produce an output similar to the following:</span>
@@ -928,14 +968,14 @@
 <span class="sd">         :type width: int</span>
 <span class="sd">         :param spacer: string to intersperse between sequence rows (default is newline)</span>
 <span class="sd">         :type spacer: basestring</span>
-<span class="sd">         :param include_complement: whether to include the complementary strand in the view</span>
-<span class="sd">         :type include_complement: bool</span>
+<span class="sd">         :param complement: whether to include the complementary strand in the view</span>
+<span class="sd">         :type complement: bool</span>
 <span class="sd">         :param include_annotations: whether to include annotations/features in the view instance</span>
 <span class="sd">         :type include_annotations: bool</span>
 <span class="sd">         :return: the viewer object</span>
 <span class="sd">         :rtype: SequenceViewer</span>
 <span class="sd">         &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="n">spacer</span><span class="p">,</span> <span class="n">include_complement</span><span class="o">=</span><span class="n">include_complement</span><span class="p">)</span><span class="o">.</span><span class="n">print</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="n">spacer</span><span class="p">,</span> <span class="n">complement</span><span class="o">=</span><span class="n">complement</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">print</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Sequence.tm"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.tm">[docs]</a>    <span class="k">def</span> <span class="nf">tm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -953,7 +993,7 @@
             <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
                 <span class="n">annotations</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
                     <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
-                    <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">end</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
                     <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">feature</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">feature</span><span class="o">.</span><span class="n">color</span><span class="p">,</span>
                     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">feature</span><span class="o">.</span><span class="n">type</span>
@@ -972,16 +1012,18 @@
         <span class="sd">&quot;&quot;&quot;Load a sequence from a json formatted dictionary&quot;&quot;&quot;</span>
         <span class="n">sequence</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;bases&#39;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
         <span class="n">sequence</span><span class="o">.</span><span class="n">cyclic</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;isCircular&#39;</span><span class="p">]</span>
+        <span class="n">sequence</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">sequence</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]:</span>
-            <span class="n">sequence</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">])</span>
+            <span class="n">sequence</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">sequence</span></div>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">max_width</span> <span class="o">=</span> <span class="mi">30</span>
         <span class="n">replace</span> <span class="o">=</span> <span class="s1">&#39;...&#39;</span>
-        <span class="n">display</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">max_width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">replace</span><span class="p">))</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">display</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">max_width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">replace</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">display</span><span class="o">*</span><span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">display</span> <span class="o">*</span> <span class="mi">2</span><span class="p">:</span>
             <span class="c1"># diff = display*2 - len(s)</span>
             <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="n">display</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="n">display</span><span class="p">:]</span>
         <span class="k">return</span> <span class="s2">&quot;Sequence(&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>

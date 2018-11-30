@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "90681b6d9a7c04d6d652e7c0c3dbaceb2c585a9c2244ccbea78b4eec0d702e39"
+            "sha256": "d73e8b8402ff28d4118cb51e8b9792f7e0c0fefe57a23e85b2b5bd29a21b56e1"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -59,6 +59,10 @@
                 "sha256:c39efa13fbdeb4506c476c9b3babf6a718da943dab7811c206005a4a956c080c"
             ],
             "version": "==4.3.0"
+        },
+        "jdna": {
+            "editable": true,
+            "path": "."
         },
         "networkx": {
             "hashes": [

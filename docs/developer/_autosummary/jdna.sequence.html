@@ -885,7 +885,7 @@ to ‘equivalent’</li>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.print">
-<code class="descname">print</code><span class="sig-paren">(</span><em>indent=None</em>, <em>width=None</em>, <em>spacer=None</em>, <em>include_complement=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.print" title="Permalink to this definition">¶</a></dt>
+<code class="descname">print</code><span class="sig-paren">(</span><em>indent=None</em>, <em>width=None</em>, <em>spacer=None</em>, <em>complement=False</em>, <em>features=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.print" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create and print a <code class="xref py py-class docutils literal notranslate"><span class="pre">SequenceViewer</span></code> instance from this sequence. Printing the view object
 with annotations and complement will produce an output similar to the following:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="s2">&quot;Unnamed&quot;</span> <span class="p">(</span><span class="mi">550</span><span class="n">bp</span><span class="p">)</span>
@@ -928,7 +928,7 @@ with annotations and complement will produce an output similar to the following:
 <li><strong>indent</strong> (<em>int</em>) – indent between left column and base pairs view windo</li>
 <li><strong>width</strong> (<em>int</em>) – width of the view window</li>
 <li><strong>spacer</strong> (<em>basestring</em>) – string to intersperse between sequence rows (default is newline)</li>
-<li><strong>include_complement</strong> (<em>bool</em>) – whether to include the complementary strand in the view</li>
+<li><strong>complement</strong> (<em>bool</em>) – whether to include the complementary strand in the view</li>
 <li><strong>include_annotations</strong> (<em>bool</em>) – whether to include annotations/features in the view instance</li>
 </ul>
 </td>
@@ -1022,7 +1022,7 @@ to the following:</p>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.view">
-<code class="descname">view</code><span class="sig-paren">(</span><em>indent=10</em>, <em>width=85</em>, <em>spacer=None</em>, <em>include_complement=False</em>, <em>include_annotations=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.view" title="Permalink to this definition">¶</a></dt>
+<code class="descname">view</code><span class="sig-paren">(</span><em>indent=10</em>, <em>width=85</em>, <em>spacer=None</em>, <em>complement=False</em>, <em>features=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.view" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a <code class="xref py py-class docutils literal notranslate"><span class="pre">SequenceViewer</span></code> instance from this sequence. Printing the view object with
 annotations and complement will produce an output similar to the following:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="s2">&quot;Unnamed&quot;</span> <span class="p">(</span><span class="mi">550</span><span class="n">bp</span><span class="p">)</span>
@@ -1065,8 +1065,8 @@ annotations and complement will produce an output similar to the following:</p>
 <li><strong>indent</strong> (<em>int</em>) – indent between left column and base pairs view windo</li>
 <li><strong>width</strong> (<em>int</em>) – width of the view window</li>
 <li><strong>spacer</strong> (<em>basestring</em>) – string to intersperse between sequence rows (default is newline)</li>
-<li><strong>include_complement</strong> (<em>bool</em>) – whether to include the complementary strand in the view</li>
-<li><strong>include_annotations</strong> (<em>bool</em>) – whether to include annotations/features in the view instance</li>
+<li><strong>complement</strong> (<em>bool</em>) – whether to include the complementary strand in the view</li>
+<li><strong>features</strong> (<em>bool</em>) – whether to include annotations/features in the view instance</li>
 </ul>
 </td>
 </tr>

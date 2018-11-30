@@ -12,7 +12,10 @@ tests_require = [
 install_requires = [
     "biopython",
     "numpy",
-    "networkx"
+    "networkx",
+    "primer3-py",
+    "colorama",
+    "webcolors"
 ]
 
 def parse_version_file():
