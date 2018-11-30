@@ -35,30 +35,34 @@ def hex_to_color_name(h):
             color = name
     return color
 
-def colored(text, hex_color):
+def _colored(text, hex_color, fore_or_back):
     """Return colored text"""
+    if hex_color is None:
+        return text
     try:
         color_name = hex_to_color_name(hex_color)
     except ValueError:
         color_name = hex_color
     s = "{color}{text}{end}".format(
-        color=getattr(Fore, color_name.upper()),
+        color=getattr(fore_or_back, color_name.upper()),
         text=text,
         end=Style.RESET_ALL
     )
     return s
 
-def background(text, hex_color):
+def colored(text, hex_color):
+    """Return colored text"""
+    return _colored(text, hex_color, Fore)
+
+def colored_background(text, hex_color):
     """Return colored text"""
     try:
-        color_name = hex_to_color_name(hex_color)
+        rgb = webcolors.hex_to_rgb(hex_color)
     except ValueError:
-        color_name = hex_color
-    s = "{color}{text}{end}".format(
-        color=getattr(Back, color_name.upper()),
-        text=text,
-        end=Style.RESET_ALL
-    )
+        rgb = webcolors.name_to_rgb(hex_color)
+    s = _colored(text, hex_color, Back)
+    if rgb.red + rgb.blue + rgb.green < (255*3/2.0):
+        colored(s, 'white')
     return s
 
 def random_color():

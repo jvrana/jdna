@@ -4,7 +4,7 @@ Represent linear or circularized nucleotides
 
 import itertools
 from collections import defaultdict
-from copy import copy, deepcopy
+from copy import copy
 from enum import IntFlag
 from Bio import pairwise2
 
@@ -14,6 +14,7 @@ from jdna.alphabet import DNA, UnambiguousDNA, AmbiguousDNA
 from jdna.format import format_sequence
 from jdna.viewer import SequenceViewer, ViewerAnnotationFlag
 import primer3
+
 
 class SequenceFlags(IntFlag):
     """Constants/Flags for sequences."""
@@ -702,7 +703,7 @@ class Sequence(DoubleLinkedList):
                     direction = ViewerAnnotationFlag.FORWARD
                 elif feature.strand == SequenceFlags.REVERSE:
                     direction = ViewerAnnotationFlag.REVERSE
-                view.annotate(pos[0], pos[1], label=feature.name, direction=direction, color=feature.color)
+                view.annotate(pos[0], pos[1], label=feature.name, direction=direction, background=feature.color)
 
     def view(self, indent=10, width=85, spacer=None, include_complement=False, include_annotations=True):
         """
@@ -772,7 +773,7 @@ class Sequence(DoubleLinkedList):
                 spacer = '\n'
             else:
                 spacer = ''
-        viewer = SequenceViewer(seqs, indent=indent, width=width, spacer=spacer, foreground_colors=colors)
+        viewer = SequenceViewer(seqs, name=self.name, description=self.description, indent=indent, width=width, spacer=spacer, foreground_colors=colors)
         if include_annotations:
             self._apply_features_to_view(self, viewer)
         return viewer
@@ -866,6 +867,8 @@ class Sequence(DoubleLinkedList):
         """Load a sequence from a json formatted dictionary"""
         sequence = cls(data['bases'], name=data['name'])
         sequence.cyclic = data['isCircular']
+        sequence.name = data['name']
+        sequence.description = data.get('description', None)
         for a in data['annotations']:
             sequence.annotate(a['start'], a['end']-1, a['name'], a['type'], a['color'])
         return sequence

@@ -74,9 +74,11 @@ def test_annotate_viewer_with_fill(start, end, rows, direction, fill):
 ])
 def test_annotate_viewer_with_label(start, end, label, expected_labels, no_labels):
     viewer = SequenceViewer([Sequence.random(500)], width=100)
-    viewer.annotate(start, end, label=label)
+    viewer.annotate(start, end, label=label, background="blue")
     for expected_label in expected_labels:
         assert expected_label in str(viewer.rows[0])
     for no_label in no_labels:
         assert no_label not in str(viewer.rows[0])
     viewer.print()
+
+
