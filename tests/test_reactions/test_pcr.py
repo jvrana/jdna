@@ -41,3 +41,25 @@ def test_pcr(primer1_inset, primer2_inset, o1, o2, circular_template):
     assert len(products) == 1
     expected_len = len(template) - primer1_inset - primer2_inset + o1 + o2
     assert len(products[0]) == expected_len, "Product should be {} long".format(expected_len)
+
+
+def test_pcr_expected_sequence():
+    anneal1 = Sequence.random(20)
+    anneal2 = Sequence.random(20)
+    overhang1 = Sequence.random(20)
+    overhang2 = Sequence.random(20)
+    buffer = Sequence('N'*100)
+
+    template = buffer + anneal1 + buffer + anneal2 + buffer
+    primer1 = overhang1 + anneal1
+    primer2 = overhang2 + anneal2.copy().rc()
+
+    products = Reaction.pcr(template, [primer1, primer2])
+    assert len(products) == 1
+
+    print(anneal2)
+    print(anneal2.copy().reverse_complement())
+    print(overhang2)
+    print(overhang2.copy().reverse_complement())
+
+    assert str(products[0]) == str(overhang1 + anneal1 + buffer + anneal2 + overhang2.copy().reverse_complement())

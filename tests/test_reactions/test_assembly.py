@@ -27,7 +27,7 @@ def generate_sequences(seq):
         if cyclic:
             sequences[-1].fuse_in_place(seq[:random.randint(20,30)])
         for i, s in enumerate(sequences):
-            s.name = str(i)
+            s.name = "Sequence {}".format(i)
         return sequences
     return generate_sequences
 
@@ -130,6 +130,11 @@ def test_cyclic_assemblies(seq, generate_sequences, reverse_complement):
     assemblies = Reaction.cyclic_assemblies(sequences, max_bases=50)
 
     assert len(assemblies) == 2
+
+    for s in sequences:
+        print(s)
+    print()
+
     for a in assemblies:
         p = a.product
         assert p.cyclic
@@ -145,3 +150,16 @@ def test_cyclic_assemblies_num_fragments(seq, generate_sequences):
     assemblies = Reaction.cyclic_assemblies(sequences, max_bases=50)
     for a in assemblies:
         print(a)
+
+
+def test_hard_coded_assembly():
+    seqs = [
+        Sequence('GTCGGCGGGACCAGGGAGTTTAAACAGGATTGATAATGTAATAGGATCAATGAATATTAACATTAGGTGCTGTGGGTGGCGCTGGAGAAAACCTTCGTATCGGC', name='seq1'),
+        Sequence('GCCGATACGAAGGTTTTCTCCAGCGAGTTTATCATTATCAGGTTTTGGGACGCTCGAAGGCTTTAATTTGCTTCAATAAAGGAGCGAGCACCCG', name='seq2')
+
+    ]
+    Reaction.interaction_report(Reaction.interaction_graph(seqs, bind_reverse_complement=True, min_bases=10, max_bases=200))
+    # assemblies = Reaction.cyclic_assemblies(seqs)
+    # for a in assemblies:
+    #     print(a.product)
+    #     a.print(width=100)

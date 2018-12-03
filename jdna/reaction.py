@@ -123,13 +123,10 @@ class Assembly(object):
             junctions.append(junctions[0])
         else:
             junctions = [Sequence()] + junctions
-        for j in junctions:
-            print(j)
         for i, t in enumerate(self.templates):
             seq = junctions[i] + t + junctions[i + 1]
             seqs.append(seq)
             pos += len(seq) - len(junctions[i + 1])
-            print(len(junctions[i+1]))
             positions.append(pos)
 
         aligned_seqs = []
@@ -141,7 +138,8 @@ class Assembly(object):
             diff = mx - len(s)
             aligned_seqs[i] = aligned_seqs[i] + Sequence('-' * diff)
 
-        labels = ['({i}) {index}'.format(i=i, index="{index}") for i in range(len(aligned_seqs))]
+        labels = ['({i}) {index}'.format(i=i,
+                                                index="{index}") for i in range(len(aligned_seqs))]
         viewer = SequenceViewer(aligned_seqs, *args,
                                 sequence_labels=labels,
                                 foreground_colors="RANDOM",
@@ -150,6 +148,7 @@ class Assembly(object):
             Sequence._apply_features_to_view(seq, viewer)
         viewer.metadata['Cyclic'] = self.cyclic
         viewer.metadata['Num Fragments'] = len(self.templates)
+        viewer.metadata['Fragment Names'] = '\n\t' + '\n\t'.join(['{} - {}'.format(i, t.name) for i, t in enumerate(self.templates)])
         viewer.metadata['Overhang Tms (°C)'] = ', '.join([str(x) for x in self.tms()])
         viewer.metadata['Junction Lengths (bp)'] = ', '.join([str(len(x)) for x in self.junctions])
         viewer.metadata['Junction ΔG'] = self.format_float_array(self.deltaGs())
@@ -172,25 +171,32 @@ class Assembly(object):
     def deltaG_hairpins(self):
         gs = []
         for jxn in self.junctions:
-            fwd = primer3.calcHairpin(str(jxn).upper()).dg
-            rev = primer3.calcHairpin(str(jxn.copy().rc()).upper()).dg
+            fwd = self._hairpin(jxn).dg
+            rev = self._hairpin(jxn.copy().rc()).dg
             gs.append((fwd, rev))
         return gs
 
+    def _heterodimer(self, s1, s2):
+        return primer3.calcHeterodimer(str(s1[:60]).upper(), str(s2[:60]).upper())
+
+    def _hairpin(self, s):
+        return primer3.calcHairpin(str(s[:60]).upper())
+
     def deltaGs(self):
-        return [primer3.calcHeterodimer(str(o).upper(), str(o.copy().reverse_complement()).upper()).dg for o in self.junctions]
+        overhangs = [o[:60] for o in self.junctions]
+        return [self._heterodimer(o, o.copy().rc()).dg for o in overhangs]
 
     def competing_deltaGs(self):
         gs = []
         for jxn in self.junctions:
             total = 0
-            total += primer3.calcHairpin(str(jxn).upper()).dg
-            total += primer3.calcHairpin(str(jxn.copy().rc()).upper()).dg
+            total += self._hairpin(jxn).dg
+            total += self._hairpin(jxn.copy().rc()).dg
             others = self.junctions[:]
             others.remove(jxn)
             for other in others:
-                dg1 = primer3.calcHeterodimer(str(jxn).upper(), str(other.copy().rc()).upper()).dg
-                dg2 = primer3.calcHeterodimer(str(jxn).upper(), str(other).upper()).dg
+                dg1 = self._heterodimer(jxn, other.copy().rc()).dg
+                dg2 = self._heterodimer(jxn, other.copy()).dg
                 total += dg1
                 total += dg2
             gs.append(total)
@@ -285,24 +291,75 @@ class Reaction(object):
             overhang1 = fwd.five_prime_overhang
             overhang2 = rev.five_prime_overhang
             amplified = template.new_slice(fwd.start, rev.end)
-            products.append(overhang1 + amplified + overhang2)
+            products.append(overhang1 + amplified + overhang2.copy().reverse_complement())
         return products
 
     @classmethod
     def interaction_graph(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, bind_reverse_complement=False,
-                          max_bases=None):
-        """Make an interaction graph from a list of sequences"""
+                          max_bases=None, only_ends=False):
+        """
+        Make an interaction graph from a list of sequences
+
+        :param sequences: list of sequences
+        :type sequences: list
+        :param min_bases: minimum number of bases to bind
+        :type min_bases: int
+        :param bind_reverse_complement: whether to reverse complement each sequence and check interactions
+        :type bind_reverse_complement: int
+        :param max_bases: max number of bases to search
+        :type max_bases: int
+        :param only_ends: whether to only consider end-to-end interactions
+        :type only_ends: bool
+        :return:
+        :rtype:
+        """
         G = nx.DiGraph()
+        sequences = [s.copy() for s in sequences]
         if bind_reverse_complement:
-            sequences = [s.copy() for s in sequences] + [s.copy().reverse_complement() for s in sequences[:]]
+            reverse_complement = []
+            for s in sequences:
+                new = s.copy().reverse_complement()
+                new.name = s.name + "(-1)"
+                reverse_complement.append(new)
+            sequences += reverse_complement
         for s in sequences:
             G.add_node(s.global_id, sequence=s)
         seq_pairs = itertools.product(sequences, repeat=2)
         for s1, s2 in seq_pairs:
             for binding in s1.anneal_forward(s2, min_bases=min_bases, depth=max_bases):
+                if only_ends:
+                    if binding.span[0] != 0 or binding.query_span[-1] != len(s2) - 1:
+                        break
                 if not (binding.span[0] == 0 and binding.span[-1] == len(s1) - 1):
                     G.add_edge(s2.global_id, s1.global_id, template=s1, primer=s2, binding=binding)
         return G
+
+    @classmethod
+    def interaction_report(cls, G):
+        rows = []
+        for n1, n2 in G.edges:
+            edge = G.edges[n1, n2]
+            binding = edge['binding']
+            template = edge['template']
+            primer = edge['primer']
+            template_info = "{name} (id={gid} ({start},{end}/{length})".format(
+                name=template.name,
+                gid=template.global_id,
+                start=binding.span[0],
+                end=binding.span[1],
+                length=len(template)-1
+            )
+            primer_info = "{name} (id={gid} ({start},{end}/{length})".format(
+                name=primer.name,
+                gid=primer.global_id,
+                start=binding.query_span[0],
+                end=binding.query_span[1],
+                length=len(primer)-1
+            )
+            rows.append("{} -> {}".format(template_info, primer_info))
+        print('format: primer -> template')
+        print('\n'.join(rows))
+
 
     @classmethod
     def linear_paths(cls, G):
@@ -349,20 +406,25 @@ class Reaction(object):
             binding = data['binding']
 
             # use the previous template and this query should refer to the same sequence
-            node_pairs.append((prev_template_end, binding.query_start.prev()))
+            node_pairs.append((prev_template_end, binding.query_start.prev(), data['primer'].name))
 
             # the next segment start is the template start
             prev_template_end = binding.end.next()
             overhangs.append(binding.template_anneal)
 
         if not cyclic:
-            node_pairs.append((prev_template_end, None))
+            node_pairs.append((prev_template_end, None, data['template'].name))
             overhangs.append(Sequence())
         else:
             pass
-            node_pairs[0] = (prev_template_end, node_pairs[0][1])
+            node_pairs[0] = (prev_template_end, node_pairs[0][1], node_pairs[0][2])
             overhangs = [overhangs[-1]] + overhangs[:-1]
-        amplified_sequences = [Sequence.new_slice(*pair) for pair in node_pairs]
+
+        amplified_sequences = []
+        for n1, n2, name in node_pairs:
+            sequence = Sequence.new_slice(n1, n2)
+            sequence.name = name
+            amplified_sequences.append(sequence)
 
         return Assembly(amplified_sequences, overhangs, cyclic)
 
@@ -380,7 +442,7 @@ class Reaction(object):
         :return: list of Assembly instances. Sequence can be accessed using `assembly.product`
         :rtype: list
         """
-        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases, max_bases=max_bases)
+        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases, max_bases=max_bases, only_ends=True)
         linear_paths = cls.linear_paths(G)
         if not linear_paths:
             return []
@@ -405,7 +467,7 @@ class Reaction(object):
         :return: list of Assembly instances. Sequence can be accessed using `assembly.product`
         :rtype: list
         """
-        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases, max_bases=max_bases)
+        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases, max_bases=max_bases, only_ends=True)
 
         nodes = list(G.nodes)
         fwd = nodes[:len(sequences)]
@@ -416,6 +478,7 @@ class Reaction(object):
         node_priority = dict(zip(fwd + rev, priority_rank))
 
         cyclic_paths = cls.cyclic_paths(G)
+        print(cyclic_paths)
         if not cyclic_paths:
             return []
         assemblies = []

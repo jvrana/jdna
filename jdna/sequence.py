@@ -42,6 +42,9 @@ class Feature(object):
         self.color = color
         # self._nodes = set()
 
+    def reverse(self):
+        self.strand = -self.strand
+
     def __str__(self):
         return "<Feature name='{name}' type='{tp}' color='{color}'".format(
             name=self.name,
@@ -402,7 +405,7 @@ class Sequence(DoubleLinkedList):
     NODE_CLASS = Nucleotide
     counter = itertools.count()
 
-    def __init__(self, sequence=None, first=None, name=None, description=''):
+    def __init__(self, sequence=None, first=None, name=None, description='', metadata=None):
         """
 
         :param sequence: sequence string
@@ -415,8 +418,13 @@ class Sequence(DoubleLinkedList):
         :type description: basestring
         """
         super(Sequence, self).__init__(data=sequence, first=first)
+        if name is None:
+            name = ''
         self.name = name
         self.description = description
+        if metadata is None:
+            metadata = dict()
+        self.metadata = metadata
         self._global_id = next(Sequence.counter)
 
     @property
@@ -568,6 +576,19 @@ class Sequence(DoubleLinkedList):
         :rtype: Feature
         """
         return self.add_feature(start, end, Feature(name, feature_type, strand=strand, color=color))
+
+    def reverse(self):
+        features_set = set()
+        if self.is_empty():
+            return self
+        nodes = self.nodes
+        for s in nodes:
+            s.swap()
+            features_set.update(s.features)
+        for f in features_set:
+            f.reverse()
+        self.head = nodes[-1]
+        return self
 
     def complement(self):
         """Complement the sequence in place"""
@@ -800,6 +821,7 @@ class Sequence(DoubleLinkedList):
                 spacer = ''
         viewer = SequenceViewer(seqs, name=self.name, description=self.description, indent=indent, width=width,
                                 spacer=spacer, foreground_colors=colors, **kwargs)
+        viewer.metadata.update(self.metadata)
         if features:
             self._apply_features_to_view(self, viewer)
         return viewer
@@ -889,7 +911,8 @@ class Sequence(DoubleLinkedList):
                     'end': end + 1,
                     'name': feature.name,
                     'color': feature.color,
-                    'type': feature.type
+                    'type': feature.type,
+                    'strand': feature.strand,
                 })
 
         return {
