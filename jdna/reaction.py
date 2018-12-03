@@ -12,6 +12,7 @@ from jdna.viewer import SequenceViewer
 import primer3
 from decimal import Decimal
 
+
 class ReactionException(Exception):
     """Generic reaction exception"""
 
@@ -155,7 +156,6 @@ class Assembly(object):
         viewer.metadata['Junction ΔG (hairpin)'] = self.format_array(self.deltaG_hairpins())
         viewer.metadata['Competing ΔG'] = self.format_float_array(self.competing_deltaGs())
         viewer.metadata['Product length (bp)'] = "{}".format(len(self.product))
-        print(self.product)
         return viewer
 
     @staticmethod
@@ -478,7 +478,6 @@ class Reaction(object):
         node_priority = dict(zip(fwd + rev, priority_rank))
 
         cyclic_paths = cls.cyclic_paths(G)
-        print(cyclic_paths)
         if not cyclic_paths:
             return []
         assemblies = []
