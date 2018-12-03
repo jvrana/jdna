@@ -28,6 +28,7 @@ def generate_sequences(seq):
             sequences[-1].fuse_in_place(seq[:random.randint(20,30)])
         for i, s in enumerate(sequences):
             s.name = "Sequence {}".format(i)
+        random.shuffle(sequences)
         return sequences
     return generate_sequences
 
