@@ -122,6 +122,7 @@
 <span class="kn">import</span> <span class="nn">primer3</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
 
+
 <div class="viewcode-block" id="ReactionException"><a class="viewcode-back" href="../../developer/_autosummary/jdna.reaction.html#jdna.reaction.ReactionException">[docs]</a><span class="k">class</span> <span class="nc">ReactionException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generic reaction exception&quot;&quot;&quot;</span></div>
 
@@ -265,7 +266,6 @@
         <span class="n">viewer</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;Junction ΔG (hairpin)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deltaG_hairpins</span><span class="p">())</span>
         <span class="n">viewer</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;Competing ΔG&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_float_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">competing_deltaGs</span><span class="p">())</span>
         <span class="n">viewer</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;Product length (bp)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">viewer</span>
 
     <span class="nd">@staticmethod</span>
@@ -588,7 +588,6 @@
         <span class="n">node_priority</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">fwd</span> <span class="o">+</span> <span class="n">rev</span><span class="p">,</span> <span class="n">priority_rank</span><span class="p">))</span>
 
         <span class="n">cyclic_paths</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">cyclic_paths</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">cyclic_paths</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">cyclic_paths</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
         <span class="n">assemblies</span> <span class="o">=</span> <span class="p">[]</span>

@@ -7,6 +7,9 @@ jdna
 ====
 
 A Python DNA sequence editor that represents sequences as a linked list.
+It includes baasic molecular reaction simulations and a viewer class.
+
+.. image:: _static/viewer.png
 
 Indices and tables
 ------------------
