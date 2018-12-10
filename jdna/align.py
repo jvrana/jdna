@@ -1,6 +1,5 @@
 from Bio import pairwise2, SeqIO
 from Bio.Align.Applications import MafftCommandline
-# from jdna.sequence import Sequence
 from jdna.viewer import SequenceViewer
 
 from jdna.interface import ClassInterface, Interface
