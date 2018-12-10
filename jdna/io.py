@@ -10,7 +10,7 @@ class IOInterface(ClassInterface):
 
     def from_seqrecord(self, seqrecord):
         return self._cls(str(seqrecord.seq),
-                         name=seqrecord.name,
+                         name=seqrecord.id,
                          description=seqrecord.description)
 
     @staticmethod
