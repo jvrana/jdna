@@ -1,11 +1,52 @@
 from Bio import pairwise2, SeqIO
 from Bio.Align.Applications import MafftCommandline
+# from jdna.sequence import Sequence
 from jdna.viewer import SequenceViewer
 
-class Align(object):
+from jdna.interface import ClassInterface, Interface
+import tempfile
 
-    def __init__(self, sequence):
-        self._sequence = sequence
+
+class AlignInterface(ClassInterface):
+
+    def mafft(self, sequences, mafft_exe="/usr/local/bin/mafft", verbose=False):
+        seqs = self._mafft_sequences(sequences, mafft_exe, verbose)
+        viewer = self._mafft_viewer(seqs)
+        return viewer
+
+    def _mafft_sequences(self, sequences, mafft_exe="/usr/local/bin/mafft", verbose=False):
+        in_file = tempfile.mkstemp()[1]
+        self._cls.IO.fasta(sequences, in_file)
+
+        mafft_cline = MafftCommandline(mafft_exe, input=in_file)
+        if verbose:
+            print(mafft_cline)
+        mafft_cline.auto = True
+        result = mafft_cline()
+        if verbose:
+            print(result[1])
+
+        out_file = tempfile.mkstemp()[1]
+        with open(out_file, 'w') as f:
+            f.write(result[0])
+        return self._cls.IO.read_fasta(out_file)
+
+    @staticmethod
+    def _mafft_viewer(seqs):
+        viewer = SequenceViewer(seqs,
+                                sequence_labels=['({})'.format(i) for i in range(len(seqs))],
+                                apply_indices=list(range(len(seqs))),
+                                name='MAFFTA alignment',
+                                )
+        viewer.metadata['Sequence Names'] = '\n\t' + '\n\t'.join(
+            ['{} - {}'.format(i, s.name) for i, s in enumerate(seqs)])
+        return viewer
+
+    def instance(self, instance):
+        return AlignInstanceInterface(instance, self)
+
+
+class AlignInstanceInterface(Interface):
 
     def pairwise(self, other):
         """
@@ -16,7 +57,7 @@ class Align(object):
         :return: list of alignments (tuples)
         :rtype: list
         """
-        alignments = pairwise2.align.globalxx(str(self._sequence).upper(), str(other).upper())
+        alignments = pairwise2.align.globalxx(str(self._inst.upper(), str(other).upper()))
         return alignments
 
     def print_alignment(self, other, max=1):
@@ -55,47 +96,12 @@ class Align(object):
             viewer = SequenceViewer([a[0], mid, a[1]], name="Alignment")
             viewer.print()
 
-    def align_sanger_reads(self, abi_filepaths, format='abi', mafft_exe='/usr/local/bin/mafft', verbose=False):
+    def sanger_reads(self, abi_filepaths, format='abi', mafft_exe='/usr/local/bin/mafft', verbose=False):
         seqrecords = []
         for filepath in abi_filepaths:
             seqrecords.append(SeqIO.read(filepath, format=format))
-        sequences = [self.from_biopython_seqrecord(seq) for seq in seqrecords]
-        self.print_mafft([self] + sequences, mafft_exe, verbose)
+        sequences = [self._inst.from_biopython_seqrecord(seq) for seq in seqrecords]
+        return self._class_interface.mafft([self._inst] + sequences, mafft_exe, verbose)
 
-    def mafft_align(self, sequences, mafft_exe='/usr/local/bin/mafft', verbose=False):
-        return self.mafft([self] + sequences, mafft_exe, verbose)
-
-    def print_mafft_align(self, sequences, mafft_exe, verbose=False):
-        self.print_mafft([self] + sequences, mafft_exe, verbose)
-
-    @classmethod
-    def mafft(cls, sequences, mafft_exe="/usr/local/bin/mafft", verbose=False):
-        import tempfile
-
-        in_file = tempfile.mkstemp()[1]
-        cls.to_fasta(sequences, in_file)
-
-        mafft_cline = MafftCommandline(mafft_exe, input=in_file)
-        if verbose:
-            print(mafft_cline)
-        mafft_cline.auto = True
-        result = mafft_cline()
-        if verbose:
-            print(result[1])
-
-        out_file = tempfile.mkstemp()[1]
-        with open(out_file, 'w') as f:
-            f.write(result[0])
-        return cls.read_fasta(out_file)
-
-    @classmethod
-    def print_mafft(cls, sequences, mafft_exe="/usr/local/bin/mafft", verbose=False):
-        seqs = cls.mafft(sequences, mafft_exe, verbose)
-        viewer = SequenceViewer(seqs,
-                                sequence_labels=['({})'.format(i) for i in range(len(seqs))],
-                                apply_indices=list(range(len(seqs))),
-                                name='MAFFTA alignment',
-                                )
-        viewer.metadata['Sequence Names'] = '\n\t' + '\n\t'.join(
-            ['{} - {}'.format(i, s.name) for i, s in enumerate(seqs)])
-        viewer.print()
+    def mafft(self, sequences, mafft_exe='/usr/local/bin/mafft', verbose=False):
+        return self._class_interface.mafft([self._inst] + sequences, mafft_exe, verbose)

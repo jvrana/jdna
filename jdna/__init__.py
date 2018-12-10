@@ -22,4 +22,3 @@ from jdna.alphabet import DNA, UnambiguousDNA, AmbiguousDNA
 from jdna.sequence import Feature, Sequence, Nucleotide
 from jdna.reaction import Reaction
 from jdna.viewer import SequenceViewer
-from jdna import convert
