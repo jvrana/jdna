@@ -47,3 +47,7 @@ class IOInstanceInterface(Interface):
 
     def write_fasta(self, out):
         return self.fasta(out)
+
+    def json(self, *args, **kwargs):
+        return self._inst.json(*args, **kwargs)
+

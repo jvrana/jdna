@@ -100,7 +100,7 @@ class AlignInstanceInterface(Interface):
         seqrecords = []
         for filepath in abi_filepaths:
             seqrecords.append(SeqIO.read(filepath, format=format))
-        sequences = [self._inst.from_biopython_seqrecord(seq) for seq in seqrecords]
+        sequences = [self._inst.IO.from_seqrecord(seq) for seq in seqrecords]
         return self._class_interface.mafft([self._inst] + sequences, mafft_exe, verbose)
 
     def mafft(self, sequences, mafft_exe='/usr/local/bin/mafft', verbose=False):
