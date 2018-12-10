@@ -22,6 +22,7 @@ class AlignInterface(ClassInterface):
         if verbose:
             print(mafft_cline)
         mafft_cline.auto = True
+        mafft_cline.adjustdirection = True
         result = mafft_cline()
         if verbose:
             print(result[1])

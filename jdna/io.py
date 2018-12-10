@@ -30,8 +30,8 @@ class IOInterface(ClassInterface):
         return [self.from_seqrecord(seq) for seq in seq_gen]
 
     def read(self, inpath, format):
-        seq_gen = SeqIO.read(inpath, format=format)
-        return [self.from_seqrecord(seq) for seq in seq_gen]
+        seq = SeqIO.read(inpath, format=format)
+        return self.from_seqrecord(seq)
 
     def read_fasta(self, inpath):
         return self.parse(inpath, format='fasta')
