@@ -573,21 +573,25 @@ class SequenceViewer(object):
         METADATA_INDENT = 2
         INDENT = 10
         SPACER = '\n'
+        HEADER_SPACER = '\n'
         WIDTH = 85
         NAME = 'Unnamed'
         DESCRIPTION = ''
         BACKGROUND_COLOR = None
         FOREGROUND_COLOR = None
+        APPLY_INDICES = [0]
 
     RANDOM_COLOR = "RANDOM"
 
     def __init__(self, sequences,
                  sequence_labels=None,
+                 apply_indices=DEFAULTS.APPLY_INDICES,
                  foreground_colors=DEFAULTS.FOREGROUND_COLOR,
                  background_colors=DEFAULTS.BACKGROUND_COLOR,
                  indent=DEFAULTS.INDENT,
                  width=DEFAULTS.WIDTH,
                  spacer=DEFAULTS.SPACER,
+                 header_spacer=DEFAULTS.HEADER_SPACER,
                  name=DEFAULTS.NAME,
                  window=(0, None),
                  description='',
@@ -632,7 +636,9 @@ class SequenceViewer(object):
         self.window = window
         self._sequences = tuple([str(s) for s in sequences])
         if sequence_labels is None:
-            sequence_labels = ["{index}"] + [''] * (len(sequences) - 1)
+            sequence_labels = [''] * len(sequences)
+        for i in apply_indices:
+            sequence_labels[i] = '{index} ' + sequence_labels[i]
 
         if foreground_colors == self.RANDOM_COLOR:
             foreground_colors = [random_color() for _ in sequences]
@@ -645,6 +651,7 @@ class SequenceViewer(object):
         self.indent = indent
         self.width = width
         self.spacer = spacer
+        self.header_spacer = header_spacer
         if name is None:
             name = self.DEFAULTS.NAME
         self.name = name
@@ -741,6 +748,29 @@ class SequenceViewer(object):
         spacer = self.spacer
         if spacer is None:
             spacer = ''
-        s = "{header}\n\n".format(header=self.header)
+        s = "{header}\n".format(header=self.header)
+        s += self.header_spacer
         s += '\n{}'.format(spacer).join([str(r) for r in self.rows])
         return s
+
+
+class FASTAItem(SequenceViewer):
+
+    def __init__(self, sequence):
+        super().__init__([sequence], indent=0, width=80, name=sequence.name, sequence_labels=[''], spacer='', header_spacer='')
+
+    @property
+    def header(self):
+        return ">{}".format(self.name)
+
+
+class FASTAViewer(object):
+
+    def __init__(self, sequences):
+        self.views = [FASTAItem(sequence) for sequence in sequences]
+
+    def __str__(self):
+        return '\n\n'.join(str(v) for v in self.views)
+
+    def print(self):
+        print(str(self))

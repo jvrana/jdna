@@ -8,13 +8,13 @@ from copy import copy
 from enum import IntFlag
 
 import primer3
-from Bio import pairwise2
+from Bio import pairwise2, SeqIO
 
 from jdna.alphabet import DNA, UnambiguousDNA
 from jdna.format import format_sequence
 from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
 from jdna.utils import random_color
-from jdna.viewer import SequenceViewer, ViewerAnnotationFlag, StringColumn
+from jdna.viewer import SequenceViewer, FASTAViewer, ViewerAnnotationFlag, StringColumn
 
 
 class SequenceFlags(IntFlag):
@@ -677,53 +677,8 @@ class Sequence(DoubleLinkedList):
     def format(self, width=75, spacer=''):
         return format_sequence(str(self), width=width, spacer=spacer)
 
-    def pairwise(self, other):
-        """
-        Perform a pairwise alignment using BioPython.
-
-        :param other: the other sequence
-        :type other: Sequence | basestring
-        :return: list of alignments (tuples)
-        :rtype: list
-        """
-        alignments = pairwise2.align.globalxx(str(self).upper(), str(other).upper())
-        return alignments
-
-    def print_alignment(self, other, max=1):
-        """
-        Print an alignment with another sequence as a view object. Output will be similar
-        to the following:
-
-        .. code::
-
-            > "Alignment" (170bp)
-
-
-            0         G-GC---G---G----G-C-------------G-TG-----A-T----T---------T--T---ATGTTCATGGACGCCCGGGT
-                      | ||   |   |    | |             | ||     | |    |         |  |   ||||||||||||||||||||
-                      GAGCCACGCACGTCCCGGCATATTAACTCCAAGCTGGTTCTACTCGGCTGGGCGGGCGTGATTTTATGTTCATGGACGCCCGGGT
-
-            85        ATCAAGGCAGCGGCTCACGCCTCTCCACGCGG--GACAG--GTGAAC--TATC--C-G-ACTAGG---TATCAA-----AG--AC
-                      |||||||||||||||   |  | |    | ||  || ||  | |||   |||   | | |  |||   | || |     ||  |
-                      ATCAAGGCAGCGGCT---G--T-T----G-GGCAGA-AGAAG-GAA-AATAT-ATCAGGA--AGGCCGT-TC-AGGTTTAGGGA-
-
-        :param other: the other sequence
-        :type other: Sequence | basestring
-        :param max: maximum number of alignments to display (default=1)
-        :type max: int
-        :return: None
-        :rtype: None
-        """
-        alignments = self.pairwise(other)
-        for a in alignments[:max]:
-            mid = ''
-            for x1, x2 in zip(a[0], a[1]):
-                if '-' not in [x1, x2]:
-                    mid += '|'
-                else:
-                    mid += ' '
-            viewer = SequenceViewer([a[0], mid, a[1]], name="Alignment")
-            viewer.print()
+    # def _print_alignment_helper(self, sequences, name=''):
+    #     for a in
 
     @classmethod
     def _apply_features_to_view(cls, sequence, view):
@@ -838,6 +793,31 @@ class Sequence(DoubleLinkedList):
             n.data = n.data.lower()
         return copied
 
+    def fasta_view(self):
+        return FASTAViewer([self])
+
+    def print_fasta(self):
+        self.fasta_view().print()
+
+    def fasta(self):
+        return str(self.fasta_view())
+
+    def write_fasta(self, path):
+        self.to_fasta([self], path)
+
+    @classmethod
+    def read_fasta(cls, path):
+        seq_gen = SeqIO.parse(path, format='fasta')
+        return [cls(str(seq.seq), name=seq.name) for seq in seq_gen]
+
+    @classmethod
+    def to_fasta(cls, sequences, path=None):
+        fasta = str(FASTAViewer(sequences))
+        if path:
+            with open(path, 'w') as f:
+                f.write(fasta)
+        return fasta
+
     def print(self, indent=None, width=None, spacer=None, complement=False, features=True, **kwargs):
         """
          Create and print a :class:`SequenceViewer` instance from this sequence. Printing the view object
@@ -891,6 +871,10 @@ class Sequence(DoubleLinkedList):
          :rtype: SequenceViewer
          """
         self.view(indent=indent, width=width, spacer=spacer, complement=complement, features=features, **kwargs).print()
+
+    @classmethod
+    def from_biopython_seqrecord(cls, seqrecord):
+        return cls(str(seqrecord.seq), name=seqrecord.name, description=seqrecord.description)
 
     def tm(self):
         """
