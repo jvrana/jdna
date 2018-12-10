@@ -757,7 +757,7 @@ class SequenceViewer(object):
 class FASTAItem(SequenceViewer):
 
     def __init__(self, sequence):
-        super().__init__([sequence], indent=0, width=80, name=sequence.name, sequence_labels=[''], spacer='', header_spacer='')
+        super().__init__([sequence], indent=0, width=80, name=sequence.name, apply_indices=[], sequence_labels=[''], spacer='', header_spacer='')
 
     @property
     def header(self):
