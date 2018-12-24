@@ -3,6 +3,7 @@ misc utilities
 """
 
 import random
+
 import webcolors
 from colorama import Fore, Style, Back
 
@@ -21,6 +22,7 @@ def rgb_to_hex(r, g, b):
 
     return "#{0:02x}{1:02x}{2:02x}".format(clamp(r), clamp(g), clamp(b))
 
+
 def hex_to_color_name(h):
     """Get closest named color for terminal printing"""
     distance = 3 * 255 ** 2 + 1
@@ -34,6 +36,7 @@ def hex_to_color_name(h):
             distance = d
             color = name
     return color
+
 
 def _colored(text, hex_color, fore_or_back):
     """Return colored text"""
@@ -50,13 +53,16 @@ def _colored(text, hex_color, fore_or_back):
     )
     return s
 
+
 def colored(text, hex_color):
     """Return colored text"""
     return _colored(text, hex_color, Fore)
 
+
 def colored_background(text, hex_color):
     """Return colored text"""
     return _colored(text, hex_color, Back)
+
 
 def random_color():
     rgb = [int(random.random() * 255) for x in range(3)]

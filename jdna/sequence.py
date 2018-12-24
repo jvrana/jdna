@@ -8,7 +8,6 @@ from copy import copy
 from enum import IntFlag
 
 import primer3
-from Bio import SeqIO
 
 from jdna.alphabet import DNA, UnambiguousDNA
 from jdna.format import format_sequence

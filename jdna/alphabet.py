@@ -29,6 +29,12 @@ class Alphabet(object):
         """
         return random.choice(list(self.__data.keys()))
 
+    def complement(self, basestring):
+        return ''.join(self[x] for x in basestring)
+
+    def reverse_complement(self, basestring):
+        return self.complement(basestring)[::-1]
+
     def __getitem__(self, item):
         return self.__data[item]
 
@@ -38,6 +44,9 @@ class Alphabet(object):
     def __contains__(self, item):
         return item in self.__data
 
+    # aliases
+    rc = reverse_complement
+    c = complement
 
 Ambiguous = Alphabet('N', 'N')
 UnambiguousDNA = Alphabet('ATCG', 'TAGC')
