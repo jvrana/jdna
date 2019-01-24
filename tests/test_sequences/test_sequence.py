@@ -331,7 +331,7 @@ def test_find_iter_reverse_complement(i, j, reverse, complement, direction, expe
         i = 0
     if j is None:
         j = 30 + i
-    template = Sequence('N'*i) + Sequence.random(j-i) + Sequence('N'*10)
+    template = Sequence('&'*i) + Sequence.random(j-i) + Sequence('&'*10)
     query = template[i:j]
 
     # manipulate query
@@ -361,6 +361,13 @@ def test_find_iter_reverse_complement(i, j, reverse, complement, direction, expe
         assert res.span == (expected_i, expected_j)
     else:
         assert not results
+
+
+def test_find_iter_ambiguous():
+
+    template = Sequence("ATATATATGCTGAGAAATTTATTATGCTGAGATATATAAT")
+    query = Sequence("GCTGAGAW")
+    assert len(list(template.find_iter(query))) == 2
 
 
 @pytest.mark.parametrize('reverse,complement,expected', [
@@ -461,6 +468,20 @@ def test_to_json():
     print(s.json())
 
     Sequence.load(s.json())
+
+@pytest.mark.parametrize('circular,expected', [
+    (True, 2),
+    (False, 3)
+])
+def test_digest(circular, expected):
+
+    s1 = Sequence.random(300)
+    s2 = Sequence.random(300)
+    pmei = 'GTTTAAAC'
+
+    s3 = s1 + Sequence(pmei) + s2
+
+    s3.digest("PmeI", as_names=True)
     # assert not s1.compare(s2 + Sequence("A"))
 #
 # @pytest.mark.parametrize('reverse_complement', [False, True])

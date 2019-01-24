@@ -26,6 +26,7 @@ def test_anneal_small(benchmark, template_length, primer_length, direction, clos
     else:
         assert len(list(template.anneal(primer))) == 1
 
+
 @pytest.fixture(scope='function')
 def generate_sequences():
     def generate_sequences(num_fragments=3, cyclic=True):

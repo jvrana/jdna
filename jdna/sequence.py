@@ -3,20 +3,23 @@ Represent linear or circularized nucleotides
 """
 
 import itertools
+import re
 from collections import defaultdict
 from copy import copy
 from enum import IntFlag
 
 import primer3
+from Bio import Restriction
 
-from jdna.alphabet import DNA, UnambiguousDNA
+from jdna.align import AlignInterface
+from jdna.alphabet import AmbiguousDNA, UnambiguousDNA
 from jdna.format import format_sequence
-from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
-from jdna.utils import random_color
-from jdna.viewer import SequenceViewer, FASTAViewer, ViewerAnnotationFlag, StringColumn
 # from jdna.align import Align
 from jdna.io import IOInterface
-from jdna.align import AlignInterface
+from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
+from jdna.utils import random_color
+from jdna.viewer import SequenceViewer, ViewerAnnotationFlag, StringColumn
+
 
 class SequenceFlags(IntFlag):
     """Constants/Flags for sequences."""
@@ -120,7 +123,6 @@ class BindPos(LinkedListMatch):
         self.direction = direction
         self.strand = strand
 
-
         if self.direction == SequenceFlags.REVERSE:
             self.anneal = query.copy_slice(*self.query_bounds[::-1])
             self.five_prime_overhang = query.new_slice(None, self.query_end.prev())
@@ -191,9 +193,9 @@ class BindPos(LinkedListMatch):
 class Nucleotide(Node):
     """Represents a biological nucleotide. Serves a :class:`Node` in teh :class:`Sequence` object."""
 
-    __slots__ = ['data', '__next', '__prev', '_features']
+    __slots__ = ['data', '__next', '__prev', '_features', 'alphabet']
 
-    def __init__(self, base):
+    def __init__(self, base, alphabet=AmbiguousDNA):
         """
         Nucleotide constructor
 
@@ -202,6 +204,7 @@ class Nucleotide(Node):
         """
         super(Nucleotide, self).__init__(base)
         self._features = set()
+        self.alphabet = alphabet
 
     @classmethod
     def random(cls):
@@ -212,14 +215,14 @@ class Nucleotide(Node):
     def base(self):
         return self.data
 
-    def equivalent(self, other):
-        return self.base.upper() == other.base.upper()
+    def equivalent(self, other) -> bool:
+        return self.alphabet.compare(self.base, other.base)
 
-    def complementary(self, other):
-        return self.base.upper() == DNA[other.base].upper()
+    def complementary(self, other) -> bool:
+        return self.base.upper() == AmbiguousDNA[other.base].upper()
 
     def to_complement(self):
-        self.data = DNA[self.data]
+        self.data = AmbiguousDNA[self.data]
 
     def set_next(self, nucleotide):
         self.cut_next()
@@ -397,6 +400,7 @@ class Sequence(DoubleLinkedList):
         MIN_ANNEAL_BASES = 13
         FOREGROUND_COLORS = ["blue", 'red']
         BACKGROUND_COLORS = None
+        ALPHABET = AmbiguousDNA
 
     FORWARD = SequenceFlags.FORWARD
     REVERSE = SequenceFlags.REVERSE
@@ -405,7 +409,7 @@ class Sequence(DoubleLinkedList):
     NODE_CLASS = Nucleotide
     counter = itertools.count()
 
-    def __init__(self, sequence=None, first=None, name=None, description='', metadata=None):
+    def __init__(self, sequence=None, first=None, name=None, description='', metadata=None, cyclic=False, alphabet=DEFAULTS.ALPHABET):
         """
 
         :param sequence: sequence string
@@ -416,8 +420,17 @@ class Sequence(DoubleLinkedList):
         :type name: basestring
         :param description: optional description of the sequence
         :type description: basestring
+        :param metadata: additional sequence metadata
+        :type metadata: dict
+        :param cyclic: whether to make the sequence circular
+        :type cyclic: bool
+        :param alphabet: the base pair alphabet of this sequence which used for complementary and comparisons
+                        (default: AmbiguousDNA)
+        :type alphabet: jdna.alphabet.Alphabet
         """
-        super(Sequence, self).__init__(data=sequence, first=first)
+
+        self.alphabet = alphabet
+        super(Sequence, self).__init__(data=sequence, first=first, cyclic=cyclic)
         if name is None:
             name = ''
         self.name = name
@@ -426,9 +439,13 @@ class Sequence(DoubleLinkedList):
             metadata = dict()
         self.metadata = metadata
         self._global_id = next(Sequence.counter)
-
         self._io = self.IO.instance(self)
         self._align = self.Align.instance(self)
+        if cyclic:
+            self.cyclic = cyclic
+
+    def new_node(self, data):
+        return self.NODE_CLASS(data, alphabet=self.alphabet)
 
     @property
     def io(self):
@@ -899,6 +916,44 @@ class Sequence(DoubleLinkedList):
         for a in data['annotations']:
             sequence.annotate(a['start'], a['end'] - 1, a['name'], a['type'], a['color'])
         return sequence
+
+    def _collect_cut_sites(self, enzyme_site, cut1=None, cut2=None):
+        if hasattr(enzyme_site, 'charac'):
+            cut1 = enzyme_site.charac[0]
+            cut2 = enzyme_site.charac[1]
+            enzyme_site = enzyme_site.charac[4]
+
+        if isinstance(enzyme_site, str):
+            enzyme_site = Sequence(enzyme_site)
+        cut_sites = []
+        for match in self.find_iter(enzyme_site):
+            cut_sites.append(match.span[0] + cut1)
+            cut_sites.append(match.span[1] + cut2 + 1)
+        return cut_sites
+
+    def digest(self, enzymes, as_names=False):
+        """
+        Supply either a Bio.RestrictionSite or a tuple of (seq, cut1, cut2)
+
+        e.g. ('GTTTAAAC', 4, -4)
+
+        :param enzymes: either a Bio.RestrictionSite or a tuple of (seq, cut1, cut2)
+        :type enzymes: list (of tuple|Bio.RestrictionSite)
+        :return: list of sequences
+        :rtype: list
+        """
+        cut_sites = []
+
+        if not isinstance(enzymes, list):
+            enzymes = [enzymes]
+        if as_names:
+            enzymes = [getattr(Restriction, name) for name in enzymes]
+        for enzyme in enzymes:
+            if isinstance(enzyme, tuple):
+                cut_sites += self._collect_cut_sites(*enzyme)
+            else:
+                cut_sites += self._collect_cut_sites(enzyme)
+        return self.cut(cut_sites)
 
     def __repr__(self):
         max_width = 30

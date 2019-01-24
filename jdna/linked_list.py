@@ -60,7 +60,7 @@ class Node(object):
         :return: the new node
         :rtype: Node
         """
-        new_node = Node(data)
+        new_node = self.__class__(data)
         self.set_next(new_node)
         return new_node
 
@@ -73,7 +73,7 @@ class Node(object):
         :return: the new node
         :rtype: Node
         """
-        new_node = Node(data)
+        new_node = self.__class__(data)
         self.set_prev(new_node)
         return new_node
 
@@ -424,7 +424,7 @@ class DoubleLinkedList(object):
 
     NODE_CLASS = Node
 
-    def __init__(self, data=None, first=None):
+    def __init__(self, data=None, first=None, cyclic=False):
         """
         linked list construction
 
@@ -438,17 +438,8 @@ class DoubleLinkedList(object):
             self.initialize(data)
         elif first is not None:
             self._head = first
-        # else:
-        #     raise AttributeError("Either 'data' or 'first' must be provided.")
-
-    # @classmethod
-    # def initialize_by_node(cls):
-
-    # def find(self, data):
-    #     t = self.head
-    #     visited = set()
-    #     while t and t not in visited:
-    #         next_method = lambda x: next(x)
+        if cyclic:
+            self.circularize()
 
     def new_node(self, data):
         return self.NODE_CLASS(data)
