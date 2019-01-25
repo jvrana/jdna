@@ -22,6 +22,8 @@ jdna.viewer
 
    .. autosummary::
    
+      FASTAItem
+      FASTAViewer
       SequenceRow
       SequenceViewer
       StringColumn

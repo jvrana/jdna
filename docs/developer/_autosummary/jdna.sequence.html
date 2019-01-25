@@ -134,7 +134,7 @@
 <tr class="row-even"><td><a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Feature</span></code></a>(name[,&nbsp;type,&nbsp;strand,&nbsp;color])</td>
 <td>An annotation for a sequence.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#jdna.sequence.Nucleotide" title="jdna.sequence.Nucleotide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nucleotide</span></code></a>(base)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#jdna.sequence.Nucleotide" title="jdna.sequence.Nucleotide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nucleotide</span></code></a>(base[,&nbsp;alphabet])</td>
 <td>Represents a biological nucleotide.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#jdna.sequence.Sequence" title="jdna.sequence.Sequence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sequence</span></code></a>([sequence,&nbsp;first,&nbsp;name,&nbsp;…])</td>
@@ -215,7 +215,7 @@ query</li>
 
 <dl class="class">
 <dt id="jdna.sequence.Nucleotide">
-<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">Nucleotide</code><span class="sig-paren">(</span><em>base</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">Nucleotide</code><span class="sig-paren">(</span><em>base</em>, <em>alphabet=&lt;jdna.alphabet.Alphabet object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.linked_list.Node</span></code></a></p>
 <p>Represents a biological nucleotide. Serves a <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code> in teh <a class="reference internal" href="#jdna.sequence.Sequence" title="jdna.sequence.Sequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a> object.</p>
 <p>Nucleotide constructor</p>
@@ -329,7 +329,7 @@ query</li>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.equivalent">
-<code class="descname">equivalent</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.equivalent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.equivalent" title="Permalink to this definition">¶</a></dt>
+<code class="descname">equivalent</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.equivalent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.equivalent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluates whether two nodes hold the same data</p>
 </dd></dl>
 
@@ -547,7 +547,7 @@ query</li>
 
 <dl class="class">
 <dt id="jdna.sequence.Sequence">
-<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">Sequence</code><span class="sig-paren">(</span><em>sequence=None</em>, <em>first=None</em>, <em>name=None</em>, <em>description=''</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">Sequence</code><span class="sig-paren">(</span><em>sequence=None</em>, <em>first=None</em>, <em>name=None</em>, <em>description=''</em>, <em>metadata=None</em>, <em>cyclic=False</em>, <em>alphabet=&lt;jdna.alphabet.Alphabet object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.linked_list.DoubleLinkedList</span></code></a></p>
 <p>Represents a biological sequence as a double linked list. Can be annotated with features.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -559,6 +559,10 @@ query</li>
 <li><strong>first</strong> (<a class="reference internal" href="#jdna.sequence.Nucleotide" title="jdna.sequence.Nucleotide"><em>Nucleotide</em></a>) – optional first Nucleotide to use as the ‘head’ to this Sequence</li>
 <li><strong>name</strong> (<em>basestring</em>) – optional name of the sequence</li>
 <li><strong>description</strong> (<em>basestring</em>) – optional description of the sequence</li>
+<li><strong>metadata</strong> (<em>dict</em>) – additional sequence metadata</li>
+<li><strong>cyclic</strong> (<em>bool</em>) – whether to make the sequence circular</li>
+<li><strong>alphabet</strong> (<a class="reference internal" href="jdna.alphabet.html#jdna.alphabet.Alphabet" title="jdna.alphabet.Alphabet"><em>jdna.alphabet.Alphabet</em></a>) – the base pair alphabet of this sequence which used for complementary and comparisons
+(default: AmbiguousDNA)</li>
 </ul>
 </td>
 </tr>
@@ -739,6 +743,25 @@ If both start and end are None return None.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="jdna.sequence.Sequence.digest">
+<code class="descname">digest</code><span class="sig-paren">(</span><em>enzymes</em>, <em>as_names=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.digest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.digest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supply either a Bio.RestrictionSite or a tuple of (seq, cut1, cut2)</p>
+<p>e.g. (‘GTTTAAAC’, 4, -4)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>enzymes</strong> (<em>list</em><em> (</em><em>of tuple|Bio.RestrictionSite</em><em>)</em>) – either a Bio.RestrictionSite or a tuple of (seq, cut1, cut2)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of sequences</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="jdna.sequence.Sequence.dsanneal">
 <code class="descname">dsanneal</code><span class="sig-paren">(</span><em>dsDNA</em>, <em>min_bases=13</em>, <em>depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.dsanneal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.dsanneal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simulate annealing a double stranded piece of DNA to a double_stranded template</p>
@@ -866,24 +889,6 @@ to ‘equivalent’</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="jdna.sequence.Sequence.pairwise">
-<code class="descname">pairwise</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.pairwise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.pairwise" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform a pairwise alignment using BioPython.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> (<em>Sequence | basestring</em>) – the other sequence</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of alignments (tuples)</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="jdna.sequence.Sequence.print">
 <code class="descname">print</code><span class="sig-paren">(</span><em>indent=None</em>, <em>width=None</em>, <em>spacer=None</em>, <em>complement=False</em>, <em>features=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.print" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create and print a <code class="xref py py-class docutils literal notranslate"><span class="pre">SequenceViewer</span></code> instance from this sequence. Printing the view object
@@ -937,43 +942,6 @@ with annotations and complement will produce an output similar to the following:
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="jdna.viewer.html#jdna.viewer.SequenceViewer" title="jdna.viewer.SequenceViewer">SequenceViewer</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="jdna.sequence.Sequence.print_alignment">
-<code class="descname">print_alignment</code><span class="sig-paren">(</span><em>other</em>, <em>max=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.print_alignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.print_alignment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Print an alignment with another sequence as a view object. Output will be similar
-to the following:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="s2">&quot;Alignment&quot;</span> <span class="p">(</span><span class="mi">170</span><span class="n">bp</span><span class="p">)</span>
-
-
-<span class="mi">0</span>         <span class="n">G</span><span class="o">-</span><span class="n">GC</span><span class="o">---</span><span class="n">G</span><span class="o">---</span><span class="n">G</span><span class="o">----</span><span class="n">G</span><span class="o">-</span><span class="n">C</span><span class="o">-------------</span><span class="n">G</span><span class="o">-</span><span class="n">TG</span><span class="o">-----</span><span class="n">A</span><span class="o">-</span><span class="n">T</span><span class="o">----</span><span class="n">T</span><span class="o">---------</span><span class="n">T</span><span class="o">--</span><span class="n">T</span><span class="o">---</span><span class="n">ATGTTCATGGACGCCCGGGT</span>
-          <span class="o">|</span> <span class="o">||</span>   <span class="o">|</span>   <span class="o">|</span>    <span class="o">|</span> <span class="o">|</span>             <span class="o">|</span> <span class="o">||</span>     <span class="o">|</span> <span class="o">|</span>    <span class="o">|</span>         <span class="o">|</span>  <span class="o">|</span>   <span class="o">||||||||||||||||||||</span>
-          <span class="n">GAGCCACGCACGTCCCGGCATATTAACTCCAAGCTGGTTCTACTCGGCTGGGCGGGCGTGATTTTATGTTCATGGACGCCCGGGT</span>
-
-<span class="mi">85</span>        <span class="n">ATCAAGGCAGCGGCTCACGCCTCTCCACGCGG</span><span class="o">--</span><span class="n">GACAG</span><span class="o">--</span><span class="n">GTGAAC</span><span class="o">--</span><span class="n">TATC</span><span class="o">--</span><span class="n">C</span><span class="o">-</span><span class="n">G</span><span class="o">-</span><span class="n">ACTAGG</span><span class="o">---</span><span class="n">TATCAA</span><span class="o">-----</span><span class="n">AG</span><span class="o">--</span><span class="n">AC</span>
-          <span class="o">|||||||||||||||</span>   <span class="o">|</span>  <span class="o">|</span> <span class="o">|</span>    <span class="o">|</span> <span class="o">||</span>  <span class="o">||</span> <span class="o">||</span>  <span class="o">|</span> <span class="o">|||</span>   <span class="o">|||</span>   <span class="o">|</span> <span class="o">|</span> <span class="o">|</span>  <span class="o">|||</span>   <span class="o">|</span> <span class="o">||</span> <span class="o">|</span>     <span class="o">||</span>  <span class="o">|</span>
-          <span class="n">ATCAAGGCAGCGGCT</span><span class="o">---</span><span class="n">G</span><span class="o">--</span><span class="n">T</span><span class="o">-</span><span class="n">T</span><span class="o">----</span><span class="n">G</span><span class="o">-</span><span class="n">GGCAGA</span><span class="o">-</span><span class="n">AGAAG</span><span class="o">-</span><span class="n">GAA</span><span class="o">-</span><span class="n">AATAT</span><span class="o">-</span><span class="n">ATCAGGA</span><span class="o">--</span><span class="n">AGGCCGT</span><span class="o">-</span><span class="n">TC</span><span class="o">-</span><span class="n">AGGTTTAGGGA</span><span class="o">-</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>other</strong> (<em>Sequence | basestring</em>) – the other sequence</li>
-<li><strong>max</strong> (<em>int</em>) – maximum number of alignments to display (default=1)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">None</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
 </td>
 </tr>
 </tbody>

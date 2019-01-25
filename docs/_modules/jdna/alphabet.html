@@ -113,6 +113,9 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">Bio.Alphabet</span> <span class="k">import</span> <span class="n">IUPAC</span>
+<span class="kn">from</span> <span class="nn">Bio.Seq</span> <span class="k">import</span> <span class="n">Seq</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
 
 <div class="viewcode-block" id="Alphabet"><a class="viewcode-back" href="../../developer/_autosummary/jdna.alphabet.html#jdna.alphabet.Alphabet">[docs]</a><span class="k">class</span> <span class="nc">Alphabet</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -120,41 +123,80 @@
 <span class="sd">    A dictionary class that retrieves complementary base pairs</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_chr&#39;</span><span class="p">,</span> <span class="s1">&#39;_comp&#39;</span><span class="p">,</span> <span class="s1">&#39;__data&#39;</span><span class="p">]</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_chr&#39;</span><span class="p">,</span> <span class="s1">&#39;_comp&#39;</span><span class="p">,</span> <span class="s1">&#39;__complementary&#39;</span><span class="p">,</span> <span class="s1">&#39;__ambiguous&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">characters</span><span class="p">,</span> <span class="n">complementary_characters</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_chr</span> <span class="o">=</span> <span class="n">characters</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_comp</span> <span class="o">=</span> <span class="n">complementary_characters</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_chr</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chr</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_comp</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">characters</span><span class="p">,</span> <span class="n">complementary_characters</span><span class="p">,</span> <span class="n">ambiguous_characters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__complementary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
+            <span class="n">characters</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">characters</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+            <span class="n">complementary_characters</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">complementary_characters</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
         <span class="p">))</span>
+        <span class="k">if</span> <span class="n">ambiguous_characters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ambiguous_characters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__ambiguous</span> <span class="o">=</span> <span class="n">ambiguous_characters</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_biopython_alphabet</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">biopython_alphabet</span><span class="p">:</span> <span class="n">IUPAC</span><span class="o">.</span><span class="n">Alphabet</span><span class="p">,</span> <span class="n">ambiguous_characters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="n">Seq</span><span class="p">(</span><span class="n">biopython_alphabet</span><span class="o">.</span><span class="n">letters</span><span class="p">)</span>
+        <span class="n">seq_letters</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+        <span class="n">c_seq_letters</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">complement</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">seq_letters</span><span class="p">,</span> <span class="n">c_seq_letters</span><span class="p">,</span> <span class="n">ambiguous_characters</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">characters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complementary</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Alphabet.random"><a class="viewcode-back" href="../../developer/_autosummary/jdna.alphabet.html#jdna.alphabet.Alphabet.random">[docs]</a>    <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return random character</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span></div>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complementary</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="Alphabet.compare"><a class="viewcode-back" href="../../developer/_autosummary/jdna.alphabet.html#jdna.alphabet.Alphabet.compare">[docs]</a>    <span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">ignore_case</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compare two sequences. If the second sequence has ambiguous bases, convert</span>
+<span class="sd">        second sequence to a regex to compare with the first sequence.</span>
+
+<span class="sd">        :param s1:</span>
+<span class="sd">        :type s1:</span>
+<span class="sd">        :param s2:</span>
+<span class="sd">        :type s2:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        :rtype:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__ambiguous</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">s2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ignore_case</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="k">def</span> <span class="nf">complement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">basestring</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reverse_complement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">complement</span><span class="p">(</span><span class="n">basestring</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Alphabet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chr</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">_chr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">_comp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complementary</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span></div>
+        <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complementary</span>
 
+    <span class="c1"># aliases</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="n">reverse_complement</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">complement</span></div>
 
-<span class="n">Ambiguous</span> <span class="o">=</span> <span class="n">Alphabet</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">)</span>
-<span class="n">UnambiguousDNA</span> <span class="o">=</span> <span class="n">Alphabet</span><span class="p">(</span><span class="s1">&#39;ATCG&#39;</span><span class="p">,</span> <span class="s1">&#39;TAGC&#39;</span><span class="p">)</span>
-<span class="n">AmbiguousDNA</span> <span class="o">=</span> <span class="n">UnambiguousDNA</span> <span class="o">+</span> <span class="n">Ambiguous</span>
-<span class="n">DNA</span> <span class="o">=</span> <span class="n">UnambiguousDNA</span> <span class="o">+</span> <span class="n">AmbiguousDNA</span>
-<span class="n">UnambiguousRNA</span> <span class="o">=</span> <span class="n">Alphabet</span><span class="p">(</span><span class="s1">&#39;AUCG&#39;</span><span class="p">,</span> <span class="s1">&#39;UAGC&#39;</span><span class="p">)</span>
-<span class="n">AmbiguousRNA</span> <span class="o">=</span> <span class="n">UnambiguousRNA</span> <span class="o">+</span> <span class="n">Ambiguous</span>
+<span class="n">_iupacdict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;M&#39;</span><span class="p">:</span> <span class="s1">&#39;[AC]&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="s1">&#39;[AG]&#39;</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span><span class="p">:</span> <span class="s1">&#39;[AT]&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="s1">&#39;[CG]&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="s1">&#39;[CT]&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;K&#39;</span><span class="p">:</span> <span class="s1">&#39;[GT]&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">:</span> <span class="s1">&#39;[ACG]&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="s1">&#39;[ACT]&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="s1">&#39;[AGT]&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="s1">&#39;[CGT]&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;[ACGT]&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;[ACGT]&#39;</span><span class="p">}</span>
+
+<span class="n">iupacdict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_iupacdict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">iupacdict</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">iupacdict</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+<span class="n">AmbiguousDNA</span> <span class="o">=</span> <span class="n">Alphabet</span><span class="o">.</span><span class="n">from_biopython_alphabet</span><span class="p">(</span><span class="n">IUPAC</span><span class="o">.</span><span class="n">ambiguous_dna</span><span class="p">,</span> <span class="n">iupacdict</span><span class="p">)</span>
+<span class="n">UnambiguousDNA</span> <span class="o">=</span> <span class="n">Alphabet</span><span class="o">.</span><span class="n">from_biopython_alphabet</span><span class="p">(</span><span class="n">IUPAC</span><span class="o">.</span><span class="n">unambiguous_dna</span><span class="p">,</span> <span class="p">{})</span>
 </pre></div>
 
           </div>

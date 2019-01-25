@@ -170,7 +170,7 @@
 <span class="sd">        :return: the new node</span>
 <span class="sd">        :rtype: Node</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">new_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_node</span></div>
 
@@ -183,7 +183,7 @@
 <span class="sd">        :return: the new node</span>
 <span class="sd">        :rtype: Node</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">new_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_prev</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_node</span></div>
 
@@ -534,7 +534,7 @@
 
     <span class="n">NODE_CLASS</span> <span class="o">=</span> <span class="n">Node</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        linked list construction</span>
 
@@ -548,17 +548,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">first</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_head</span> <span class="o">=</span> <span class="n">first</span>
-        <span class="c1"># else:</span>
-        <span class="c1">#     raise AttributeError(&quot;Either &#39;data&#39; or &#39;first&#39; must be provided.&quot;)</span>
-
-    <span class="c1"># @classmethod</span>
-    <span class="c1"># def initialize_by_node(cls):</span>
-
-    <span class="c1"># def find(self, data):</span>
-    <span class="c1">#     t = self.head</span>
-    <span class="c1">#     visited = set()</span>
-    <span class="c1">#     while t and t not in visited:</span>
-    <span class="c1">#         next_method = lambda x: next(x)</span>
+        <span class="k">if</span> <span class="n">cyclic</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">circularize</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">new_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">NODE_CLASS</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>

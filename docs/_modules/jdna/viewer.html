@@ -683,21 +683,25 @@
         <span class="n">METADATA_INDENT</span> <span class="o">=</span> <span class="mi">2</span>
         <span class="n">INDENT</span> <span class="o">=</span> <span class="mi">10</span>
         <span class="n">SPACER</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">HEADER_SPACER</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="n">WIDTH</span> <span class="o">=</span> <span class="mi">85</span>
         <span class="n">NAME</span> <span class="o">=</span> <span class="s1">&#39;Unnamed&#39;</span>
         <span class="n">DESCRIPTION</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="n">BACKGROUND_COLOR</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">FOREGROUND_COLOR</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">APPLY_INDICES</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="n">RANDOM_COLOR</span> <span class="o">=</span> <span class="s2">&quot;RANDOM&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequences</span><span class="p">,</span>
                  <span class="n">sequence_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">apply_indices</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">APPLY_INDICES</span><span class="p">,</span>
                  <span class="n">foreground_colors</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">FOREGROUND_COLOR</span><span class="p">,</span>
                  <span class="n">background_colors</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">BACKGROUND_COLOR</span><span class="p">,</span>
                  <span class="n">indent</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">INDENT</span><span class="p">,</span>
                  <span class="n">width</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">WIDTH</span><span class="p">,</span>
                  <span class="n">spacer</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">SPACER</span><span class="p">,</span>
+                 <span class="n">header_spacer</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">HEADER_SPACER</span><span class="p">,</span>
                  <span class="n">name</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span>
                  <span class="n">window</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                  <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
@@ -742,7 +746,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">window</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sequences</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">sequence_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">sequence_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">{index}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sequences</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">sequence_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">sequences</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">apply_indices</span><span class="p">:</span>
+            <span class="n">sequence_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{index}</span><span class="s1"> &#39;</span> <span class="o">+</span> <span class="n">sequence_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">foreground_colors</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">RANDOM_COLOR</span><span class="p">:</span>
             <span class="n">foreground_colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">random_color</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">]</span>
@@ -755,6 +761,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">=</span> <span class="n">indent</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spacer</span> <span class="o">=</span> <span class="n">spacer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_spacer</span> <span class="o">=</span> <span class="n">header_spacer</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">NAME</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -851,9 +858,32 @@
         <span class="n">spacer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spacer</span>
         <span class="k">if</span> <span class="n">spacer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">spacer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{header}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{header}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_spacer</span>
         <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spacer</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="FASTAItem"><a class="viewcode-back" href="../../developer/_autosummary/jdna.viewer.html#jdna.viewer.FASTAItem">[docs]</a><span class="k">class</span> <span class="nc">FASTAItem</span><span class="p">(</span><span class="n">SequenceViewer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequence</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">([</span><span class="n">sequence</span><span class="p">],</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">sequence</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">apply_indices</span><span class="o">=</span><span class="p">[],</span> <span class="n">sequence_labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">],</span> <span class="n">spacer</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">header_spacer</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&gt;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">FASTAViewer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequences</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">views</span> <span class="o">=</span> <span class="p">[</span><span class="n">FASTAItem</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span> <span class="k">for</span> <span class="n">sequence</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">views</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 </pre></div>
 
           </div>

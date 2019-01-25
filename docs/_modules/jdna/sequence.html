@@ -113,15 +113,19 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">copy</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">IntFlag</span>
 
 <span class="kn">import</span> <span class="nn">primer3</span>
-<span class="kn">from</span> <span class="nn">Bio</span> <span class="k">import</span> <span class="n">pairwise2</span>
+<span class="kn">from</span> <span class="nn">Bio</span> <span class="k">import</span> <span class="n">Restriction</span>
 
-<span class="kn">from</span> <span class="nn">jdna.alphabet</span> <span class="k">import</span> <span class="n">DNA</span><span class="p">,</span> <span class="n">UnambiguousDNA</span>
+<span class="kn">from</span> <span class="nn">jdna.align</span> <span class="k">import</span> <span class="n">AlignInterface</span>
+<span class="kn">from</span> <span class="nn">jdna.alphabet</span> <span class="k">import</span> <span class="n">AmbiguousDNA</span><span class="p">,</span> <span class="n">UnambiguousDNA</span>
 <span class="kn">from</span> <span class="nn">jdna.format</span> <span class="k">import</span> <span class="n">format_sequence</span>
+<span class="c1"># from jdna.align import Align</span>
+<span class="kn">from</span> <span class="nn">jdna.io</span> <span class="k">import</span> <span class="n">IOInterface</span>
 <span class="kn">from</span> <span class="nn">jdna.linked_list</span> <span class="k">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">DoubleLinkedList</span><span class="p">,</span> <span class="n">LinkedListMatch</span>
 <span class="kn">from</span> <span class="nn">jdna.utils</span> <span class="k">import</span> <span class="n">random_color</span>
 <span class="kn">from</span> <span class="nn">jdna.viewer</span> <span class="k">import</span> <span class="n">SequenceViewer</span><span class="p">,</span> <span class="n">ViewerAnnotationFlag</span><span class="p">,</span> <span class="n">StringColumn</span>
@@ -229,7 +233,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="n">direction</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strand</span> <span class="o">=</span> <span class="n">strand</span>
 
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">SequenceFlags</span><span class="o">.</span><span class="n">REVERSE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">anneal</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">copy_slice</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">query_bounds</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">five_prime_overhang</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">new_slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_end</span><span class="o">.</span><span class="n">prev</span><span class="p">())</span>
@@ -300,9 +303,9 @@
 <div class="viewcode-block" id="Nucleotide"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide">[docs]</a><span class="k">class</span> <span class="nc">Nucleotide</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a biological nucleotide. Serves a :class:`Node` in teh :class:`Sequence` object.&quot;&quot;&quot;</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;__next&#39;</span><span class="p">,</span> <span class="s1">&#39;__prev&#39;</span><span class="p">,</span> <span class="s1">&#39;_features&#39;</span><span class="p">]</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;__next&#39;</span><span class="p">,</span> <span class="s1">&#39;__prev&#39;</span><span class="p">,</span> <span class="s1">&#39;_features&#39;</span><span class="p">,</span> <span class="s1">&#39;alphabet&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">alphabet</span><span class="o">=</span><span class="n">AmbiguousDNA</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Nucleotide constructor</span>
 
@@ -311,6 +314,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Nucleotide</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_features</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alphabet</span> <span class="o">=</span> <span class="n">alphabet</span>
 
 <div class="viewcode-block" id="Nucleotide.random"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide.random">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -321,14 +325,14 @@
     <span class="k">def</span> <span class="nf">base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
 
-<div class="viewcode-block" id="Nucleotide.equivalent"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide.equivalent">[docs]</a>    <span class="k">def</span> <span class="nf">equivalent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
+<div class="viewcode-block" id="Nucleotide.equivalent"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide.equivalent">[docs]</a>    <span class="k">def</span> <span class="nf">equivalent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphabet</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">base</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">complementary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">DNA</span><span class="p">[</span><span class="n">other</span><span class="o">.</span><span class="n">base</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">complementary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">AmbiguousDNA</span><span class="p">[</span><span class="n">other</span><span class="o">.</span><span class="n">base</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">to_complement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DNA</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">AmbiguousDNA</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Nucleotide.set_next"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Nucleotide.set_next">[docs]</a>    <span class="k">def</span> <span class="nf">set_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nucleotide</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cut_next</span><span class="p">()</span>
@@ -505,8 +509,8 @@
         <span class="sd">&quot;&quot;&quot;Sequence defaults&quot;&quot;&quot;</span>
         <span class="n">MIN_ANNEAL_BASES</span> <span class="o">=</span> <span class="mi">13</span>
         <span class="n">FOREGROUND_COLORS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">]</span>
-        <span class="n">BACKGROUND_COLORS</span> <span class="o">=</span> <span class="kc">None</span></div>
-
+        <span class="n">BACKGROUND_COLORS</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">ALPHABET</span> <span class="o">=</span> <span class="n">AmbiguousDNA</span></div>
 
     <span class="n">FORWARD</span> <span class="o">=</span> <span class="n">SequenceFlags</span><span class="o">.</span><span class="n">FORWARD</span>
     <span class="n">REVERSE</span> <span class="o">=</span> <span class="n">SequenceFlags</span><span class="o">.</span><span class="n">REVERSE</span>
@@ -515,7 +519,7 @@
     <span class="n">NODE_CLASS</span> <span class="o">=</span> <span class="n">Nucleotide</span>
     <span class="n">counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alphabet</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">ALPHABET</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param sequence: sequence string</span>
@@ -526,8 +530,17 @@
 <span class="sd">        :type name: basestring</span>
 <span class="sd">        :param description: optional description of the sequence</span>
 <span class="sd">        :type description: basestring</span>
+<span class="sd">        :param metadata: additional sequence metadata</span>
+<span class="sd">        :type metadata: dict</span>
+<span class="sd">        :param cyclic: whether to make the sequence circular</span>
+<span class="sd">        :type cyclic: bool</span>
+<span class="sd">        :param alphabet: the base pair alphabet of this sequence which used for complementary and comparisons</span>
+<span class="sd">                        (default: AmbiguousDNA)</span>
+<span class="sd">        :type alphabet: jdna.alphabet.Alphabet</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Sequence</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">sequence</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="n">first</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">alphabet</span> <span class="o">=</span> <span class="n">alphabet</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Sequence</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">sequence</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="n">first</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="n">cyclic</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -536,6 +549,21 @@
             <span class="n">metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_global_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">Sequence</span><span class="o">.</span><span class="n">counter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_io</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">IO</span><span class="o">.</span><span class="n">instance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_align</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Align</span><span class="o">.</span><span class="n">instance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cyclic</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span> <span class="o">=</span> <span class="n">cyclic</span>
+
+    <span class="k">def</span> <span class="nf">new_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">NODE_CLASS</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alphabet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alphabet</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">io</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_io</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">align</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_align</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">global_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -787,53 +815,8 @@
     <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">format_sequence</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">spacer</span><span class="o">=</span><span class="n">spacer</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Sequence.pairwise"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.pairwise">[docs]</a>    <span class="k">def</span> <span class="nf">pairwise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform a pairwise alignment using BioPython.</span>
-
-<span class="sd">        :param other: the other sequence</span>
-<span class="sd">        :type other: Sequence | basestring</span>
-<span class="sd">        :return: list of alignments (tuples)</span>
-<span class="sd">        :rtype: list</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">alignments</span> <span class="o">=</span> <span class="n">pairwise2</span><span class="o">.</span><span class="n">align</span><span class="o">.</span><span class="n">globalxx</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">alignments</span></div>
-
-<div class="viewcode-block" id="Sequence.print_alignment"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.print_alignment">[docs]</a>    <span class="k">def</span> <span class="nf">print_alignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Print an alignment with another sequence as a view object. Output will be similar</span>
-<span class="sd">        to the following:</span>
-
-<span class="sd">        .. code::</span>
-
-<span class="sd">            &gt; &quot;Alignment&quot; (170bp)</span>
-
-
-<span class="sd">            0         G-GC---G---G----G-C-------------G-TG-----A-T----T---------T--T---ATGTTCATGGACGCCCGGGT</span>
-<span class="sd">                      | ||   |   |    | |             | ||     | |    |         |  |   ||||||||||||||||||||</span>
-<span class="sd">                      GAGCCACGCACGTCCCGGCATATTAACTCCAAGCTGGTTCTACTCGGCTGGGCGGGCGTGATTTTATGTTCATGGACGCCCGGGT</span>
-
-<span class="sd">            85        ATCAAGGCAGCGGCTCACGCCTCTCCACGCGG--GACAG--GTGAAC--TATC--C-G-ACTAGG---TATCAA-----AG--AC</span>
-<span class="sd">                      |||||||||||||||   |  | |    | ||  || ||  | |||   |||   | | |  |||   | || |     ||  |</span>
-<span class="sd">                      ATCAAGGCAGCGGCT---G--T-T----G-GGCAGA-AGAAG-GAA-AATAT-ATCAGGA--AGGCCGT-TC-AGGTTTAGGGA-</span>
-
-<span class="sd">        :param other: the other sequence</span>
-<span class="sd">        :type other: Sequence | basestring</span>
-<span class="sd">        :param max: maximum number of alignments to display (default=1)</span>
-<span class="sd">        :type max: int</span>
-<span class="sd">        :return: None</span>
-<span class="sd">        :rtype: None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">alignments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pairwise</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alignments</span><span class="p">[:</span><span class="nb">max</span><span class="p">]:</span>
-            <span class="n">mid</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-            <span class="k">for</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="k">if</span> <span class="s1">&#39;-&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">]:</span>
-                    <span class="n">mid</span> <span class="o">+=</span> <span class="s1">&#39;|&#39;</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">mid</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span>
-            <span class="n">viewer</span> <span class="o">=</span> <span class="n">SequenceViewer</span><span class="p">([</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mid</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Alignment&quot;</span><span class="p">)</span>
-            <span class="n">viewer</span><span class="o">.</span><span class="n">print</span><span class="p">()</span></div>
+    <span class="c1"># def _print_alignment_helper(self, sequences, name=&#39;&#39;):</span>
+    <span class="c1">#     for a in</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_apply_features_to_view</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sequence</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
@@ -1044,6 +1027,44 @@
             <span class="n">sequence</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">sequence</span></div>
 
+    <span class="k">def</span> <span class="nf">_collect_cut_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enzyme_site</span><span class="p">,</span> <span class="n">cut1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cut2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">enzyme_site</span><span class="p">,</span> <span class="s1">&#39;charac&#39;</span><span class="p">):</span>
+            <span class="n">cut1</span> <span class="o">=</span> <span class="n">enzyme_site</span><span class="o">.</span><span class="n">charac</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">cut2</span> <span class="o">=</span> <span class="n">enzyme_site</span><span class="o">.</span><span class="n">charac</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">enzyme_site</span> <span class="o">=</span> <span class="n">enzyme_site</span><span class="o">.</span><span class="n">charac</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">enzyme_site</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">enzyme_site</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">(</span><span class="n">enzyme_site</span><span class="p">)</span>
+        <span class="n">cut_sites</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_iter</span><span class="p">(</span><span class="n">enzyme_site</span><span class="p">):</span>
+            <span class="n">cut_sites</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">cut1</span><span class="p">)</span>
+            <span class="n">cut_sites</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">cut2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cut_sites</span>
+
+<div class="viewcode-block" id="Sequence.digest"><a class="viewcode-back" href="../../developer/_autosummary/jdna.sequence.html#jdna.sequence.Sequence.digest">[docs]</a>    <span class="k">def</span> <span class="nf">digest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enzymes</span><span class="p">,</span> <span class="n">as_names</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Supply either a Bio.RestrictionSite or a tuple of (seq, cut1, cut2)</span>
+
+<span class="sd">        e.g. (&#39;GTTTAAAC&#39;, 4, -4)</span>
+
+<span class="sd">        :param enzymes: either a Bio.RestrictionSite or a tuple of (seq, cut1, cut2)</span>
+<span class="sd">        :type enzymes: list (of tuple|Bio.RestrictionSite)</span>
+<span class="sd">        :return: list of sequences</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cut_sites</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">enzymes</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">enzymes</span> <span class="o">=</span> <span class="p">[</span><span class="n">enzymes</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">as_names</span><span class="p">:</span>
+            <span class="n">enzymes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">Restriction</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">enzymes</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">enzyme</span> <span class="ow">in</span> <span class="n">enzymes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">enzyme</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">cut_sites</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_cut_sites</span><span class="p">(</span><span class="o">*</span><span class="n">enzyme</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cut_sites</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_cut_sites</span><span class="p">(</span><span class="n">enzyme</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">cut_sites</span><span class="p">)</span></div>
+
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">max_width</span> <span class="o">=</span> <span class="mi">30</span>
         <span class="n">replace</span> <span class="o">=</span> <span class="s1">&#39;...&#39;</span>
@@ -1053,6 +1074,10 @@
             <span class="c1"># diff = display*2 - len(s)</span>
             <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="n">display</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="n">display</span><span class="p">:]</span>
         <span class="k">return</span> <span class="s2">&quot;Sequence(&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
+
+
+<span class="n">Sequence</span><span class="o">.</span><span class="n">IO</span> <span class="o">=</span> <span class="n">IOInterface</span><span class="p">(</span><span class="n">Sequence</span><span class="p">)</span>
+<span class="n">Sequence</span><span class="o">.</span><span class="n">Align</span> <span class="o">=</span> <span class="n">AlignInterface</span><span class="p">(</span><span class="n">Sequence</span><span class="p">)</span>
 </pre></div>
 
           </div>

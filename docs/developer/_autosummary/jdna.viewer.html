@@ -182,6 +182,12 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#jdna.viewer.FASTAItem" title="jdna.viewer.FASTAItem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FASTAItem</span></code></a>(sequence)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">FASTAViewer</span></code>(sequences)</td>
+<td></td>
+</tr>
 <tr class="row-odd"><td><a class="reference internal" href="#jdna.viewer.SequenceRow" title="jdna.viewer.SequenceRow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SequenceRow</span></code></a>(lines,&nbsp;labels,&nbsp;indent,&nbsp;start,&nbsp;end)</td>
 <td>A row in a <a class="reference internal" href="#jdna.viewer.SequenceViewer" title="jdna.viewer.SequenceViewer"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequenceViewer</span></code></a> instance.</td>
 </tr>
@@ -196,6 +202,58 @@
 </tr>
 </tbody>
 </table>
+<dl class="class">
+<dt id="jdna.viewer.FASTAItem">
+<em class="property">class </em><code class="descclassname">jdna.viewer.</code><code class="descname">FASTAItem</code><span class="sig-paren">(</span><em>sequence</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/viewer.html#FASTAItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.viewer.FASTAItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jdna.viewer.SequenceViewer" title="jdna.viewer.SequenceViewer"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.viewer.SequenceViewer</span></code></a></p>
+<dl class="method">
+<dt id="jdna.viewer.FASTAItem._annotate_rows">
+<code class="descname">_annotate_rows</code><span class="sig-paren">(</span><em>rows</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.viewer.FASTAItem._annotate_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotate the rows using the viewer’s annotations</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.viewer.FASTAItem.annotate">
+<code class="descname">annotate</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>label=None</em>, <em>fill=None</em>, <em>color=None</em>, <em>background=None</em>, <em>top=True</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.viewer.FASTAItem.annotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotates this viewer object starting from ‘start’ to ‘end’ inclusively.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start</strong> (<em>int</em>) – inclusive start</li>
+<li><strong>end</strong> (<em>int</em>) – inclusive end</li>
+<li><strong>label</strong> (<em>basestring | StringColumn</em>) – optional label to apply to the annotation</li>
+<li><strong>fill</strong> (<em>string</em>) – the fill character to use to (e.g. ‘&lt;’, ‘&gt;’, ‘^’) to fill in whitespace</li>
+<li><strong>color</strong> (<em>string</em>) – the foreground color to apply to the annotation (hex or common name)</li>
+<li><strong>background</strong> (<em>string</em>) – the foreground color to apply to the annotation (hex or common name)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="jdna.viewer.FASTAItem.header">
+<code class="descname">header</code><a class="headerlink" href="#jdna.viewer.FASTAItem.header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the formatted header and metadata</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jdna.viewer.FASTAItem.set_window">
+<code class="descname">set_window</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.viewer.FASTAItem.set_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the inclusive viewing window</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="class">
 <dt id="jdna.viewer.SequenceRow">
 <em class="property">class </em><code class="descclassname">jdna.viewer.</code><code class="descname">SequenceRow</code><span class="sig-paren">(</span><em>lines</em>, <em>labels</em>, <em>indent</em>, <em>start</em>, <em>end</em>, <em>line_colors=None</em>, <em>line_backgrounds=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/viewer.html#SequenceRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.viewer.SequenceRow" title="Permalink to this definition">¶</a></dt>
@@ -320,7 +378,7 @@ automatically be truncated.</p>
 
 <dl class="class">
 <dt id="jdna.viewer.SequenceViewer">
-<em class="property">class </em><code class="descclassname">jdna.viewer.</code><code class="descname">SequenceViewer</code><span class="sig-paren">(</span><em>sequences</em>, <em>sequence_labels=None</em>, <em>foreground_colors=None</em>, <em>background_colors=None</em>, <em>indent=10</em>, <em>width=85</em>, <em>spacer='n'</em>, <em>name='Unnamed'</em>, <em>window=(0</em>, <em>None)</em>, <em>description=''</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/viewer.html#SequenceViewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.viewer.SequenceViewer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">jdna.viewer.</code><code class="descname">SequenceViewer</code><span class="sig-paren">(</span><em>sequences, sequence_labels=None, apply_indices=[0], foreground_colors=None, background_colors=None, indent=10, width=85, spacer='n', header_spacer='n', name='Unnamed', window=(0, None), description='', metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/viewer.html#SequenceViewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.viewer.SequenceViewer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A class that views longs sets of sequences.</p>
 <p>SequenceViewer constructor</p>

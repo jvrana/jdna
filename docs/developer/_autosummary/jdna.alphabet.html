@@ -135,9 +135,34 @@
 </table>
 <dl class="class">
 <dt id="jdna.alphabet.Alphabet">
-<em class="property">class </em><code class="descclassname">jdna.alphabet.</code><code class="descname">Alphabet</code><span class="sig-paren">(</span><em>characters</em>, <em>complementary_characters</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/alphabet.html#Alphabet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.alphabet.Alphabet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">jdna.alphabet.</code><code class="descname">Alphabet</code><span class="sig-paren">(</span><em>characters</em>, <em>complementary_characters</em>, <em>ambiguous_characters=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/alphabet.html#Alphabet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.alphabet.Alphabet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A dictionary class that retrieves complementary base pairs</p>
+<dl class="method">
+<dt id="jdna.alphabet.Alphabet.compare">
+<code class="descname">compare</code><span class="sig-paren">(</span><em>s1</em>, <em>s2</em>, <em>ignore_case=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/alphabet.html#Alphabet.compare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.alphabet.Alphabet.compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare two sequences. If the second sequence has ambiguous bases, convert
+second sequence to a regex to compare with the first sequence.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s1</strong> – </li>
+<li><strong>s2</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="jdna.alphabet.Alphabet.random">
 <code class="descname">random</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/alphabet.html#Alphabet.random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.alphabet.Alphabet.random" title="Permalink to this definition">¶</a></dt>
