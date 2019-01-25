@@ -1,8 +1,6 @@
 # jdna
 
-DNA implemented as a linked list. jDNA provides low level methods for manipulating DNA sequences and is intended to
-handle circular sequences.
+A Python DNA sequence editor that represents sequences as a linked list.
+It includes basic molecular reaction simulations and a viewer class.
 
-## TODO:
-
-1. convert back and forth to Biopython and JSON
+[Documentation is here](https://jvrana.github.io/jdna/index)
