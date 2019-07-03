@@ -16,7 +16,7 @@ jdna
 
 """
 
-from .__version__ import __description__, __author__, __version__, __url__, __title__, __pypi__
+from ._version import __version__, __title__, __author__, __homepage__, __repo__
 from jdna.linked_list import Node, DoubleLinkedList
 from jdna.alphabet import UnambiguousDNA, AmbiguousDNA
 from jdna.sequence import Feature, Sequence, Nucleotide
