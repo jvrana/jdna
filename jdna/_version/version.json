@@ -1,12 +1,13 @@
 {
   "name": "jdna",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "",
   "authors": [
     "Justin Vrana <justin.vrana@gmail.com>"
   ],
-  "homepage": "https://jvrana.github.io/jdna/",
+  "homepage": "https://github.com/jvrana/jdna",
   "repository": "https://github.com/jvrana/jdna",
+  "documentation": "https://jvrana.github.io/jdna/",
   "readme": "README.md",
   "dependencies": {
     "python": "^3.7",
