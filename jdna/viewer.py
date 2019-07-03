@@ -51,7 +51,7 @@ from jdna.utils import random_color, colored, colored_background
 class StringColumn(object):
     """Class for managing string columns"""
 
-    FILL = ' '
+    FILL = " "
 
     def __init__(self, strings=None, color=None, background=None, fill=None):
         """
@@ -87,13 +87,13 @@ class StringColumn(object):
 
     @staticmethod
     def remove_formatting(string):
-        pattern = '\\x1b\[\d\dm'
-        return re.sub(pattern, '', string)
+        pattern = "\\x1b\[\d\dm"
+        return re.sub(pattern, "", string)
 
     @classmethod
     def string_length(cls, string):
         """String length, ignoring terminal formatting"""
-        subbed = (cls.remove_formatting(string))
+        subbed = cls.remove_formatting(string)
         l = len(subbed)
         return len(subbed)
 
@@ -118,8 +118,8 @@ class StringColumn(object):
     def center(self, span):
         diff = span - self.length
         if diff > 0:
-            l = int(diff/2)
-            r = l + diff%2
+            l = int(diff / 2)
+            r = l + diff % 2
             return self.indent(l).indent_right(r)
         return self.copy()
 
@@ -164,10 +164,10 @@ class StringColumn(object):
         diff = len(sc.strings) - len(other.strings)
         if diff > 0:
             for i in range(diff):
-                other.prepend_string('')
+                other.prepend_string("")
         elif diff < 0:
             for i in range(-diff):
-                sc.prepend_string('')
+                sc.prepend_string("")
 
         new_sc = self.copy_empty()
         for this_string, other_string in zip(sc.strings, other.strings):
@@ -186,12 +186,12 @@ class StringColumn(object):
         n1 = 0
         n2 = 0
         for x in self[:]:
-            if all([_x == ' ' for _x in x]):
+            if all([_x == " " for _x in x]):
                 n1 += 1
             else:
                 break
         for x in self[::-1]:
-            if all([_x == ' ' for _x in x]):
+            if all([_x == " " for _x in x]):
                 n2 += 1
             else:
                 break
@@ -202,7 +202,9 @@ class StringColumn(object):
         return self[n1:n2]
 
     def __copy__(self):
-        copied = self.__class__(self.strings, color=self.color, background=self.background, fill=self.fill)
+        copied = self.__class__(
+            self.strings, color=self.color, background=self.background, fill=self.fill
+        )
         return copied
 
     def __getitem__(self, key):
@@ -227,7 +229,7 @@ class StringColumn(object):
         return self.length
 
     def __str__(self):
-        s = '\n'.join(self.strings)
+        s = "\n".join(self.strings)
         return s
 
     def __repr__(self):
@@ -263,7 +265,11 @@ class StringColumn(object):
         indexed_segments = []
         previous_end = 0
         for row in rows:
-            col = row.strip().apply_color(row.color).apply_background_color(row.background)
+            col = (
+                row.strip()
+                .apply_color(row.color)
+                .apply_background_color(row.background)
+            )
             start, end = row.strip_indices()
             word = (start, end, col)
             if word not in segments:
@@ -325,11 +331,11 @@ def to_lines(string, width):
     """Converts a string to lines of length <= width"""
     lines = []
     for i in range(0, len(string), width):
-        lines.append(string[i:i + width])
+        lines.append(string[i : i + width])
     return lines
 
 
-def prepend_lines(lines, label_iterable, indent, fill=' ', align='<'):
+def prepend_lines(lines, label_iterable, indent, fill=" ", align="<"):
     """
     Prepend lines with a label
 
@@ -344,7 +350,9 @@ def prepend_lines(lines, label_iterable, indent, fill=' ', align='<'):
     :return: new prepended lines
     :rtype: list
     """
-    prepend_pattern = functools.partial("{0:{fill}{align}{indent}}".format, fill=fill, align=align, indent=indent)
+    prepend_pattern = functools.partial(
+        "{0:{fill}{align}{indent}}".format, fill=fill, align=align, indent=indent
+    )
     new_lines = []
     for label, line in zip(label_iterable, lines):
         new_lines.append("{}{}".format(prepend_pattern(label), line))
@@ -354,8 +362,8 @@ def prepend_lines(lines, label_iterable, indent, fill=' ', align='<'):
 def indent(string, indent):
     """Indent lines"""
     lines = string.split("\n")
-    new_lines = prepend_lines(lines, [''] * len(lines), indent)
-    return '\n'.join(new_lines)
+    new_lines = prepend_lines(lines, [""] * len(lines), indent)
+    return "\n".join(new_lines)
 
 
 # def set_indent(lines, indent):
@@ -387,13 +395,13 @@ class ViewerAnnotationFlag(object):
     BOTH = "-"
 
 
-
-
 class SequenceRow(object):
     """A row in a :class:`SequenceViewer` instance. Can be comprised of multiple sequences (i.e. lines)
     and can be annotated with 'features'."""
 
-    def __init__(self, lines, labels, indent, start, end, line_colors=None, line_backgrounds=None):
+    def __init__(
+        self, lines, labels, indent, start, end, line_colors=None, line_backgrounds=None
+    ):
         """
         SequenceRow constructor
 
@@ -429,10 +437,14 @@ class SequenceRow(object):
     def lines(self):
         lines = self._lines[:]
         if self.line_colors:
-            lines = [colored(line, color) for line, color in zip(lines, self.line_colors)]
+            lines = [
+                colored(line, color) for line, color in zip(lines, self.line_colors)
+            ]
         if self.line_backgrounds:
-            lines = [colored_background(line, color) for line, color in
-                     zip(lines, self.line_backgrounds)]
+            lines = [
+                colored_background(line, color)
+                for line, color in zip(lines, self.line_backgrounds)
+            ]
         return prepend_lines(lines, self.labels, self.indent)
 
     def annotation_lines(self, annotations):
@@ -440,7 +452,7 @@ class SequenceRow(object):
         return [str(a.indent(self.indent)) for a in condensed]
 
     @staticmethod
-    def make_annotation(label, span, fill='*', color=None, background=None):
+    def make_annotation(label, span, fill="*", color=None, background=None):
         """
         Make an annotation with 'label' spanning inclusive base pairs indices 'span'
 
@@ -455,8 +467,12 @@ class SequenceRow(object):
         """
 
         if len(fill) != 1:
-            raise Exception("Fill '{}' must be a single character long, not {} characters".format(fill, len(fill)))
-        if fill.strip() == '':
+            raise Exception(
+                "Fill '{}' must be a single character long, not {} characters".format(
+                    fill, len(fill)
+                )
+            )
+        if fill.strip() == "":
             raise Exception("Fill cannot be whitespace")
         sc = StringColumn(color=color, background=background)
         if isinstance(label, str):
@@ -471,11 +487,13 @@ class SequenceRow(object):
         elif isinstance(label, StringColumn):
             if len(label) > span:
                 sc = sc.stack(label)
-                return sc.stack(StringColumn([''], fill=fill).center(span))
+                return sc.stack(StringColumn([""], fill=fill).center(span))
             label.fill = fill
             return sc.stack(label.center(span))
 
-    def absolute_annotate(self, start, end, fill, label, color=None, background=None, top=True):
+    def absolute_annotate(
+        self, start, end, fill, label, color=None, background=None, top=True
+    ):
         """
         Applyt annotation to this row using absolute start and ends for
         THIS row.
@@ -492,13 +510,25 @@ class SequenceRow(object):
         :rtype: None
         """
         span = end - start + 1
-        annotation = self.make_annotation(label, span, fill, color=color, background=background).indent(start)
+        annotation = self.make_annotation(
+            label, span, fill, color=color, background=background
+        ).indent(start)
         if top:
             self.annotations.append(annotation)
         else:
             self.bottom_annotations.append(annotation)
 
-    def annotate(self, start, end, fill, label='', color=None, background=None, top=True, wrap=False):
+    def annotate(
+        self,
+        start,
+        end,
+        fill,
+        label="",
+        color=None,
+        background=None,
+        top=True,
+        wrap=False,
+    ):
         """
         Annotate the sequence row. If 'start' or 'end' is beyond,
         the expected start or end for this row, the annotation will
@@ -517,7 +547,9 @@ class SequenceRow(object):
         """
         s = max(start - self.start, 0)
         e = min(end - self.start, len(self) - 1)
-        return self.absolute_annotate(s, e, fill, label, color=color, background=background, top=top)
+        return self.absolute_annotate(
+            s, e, fill, label, color=color, background=background, top=top
+        )
 
     def in_bounds(self, x):
         """
@@ -534,9 +566,11 @@ class SequenceRow(object):
         return len(self._lines[0])
 
     def __str__(self):
-        return '\n'.join(self.annotation_lines(self.annotations) +
-                         self.lines +
-                         self.annotation_lines(self.bottom_annotations))
+        return "\n".join(
+            self.annotation_lines(self.annotations)
+            + self.lines
+            + self.annotation_lines(self.bottom_annotations)
+        )
 
 
 #
@@ -572,30 +606,33 @@ class SequenceViewer(object):
     class DEFAULTS:
         METADATA_INDENT = 2
         INDENT = 10
-        SPACER = '\n'
-        HEADER_SPACER = '\n'
+        SPACER = "\n"
+        HEADER_SPACER = "\n"
         WIDTH = 85
-        NAME = 'Unnamed'
-        DESCRIPTION = ''
+        NAME = "Unnamed"
+        DESCRIPTION = ""
         BACKGROUND_COLOR = None
         FOREGROUND_COLOR = None
         APPLY_INDICES = [0]
 
     RANDOM_COLOR = "RANDOM"
 
-    def __init__(self, sequences,
-                 sequence_labels=None,
-                 apply_indices=DEFAULTS.APPLY_INDICES,
-                 foreground_colors=DEFAULTS.FOREGROUND_COLOR,
-                 background_colors=DEFAULTS.BACKGROUND_COLOR,
-                 indent=DEFAULTS.INDENT,
-                 width=DEFAULTS.WIDTH,
-                 spacer=DEFAULTS.SPACER,
-                 header_spacer=DEFAULTS.HEADER_SPACER,
-                 name=DEFAULTS.NAME,
-                 window=(0, None),
-                 description='',
-                 metadata=None):
+    def __init__(
+        self,
+        sequences,
+        sequence_labels=None,
+        apply_indices=DEFAULTS.APPLY_INDICES,
+        foreground_colors=DEFAULTS.FOREGROUND_COLOR,
+        background_colors=DEFAULTS.BACKGROUND_COLOR,
+        indent=DEFAULTS.INDENT,
+        width=DEFAULTS.WIDTH,
+        spacer=DEFAULTS.SPACER,
+        header_spacer=DEFAULTS.HEADER_SPACER,
+        name=DEFAULTS.NAME,
+        window=(0, None),
+        description="",
+        metadata=None,
+    ):
         """
         SequenceViewer constructor
 
@@ -629,16 +666,20 @@ class SequenceViewer(object):
         assert isinstance(sequences, list)
         seq_lens = set([len(s) for s in sequences])
         if len(seq_lens) > 1:
-            raise Exception("Sequence must be same length but found lengths {}".format([len(s) for s in sequences]))
+            raise Exception(
+                "Sequence must be same length but found lengths {}".format(
+                    [len(s) for s in sequences]
+                )
+            )
 
         self.annotations = []
 
         self.window = window
         self._sequences = tuple([str(s) for s in sequences])
         if sequence_labels is None:
-            sequence_labels = [''] * len(sequences)
+            sequence_labels = [""] * len(sequences)
         for i in apply_indices:
-            sequence_labels[i] = '{index} ' + sequence_labels[i]
+            sequence_labels[i] = "{index} " + sequence_labels[i]
 
         if foreground_colors == self.RANDOM_COLOR:
             foreground_colors = [random_color() for _ in sequences]
@@ -657,9 +698,9 @@ class SequenceViewer(object):
         self.name = name
         self.metadata = OrderedDict()
         if description:
-            self.metadata['Description'] = self.DEFAULTS.DESCRIPTION
-        if hasattr(self.sequences[0], 'cyclic'):
-            self.metadata['Cyclic'] = self.sequences[0].cyclic
+            self.metadata["Description"] = self.DEFAULTS.DESCRIPTION
+        if hasattr(self.sequences[0], "cyclic"):
+            self.metadata["Cyclic"] = self.sequences[0].cyclic
         if metadata is not None:
             self.metadata.update(metadata)
 
@@ -675,15 +716,20 @@ class SequenceViewer(object):
     @property
     def header(self):
         """Return the formatted header and metadata"""
-        metadata = '\n'.join('{key}: {val}'.format(key=key, val=val) for key, val in self.metadata.items())
+        metadata = "\n".join(
+            "{key}: {val}".format(key=key, val=val)
+            for key, val in self.metadata.items()
+        )
         metadata = indent(metadata, self.DEFAULTS.METADATA_INDENT)
-        return "> \"{name}\" ({length}bp)\n{metadata}".format(name=self.name, length=len(self), metadata=metadata)
+        return '> "{name}" ({length}bp)\n{metadata}'.format(
+            name=self.name, length=len(self), metadata=metadata
+        )
 
     @property
     def rows(self):
         lines = []
         for seq in self.sequences:
-            line = to_lines(str(seq)[self.window[0]:self.window[1]], width=self.width)
+            line = to_lines(str(seq)[self.window[0] : self.window[1]], width=self.width)
             lines.append(line)
         interleafed = functools.reduce(lambda x, y: x + y, zip(*lines))
         chunks = chunkify(interleafed, len(self.sequences))
@@ -691,13 +737,24 @@ class SequenceViewer(object):
         index = self.window[0]
         for chunk in chunks:
             labels = [str(l).format(index=index) for l in self.sequence_labels]
-            rows.append(SequenceRow(chunk, labels, self.indent, index, min(index + self.width - 1, len(self)),
-                                    line_colors=self.foreground_colors, line_backgrounds=self.background_colors))
+            rows.append(
+                SequenceRow(
+                    chunk,
+                    labels,
+                    self.indent,
+                    index,
+                    min(index + self.width - 1, len(self)),
+                    line_colors=self.foreground_colors,
+                    line_backgrounds=self.background_colors,
+                )
+            )
             index += len(chunk[0])
         self._annotate_rows(rows)
         return rows
 
-    def annotate(self, start, end, label=None, fill=None, color=None, background=None, top=True):
+    def annotate(
+        self, start, end, label=None, fill=None, color=None, background=None, top=True
+    ):
         """
         Annotates this viewer object starting from 'start' to 'end' inclusively.
 
@@ -719,22 +776,24 @@ class SequenceViewer(object):
         if fill is None:
             fill = ViewerAnnotationFlag.BOTH
         if label is None:
-            label = ''
-        self.annotations.append(dict(
-            start=start,
-            end=end,
-            label=label,
-            fill=str(fill),
-            color=color,
-            background=background,
-            top=top
-        ))
+            label = ""
+        self.annotations.append(
+            dict(
+                start=start,
+                end=end,
+                label=label,
+                fill=str(fill),
+                color=color,
+                background=background,
+                top=top,
+            )
+        )
 
     def _annotate_rows(self, rows):
         """Annotate the rows using the viewer's annotations"""
         for a in self.annotations:
             for row in rows:
-                if a['end'] >= row.start and a['start'] <= row.end:
+                if a["end"] >= row.start and a["start"] <= row.end:
                     row.annotate(**a)
         return rows
 
@@ -747,17 +806,25 @@ class SequenceViewer(object):
     def __str__(self):
         spacer = self.spacer
         if spacer is None:
-            spacer = ''
+            spacer = ""
         s = "{header}\n".format(header=self.header)
         s += self.header_spacer
-        s += '\n{}'.format(spacer).join([str(r) for r in self.rows])
+        s += "\n{}".format(spacer).join([str(r) for r in self.rows])
         return s
 
 
 class FASTAItem(SequenceViewer):
-
     def __init__(self, sequence):
-        super().__init__([sequence], indent=0, width=80, name=sequence.name, apply_indices=[], sequence_labels=[''], spacer='', header_spacer='')
+        super().__init__(
+            [sequence],
+            indent=0,
+            width=80,
+            name=sequence.name,
+            apply_indices=[],
+            sequence_labels=[""],
+            spacer="",
+            header_spacer="",
+        )
 
     @property
     def header(self):
@@ -765,12 +832,11 @@ class FASTAItem(SequenceViewer):
 
 
 class FASTAViewer(object):
-
     def __init__(self, sequences):
         self.views = [FASTAItem(sequence) for sequence in sequences]
 
     def __str__(self):
-        return '\n\n'.join(str(v) for v in self.views)
+        return "\n\n".join(str(v) for v in self.views)
 
     def print(self):
         print(str(self))

@@ -6,7 +6,9 @@ class Context(object):
 
     DEFAULT_START_INDEX = 0
 
-    def __init__(self, length, circular, name=None, id=None, start_index=DEFAULT_START_INDEX):
+    def __init__(
+        self, length, circular, name=None, id=None, start_index=DEFAULT_START_INDEX
+    ):
         """
         Context constructor
 
@@ -51,7 +53,7 @@ class Context(object):
         :return:
         :rtype:
         """
-        return self.length+self.start-1
+        return self.length + self.start - 1
 
     def span(self, x, y):
         """
@@ -79,13 +81,13 @@ class Context(object):
         y = self.translate_pos(y)
         mx = max(x, y)
         mn = min(x, y)
-        m = mx-mn-1
+        m = mx - mn - 1
         if x > y:
             if self.circular:
-                return self.length-m
+                return self.length - m
             else:
                 return None
-        return int(m+2)
+        return int(m + 2)
 
     def within_bounds(self, pos, inclusive=True):
         """
@@ -125,24 +127,28 @@ class Context(object):
             while not cleared:
                 cleared = True
                 if pos > self.end:
-                    pos = pos-self.length
+                    pos = pos - self.length
                     cleared = False
                 if pos < self.start:
-                    pos = pos+self.length
+                    pos = pos + self.length
                     cleared = False
         else:
             if not self.within_bounds(pos, inclusive=True):
                 raise RegionError(
-                        "Position {} outside of bounds for linear region [{} {}].".format(pos, self.start,
-                                                                                          self.end))
+                    "Position {} outside of bounds for linear region [{} {}].".format(
+                        pos, self.start, self.end
+                    )
+                )
         return pos
 
     def __eq__(self, other):
         """Whether another context is functionally equivalent"""
-        return self.circular == other.circular and \
-               self.start == other.start and \
-               self.end == other.end and \
-               self.length == other.length
+        return (
+            self.circular == other.circular
+            and self.start == other.start
+            and self.end == other.end
+            and self.length == other.length
+        )
 
     def __len__(self):
         """The length of the context"""
@@ -150,9 +156,7 @@ class Context(object):
 
     def __str__(self):
         return "Context(length={length}, circular={circular}, start_index={start_index})".format(
-                length=self.length,
-                circular=self.circular,
-                start_index=self.start
+            length=self.length, circular=self.circular, start_index=self.start
         )
 
     def __repr__(self):

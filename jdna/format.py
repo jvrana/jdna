@@ -24,7 +24,7 @@ def to_lines(string, width):
     """Converts a string to lines of length <= width"""
     lines = []
     for i in range(0, len(string), width):
-        lines.append(string[i:i + width])
+        lines.append(string[i : i + width])
     return lines
 
 
@@ -43,7 +43,8 @@ def rows_to_chunks(rows, width=75):
     interleafed = functools.reduce(lambda x, y: x + y, zip(*lines))
     return list(chunks(interleafed, len(rows)))
 
-def prepend_lines(lines, label_iterable, indent, fill=' ', align='<'):
+
+def prepend_lines(lines, label_iterable, indent, fill=" ", align="<"):
     """
 
     :param lines:
@@ -57,7 +58,9 @@ def prepend_lines(lines, label_iterable, indent, fill=' ', align='<'):
     :return:
     :rtype:
     """
-    prepend_pattern = functools.partial("{0:{fill}{align}{indent}}".format, fill=fill, align=align, indent=indent)
+    prepend_pattern = functools.partial(
+        "{0:{fill}{align}{indent}}".format, fill=fill, align=align, indent=indent
+    )
     new_lines = []
     for label, line in zip(label_iterable, lines):
         print(line)
@@ -66,7 +69,7 @@ def prepend_lines(lines, label_iterable, indent, fill=' ', align='<'):
 
 
 def indent(lines, indent):
-    return prepend_lines(lines, ['']*len(lines), indent)
+    return prepend_lines(lines, [""] * len(lines), indent)
 
 
 def set_indent(lines, indent):
@@ -79,18 +82,18 @@ def enumerate_lines(lines, indent):
 
 
 def accumulate_length_of_lines(lines, indent):
-    labels = itertools.accumulate([len(l.strip('\n')) for l in lines], operator.add)
+    labels = itertools.accumulate([len(l.strip("\n")) for l in lines], operator.add)
     return prepend_lines(lines, labels, indent)
 
 
 def accumulate_length_of_first_line(lines, indent):
-    labels = itertools.accumulate([len(l.split('\n')[0].strip('\n')) for l in lines], operator.add)
+    labels = itertools.accumulate(
+        [len(l.split("\n")[0].strip("\n")) for l in lines], operator.add
+    )
     return prepend_lines(lines, labels, indent)
 
 
-def number_lines(lines, indent=None,
-                 numbering_strategy=NumberStrategy.LENGTH,
-                 step=1):
+def number_lines(lines, indent=None, numbering_strategy=NumberStrategy.LENGTH, step=1):
     if indent is None:
         indent = 10
     index = 0
@@ -103,12 +106,13 @@ def number_lines(lines, indent=None,
             elif numbering_strategy == NumberStrategy.NUM:
                 index += 1
         else:
-            indices.append('')
-
+            indices.append("")
 
     new_lines = []
     for index, line in zip(indices, lines):
-        index_str = "{0:{fill}{align}{indent}}".format(index, fill=' ', align='<', indent=indent)
+        index_str = "{0:{fill}{align}{indent}}".format(
+            index, fill=" ", align="<", indent=indent
+        )
         new_lines.append("{}{}".format(index_str, line))
     return new_lines
 
@@ -116,7 +120,7 @@ def number_lines(lines, indent=None,
 def interleaf(rows, width=75, spacer=None, number=False, indent=None):
     """Interleaf lines that have the same lengths"""
     if not rows:
-        return ''
+        return ""
     lengths = set([len(r) for r in rows])
     if len(lengths) > 1:
         raise Exception("Cannot format rows that have different lengths")
@@ -136,7 +140,7 @@ def interleaf(rows, width=75, spacer=None, number=False, indent=None):
             with_spacer.append(spacer)
         with_spacer.append(l)
 
-    return '\n'.join(with_spacer)
+    return "\n".join(with_spacer)
 
 
 def group_by_line_lengths(lines):
@@ -151,6 +155,8 @@ def group_by_line_lengths(lines):
     return groups
 
 
-def format_sequence(s, width=75, spacer=''):
-    groups = group_by_line_lengths(s.split('\n'))
-    return '\n'.join([interleaf(g, width=width, spacer=spacer, number=True) for g in groups])
+def format_sequence(s, width=75, spacer=""):
+    groups = group_by_line_lengths(s.split("\n"))
+    return "\n".join(
+        [interleaf(g, width=width, spacer=spacer, number=True) for g in groups]
+    )

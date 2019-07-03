@@ -1,11 +1,9 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
   <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
@@ -15,7 +13,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>jdna.alphabet &#8212; jdna 0.0.4 documentation</title>
+    <title>jdna.alphabet &#8212; jdna 0.1.0a documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -23,6 +21,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   
@@ -38,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.1.0a documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>
@@ -57,7 +56,7 @@
     </div>
 </div>
 
-<p align="center" class="sidebar-subtitle">version: <a href="">0.0.4</a></p>
+<p align="center" class="sidebar-subtitle">version: <a href="https://jvrana.github.io/jdna/">0.1.0a</a></p>
 <div>
 
 </div>
@@ -123,19 +122,23 @@
 <span class="sd">    A dictionary class that retrieves complementary base pairs</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_chr&#39;</span><span class="p">,</span> <span class="s1">&#39;_comp&#39;</span><span class="p">,</span> <span class="s1">&#39;__complementary&#39;</span><span class="p">,</span> <span class="s1">&#39;__ambiguous&#39;</span><span class="p">]</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_chr&quot;</span><span class="p">,</span> <span class="s2">&quot;_comp&quot;</span><span class="p">,</span> <span class="s2">&quot;__complementary&quot;</span><span class="p">,</span> <span class="s2">&quot;__ambiguous&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">characters</span><span class="p">,</span> <span class="n">complementary_characters</span><span class="p">,</span> <span class="n">ambiguous_characters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__complementary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
-            <span class="n">characters</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">characters</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
-            <span class="n">complementary_characters</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">complementary_characters</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-        <span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__complementary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">characters</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">characters</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+                <span class="n">complementary_characters</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">complementary_characters</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">ambiguous_characters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ambiguous_characters</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__ambiguous</span> <span class="o">=</span> <span class="n">ambiguous_characters</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_biopython_alphabet</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">biopython_alphabet</span><span class="p">:</span> <span class="n">IUPAC</span><span class="o">.</span><span class="n">Alphabet</span><span class="p">,</span> <span class="n">ambiguous_characters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_biopython_alphabet</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">biopython_alphabet</span><span class="p">:</span> <span class="n">IUPAC</span><span class="o">.</span><span class="n">Alphabet</span><span class="p">,</span> <span class="n">ambiguous_characters</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
         <span class="n">seq</span> <span class="o">=</span> <span class="n">Seq</span><span class="p">(</span><span class="n">biopython_alphabet</span><span class="o">.</span><span class="n">letters</span><span class="p">)</span>
         <span class="n">seq_letters</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
         <span class="n">c_seq_letters</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">complement</span><span class="p">())</span>
@@ -162,7 +165,7 @@
 <span class="sd">        :return:</span>
 <span class="sd">        :rtype:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__ambiguous</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">s2</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__ambiguous</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">s2</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ignore_case</span><span class="p">:</span>
             <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -172,7 +175,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
     <span class="k">def</span> <span class="nf">complement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">basestring</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">basestring</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">reverse_complement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">complement</span><span class="p">(</span><span class="n">basestring</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -187,8 +190,21 @@
     <span class="n">rc</span> <span class="o">=</span> <span class="n">reverse_complement</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">complement</span></div>
 
-<span class="n">_iupacdict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;M&#39;</span><span class="p">:</span> <span class="s1">&#39;[AC]&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="s1">&#39;[AG]&#39;</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span><span class="p">:</span> <span class="s1">&#39;[AT]&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="s1">&#39;[CG]&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="s1">&#39;[CT]&#39;</span><span class="p">,</span>
-             <span class="s1">&#39;K&#39;</span><span class="p">:</span> <span class="s1">&#39;[GT]&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">:</span> <span class="s1">&#39;[ACG]&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="s1">&#39;[ACT]&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="s1">&#39;[AGT]&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="s1">&#39;[CGT]&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;[ACGT]&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;[ACGT]&#39;</span><span class="p">}</span>
+
+<span class="n">_iupacdict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;M&quot;</span><span class="p">:</span> <span class="s2">&quot;[AC]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;R&quot;</span><span class="p">:</span> <span class="s2">&quot;[AG]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;W&quot;</span><span class="p">:</span> <span class="s2">&quot;[AT]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;S&quot;</span><span class="p">:</span> <span class="s2">&quot;[CG]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="s2">&quot;[CT]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;K&quot;</span><span class="p">:</span> <span class="s2">&quot;[GT]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;V&quot;</span><span class="p">:</span> <span class="s2">&quot;[ACG]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;H&quot;</span><span class="p">:</span> <span class="s2">&quot;[ACT]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="s2">&quot;[AGT]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="s2">&quot;[CGT]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="s2">&quot;[ACGT]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="s2">&quot;[ACGT]&quot;</span><span class="p">,</span>
+<span class="p">}</span>
 
 <span class="n">iupacdict</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_iupacdict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -213,7 +229,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.1.0a documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>

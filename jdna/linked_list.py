@@ -20,7 +20,7 @@ class Node(object):
     A node in a linked list
     """
 
-    __slots__ = ['data', '__next', '__prev']
+    __slots__ = ["data", "__next", "__prev"]
 
     def __init__(self, data):
         """
@@ -138,7 +138,7 @@ class Node(object):
         temp = self.__next
         self.__next = self.__prev
         self.__prev = temp
-        
+
     def set_next(self, node):
         """
         Set the next node
@@ -175,9 +175,11 @@ class Node(object):
         visited = set()
         curr = self
         while True:
-            if curr is None or \
-                    curr in visited or \
-                    (stop_criteria and stop_criteria(curr)):
+            if (
+                curr is None
+                or curr in visited
+                or (stop_criteria and stop_criteria(curr))
+            ):
                 return
             yield curr
             if curr is stop:
@@ -197,9 +199,8 @@ class Node(object):
         :rtype:
         """
         return self._propogate(
-            lambda x: x.next(),
-            stop=stop_node,
-            stop_criteria=stop_criteria)
+            lambda x: x.next(), stop=stop_node, stop_criteria=stop_criteria
+        )
 
     def rev(self, stop_node=None, stop_criteria=None):
         """
@@ -213,9 +214,8 @@ class Node(object):
         :rtype:
         """
         return self._propogate(
-            lambda x: x.prev(),
-            stop=stop_node,
-            stop_criteria=stop_criteria)
+            lambda x: x.prev(), stop=stop_node, stop_criteria=stop_criteria
+        )
 
     def find_first(self):
         """
@@ -305,8 +305,10 @@ class Node(object):
         return self.copy()
 
     def __deepcopy__(self, memo):
-        raise NotImplementedError("copy.deepcopy not implemented with class"
-                                  "{}. Use copy.copy instead.".format(self.__class__.__name__))
+        raise NotImplementedError(
+            "copy.deepcopy not implemented with class"
+            "{}. Use copy.copy instead.".format(self.__class__.__name__)
+        )
 
     def __repr__(self):
         return str(self)
@@ -316,7 +318,6 @@ class Node(object):
 
 
 class EmptyNode(Node):
-
     def __init__(self):
         pass
 
@@ -336,7 +337,7 @@ class EmptyNode(Node):
         yield
 
     def __str__(self):
-        return ''
+        return ""
 
 
 class LinkedListMatch(object):
@@ -367,8 +368,10 @@ class LinkedListMatch(object):
         :rtype: list of LinkedListMatch
         """
         if len(template_bounds_list) != len(query_bounds_list):
-            raise LinkedListIndexError("Cannot create Matches The template bounds list must be same size as query_"
-                                       "bounds list")
+            raise LinkedListIndexError(
+                "Cannot create Matches The template bounds list must be same size as query_"
+                "bounds list"
+            )
         if not template_bounds_list:
             return []
         template_nodes = reduce(lambda x, y: list(x) + list(y), template_bounds_list)
@@ -379,10 +382,10 @@ class LinkedListMatch(object):
         matches = []
         for i in range(0, len(template_nodes), 2):
             new_match = cls.__new__(cls)
-            new_match.span = (template_indices[i], template_indices[i+1])
-            new_match.query_span = (query_indices[i], query_indices[i+1])
-            new_match.query_bounds = (query_nodes[i], query_nodes[i+1])
-            new_match.template_bounds = (template_nodes[i], template_nodes[i+1])
+            new_match.span = (template_indices[i], template_indices[i + 1])
+            new_match.query_span = (query_indices[i], query_indices[i + 1])
+            new_match.query_bounds = (query_nodes[i], query_nodes[i + 1])
+            new_match.template_bounds = (template_nodes[i], template_nodes[i + 1])
             matches.append(new_match)
         return matches
 
@@ -404,9 +407,7 @@ class LinkedListMatch(object):
 
     def __repr__(self):
         return "<{cls} span={span}, qspan={query_span}>".format(
-            cls=self.__class__.__name__,
-            span=self.span,
-            query_span=self.query_span
+            cls=self.__class__.__name__, span=self.span, query_span=self.query_span
         )
 
     def __str__(self):
@@ -532,7 +533,9 @@ class DoubleLinkedList(object):
         for index, n in enumerate(self):
             if index == i:
                 return n
-        raise LinkedListIndexError("There is no node at index '{}'. There are {} nodes.".format(i, len(self)))
+        raise LinkedListIndexError(
+            "There is no node at index '{}'. There are {} nodes.".format(i, len(self))
+        )
 
     def cut(self, i, cut_prev=True):
         if isinstance(i, tuple):
@@ -625,7 +628,7 @@ class DoubleLinkedList(object):
         # TODO: This copies the insertion sequence, you want that?
         if i == len(self):
             loc2 = None
-            loc1 = self.get(i-1)
+            loc1 = self.get(i - 1)
         else:
             loc2 = self.get(i)
             loc1 = loc2.prev()
@@ -633,7 +636,9 @@ class DoubleLinkedList(object):
         last = node_list.nodes[-1]
         first.set_prev(loc1)
         last.set_next(loc2)
-        if i == 0:  # Special case in which user inserts sequence in front of their sequence; they probably intend to re-index it
+        if (
+            i == 0
+        ):  # Special case in which user inserts sequence in front of their sequence; they probably intend to re-index it
             self.head = first
         return self
 
@@ -650,7 +655,9 @@ class DoubleLinkedList(object):
     def reindex(self, i):
         self._check_if_in_bounds(i)
         if not self.cyclic:
-            raise TypeError("Cannot re-index a linear {}".format(self.__class__.__name__))
+            raise TypeError(
+                "Cannot re-index a linear {}".format(self.__class__.__name__)
+            )
         self.head = self.get(i)
         return self
 
@@ -661,7 +668,9 @@ class DoubleLinkedList(object):
             mn = 0
             mx = len(self) - 1
             if n < 0 or n > mx:
-                raise LinkedListIndexError("Index {} out of acceptable bounds ({}, {})".format(n, mn, mx))
+                raise LinkedListIndexError(
+                    "Index {} out of acceptable bounds ({}, {})".format(n, mn, mx)
+                )
 
     # TODO: implement yield in find_iter, search_all should call this
     # TODO: query should be any interable
@@ -724,22 +733,38 @@ class DoubleLinkedList(object):
     #         yield LinkedListMatch(curr_node, x1, span=(i, j - 1))
 
     @classmethod
-    def match(cls, n1, n2, query_direction=Direction.FORWARD, template_direction=Direction.FORWARD, protocol=None):
+    def match(
+        cls,
+        n1,
+        n2,
+        query_direction=Direction.FORWARD,
+        template_direction=Direction.FORWARD,
+        protocol=None,
+    ):
         """"""
         if protocol is None:
             protocol = lambda x, y: x.equivalent(y)
 
         iterators = {
             cls.Direction.FORWARD: lambda x: x.fwd(),
-            cls.Direction.REVERSE: lambda x: x.rev()
+            cls.Direction.REVERSE: lambda x: x.rev(),
         }
-        for x1, x2 in zip(iterators[template_direction](n1), iterators[query_direction](n2)):
+        for x1, x2 in zip(
+            iterators[template_direction](n1), iterators[query_direction](n2)
+        ):
             if protocol(x1, x2):
                 yield (x1, x2)
             else:
                 return
 
-    def find_iter(self, query, min_query_length=None, direction=Direction.FORWARD, protocol=None, depth=None):
+    def find_iter(
+        self,
+        query,
+        min_query_length=None,
+        direction=Direction.FORWARD,
+        protocol=None,
+        depth=None,
+    ):
         """
         Iteratively finds positions that match the query.
 
@@ -783,8 +808,15 @@ class DoubleLinkedList(object):
             if depth is not None and index > depth:
                 break
             visited.add(curr_node)
-            matches = list(self.match(curr_node, query_start, query_direction=query_direction,
-                                      template_direction=template_direction, protocol=protocol))
+            matches = list(
+                self.match(
+                    curr_node,
+                    query_start,
+                    query_direction=query_direction,
+                    template_direction=template_direction,
+                    protocol=protocol,
+                )
+            )
             if self.Direction.REVERSE == template_direction:
                 matches = matches[::-1]
             if len(matches) >= min_query_length:
@@ -901,7 +933,9 @@ class DoubleLinkedList(object):
             if n is stop:
                 stop_hit = True
         if stop is not None and not stop_hit:
-            raise LinkedListIndexError("Inclusive indices {} out of bounds".format((i,j)))
+            raise LinkedListIndexError(
+                "Inclusive indices {} out of bounds".format((i, j))
+            )
 
     def index_of(self, node):
         for i, n in enumerate(self):
@@ -945,12 +979,12 @@ class DoubleLinkedList(object):
 
     def left_trim(self, i):
         if self.cyclic:
-            raise IndexError('Cannot chop a cyclic sequence.')
+            raise IndexError("Cannot chop a cyclic sequence.")
         return self.cut(i)[-1]
 
     def right_trim(self, i):
         if self.cyclic:
-            raise IndexError('Cannot chop a cyclic sequence.')
+            raise IndexError("Cannot chop a cyclic sequence.")
         return self.cut(i, cut_prev=False)[0]
 
     def __eq__(self, other):
@@ -966,7 +1000,11 @@ class DoubleLinkedList(object):
     def __getitem__(self, key):
         if isinstance(key, slice):
             if key.step and key.step > 1:
-                raise LinkedListIndexError("Step > 1 is not supported for sliced object of '{}'".format(self.__class__.__name__))
+                raise LinkedListIndexError(
+                    "Step > 1 is not supported for sliced object of '{}'".format(
+                        self.__class__.__name__
+                    )
+                )
 
             if key.start is not None and key.stop is not None:
                 if key.start == key.stop:
@@ -1011,8 +1049,10 @@ class DoubleLinkedList(object):
         return copied
 
     def __deepcopy__(self, memo):
-        raise NotImplementedError("copy.deepcopy not implemented with class" \
-                                  "{}. Use copy.copy instead.".format(self.__class__.__name__))
+        raise NotImplementedError(
+            "copy.deepcopy not implemented with class"
+            "{}. Use copy.copy instead.".format(self.__class__.__name__)
+        )
 
     def __reversed__(self):
         copied = self.copy()
@@ -1030,10 +1070,9 @@ class DoubleLinkedList(object):
 
     def __repr__(self):
         return "<{cls} data='{data}'>".format(
-            cls=self.__class__.__name__,
-            data=str(self)
+            cls=self.__class__.__name__, data=str(self)
         )
         return str(self)
 
     def __str__(self):
-        return ''.join(str(x) for x in self)
+        return "".join(str(x) for x in self)

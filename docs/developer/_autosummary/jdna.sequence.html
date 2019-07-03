@@ -1,11 +1,9 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
   
   <!-- Licensed under the Apache 2.0 License -->
   <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
@@ -15,7 +13,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>jdna.sequence &#8212; jdna 0.0.4 documentation</title>
+    <title>jdna.sequence &#8212; jdna 0.1.0a documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -23,6 +21,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="jdna.alphabet" href="jdna.alphabet.html" />
@@ -46,7 +45,7 @@
         <li class="right" >
           <a href="jdna.linked_list.html" title="jdna.linked_list"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.1.0a documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api_reference.html" accesskey="U">API Reference</a> &#187;</li> 
       </ul>
     </div>
@@ -65,7 +64,7 @@
     </div>
 </div>
 
-<p align="center" class="sidebar-subtitle">version: <a href="">0.0.4</a></p>
+<p align="center" class="sidebar-subtitle">version: <a href="https://jvrana.github.io/jdna/">0.1.0a</a></p>
 <div>
 
 </div>
@@ -122,81 +121,73 @@
 <span id="jdna-sequence"></span><h1>jdna.sequence<a class="headerlink" href="#module-jdna.sequence" title="Permalink to this headline">¶</a></h1>
 <p>Represent linear or circularized nucleotides</p>
 <p class="rubric">Classes</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#jdna.sequence.BindPos" title="jdna.sequence.BindPos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BindPos</span></code></a>(template_bounds,&nbsp;query_bounds,&nbsp;…)</td>
-<td>Makes a sequence binding position.</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdna.sequence.BindPos" title="jdna.sequence.BindPos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BindPos</span></code></a>(template_bounds, query_bounds, …)</p></td>
+<td><p>Makes a sequence binding position.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Feature</span></code></a>(name[,&nbsp;type,&nbsp;strand,&nbsp;color])</td>
-<td>An annotation for a sequence.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Feature</span></code></a>(name[, type, strand, color])</p></td>
+<td><p>An annotation for a sequence.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#jdna.sequence.Nucleotide" title="jdna.sequence.Nucleotide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nucleotide</span></code></a>(base[,&nbsp;alphabet])</td>
-<td>Represents a biological nucleotide.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdna.sequence.Nucleotide" title="jdna.sequence.Nucleotide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nucleotide</span></code></a>(base[, alphabet])</p></td>
+<td><p>Represents a biological nucleotide.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#jdna.sequence.Sequence" title="jdna.sequence.Sequence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sequence</span></code></a>([sequence,&nbsp;first,&nbsp;name,&nbsp;…])</td>
-<td>Represents a biological sequence as a double linked list.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="#jdna.sequence.Sequence" title="jdna.sequence.Sequence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sequence</span></code></a>([sequence, first, name, …])</p></td>
+<td><p>Represents a biological sequence as a double linked list.</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#jdna.sequence.SequenceFlags" title="jdna.sequence.SequenceFlags"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SequenceFlags</span></code></a></td>
-<td>Constants/Flags for sequences.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jdna.sequence.SequenceFlags" title="jdna.sequence.SequenceFlags"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SequenceFlags</span></code></a></p></td>
+<td><p>Constants/Flags for sequences.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="class">
 <dt id="jdna.sequence.BindPos">
-<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">BindPos</code><span class="sig-paren">(</span><em>template_bounds</em>, <em>query_bounds</em>, <em>template</em>, <em>query</em>, <em>direction</em>, <em>strand=&lt;SequenceFlags.FORWARD: 1&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#BindPos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.BindPos" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">jdna.sequence.</code><code class="sig-name descname">BindPos</code><span class="sig-paren">(</span><em class="sig-param">template_bounds</em>, <em class="sig-param">query_bounds</em>, <em class="sig-param">template</em>, <em class="sig-param">query</em>, <em class="sig-param">direction</em>, <em class="sig-param">strand=&lt;SequenceFlags.FORWARD: 1&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#BindPos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.BindPos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.LinkedListMatch" title="jdna.linked_list.LinkedListMatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.linked_list.LinkedListMatch</span></code></a></p>
 <p>Makes a sequence binding position.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>template_bounds_list</strong> (<em>template DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a template</li>
-<li><strong>query_bounds_list</strong> (<em>query DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a query</li>
-<li><strong>template</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the template</li>
-<li><strong>query</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the query</li>
-<li><strong>direction</strong> (<em>int</em>) – If SequenceFlags.FORWARD, the binding position indicates binding forward, to the bottom strand
-of a dsDNA sequence.</li>
-<li><strong>strand</strong> (<em>int</em>) – If SequenceFlags.BOTTOM, then the query is assumed to be the reverse_complement of the original
-query</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>template_bounds_list</strong> (<em>template DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a template</p></li>
+<li><p><strong>query_bounds_list</strong> (<em>query DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a query</p></li>
+<li><p><strong>template</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the template</p></li>
+<li><p><strong>query</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the query</p></li>
+<li><p><strong>direction</strong> (<em>int</em>) – If SequenceFlags.FORWARD, the binding position indicates binding forward, to the bottom strand
+of a dsDNA sequence.</p></li>
+<li><p><strong>strand</strong> (<em>int</em>) – If SequenceFlags.BOTTOM, then the query is assumed to be the reverse_complement of the original
+query</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="classmethod">
+</dd>
+</dl>
+<dl class="method">
 <dt id="jdna.sequence.BindPos.batch_create">
-<em class="property">classmethod </em><code class="descname">batch_create</code><span class="sig-paren">(</span><em>template_bounds_list</em>, <em>query_bounds_list</em>, <em>template</em>, <em>query</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.BindPos.batch_create" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">batch_create</code><span class="sig-paren">(</span><em class="sig-param">template_bounds_list</em>, <em class="sig-param">query_bounds_list</em>, <em class="sig-param">template</em>, <em class="sig-param">query</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.BindPos.batch_create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Efficiently create several LinkedListMatches from lists of template starts/ends and query starts/ends</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>template_bounds_list</strong> (<em>template DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a template</li>
-<li><strong>query_bounds_list</strong> (<em>query DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a query</li>
-<li><strong>template</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the template</li>
-<li><strong>query</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the query</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>template_bounds_list</strong> (<em>template DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a template</p></li>
+<li><p><strong>query_bounds_list</strong> (<em>query DoubleLinkedList</em>) – list of 2 len tuples containing starts and ends from a query</p></li>
+<li><p><strong>template</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the template</p></li>
+<li><p><strong>query</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – the query</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">matchese</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of LinkedListMatch</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>matchese</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of LinkedListMatch</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="jdna.sequence.BindPos.from_match">
-<em class="property">classmethod </em><code class="descname">from_match</code><span class="sig-paren">(</span><em>linked_list_match</em>, <em>template</em>, <em>query</em>, <em>direction</em>, <em>strand=&lt;SequenceFlags.FORWARD: 1&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#BindPos.from_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.BindPos.from_match" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_match</code><span class="sig-paren">(</span><em class="sig-param">linked_list_match</em>, <em class="sig-param">template</em>, <em class="sig-param">query</em>, <em class="sig-param">direction</em>, <em class="sig-param">strand=&lt;SequenceFlags.FORWARD: 1&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#BindPos.from_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.BindPos.from_match" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a binding pos
 :param linked_list_match: the linked list match
 :type linked_list_match: LinkedListMatch
@@ -208,28 +199,25 @@ query</li>
 
 <dl class="class">
 <dt id="jdna.sequence.Feature">
-<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">Feature</code><span class="sig-paren">(</span><em>name</em>, <em>type=None</em>, <em>strand=None</em>, <em>color=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Feature" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">jdna.sequence.</code><code class="sig-name descname">Feature</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">type=None</em>, <em class="sig-param">strand=None</em>, <em class="sig-param">color=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Feature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>An annotation for a sequence.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="jdna.sequence.Nucleotide">
-<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">Nucleotide</code><span class="sig-paren">(</span><em>base</em>, <em>alphabet=&lt;jdna.alphabet.Alphabet object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">jdna.sequence.</code><code class="sig-name descname">Nucleotide</code><span class="sig-paren">(</span><em class="sig-param">base</em>, <em class="sig-param">alphabet=&lt;jdna.alphabet.Alphabet object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.linked_list.Node</span></code></a></p>
 <p>Represents a biological nucleotide. Serves a <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code> in teh <a class="reference internal" href="#jdna.sequence.Sequence" title="jdna.sequence.Sequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a> object.</p>
 <p>Nucleotide constructor</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>base</strong> (<em>basestring</em>) – base as a single character string</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>base</strong> (<em>basestring</em>) – base as a single character string</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide._break_connections">
-<code class="descname">_break_connections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide._break_connections" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_break_connections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide._break_connections" title="Permalink to this definition">¶</a></dt>
 <dd><p>Break connections in this node.
 :return:
 :rtype:</p>
@@ -237,506 +225,451 @@ query</li>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide._complete_match">
-<code class="descname">_complete_match</code><span class="sig-paren">(</span><em>node</em>, <em>next_method</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide._complete_match" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_complete_match</code><span class="sig-paren">(</span><em class="sig-param">node</em>, <em class="sig-param">next_method</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide._complete_match" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return whether the longest match between two nodes is equivalent.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>node</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node"><em>Node</em></a>) – the node to compare</li>
-<li><strong>next_method</strong> (<em>callable</em>) – how to obtain the next node</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node"><em>Node</em></a>) – the node to compare</p></li>
+<li><p><strong>next_method</strong> (<em>callable</em>) – how to obtain the next node</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">whether the longest match between two nodes is equivalent</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>whether the longest match between two nodes is equivalent</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.add_next">
-<code class="descname">add_next</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.add_next" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_next</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.add_next" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new node and add to next</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>any</em>) – any data</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the new node</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>any</em>) – any data</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the new node</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.add_prev">
-<code class="descname">add_prev</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.add_prev" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_prev</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.add_prev" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new node and add to previous</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>any</em>) – any data</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the new node</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>any</em>) – any data</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the new node</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.cut_next">
-<code class="descname">cut_next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.cut_next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.cut_next" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">cut_next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.cut_next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.cut_next" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cut the next node, return the cut node.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the cut (next) node</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the cut (next) node</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.cut_prev">
-<code class="descname">cut_prev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.cut_prev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.cut_prev" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">cut_prev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.cut_prev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.cut_prev" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cut the previous node, return the cut node.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the cut (previous) node</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the cut (previous) node</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.equivalent">
-<code class="descname">equivalent</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.equivalent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.equivalent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">equivalent</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.equivalent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.equivalent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluates whether two nodes hold the same data</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.find_first">
-<code class="descname">find_first</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.find_first" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">find_first</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.find_first" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the head node</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.find_last">
-<code class="descname">find_last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.find_last" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">find_last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.find_last" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the tail node</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.fwd">
-<code class="descname">fwd</code><span class="sig-paren">(</span><em>stop_node=None</em>, <em>stop_criteria=None</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.fwd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fwd</code><span class="sig-paren">(</span><em class="sig-param">stop_node=None</em>, <em class="sig-param">stop_criteria=None</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.fwd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Propogates forwards until stop node is visited or stop criteria is reached.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>stop_node</strong> – </li>
-<li><strong>stop_criteria</strong> – </li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stop_node</strong> – </p></li>
+<li><p><strong>stop_criteria</strong> – </p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.longest_match">
-<code class="descname">longest_match</code><span class="sig-paren">(</span><em>node</em>, <em>next_method=None</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.longest_match" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">longest_match</code><span class="sig-paren">(</span><em class="sig-param">node</em>, <em class="sig-param">next_method=None</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.longest_match" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the longest match between two linked_lists</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>node</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node"><em>Node</em></a>) – the node to compare</li>
-<li><strong>next_method</strong> (<em>callable</em>) – how to obtain the next node</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node"><em>Node</em></a>) – the node to compare</p></li>
+<li><p><strong>next_method</strong> (<em>callable</em>) – how to obtain the next node</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of tuples containing matching nodes</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of tuples containing matching nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.next">
-<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.next" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.next" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the next node</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the next node</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the next node</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.prev">
-<code class="descname">prev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.prev" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">prev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.prev" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the previous node</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the previous node</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the previous node</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.Node" title="jdna.linked_list.Node">Node</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="jdna.sequence.Nucleotide.random">
-<em class="property">classmethod </em><code class="descname">random</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.random" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">random</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a random sequence</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.remove">
-<code class="descname">remove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove node from linked list, connecting the previous and next nodes together.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.rev">
-<code class="descname">rev</code><span class="sig-paren">(</span><em>stop_node=None</em>, <em>stop_criteria=None</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.rev" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">rev</code><span class="sig-paren">(</span><em class="sig-param">stop_node=None</em>, <em class="sig-param">stop_criteria=None</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.rev" title="Permalink to this definition">¶</a></dt>
 <dd><p>Propogates backwards until stop node is visited or stop criteria is reached.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>stop_node</strong> – </li>
-<li><strong>stop_criteria</strong> – </li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stop_node</strong> – </p></li>
+<li><p><strong>stop_criteria</strong> – </p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.set_next">
-<code class="descname">set_next</code><span class="sig-paren">(</span><em>nucleotide</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.set_next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.set_next" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_next</code><span class="sig-paren">(</span><em class="sig-param">nucleotide</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.set_next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.set_next" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the next node</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> – </td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.set_prev">
-<code class="descname">set_prev</code><span class="sig-paren">(</span><em>nucleotide</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.set_prev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.set_prev" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_prev</code><span class="sig-paren">(</span><em class="sig-param">nucleotide</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Nucleotide.set_prev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Nucleotide.set_prev" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the previous node</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> – </td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Nucleotide.swap">
-<code class="descname">swap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.swap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">swap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Nucleotide.swap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Swap the previous and next nodes.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="jdna.sequence.Sequence">
-<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">Sequence</code><span class="sig-paren">(</span><em>sequence=None</em>, <em>first=None</em>, <em>name=None</em>, <em>description=''</em>, <em>metadata=None</em>, <em>cyclic=False</em>, <em>alphabet=&lt;jdna.alphabet.Alphabet object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">jdna.sequence.</code><code class="sig-name descname">Sequence</code><span class="sig-paren">(</span><em class="sig-param">sequence=None</em>, <em class="sig-param">first=None</em>, <em class="sig-param">name=None</em>, <em class="sig-param">description=''</em>, <em class="sig-param">metadata=None</em>, <em class="sig-param">cyclic=False</em>, <em class="sig-param">alphabet=&lt;jdna.alphabet.Alphabet object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.linked_list.DoubleLinkedList</span></code></a></p>
 <p>Represents a biological sequence as a double linked list. Can be annotated with features.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>sequence</strong> (<em>basestring</em>) – sequence string</li>
-<li><strong>first</strong> (<a class="reference internal" href="#jdna.sequence.Nucleotide" title="jdna.sequence.Nucleotide"><em>Nucleotide</em></a>) – optional first Nucleotide to use as the ‘head’ to this Sequence</li>
-<li><strong>name</strong> (<em>basestring</em>) – optional name of the sequence</li>
-<li><strong>description</strong> (<em>basestring</em>) – optional description of the sequence</li>
-<li><strong>metadata</strong> (<em>dict</em>) – additional sequence metadata</li>
-<li><strong>cyclic</strong> (<em>bool</em>) – whether to make the sequence circular</li>
-<li><strong>alphabet</strong> (<a class="reference internal" href="jdna.alphabet.html#jdna.alphabet.Alphabet" title="jdna.alphabet.Alphabet"><em>jdna.alphabet.Alphabet</em></a>) – the base pair alphabet of this sequence which used for complementary and comparisons
-(default: AmbiguousDNA)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sequence</strong> (<em>basestring</em>) – sequence string</p></li>
+<li><p><strong>first</strong> (<a class="reference internal" href="#jdna.sequence.Nucleotide" title="jdna.sequence.Nucleotide"><em>Nucleotide</em></a>) – optional first Nucleotide to use as the ‘head’ to this Sequence</p></li>
+<li><p><strong>name</strong> (<em>basestring</em>) – optional name of the sequence</p></li>
+<li><p><strong>description</strong> (<em>basestring</em>) – optional description of the sequence</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em>) – additional sequence metadata</p></li>
+<li><p><strong>cyclic</strong> (<em>bool</em>) – whether to make the sequence circular</p></li>
+<li><p><strong>alphabet</strong> (<a class="reference internal" href="jdna.alphabet.html#jdna.alphabet.Alphabet" title="jdna.alphabet.Alphabet"><em>jdna.alphabet.Alphabet</em></a>) – the base pair alphabet of this sequence which used for complementary and comparisons
+(default: AmbiguousDNA)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="class">
 <dt id="jdna.sequence.Sequence.DEFAULTS">
-<em class="property">class </em><code class="descname">DEFAULTS</code><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.DEFAULTS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.DEFAULTS" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">DEFAULTS</code><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.DEFAULTS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.DEFAULTS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Sequence defaults</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="jdna.sequence.Sequence.Direction">
-<em class="property">class </em><code class="descname">Direction</code><a class="headerlink" href="#jdna.sequence.Sequence.Direction" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Direction</code><a class="headerlink" href="#jdna.sequence.Sequence.Direction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntFlag</span></code></p>
 <p>An enumeration.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="jdna.sequence.Sequence.NODE_CLASS">
-<code class="descname">NODE_CLASS</code><a class="headerlink" href="#jdna.sequence.Sequence.NODE_CLASS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">NODE_CLASS</code><a class="headerlink" href="#jdna.sequence.Sequence.NODE_CLASS" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#jdna.sequence.Nucleotide" title="jdna.sequence.Nucleotide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nucleotide</span></code></a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.add_feature">
-<code class="descname">add_feature</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>feature</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.add_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.add_feature" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_feature</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">end</em>, <em class="sig-param">feature</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.add_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.add_feature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a feature to the start and end positions (inclusive)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>start</strong> (<em>int</em>) – start</li>
-<li><strong>end</strong> (<em>int</em>) – end (inclusive)</li>
-<li><strong>feature</strong> (<a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature"><em>Feature</em></a>) – the feature to add</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<em>int</em>) – start</p></li>
+<li><p><strong>end</strong> (<em>int</em>) – end (inclusive)</p></li>
+<li><p><strong>feature</strong> (<a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature"><em>Feature</em></a>) – the feature to add</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the added feature</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature">Feature</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the added feature</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature">Feature</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.add_multipart_feature">
-<code class="descname">add_multipart_feature</code><span class="sig-paren">(</span><em>positions</em>, <em>feature</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.add_multipart_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.add_multipart_feature" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_multipart_feature</code><span class="sig-paren">(</span><em class="sig-param">positions</em>, <em class="sig-param">feature</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.add_multipart_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.add_multipart_feature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a multi-part feature (i.e. a disjointed feature)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>positions</strong> (<em>list</em>) – list of start and ends as tuples ([(1,100), (110,200)]</li>
-<li><strong>feature</strong> (<a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature"><em>Feature</em></a>) – the feature to add</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positions</strong> (<em>list</em>) – list of start and ends as tuples ([(1,100), (110,200)]</p></li>
+<li><p><strong>feature</strong> (<a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature"><em>Feature</em></a>) – the feature to add</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the added feature</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature">Feature</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the added feature</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature">Feature</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.anneal">
-<code class="descname">anneal</code><span class="sig-paren">(</span><em>ssDNA</em>, <em>min_bases=13</em>, <em>depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.anneal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.anneal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">anneal</code><span class="sig-paren">(</span><em class="sig-param">ssDNA</em>, <em class="sig-param">min_bases=13</em>, <em class="sig-param">depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.anneal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.anneal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simulate annealing a single stranded piece of DNA to a double_stranded template</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.anneal_forward">
-<code class="descname">anneal_forward</code><span class="sig-paren">(</span><em>other</em>, <em>min_bases=13</em>, <em>depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.anneal_forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.anneal_forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">anneal_forward</code><span class="sig-paren">(</span><em class="sig-param">other</em>, <em class="sig-param">min_bases=13</em>, <em class="sig-param">depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.anneal_forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.anneal_forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Anneal a sequence in the forward direction</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.anneal_reverse">
-<code class="descname">anneal_reverse</code><span class="sig-paren">(</span><em>other</em>, <em>min_bases=13</em>, <em>depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.anneal_reverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.anneal_reverse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">anneal_reverse</code><span class="sig-paren">(</span><em class="sig-param">other</em>, <em class="sig-param">min_bases=13</em>, <em class="sig-param">depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.anneal_reverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.anneal_reverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Anneal a sequence in the reverse direction</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.annotate">
-<code class="descname">annotate</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>name</em>, <em>feature_type=None</em>, <em>color=None</em>, <em>strand=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.annotate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">annotate</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">end</em>, <em class="sig-param">name</em>, <em class="sig-param">feature_type=None</em>, <em class="sig-param">color=None</em>, <em class="sig-param">strand=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.annotate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Annotate a regions</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>start</strong> (<em>int</em>) – start</li>
-<li><strong>end</strong> (<em>end</em>) – end (inclusive)</li>
-<li><strong>name</strong> (<em>basestring</em>) – feature name</li>
-<li><strong>feature_type</strong> (<em>basestring</em>) – feature type (default=misc)</li>
-<li><strong>color</strong> (<em>basestring</em>) – optional feature color</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<em>int</em>) – start</p></li>
+<li><p><strong>end</strong> (<em>end</em>) – end (inclusive)</p></li>
+<li><p><strong>name</strong> (<em>basestring</em>) – feature name</p></li>
+<li><p><strong>feature_type</strong> (<em>basestring</em>) – feature type (default=misc)</p></li>
+<li><p><strong>color</strong> (<em>basestring</em>) – optional feature color</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">new feature</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature">Feature</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>new feature</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#jdna.sequence.Feature" title="jdna.sequence.Feature">Feature</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.c">
-<code class="descname">c</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.c"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.c" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">c</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.c"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.c" title="Permalink to this definition">¶</a></dt>
 <dd><p>Complement the sequence in place</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="jdna.sequence.Sequence.circular">
-<code class="descname">circular</code><a class="headerlink" href="#jdna.sequence.Sequence.circular" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">circular</code><a class="headerlink" href="#jdna.sequence.Sequence.circular" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for cyclic</p>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="jdna.sequence.Sequence.collect_nodes">
-<em class="property">static </em><code class="descname">collect_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.collect_nodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">collect_nodes</code><span class="sig-paren">(</span><em class="sig-param">nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.collect_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all visisted nodes and return an unordered set of nodes.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">all visited nodes</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">set</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>all visited nodes</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>set</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.compare">
-<code class="descname">compare</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.compare" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">compare</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.compare" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares two linked lists. If both are cyclic, will attempt to reindex</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – other linked list</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">whether sequence data is equivalent</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – other linked list</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>whether sequence data is equivalent</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.complement">
-<code class="descname">complement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.complement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.complement" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">complement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.complement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.complement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Complement the sequence in place</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.copy_slice">
-<code class="descname">copy_slice</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.copy_slice" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">copy_slice</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">end</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.copy_slice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy of the sequence between ‘start’ and ‘end’ nodes. If start is None,
 return the slice copy from head to end. If end is None, return copy from start to tail.
 If both start and end are None return None.</p>
@@ -744,156 +677,147 @@ If both start and end are None return None.</p>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.digest">
-<code class="descname">digest</code><span class="sig-paren">(</span><em>enzymes</em>, <em>as_names=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.digest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.digest" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">digest</code><span class="sig-paren">(</span><em class="sig-param">enzymes</em>, <em class="sig-param">as_names=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.digest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.digest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supply either a Bio.RestrictionSite or a tuple of (seq, cut1, cut2)</p>
 <p>e.g. (‘GTTTAAAC’, 4, -4)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>enzymes</strong> (<em>list</em><em> (</em><em>of tuple|Bio.RestrictionSite</em><em>)</em>) – either a Bio.RestrictionSite or a tuple of (seq, cut1, cut2)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of sequences</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>enzymes</strong> (<em>list</em><em> (</em><em>of tuple|Bio.RestrictionSite</em><em>)</em>) – either a Bio.RestrictionSite or a tuple of (seq, cut1, cut2)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of sequences</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.dsanneal">
-<code class="descname">dsanneal</code><span class="sig-paren">(</span><em>dsDNA</em>, <em>min_bases=13</em>, <em>depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.dsanneal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.dsanneal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">dsanneal</code><span class="sig-paren">(</span><em class="sig-param">dsDNA</em>, <em class="sig-param">min_bases=13</em>, <em class="sig-param">depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.dsanneal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.dsanneal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simulate annealing a double stranded piece of DNA to a double_stranded template</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.feature_positions">
-<code class="descname">feature_positions</code><span class="sig-paren">(</span><em>with_nodes=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.feature_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.feature_positions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">feature_positions</code><span class="sig-paren">(</span><em class="sig-param">with_nodes=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.feature_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.feature_positions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of feature positions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>with_nodes</strong> (<em>bool</em>) – if True, will return a tuple composed of a feature to position dictionary and a feature to
-start and end node. If False, will just return a feature to position dictionary</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">feature positions dictionary OR tuple of feature positions dictionary and feature node dictionary</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>with_nodes</strong> (<em>bool</em>) – if True, will return a tuple composed of a feature to position dictionary and a feature to
+start and end node. If False, will just return a feature to position dictionary</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>feature positions dictionary OR tuple of feature positions dictionary and feature node dictionary</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="jdna.sequence.Sequence.features">
-<code class="descname">features</code><a class="headerlink" href="#jdna.sequence.Sequence.features" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">features</code><a class="headerlink" href="#jdna.sequence.Sequence.features" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns set of features contained in sequence.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">set of features in this sequence</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">set</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>set of features in this sequence</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>set</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="jdna.sequence.Sequence.find_ends">
-<em class="property">static </em><code class="descname">find_ends</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.find_ends" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">find_ends</code><span class="sig-paren">(</span><em class="sig-param">nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.find_ends" title="Permalink to this definition">¶</a></dt>
 <dd><p>Efficiently finds the head and tails from a group of nodes.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.find_feature_by_name">
-<code class="descname">find_feature_by_name</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.find_feature_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.find_feature_by_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">find_feature_by_name</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.find_feature_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.find_feature_by_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find features by name</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>basestring</em>) – feature name</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of features</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>basestring</em>) – feature name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of features</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.find_iter">
-<code class="descname">find_iter</code><span class="sig-paren">(</span><em>query</em>, <em>min_query_length=None</em>, <em>direction=&lt;Direction.FORWARD: 1&gt;</em>, <em>protocol=None</em>, <em>depth=None</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.find_iter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">find_iter</code><span class="sig-paren">(</span><em class="sig-param">query</em>, <em class="sig-param">min_query_length=None</em>, <em class="sig-param">direction=&lt;Direction.FORWARD: 1&gt;</em>, <em class="sig-param">protocol=None</em>, <em class="sig-param">depth=None</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.find_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iteratively finds positions that match the query.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>query</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – query list to find</li>
-<li><strong>min_query_length</strong> (<em>inst</em>) – the minimum number of matches to return. If None, find_iter will only return complete
-matches</li>
-<li><strong>direction</strong> (<em>int</em><em> or </em><em>tuple</em>) – If Direction.FORWARD (+1), find iter will search from the query head and search forward,
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<a class="reference internal" href="jdna.linked_list.html#jdna.linked_list.DoubleLinkedList" title="jdna.linked_list.DoubleLinkedList"><em>DoubleLinkedList</em></a>) – query list to find</p></li>
+<li><p><strong>min_query_length</strong> (<em>inst</em>) – the minimum number of matches to return. If None, find_iter will only return complete
+matches</p></li>
+<li><p><strong>direction</strong> (<em>int</em><em> or </em><em>tuple</em>) – If Direction.FORWARD (+1), find iter will search from the query head and search forward,
 potentially leaving a ‘tail’ overhang on the query. If
 Direction.REVERSE (-1), find iter will search from the query tail and search reverse, potentially
 leaving a ‘head’ overhang on the query. If a tuple, the template_direction and query_direction are
-set respectively.</li>
-<li><strong>protocol</strong> (<em>callable</em>) – the callable taking two parameters (as Node) to compare during find. If None, defaults
-to ‘equivalent’</li>
+set respectively.</p></li>
+<li><p><strong>protocol</strong> (<em>callable</em>) – the callable taking two parameters (as Node) to compare during find. If None, defaults
+to ‘equivalent’</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of LinkedListMatches</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of LinkedListMatches</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.inclusive_range">
-<code class="descname">inclusive_range</code><span class="sig-paren">(</span><em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.inclusive_range" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">inclusive_range</code><span class="sig-paren">(</span><em class="sig-param">i</em>, <em class="sig-param">j</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.inclusive_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return generator for inclusive nodes between index i and j. If i is None, assume i is the head node.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.json">
-<code class="descname">json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.json" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print sequence to a json dictionary</p>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="jdna.sequence.Sequence.load">
-<em class="property">classmethod </em><code class="descname">load</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.load" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load a sequence from a json formatted dictionary</p>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="jdna.sequence.Sequence.new_slice">
-<em class="property">classmethod </em><code class="descname">new_slice</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.new_slice" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">new_slice</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">end</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.new_slice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy of the sequence between ‘start’ and ‘end’ nodes)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.node_range">
-<code class="descname">node_range</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.node_range" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">node_range</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">end</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.node_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate between ‘start’ to ‘end’ nodes (inclusive)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.print">
-<code class="descname">print</code><span class="sig-paren">(</span><em>indent=None</em>, <em>width=None</em>, <em>spacer=None</em>, <em>complement=False</em>, <em>features=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.print" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">print</code><span class="sig-paren">(</span><em class="sig-param">indent=None</em>, <em class="sig-param">width=None</em>, <em class="sig-param">spacer=None</em>, <em class="sig-param">complement=False</em>, <em class="sig-param">features=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.print" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create and print a <code class="xref py py-class docutils literal notranslate"><span class="pre">SequenceViewer</span></code> instance from this sequence. Printing the view object
 with annotations and complement will produce an output similar to the following:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="s2">&quot;Unnamed&quot;</span> <span class="p">(</span><span class="mi">550</span><span class="n">bp</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="s2">&quot;Unnamed&quot;</span> <span class="p">(</span><span class="mi">550</span><span class="n">bp</span><span class="p">)</span>
 
 
                                                             <span class="o">----------------</span><span class="n">GFP</span><span class="o">----------------</span>
@@ -925,75 +849,69 @@ with annotations and complement will produce an output similar to the following:
           <span class="n">ACGTTAGAGGAATCCAGTGTCGTTTGTATCGTCGGGGACA</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>indent</strong> (<em>int</em>) – indent between left column and base pairs view windo</li>
-<li><strong>width</strong> (<em>int</em>) – width of the view window</li>
-<li><strong>spacer</strong> (<em>basestring</em>) – string to intersperse between sequence rows (default is newline)</li>
-<li><strong>complement</strong> (<em>bool</em>) – whether to include the complementary strand in the view</li>
-<li><strong>include_annotations</strong> (<em>bool</em>) – whether to include annotations/features in the view instance</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indent</strong> (<em>int</em>) – indent between left column and base pairs view windo</p></li>
+<li><p><strong>width</strong> (<em>int</em>) – width of the view window</p></li>
+<li><p><strong>spacer</strong> (<em>basestring</em>) – string to intersperse between sequence rows (default is newline)</p></li>
+<li><p><strong>complement</strong> (<em>bool</em>) – whether to include the complementary strand in the view</p></li>
+<li><p><strong>include_annotations</strong> (<em>bool</em>) – whether to include annotations/features in the view instance</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the viewer object</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="jdna.viewer.html#jdna.viewer.SequenceViewer" title="jdna.viewer.SequenceViewer">SequenceViewer</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the viewer object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="jdna.viewer.html#jdna.viewer.SequenceViewer" title="jdna.viewer.SequenceViewer">SequenceViewer</a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="jdna.sequence.Sequence.random">
-<em class="property">classmethod </em><code class="descname">random</code><span class="sig-paren">(</span><em>length</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.random" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param">length</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a random sequence</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.range">
-<code class="descname">range</code><span class="sig-paren">(</span><em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.range" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">range</code><span class="sig-paren">(</span><em class="sig-param">i</em>, <em class="sig-param">j</em><span class="sig-paren">)</span><a class="headerlink" href="#jdna.sequence.Sequence.range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an iterator from node at ‘i’ to node at ‘j-1’</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.rc">
-<code class="descname">rc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.rc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.rc" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">rc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.rc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.rc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reverse complement the sequence in place</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.reverse_complement">
-<code class="descname">reverse_complement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.reverse_complement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.reverse_complement" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">reverse_complement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.reverse_complement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.reverse_complement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reverse complement the sequence in place</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.tm">
-<code class="descname">tm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.tm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.tm" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">tm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.tm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.tm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the Tm of this sequence using primer3 defaults</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the tm of the sequence</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the tm of the sequence</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="jdna.sequence.Sequence.view">
-<code class="descname">view</code><span class="sig-paren">(</span><em>indent=10</em>, <em>width=85</em>, <em>spacer=None</em>, <em>complement=False</em>, <em>features=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.view" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">view</code><span class="sig-paren">(</span><em class="sig-param">indent=10</em>, <em class="sig-param">width=85</em>, <em class="sig-param">spacer=None</em>, <em class="sig-param">complement=False</em>, <em class="sig-param">features=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/sequence.html#Sequence.view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.Sequence.view" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a <code class="xref py py-class docutils literal notranslate"><span class="pre">SequenceViewer</span></code> instance from this sequence. Printing the view object with
 annotations and complement will produce an output similar to the following:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="s2">&quot;Unnamed&quot;</span> <span class="p">(</span><span class="mi">550</span><span class="n">bp</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="s2">&quot;Unnamed&quot;</span> <span class="p">(</span><span class="mi">550</span><span class="n">bp</span><span class="p">)</span>
 
 
                                                             <span class="o">----------------</span><span class="n">GFP</span><span class="o">----------------</span>
@@ -1025,34 +943,30 @@ annotations and complement will produce an output similar to the following:</p>
           <span class="n">ACGTTAGAGGAATCCAGTGTCGTTTGTATCGTCGGGGACA</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>indent</strong> (<em>int</em>) – indent between left column and base pairs view windo</li>
-<li><strong>width</strong> (<em>int</em>) – width of the view window</li>
-<li><strong>spacer</strong> (<em>basestring</em>) – string to intersperse between sequence rows (default is newline)</li>
-<li><strong>complement</strong> (<em>bool</em>) – whether to include the complementary strand in the view</li>
-<li><strong>features</strong> (<em>bool</em>) – whether to include annotations/features in the view instance</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indent</strong> (<em>int</em>) – indent between left column and base pairs view windo</p></li>
+<li><p><strong>width</strong> (<em>int</em>) – width of the view window</p></li>
+<li><p><strong>spacer</strong> (<em>basestring</em>) – string to intersperse between sequence rows (default is newline)</p></li>
+<li><p><strong>complement</strong> (<em>bool</em>) – whether to include the complementary strand in the view</p></li>
+<li><p><strong>features</strong> (<em>bool</em>) – whether to include annotations/features in the view instance</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the viewer object</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="jdna.viewer.html#jdna.viewer.SequenceViewer" title="jdna.viewer.SequenceViewer">SequenceViewer</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the viewer object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="jdna.viewer.html#jdna.viewer.SequenceViewer" title="jdna.viewer.SequenceViewer">SequenceViewer</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="jdna.sequence.SequenceFlags">
-<em class="property">class </em><code class="descclassname">jdna.sequence.</code><code class="descname">SequenceFlags</code><a class="reference internal" href="../../_modules/jdna/sequence.html#SequenceFlags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.SequenceFlags" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">jdna.sequence.</code><code class="sig-name descname">SequenceFlags</code><a class="reference internal" href="../../_modules/jdna/sequence.html#SequenceFlags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.sequence.SequenceFlags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntFlag</span></code></p>
 <p>Constants/Flags for sequences.</p>
 </dd></dl>
@@ -1092,7 +1006,7 @@ annotations and complement will produce an output similar to the following:</p>
         <li class="right" >
           <a href="jdna.linked_list.html" title="jdna.linked_list"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.0.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.1.0a documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api_reference.html" >API Reference</a> &#187;</li> 
       </ul>
     </div>

@@ -132,41 +132,52 @@ class Assembly(object):
 
         aligned_seqs = []
         for p, s in zip(positions, seqs):
-            aligned_seqs.append(Sequence('-' * p) + s)
+            aligned_seqs.append(Sequence("-" * p) + s)
 
         mx = max([len(s) for s in aligned_seqs])
         for i, s in enumerate(aligned_seqs):
             diff = mx - len(s)
-            aligned_seqs[i] = aligned_seqs[i] + Sequence('-' * diff)
+            aligned_seqs[i] = aligned_seqs[i] + Sequence("-" * diff)
 
-        labels = ['({i}) {index}'.format(i=i,
-                                                index="{index}") for i in range(len(aligned_seqs))]
-        viewer = SequenceViewer(aligned_seqs, *args,
-                                sequence_labels=labels,
-                                foreground_colors="RANDOM",
-                                **kwargs)
+        labels = [
+            "({i}) {index}".format(i=i, index="{index}")
+            for i in range(len(aligned_seqs))
+        ]
+        viewer = SequenceViewer(
+            aligned_seqs,
+            *args,
+            sequence_labels=labels,
+            foreground_colors="RANDOM",
+            **kwargs
+        )
         for seq in aligned_seqs:
             Sequence._apply_features_to_view(seq, viewer)
-        viewer.metadata['Cyclic'] = self.cyclic
-        viewer.metadata['Num Fragments'] = len(self.templates)
-        viewer.metadata['Fragment Names'] = '\n\t' + '\n\t'.join(['{} - {}'.format(i, t.name) for i, t in enumerate(self.templates)])
-        viewer.metadata['Overhang Tms (°C)'] = ', '.join([str(x) for x in self.tms()])
-        viewer.metadata['Junction Lengths (bp)'] = ', '.join([str(len(x)) for x in self.junctions])
-        viewer.metadata['Junction ΔG'] = self.format_float_array(self.deltaGs())
-        viewer.metadata['Junction ΔG (hairpin)'] = self.format_array(self.deltaG_hairpins())
-        viewer.metadata['Competing ΔG'] = self.format_float_array(self.competing_deltaGs())
-        viewer.metadata['Product length (bp)'] = "{}".format(len(self.product))
+        viewer.metadata["Cyclic"] = self.cyclic
+        viewer.metadata["Num Fragments"] = len(self.templates)
+        viewer.metadata["Fragment Names"] = "\n\t" + "\n\t".join(
+            ["{} - {}".format(i, t.name) for i, t in enumerate(self.templates)]
+        )
+        viewer.metadata["Overhang Tms (°C)"] = ", ".join([str(x) for x in self.tms()])
+        viewer.metadata["Junction Lengths (bp)"] = ", ".join(
+            [str(len(x)) for x in self.junctions]
+        )
+        viewer.metadata["Junction ΔG"] = self.format_float_array(self.deltaGs())
+        viewer.metadata["Junction ΔG (hairpin)"] = self.format_array(
+            self.deltaG_hairpins()
+        )
+        viewer.metadata["Competing ΔG"] = self.format_float_array(
+            self.competing_deltaGs()
+        )
+        viewer.metadata["Product length (bp)"] = "{}".format(len(self.product))
         return viewer
 
     @staticmethod
     def format_array(arr):
-        return ', '.join([str(x) for x in arr])
+        return ", ".join([str(x) for x in arr])
 
     @staticmethod
     def format_float_array(arr):
-        return ', '.join([
-            "{:.2e}".format(Decimal(float(x))) for x in arr
-        ])
+        return ", ".join(["{:.2e}".format(Decimal(float(x))) for x in arr])
 
     def deltaG_hairpins(self):
         gs = []
@@ -285,18 +296,27 @@ class Reaction(object):
             raise PCRException(
                 "Some primers did not bind. Number of forward bindings: {}. Number of rev bindings: {}".format(
                     len(forward_bindings), len(reverse_bindings)
-                ))
+                )
+            )
         products = []
         for fwd, rev in itertools.product(forward_bindings, reverse_bindings):
             overhang1 = fwd.five_prime_overhang
             overhang2 = rev.five_prime_overhang
             amplified = template.new_slice(fwd.start, rev.end)
-            products.append(overhang1 + amplified + overhang2.copy().reverse_complement())
+            products.append(
+                overhang1 + amplified + overhang2.copy().reverse_complement()
+            )
         return products
 
     @classmethod
-    def interaction_graph(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, bind_reverse_complement=False,
-                          max_bases=None, only_ends=False):
+    def interaction_graph(
+        cls,
+        sequences,
+        min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES,
+        bind_reverse_complement=False,
+        max_bases=None,
+        only_ends=False,
+    ):
         """
         Make an interaction graph from a list of sequences
 
@@ -331,7 +351,13 @@ class Reaction(object):
                     if binding.span[0] != 0 or binding.query_span[-1] != len(s2) - 1:
                         break
                 if not (binding.span[0] == 0 and binding.span[-1] == len(s1) - 1):
-                    G.add_edge(s2.global_id, s1.global_id, template=s1, primer=s2, binding=binding)
+                    G.add_edge(
+                        s2.global_id,
+                        s1.global_id,
+                        template=s1,
+                        primer=s2,
+                        binding=binding,
+                    )
         return G
 
     @classmethod
@@ -339,27 +365,26 @@ class Reaction(object):
         rows = []
         for n1, n2 in G.edges:
             edge = G.edges[n1, n2]
-            binding = edge['binding']
-            template = edge['template']
-            primer = edge['primer']
+            binding = edge["binding"]
+            template = edge["template"]
+            primer = edge["primer"]
             template_info = "{name} (id={gid} ({start},{end}/{length})".format(
                 name=template.name,
                 gid=template.global_id,
                 start=binding.span[0],
                 end=binding.span[1],
-                length=len(template)-1
+                length=len(template) - 1,
             )
             primer_info = "{name} (id={gid} ({start},{end}/{length})".format(
                 name=primer.name,
                 gid=primer.global_id,
                 start=binding.query_span[0],
                 end=binding.query_span[1],
-                length=len(primer)-1
+                length=len(primer) - 1,
             )
             rows.append("{} -> {}".format(template_info, primer_info))
-        print('format: primer -> template')
-        print('\n'.join(rows))
-
+        print("format: primer -> template")
+        print("\n".join(rows))
 
     @classmethod
     def linear_paths(cls, G):
@@ -403,17 +428,19 @@ class Reaction(object):
         overhangs = []
 
         for i, data in enumerate(self._path_to_edge_data(G, path, cyclic)):
-            binding = data['binding']
+            binding = data["binding"]
 
             # use the previous template and this query should refer to the same sequence
-            node_pairs.append((prev_template_end, binding.query_start.prev(), data['primer'].name))
+            node_pairs.append(
+                (prev_template_end, binding.query_start.prev(), data["primer"].name)
+            )
 
             # the next segment start is the template start
             prev_template_end = binding.end.next()
             overhangs.append(binding.template_anneal)
 
         if not cyclic:
-            node_pairs.append((prev_template_end, None, data['template'].name))
+            node_pairs.append((prev_template_end, None, data["template"].name))
             overhangs.append(Sequence())
         else:
             pass
@@ -429,7 +456,9 @@ class Reaction(object):
         return Assembly(amplified_sequences, overhangs, cyclic)
 
     @classmethod
-    def linear_assemblies(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, max_bases=None):
+    def linear_assemblies(
+        cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, max_bases=None
+    ):
         """
         Finds all unique, longest linear assemblies. If cyclic assemblies are found, returns empty list.
 
@@ -442,7 +471,13 @@ class Reaction(object):
         :return: list of Assembly instances. Sequence can be accessed using `assembly.product`
         :rtype: list
         """
-        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases, max_bases=max_bases, only_ends=True)
+        G = cls.interaction_graph(
+            sequences,
+            bind_reverse_complement=True,
+            min_bases=min_bases,
+            max_bases=max_bases,
+            only_ends=True,
+        )
         linear_paths = cls.linear_paths(G)
         if not linear_paths:
             return []
@@ -453,7 +488,9 @@ class Reaction(object):
         return assemblies
 
     @classmethod
-    def cyclic_assemblies(cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, max_bases=None):
+    def cyclic_assemblies(
+        cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, max_bases=None
+    ):
         """
         Finds all unique, longest cyclic assemblies. If no cyclic assemblies found, returns empty list.
 
@@ -467,11 +504,17 @@ class Reaction(object):
         :return: list of Assembly instances. Sequence can be accessed using `assembly.product`
         :rtype: list
         """
-        G = cls.interaction_graph(sequences, bind_reverse_complement=True, min_bases=min_bases, max_bases=max_bases, only_ends=True)
+        G = cls.interaction_graph(
+            sequences,
+            bind_reverse_complement=True,
+            min_bases=min_bases,
+            max_bases=max_bases,
+            only_ends=True,
+        )
 
         nodes = list(G.nodes)
-        fwd = nodes[:len(sequences)]
-        rev = nodes[len(sequences):]
+        fwd = nodes[: len(sequences)]
+        rev = nodes[len(sequences) :]
         fpriority = list(range(len(fwd)))
         rpriority = list(range(len(fwd), len(fwd) * 2))
         priority_rank = fpriority + rpriority[1:] + [rpriority[0]]
@@ -481,7 +524,9 @@ class Reaction(object):
         if not cyclic_paths:
             return []
         assemblies = []
-        cyclic_paths = sorted(cyclic_paths, key=lambda x: min([node_priority[n] for n in x]))
+        cyclic_paths = sorted(
+            cyclic_paths, key=lambda x: min([node_priority[n] for n in x])
+        )
         for path in cyclic_paths:
             ranks = [node_priority[n] for n in path]
             mn = ranks.index(min(ranks))

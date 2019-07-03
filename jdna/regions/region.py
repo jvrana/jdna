@@ -1,4 +1,4 @@
-'''
+"""
 Project: jdna
 File: region
 Author: Justin
@@ -7,14 +7,14 @@ Date: 2/21/17
 Description: Basic functionality for defining regions of linear, circularized, or reversed
 regions of a sequence.
 
-'''
+"""
 from jdna.regions.exceptions import RegionError
 from jdna.regions.context import Context
 
 
 def force_same_context(error=False):
-    ''' Wrapper that returns False or raises Error if other Region has a different context. If error==False,
-    then wrapped function returns False. If error=True, then raises a RegionError. '''
+    """ Wrapper that returns False or raises Error if other Region has a different context. If error==False,
+    then wrapped function returns False. If error=True, then raises a RegionError. """
 
     def context_wrapper(fxn):
         def check_context(*args, **kwargs):
@@ -22,7 +22,9 @@ def force_same_context(error=False):
             other = args[1]
             if not self.same_context(other):
                 if error:
-                    raise RegionError("Cannot compare two regions if they have different sequence contexts.")
+                    raise RegionError(
+                        "Cannot compare two regions if they have different sequence contexts."
+                    )
                 else:
                     return False
             return fxn(*args, **kwargs)
@@ -137,14 +139,26 @@ class Region(object):
     def _validate_direction(self):
         """Validates that the direction key is understood"""
         if self.direction not in [Region.FORWARD, Region.REVERSE, Region.BOTH]:
-            raise RegionError("Direction {} not understood. Direction must be Region.FORWARD = {}, Region.REVERSE = {},\
-             or Region.BOTH = {}".format(self.direction, Region.FORWARD, Region.REVERSE, Region.BOTH))
+            raise RegionError(
+                "Direction {} not understood. Direction must be Region.FORWARD = {}, Region.REVERSE = {},\
+             or Region.BOTH = {}".format(
+                    self.direction, Region.FORWARD, Region.REVERSE, Region.BOTH
+                )
+            )
 
     def _validate_region(self):
         """Validates that the start and end regions are within the bounds of its context."""
-        if not self.context.circular and self.start > self.end and self.direction == Region.FORWARD:
+        if (
+            not self.context.circular
+            and self.start > self.end
+            and self.direction == Region.FORWARD
+        ):
             raise RegionError("START cannot be greater than END for linear regions.")
-        if not self.context.circular and self.start < self.end and self.direction == Region.REVERSE:
+        if (
+            not self.context.circular
+            and self.start < self.end
+            and self.direction == Region.REVERSE
+        ):
             raise RegionError("START cannot be greater than END for linear regions.")
 
     @property
@@ -171,7 +185,9 @@ class Region(object):
     def length(self):
         """The length of this region"""
         if self._spans_origin():
-            return self.context.span(self.rp, self.lp)  # if it spans origin, reverse span calculation
+            return self.context.span(
+                self.rp, self.lp
+            )  # if it spans origin, reverse span calculation
         else:
             return self.context.span(self.lp, self.rp)
 
@@ -370,7 +386,7 @@ class Region(object):
         if not self._spans_origin():
             v = [(self.lp, self.rp)]
             if not inclusive:
-                v = [(self.lp+1, self.rp-1)]
+                v = [(self.lp + 1, self.rp - 1)]
             if v[0][0] > v[0][1]:  # there are no valid indices
                 v = []
             return v
@@ -379,8 +395,8 @@ class Region(object):
             left = (self.bounds_start, self.lp)
             right = (self.rp, self.context.end)
             if not inclusive:
-                left = (self.context.start, self.lp-1)
-                right = (self.rp+1, self.context.start)
+                left = (self.context.start, self.lp - 1)
+                right = (self.rp + 1, self.context.start)
             if left[0] <= left[1]:
                 ranges.append(left)
             if right[0] <= right[1]:
@@ -413,7 +429,9 @@ class Region(object):
         :return: creates a sub region of this region
         :rtype: Region
         """
-        if self.within_region(s, inclusive=True) and self.within_region(e, inclusive=True):
+        if self.within_region(s, inclusive=True) and self.within_region(
+            e, inclusive=True
+        ):
             r = self.copy()
             r.start = s
             r.end = e
@@ -421,8 +439,10 @@ class Region(object):
             return r
         else:
             raise RegionError(
-                    "Sub region bounds [{}-{}] outside of Region bounds [{}-{}]".format(s, e, self.context.start,
-                                                                                        self.context.end))
+                "Sub region bounds [{}-{}] outside of Region bounds [{}-{}]".format(
+                    s, e, self.context.start, self.context.end
+                )
+            )
 
     def same_context(self, other):
         """
@@ -446,7 +466,9 @@ class Region(object):
         # s, e = self.start, self.end
         # if self.direction is Region.REVERSE:
         #     s, e = self.end, self.start
-        return self.__class__(self.start, self.end, self.context, direction=self.direction, name=self.name)
+        return self.__class__(
+            self.start, self.end, self.context, direction=self.direction, name=self.name
+        )
 
     # TODO: Why does this copy itself??
     @force_same_context(error=True)
@@ -479,8 +501,9 @@ class Region(object):
 
     @force_same_context(error=True)
     def encompasses(self, other, inclusive=True):
-        return self.within_region(other.start, inclusive=inclusive) and \
-               self.within_region(other.end, inclusive=inclusive)
+        return self.within_region(
+            other.start, inclusive=inclusive
+        ) and self.within_region(other.end, inclusive=inclusive)
 
     @force_same_context(error=True)
     def end_overlaps_with(self, other):
@@ -510,7 +533,9 @@ class Region(object):
         :rtype: bool
         """
 
-        return self.within_region(other.left_end, inclusive=True) and not self.encompasses(other)
+        return self.within_region(
+            other.left_end, inclusive=True
+        ) and not self.encompasses(other)
 
     @force_same_context(error=True)
     def get_gap(self, other):
@@ -539,8 +564,8 @@ class Region(object):
         if not self.within_region(other.lp) or self is other:
             r = self.copy()
             try:
-                r.end = other.left_end-1
-                r.start = self.right_end+1
+                r.end = other.left_end - 1
+                r.start = self.right_end + 1
             except RegionError:
                 return None
             return r
@@ -609,15 +634,16 @@ class Region(object):
         expected_right_end = None
         expected_left_end = None
         try:
-            expected_left_end = self.context.translate_pos(self.right_end+1)
+            expected_left_end = self.context.translate_pos(self.right_end + 1)
         except RegionError:
             return False
         try:
-            expected_right_end = other.context.translate_pos(other.left_end-1)
+            expected_right_end = other.context.translate_pos(other.left_end - 1)
         except RegionError:
             return False
-        consecutive = self.right_end == expected_right_end and \
-                      other.left_end == expected_left_end
+        consecutive = (
+            self.right_end == expected_right_end and other.left_end == expected_left_end
+        )
         return consecutive
 
     @force_same_context(error=True)
@@ -691,19 +717,25 @@ class Region(object):
 
     def _extend(self, x, end_pos):
         """ Extends or retracts by x amount at end_pos. """
-        if x < -self.length+1:
-            raise RegionError("Cannot retract end past region start (start: {0}, end: {1}, x: {2})".format(
-                    self.start, self.end, x))
-        if x > self.context.length-self.length:
-            raise RegionError("Cannot extend end around origin and past other end (start: {0}, end: {1}, "
-                              "x: {2})".format(
-                    self.start, self.end, x))
+        if x < -self.length + 1:
+            raise RegionError(
+                "Cannot retract end past region start (start: {0}, end: {1}, x: {2})".format(
+                    self.start, self.end, x
+                )
+            )
+        if x > self.context.length - self.length:
+            raise RegionError(
+                "Cannot extend end around origin and past other end (start: {0}, end: {1}, "
+                "x: {2})".format(self.start, self.end, x)
+            )
         if end_pos == self.right_end:
             self.right_end += x
         elif end_pos == self.left_end:
             self.left_end -= x
         else:
-            raise RegionError("Position at {0} not at either end. Cannot extend.".format(end_pos))
+            raise RegionError(
+                "Position at {0} not at either end. Cannot extend.".format(end_pos)
+            )
 
     def set_forward(self):
         """ Reverses direction of region if region is reverse """
@@ -732,11 +764,11 @@ class Region(object):
 
     def __str__(self):
         return "Region(start={start} end={end}, name={name}, direction={direction}, context={context})".format(
-                start=self.start,
-                end=self.end,
-                direction=self.direction,
-                context=self.context,
-                name=self.name
+            start=self.start,
+            end=self.end,
+            direction=self.direction,
+            context=self.context,
+            name=self.name,
         )
 
     def __repr__(self):

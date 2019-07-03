@@ -13,19 +13,23 @@ class Alphabet(object):
     A dictionary class that retrieves complementary base pairs
     """
 
-    __slots__ = ['_chr', '_comp', '__complementary', '__ambiguous']
+    __slots__ = ["_chr", "_comp", "__complementary", "__ambiguous"]
 
     def __init__(self, characters, complementary_characters, ambiguous_characters=None):
-        self.__complementary = dict(zip(
-            characters.lower() + characters.upper(),
-            complementary_characters.lower() + complementary_characters.upper()
-        ))
+        self.__complementary = dict(
+            zip(
+                characters.lower() + characters.upper(),
+                complementary_characters.lower() + complementary_characters.upper(),
+            )
+        )
         if ambiguous_characters is None:
             ambiguous_characters = {}
         self.__ambiguous = ambiguous_characters
 
     @classmethod
-    def from_biopython_alphabet(cls, biopython_alphabet: IUPAC.Alphabet, ambiguous_characters=None):
+    def from_biopython_alphabet(
+        cls, biopython_alphabet: IUPAC.Alphabet, ambiguous_characters=None
+    ):
         seq = Seq(biopython_alphabet.letters)
         seq_letters = str(seq)
         c_seq_letters = str(seq.complement())
@@ -52,7 +56,7 @@ class Alphabet(object):
         :return:
         :rtype:
         """
-        pattern = ''.join(self.__ambiguous.get(b, b) for b in s2)
+        pattern = "".join(self.__ambiguous.get(b, b) for b in s2)
         if ignore_case:
             match = re.match(pattern, s1, re.IGNORECASE)
         else:
@@ -62,7 +66,7 @@ class Alphabet(object):
         return False
 
     def complement(self, basestring):
-        return ''.join(self[x] for x in basestring)
+        return "".join(self[x] for x in basestring)
 
     def reverse_complement(self, basestring):
         return self.complement(basestring)[::-1]
@@ -77,8 +81,21 @@ class Alphabet(object):
     rc = reverse_complement
     c = complement
 
-_iupacdict = {'M': '[AC]', 'R': '[AG]', 'W': '[AT]', 'S': '[CG]', 'Y': '[CT]',
-             'K': '[GT]', 'V': '[ACG]', 'H': '[ACT]', 'D': '[AGT]', 'B': '[CGT]', 'X': '[ACGT]', 'N': '[ACGT]'}
+
+_iupacdict = {
+    "M": "[AC]",
+    "R": "[AG]",
+    "W": "[AT]",
+    "S": "[CG]",
+    "Y": "[CT]",
+    "K": "[GT]",
+    "V": "[ACG]",
+    "H": "[ACT]",
+    "D": "[AGT]",
+    "B": "[CGT]",
+    "X": "[ACGT]",
+    "N": "[ACGT]",
+}
 
 iupacdict = {}
 for k, v in _iupacdict.items():

@@ -4,14 +4,13 @@ from jdna.sequence import Sequence, Feature, Nucleotide
 
 
 class TestFeatureProperties(object):
-
-    @pytest.fixture(scope='function')
+    @pytest.fixture(scope="function")
     def seq(self, test_str):
         return Sequence(test_str)
 
     @pytest.fixture(scope="function")
     def basic_feature(self, test_seq):
-        f = test_seq.annotate(1, len(test_seq) - 1, 'feature', 'type')
+        f = test_seq.annotate(1, len(test_seq) - 1, "feature", "type")
         return f
 
     def test_(self, test_seq):
@@ -20,15 +19,15 @@ class TestFeatureProperties(object):
     def test_sequence_has_features(self, test_seq):
         print("Head: {}".format(test_seq._head))
         len(test_seq)
-        test_seq.annotate(1, len(test_seq) - 1, 'feature', 'type')
-        test_seq.annotate(1, len(test_seq) - 1, 'feature', 'type')
-        test_seq.annotate(1, len(test_seq) - 1, 'feature', 'type')
+        test_seq.annotate(1, len(test_seq) - 1, "feature", "type")
+        test_seq.annotate(1, len(test_seq) - 1, "feature", "type")
+        test_seq.annotate(1, len(test_seq) - 1, "feature", "type")
         assert len(test_seq.features) == 3
 
     def test_sequence_has_feature_positions(self, test_seq, test_str):
-        f1 = test_seq.annotate(1, len(test_seq) - 1, 'feature', 'type')
-        f2 = test_seq.annotate(2, len(test_seq) - 2, 'feature', 'type')
-        f3 = test_seq.annotate(3, len(test_seq) - 3, 'feature', 'type')
+        f1 = test_seq.annotate(1, len(test_seq) - 1, "feature", "type")
+        f2 = test_seq.annotate(2, len(test_seq) - 2, "feature", "type")
+        f3 = test_seq.annotate(3, len(test_seq) - 3, "feature", "type")
         fpos = test_seq.feature_positions()
         assert len(fpos) == 3
         assert fpos[f1] == [[1, len(test_str) - 1]]
@@ -42,10 +41,10 @@ class TestFeatureProperties(object):
     #     print(basic_feature.segments)
 
     def test_basic_feature_name(self, basic_feature):
-        assert basic_feature.name == 'feature'
+        assert basic_feature.name == "feature"
 
     def test_basic_feature_type(self, basic_feature):
-        assert basic_feature.type == 'type'
+        assert basic_feature.type == "type"
 
     # def test_basic_feature_start(self, basic_feature):
     #     assert basic_feature.start == 1
@@ -55,15 +54,12 @@ class TestFeatureProperties(object):
 
 
 class TestFeatureManipulations(object):
-
     def test_features_linearizing(self, test_seq):
-        test_seq.annotate(0, len(test_seq) - 1, 'feature', 'type')
+        test_seq.annotate(0, len(test_seq) - 1, "feature", "type")
         test_seq.circularize()
         test_seq.linearize()
 
-    @pytest.mark.parametrize('c,s,e', [
-        (5, 0, 10)
-    ])
+    @pytest.mark.parametrize("c,s,e", [(5, 0, 10)])
     def test_feature_cutting(self, test_seq, c, s, e):
         """
         e.g.
@@ -75,7 +71,7 @@ class TestFeatureManipulations(object):
         XXXXX XXXXXX----  FEATURE LOCATION
         01234 0123456789  NEW INDEX
         """
-        f = Feature(name='feature name', type='feature type')
+        f = Feature(name="feature name", type="feature type")
         test_seq.add_feature(s, e, f)
         assert len(test_seq.features) == 1
         fragments = test_seq.cut(c)
@@ -90,8 +86,8 @@ class TestFeatureManipulations(object):
         # assert len(feature.segments()) == 2
 
     def test_feature_fusion(self, test_seq):
-        f1 = Feature(name='myfeature', type='myfeature')
-        f2 = Feature(name='myfeature', type='myfeature')
+        f1 = Feature(name="myfeature", type="myfeature")
+        f2 = Feature(name="myfeature", type="myfeature")
 
         i = 0
         j = 4
@@ -103,13 +99,11 @@ class TestFeatureManipulations(object):
         assert len(test_seq.features) == 2
         Nucleotide.fuse_features(test_seq.get(j), test_seq.get(k))
         assert len(test_seq.features) == 1
-        assert test_seq.feature_positions() == {
-            f1: [[i, l]]
-        }
+        assert test_seq.feature_positions() == {f1: [[i, l]]}
 
     def test_feature_fusion_unsuccessful(self, test_seq):
-        f1 = Feature(name='myfeature', type='myfeature')
-        f2 = Feature(name='myfeature2', type='myfeature')
+        f1 = Feature(name="myfeature", type="myfeature")
+        f2 = Feature(name="myfeature2", type="myfeature")
 
         i = 0
         j = 4
@@ -123,21 +117,16 @@ class TestFeatureManipulations(object):
         assert len(test_seq.features) == 2
 
     def test_feature_fusion_cyclic(self, test_seq):
-        f1 = Feature(name='name')
+        f1 = Feature(name="name")
 
         i, j, k, l = len(test_seq) - 5, len(test_seq) - 1, 0, 5
 
         test_seq.add_feature(i, j, f1)
         test_seq.add_feature(k, l, f1)
-        assert test_seq.feature_positions() == {
-            f1: [[k, l], [i, j]]
-        }
+        assert test_seq.feature_positions() == {f1: [[k, l], [i, j]]}
 
         test_seq.cyclic = True
-        assert test_seq.feature_positions() == {
-            f1: [[i, l]]
-        }
-
+        assert test_seq.feature_positions() == {f1: [[i, l]]}
 
         # for start in range(1, len(test_seq)):
         #     for end in range(start, len(test_seq)):
@@ -151,7 +140,7 @@ class TestFeatureManipulations(object):
         #             assert fused.feature_positions()[feature] == [(start, end), (0, end - start)]
 
     def test_add_feature_to_cyclic(self, test_seq):
-        f = Feature(name='feature fail', type='failure')
+        f = Feature(name="feature fail", type="failure")
         with pytest.raises(IndexError):
             test_seq.add_feature(-1, 10, f)
         with pytest.raises(IndexError):
@@ -165,7 +154,7 @@ class TestFeatureManipulations(object):
         assert test_seq.feature_positions() == {f: [[10, 1]]}
 
     def test_copying_features(self, test_seq):
-        f = Feature(name='alfjl', type='lkdjflkj')
+        f = Feature(name="alfjl", type="lkdjflkj")
         test_seq.add_feature(0, 5, f)
         seq_copy = copy(test_seq)
         assert f not in list(seq_copy.feature_positions().keys())
@@ -173,8 +162,8 @@ class TestFeatureManipulations(object):
         assert f in test_seq.feature_positions()
 
     def test_multiple_features(self, test_seq):
-        f1 = Feature(name='feature 1', type='test')
-        f2 = Feature(name='feature 2', type='test')
+        f1 = Feature(name="feature 1", type="test")
+        f2 = Feature(name="feature 2", type="test")
         s1, e1 = (0, 10)
         s2, e2 = (5, 15)
         test_seq.add_feature(s1, e1, f1)
@@ -184,12 +173,14 @@ class TestFeatureManipulations(object):
         assert f2 in test_seq.nodes[7].features
 
     def test_maintain_features_after_reverse(self, test_seq, test_str):
-        f1 = Feature(name='feature 1', type='test')
+        f1 = Feature(name="feature 1", type="test")
         test_seq.add_feature(5, 10, f1)
         assert len(test_seq.features) == 1
         test_seq.reverse()
         # assert str(test_seq) == test_str[::-1]
         assert len(test_seq) == len(test_str)
         print(test_seq.features)
-        assert len(test_seq.features) == 1, "Sequence should have one feature after reversal"
+        assert (
+            len(test_seq.features) == 1
+        ), "Sequence should have one feature after reversal"
         # assert test_seq.feature_positions() == {f1: [(len(test_seq) - 1 - 10, len(test_seq) - 1 - 5), (5, 0)]}

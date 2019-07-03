@@ -7,17 +7,16 @@ from jdna.interface import ClassInterface, Interface
 
 
 class IOInterface(ClassInterface):
-
     def from_seqrecord(self, seqrecord):
-        return self._cls(str(seqrecord.seq),
-                         name=seqrecord.id,
-                         description=seqrecord.description)
+        return self._cls(
+            str(seqrecord.seq), name=seqrecord.id, description=seqrecord.description
+        )
 
     @staticmethod
     def fasta(sequences, out=None):
         fasta_viewer = FASTAViewer(sequences)
         if out:
-            with open(out, 'w') as f:
+            with open(out, "w") as f:
                 f.write(str(fasta_viewer))
         return fasta_viewer
 
@@ -34,14 +33,13 @@ class IOInterface(ClassInterface):
         return self.from_seqrecord(seq)
 
     def read_fasta(self, inpath):
-        return self.parse(inpath, format='fasta')
+        return self.parse(inpath, format="fasta")
 
     def instance(self, instance):
         return IOInstanceInterface(instance, self)
 
 
 class IOInstanceInterface(Interface):
-
     def fasta(self, *sequences, out=None):
         return self._class_interface.fasta([self._inst] + sequences, out=out)
 
@@ -50,4 +48,3 @@ class IOInstanceInterface(Interface):
 
     def json(self, *args, **kwargs):
         return self._inst.json(*args, **kwargs)
-

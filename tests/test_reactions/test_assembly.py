@@ -3,12 +3,13 @@ from jdna.reaction import Reaction, Assembly
 from jdna.sequence import Sequence
 import random
 
-@pytest.fixture(scope='function')
+
+@pytest.fixture(scope="function")
 def seq():
     return Sequence.random(300)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def generate_sequences(seq):
     """
     A number of overlapping sequences
@@ -17,38 +18,47 @@ def generate_sequences(seq):
     :return:
     :rtype:
     """
+
     def generate_sequences(num_fragments=3, overhang=20, cyclic=True):
         sequences = []
-        indices = list(range(0, len(seq), int(len(seq)/(num_fragments))))
+        indices = list(range(0, len(seq), int(len(seq) / (num_fragments))))
         j = 0
         for i, j in zip(indices[:-1], indices[1:]):
-            sequences.append(seq[i:j+random.randint(20,30)])
+            sequences.append(seq[i : j + random.randint(20, 30)])
         sequences.append(seq[j:])
         if cyclic:
-            sequences[-1].fuse_in_place(seq[:random.randint(20,30)])
+            sequences[-1].fuse_in_place(seq[: random.randint(20, 30)])
         for i, s in enumerate(sequences):
             s.name = "Sequence {}".format(i)
         random.shuffle(sequences)
         return sequences
+
     return generate_sequences
 
 
-@pytest.mark.parametrize('cyclic', [False, True])
+@pytest.mark.parametrize("cyclic", [False, True])
 def test_assembly_init(generate_sequences, cyclic):
     overhangs = [Sequence.random(20) for i in range(4)]
     templates = [Sequence.random(100) for i in range(4)]
     a = Assembly(templates, overhangs, cyclic=cyclic)
     print(a)
 
-@pytest.mark.parametrize('cyclic', [pytest.param(False, id='linear'), pytest.param(True, id='circular'),])
-@pytest.mark.parametrize('try_reverse_complement', [False, True])
-@pytest.mark.parametrize('bind_reverse_complement', [False, True])
-def test_interaction_graph(cyclic, seq, generate_sequences, try_reverse_complement, bind_reverse_complement):
+
+@pytest.mark.parametrize(
+    "cyclic", [pytest.param(False, id="linear"), pytest.param(True, id="circular")]
+)
+@pytest.mark.parametrize("try_reverse_complement", [False, True])
+@pytest.mark.parametrize("bind_reverse_complement", [False, True])
+def test_interaction_graph(
+    cyclic, seq, generate_sequences, try_reverse_complement, bind_reverse_complement
+):
     num_fragments = 4
     sequences = generate_sequences(num_fragments, cyclic=cyclic)
-    if try_reverse_complement == 'try_reverse_complement':
+    if try_reverse_complement == "try_reverse_complement":
         sequences[1].reverse_complement()
-    G = Reaction.interaction_graph(sequences, bind_reverse_complement=bind_reverse_complement)
+    G = Reaction.interaction_graph(
+        sequences, bind_reverse_complement=bind_reverse_complement
+    )
 
     edges = list(G.edges)
     print(len(edges))
@@ -63,7 +73,10 @@ def test_interaction_graph(cyclic, seq, generate_sequences, try_reverse_compleme
         else:
             assert len(edges) == 3
 
-@pytest.mark.parametrize('cyclic', [pytest.param(False, id='linear'), pytest.param(True, id='circular'),])
+
+@pytest.mark.parametrize(
+    "cyclic", [pytest.param(False, id="linear"), pytest.param(True, id="circular")]
+)
 def test_linear_paths(generate_sequences, cyclic):
     sequences = generate_sequences(4, cyclic=cyclic)
     G = Reaction.interaction_graph(sequences, bind_reverse_complement=True)
@@ -76,7 +89,10 @@ def test_linear_paths(generate_sequences, cyclic):
     else:
         assert len(paths) == 0
 
-@pytest.mark.parametrize('cyclic', [pytest.param(False, id='linear'), pytest.param(True, id='circular'),])
+
+@pytest.mark.parametrize(
+    "cyclic", [pytest.param(False, id="linear"), pytest.param(True, id="circular")]
+)
 def test_cyclic_paths(generate_sequences, cyclic):
     sequences = generate_sequences(4, cyclic=cyclic)
     sequences[0].reverse_complement()
@@ -93,13 +109,8 @@ def test_cyclic_paths(generate_sequences, cyclic):
     else:
         assert len(paths) == 0
 
-@pytest.mark.parametrize('reverse_complement', [
-    [],
-    [0],
-    [1],
-    [0, 1],
-    [0, 2],
-])
+
+@pytest.mark.parametrize("reverse_complement", [[], [0], [1], [0, 1], [0, 2]])
 def test_linear_assemblies(seq, generate_sequences, reverse_complement):
     sequences = generate_sequences(4, cyclic=False)
     for rc in reverse_complement:
@@ -115,14 +126,8 @@ def test_linear_assemblies(seq, generate_sequences, reverse_complement):
         assert str(p) == str(seq) or str(p.copy().reverse_complement()) == str(seq)
         print(a)
 
-@pytest.mark.parametrize('reverse_complement', [
-    [],
-    [0],
-    [1],
-    [2],
-    [0, 1],
-    [0, 2],
-])
+
+@pytest.mark.parametrize("reverse_complement", [[], [0], [1], [2], [0, 1], [0, 2]])
 def test_cyclic_assemblies(seq, generate_sequences, reverse_complement):
     sequences = generate_sequences(4, cyclic=True)
     for rc in reverse_complement:
@@ -155,11 +160,20 @@ def test_cyclic_assemblies_num_fragments(seq, generate_sequences):
 
 def test_hard_coded_assembly():
     seqs = [
-        Sequence('GTCGGCGGGACCAGGGAGTTTAAACAGGATTGATAATGTAATAGGATCAATGAATATTAACATTAGGTGCTGTGGGTGGCGCTGGAGAAAACCTTCGTATCGGC', name='seq1'),
-        Sequence('GCCGATACGAAGGTTTTCTCCAGCGAGTTTATCATTATCAGGTTTTGGGACGCTCGAAGGCTTTAATTTGCTTCAATAAAGGAGCGAGCACCCG', name='seq2')
-
+        Sequence(
+            "GTCGGCGGGACCAGGGAGTTTAAACAGGATTGATAATGTAATAGGATCAATGAATATTAACATTAGGTGCTGTGGGTGGCGCTGGAGAAAACCTTCGTATCGGC",
+            name="seq1",
+        ),
+        Sequence(
+            "GCCGATACGAAGGTTTTCTCCAGCGAGTTTATCATTATCAGGTTTTGGGACGCTCGAAGGCTTTAATTTGCTTCAATAAAGGAGCGAGCACCCG",
+            name="seq2",
+        ),
     ]
-    Reaction.interaction_report(Reaction.interaction_graph(seqs, bind_reverse_complement=True, min_bases=10, max_bases=200))
+    Reaction.interaction_report(
+        Reaction.interaction_graph(
+            seqs, bind_reverse_complement=True, min_bases=10, max_bases=200
+        )
+    )
     # assemblies = Reaction.cyclic_assemblies(seqs)
     # for a in assemblies:
     #     print(a.product)

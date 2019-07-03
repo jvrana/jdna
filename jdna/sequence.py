@@ -14,6 +14,7 @@ from Bio import Restriction
 from jdna.align import AlignInterface
 from jdna.alphabet import AmbiguousDNA, UnambiguousDNA
 from jdna.format import format_sequence
+
 # from jdna.align import Align
 from jdna.io import IOInterface
 from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
@@ -36,7 +37,7 @@ class Feature(object):
     def __init__(self, name, type=None, strand=None, color=None):
         self.name = name
         if type is None:
-            type = 'misc'
+            type = "misc"
         self.type = type
         if strand is None:
             strand = SequenceFlags.FORWARD
@@ -51,9 +52,7 @@ class Feature(object):
 
     def __str__(self):
         return "<Feature name='{name}' type='{tp}' color='{color}'".format(
-            name=self.name,
-            tp=self.type,
-            color=self.color
+            name=self.name, tp=self.type, color=self.color
         )
 
     def __repr__(self):
@@ -99,8 +98,15 @@ class Feature(object):
 
 
 class BindPos(LinkedListMatch):
-
-    def __init__(self, template_bounds, query_bounds, template, query, direction, strand=SequenceFlags.TOP):
+    def __init__(
+        self,
+        template_bounds,
+        query_bounds,
+        template,
+        query,
+        direction,
+        strand=SequenceFlags.TOP,
+    ):
         """
         Makes a sequence binding position.
 
@@ -150,7 +156,9 @@ class BindPos(LinkedListMatch):
     #         self.query_span = (self.query_span[0] + length, self.query_span[1] + length)
 
     @classmethod
-    def from_match(cls, linked_list_match, template, query, direction, strand=SequenceFlags.TOP):
+    def from_match(
+        cls, linked_list_match, template, query, direction, strand=SequenceFlags.TOP
+    ):
         """
         Return a binding pos
         :param linked_list_match: the linked list match
@@ -158,11 +166,14 @@ class BindPos(LinkedListMatch):
         :return:
         :rtype:
         """
-        return cls(linked_list_match.template_bounds, linked_list_match.query_bounds,
-                   template, query,
-                   direction,
-                   strand=strand
-                   )
+        return cls(
+            linked_list_match.template_bounds,
+            linked_list_match.query_bounds,
+            template,
+            query,
+            direction,
+            strand=strand,
+        )
 
     @property
     def template_anneal(self):
@@ -176,7 +187,9 @@ class BindPos(LinkedListMatch):
         if self.direction == SequenceFlags.FORWARD:
             return Sequence.new_slice(self.query_start, self.query_end)
         else:
-            return Sequence.new_slice(self.query_end, self.query_start).reverse_complement()
+            return Sequence.new_slice(
+                self.query_end, self.query_start
+            ).reverse_complement()
 
     def __repr__(self):
         return "<{cls} span={span} direction='{direction}' strand='{strand}' 5'='{five}' anneal='{anneal}' 3'='{three}'>".format(
@@ -186,14 +199,14 @@ class BindPos(LinkedListMatch):
             strand=self.strand,
             five=self.five_prime_overhang.__repr__(),
             three=self.three_prime_overhang.__repr__(),
-            anneal=self.anneal.__repr__()
+            anneal=self.anneal.__repr__(),
         )
 
 
 class Nucleotide(Node):
     """Represents a biological nucleotide. Serves a :class:`Node` in teh :class:`Sequence` object."""
 
-    __slots__ = ['data', '__next', '__prev', '_features', 'alphabet']
+    __slots__ = ["data", "__next", "__prev", "_features", "alphabet"]
 
     def __init__(self, base, alphabet=AmbiguousDNA):
         """
@@ -397,8 +410,9 @@ class Sequence(DoubleLinkedList):
 
     class DEFAULTS(object):
         """Sequence defaults"""
+
         MIN_ANNEAL_BASES = 13
-        FOREGROUND_COLORS = ["blue", 'red']
+        FOREGROUND_COLORS = ["blue", "red"]
         BACKGROUND_COLORS = None
         ALPHABET = AmbiguousDNA
 
@@ -409,7 +423,16 @@ class Sequence(DoubleLinkedList):
     NODE_CLASS = Nucleotide
     counter = itertools.count()
 
-    def __init__(self, sequence=None, first=None, name=None, description='', metadata=None, cyclic=False, alphabet=DEFAULTS.ALPHABET):
+    def __init__(
+        self,
+        sequence=None,
+        first=None,
+        name=None,
+        description="",
+        metadata=None,
+        cyclic=False,
+        alphabet=DEFAULTS.ALPHABET,
+    ):
         """
 
         :param sequence: sequence string
@@ -432,7 +455,7 @@ class Sequence(DoubleLinkedList):
         self.alphabet = alphabet
         super(Sequence, self).__init__(data=sequence, first=first, cyclic=cyclic)
         if name is None:
-            name = ''
+            name = ""
         self.name = name
         self.description = description
         if metadata is None:
@@ -465,7 +488,7 @@ class Sequence(DoubleLinkedList):
         seq = ""
         for i in range(length):
             seq += UnambiguousDNA.random().upper()
-        if seq == '':
+        if seq == "":
             return cls.empty()
         return cls(sequence=seq)
 
@@ -541,14 +564,13 @@ class Sequence(DoubleLinkedList):
         feature_nts = list(self.inclusive_range(start, end))
         if end and feature_nts[-1] is not self[end]:
             if not self.cyclic:
-                raise IndexError("Cannot add feature to {} to linear dna with bounds {}".format(
-                    (start, end),
-                    (0, len(self))
-                ))
+                raise IndexError(
+                    "Cannot add feature to {} to linear dna with bounds {}".format(
+                        (start, end), (0, len(self))
+                    )
+                )
             else:
-                raise IndexError("Cannot add feature to {}".format(
-                    (start, end)
-                ))
+                raise IndexError("Cannot add feature to {}".format((start, end)))
         for n in self.inclusive_range(start, end):
             n.add_feature(feature)
         return feature
@@ -603,7 +625,9 @@ class Sequence(DoubleLinkedList):
         :return: new feature
         :rtype: Feature
         """
-        return self.add_feature(start, end, Feature(name, feature_type, strand=strand, color=color))
+        return self.add_feature(
+            start, end, Feature(name, feature_type, strand=strand, color=color)
+        )
 
     def reverse(self):
         features_set = set()
@@ -672,20 +696,28 @@ class Sequence(DoubleLinkedList):
 
     def anneal_forward(self, other, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
         """Anneal a sequence in the forward direction"""
-        for match in self.find_iter(other, min_query_length=min_bases,
-                                    direction=self.Direction.REVERSE,
-                                    depth=depth):
-            yield BindPos.from_match(match, self, other, direction=self.Direction.FORWARD)
+        for match in self.find_iter(
+            other,
+            min_query_length=min_bases,
+            direction=self.Direction.REVERSE,
+            depth=depth,
+        ):
+            yield BindPos.from_match(
+                match, self, other, direction=self.Direction.FORWARD
+            )
 
     def anneal_reverse(self, other, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
         """Anneal a sequence in the reverse direction"""
-        for match in self.find_iter(other,
-                                    min_query_length=min_bases,
-                                    direction=(1, -1),
-                                    protocol=lambda x, y: x.complementary(y),
-                                    depth=depth
-                                    ):
-            yield BindPos.from_match(match, self, other, direction=self.Direction.REVERSE)
+        for match in self.find_iter(
+            other,
+            min_query_length=min_bases,
+            direction=(1, -1),
+            protocol=lambda x, y: x.complementary(y),
+            depth=depth,
+        ):
+            yield BindPos.from_match(
+                match, self, other, direction=self.Direction.REVERSE
+            )
 
     def anneal(self, ssDNA, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
         """Simulate annealing a single stranded piece of DNA to a double_stranded template"""
@@ -698,11 +730,13 @@ class Sequence(DoubleLinkedList):
         """Simulate annealing a double stranded piece of DNA to a double_stranded template"""
         for binding in self.anneal(dsDNA, min_bases=min_bases, depth=depth):
             yield binding
-        for binding in self.anneal(dsDNA.copy().reverse_complement(), min_bases=min_bases, depth=depth):
+        for binding in self.anneal(
+            dsDNA.copy().reverse_complement(), min_bases=min_bases, depth=depth
+        ):
             binding.strand = SequenceFlags.BOTTOM
             yield binding
 
-    def format(self, width=75, spacer=''):
+    def format(self, width=75, spacer=""):
         return format_sequence(str(self), width=width, spacer=spacer)
 
     # def _print_alignment_helper(self, sequences, name=''):
@@ -717,7 +751,13 @@ class Sequence(DoubleLinkedList):
                     direction = ViewerAnnotationFlag.FORWARD
                 elif feature.strand == SequenceFlags.REVERSE:
                     direction = ViewerAnnotationFlag.REVERSE
-                view.annotate(pos[0], pos[1], label=feature.name, fill=direction, background=feature.color)
+                view.annotate(
+                    pos[0],
+                    pos[1],
+                    label=feature.name,
+                    fill=direction,
+                    background=feature.color,
+                )
 
     def view_bindings(self, bindings, view=None):
         if view is None:
@@ -725,16 +765,29 @@ class Sequence(DoubleLinkedList):
         for b in bindings:
             anneal = b.anneal
             primer_sequence = b.five_prime_overhang + anneal + b.three_prime_overhang
-            annotation = StringColumn([str(primer_sequence),
-                                       ' ' * len(b.five_prime_overhang) + '|' * len(anneal) + ' ' * len(
-                                           b.three_prime_overhang)])
+            annotation = StringColumn(
+                [
+                    str(primer_sequence),
+                    " " * len(b.five_prime_overhang)
+                    + "|" * len(anneal)
+                    + " " * len(b.three_prime_overhang),
+                ]
+            )
             if b.direction == Sequence.FORWARD:
                 view.annotate(b.span[0], b.span[1], annotation)
             if b.direction == Sequence.REVERSE:
                 view.annotate(b.span[0], b.span[1], annotation.flip()[::-1], top=False)
         return view
 
-    def view(self, indent=10, width=85, spacer=None, complement=False, features=True, **kwargs):
+    def view(
+        self,
+        indent=10,
+        width=85,
+        spacer=None,
+        complement=False,
+        features=True,
+        **kwargs
+    ):
         """
         Create a :class:`SequenceViewer` instance from this sequence. Printing the view object with
         annotations and complement will produce an output similar to the following:
@@ -799,11 +852,19 @@ class Sequence(DoubleLinkedList):
             colors = self.DEFAULTS.FOREGROUND_COLORS
         if spacer is None:
             if complement:
-                spacer = '\n'
+                spacer = "\n"
             else:
-                spacer = ''
-        viewer = SequenceViewer(seqs, name=self.name, description=self.description, indent=indent, width=width,
-                                spacer=spacer, foreground_colors=colors, **kwargs)
+                spacer = ""
+        viewer = SequenceViewer(
+            seqs,
+            name=self.name,
+            description=self.description,
+            indent=indent,
+            width=width,
+            spacer=spacer,
+            foreground_colors=colors,
+            **kwargs
+        )
         viewer.metadata.update(self.metadata)
         if features:
             self._apply_features_to_view(self, viewer)
@@ -821,7 +882,15 @@ class Sequence(DoubleLinkedList):
             n.data = n.data.lower()
         return copied
 
-    def print(self, indent=None, width=None, spacer=None, complement=False, features=True, **kwargs):
+    def print(
+        self,
+        indent=None,
+        width=None,
+        spacer=None,
+        complement=False,
+        features=True,
+        **kwargs
+    ):
         """
          Create and print a :class:`SequenceViewer` instance from this sequence. Printing the view object
          with annotations and complement will produce an output similar to the following:
@@ -873,7 +942,14 @@ class Sequence(DoubleLinkedList):
          :return: the viewer object
          :rtype: SequenceViewer
          """
-        self.view(indent=indent, width=width, spacer=spacer, complement=complement, features=features, **kwargs).print()
+        self.view(
+            indent=indent,
+            width=width,
+            spacer=spacer,
+            complement=complement,
+            features=features,
+            **kwargs
+        ).print()
 
     def tm(self):
         """
@@ -889,36 +965,40 @@ class Sequence(DoubleLinkedList):
         annotations = []
         for feature, positions in self.feature_positions().items():
             for start, end in positions:
-                annotations.append({
-                    'start': start,
-                    'end': end + 1,
-                    'name': feature.name,
-                    'color': feature.color,
-                    'type': feature.type,
-                    'strand': feature.strand,
-                })
+                annotations.append(
+                    {
+                        "start": start,
+                        "end": end + 1,
+                        "name": feature.name,
+                        "color": feature.color,
+                        "type": feature.type,
+                        "strand": feature.strand,
+                    }
+                )
 
         return {
-            'name': self.name,
-            'isCircular': self.cyclic,
-            'length': len(self),
-            'bases': str(self),
-            'annotations': annotations
+            "name": self.name,
+            "isCircular": self.cyclic,
+            "length": len(self),
+            "bases": str(self),
+            "annotations": annotations,
         }
 
     @classmethod
     def load(cls, data):
         """Load a sequence from a json formatted dictionary"""
-        sequence = cls(data['bases'], name=data['name'])
-        sequence.cyclic = data['isCircular']
-        sequence.name = data['name']
-        sequence.description = data.get('description', None)
-        for a in data['annotations']:
-            sequence.annotate(a['start'], a['end'] - 1, a['name'], a['type'], a['color'])
+        sequence = cls(data["bases"], name=data["name"])
+        sequence.cyclic = data["isCircular"]
+        sequence.name = data["name"]
+        sequence.description = data.get("description", None)
+        for a in data["annotations"]:
+            sequence.annotate(
+                a["start"], a["end"] - 1, a["name"], a["type"], a["color"]
+            )
         return sequence
 
     def _collect_cut_sites(self, enzyme_site, cut1=None, cut2=None):
-        if hasattr(enzyme_site, 'charac'):
+        if hasattr(enzyme_site, "charac"):
             cut1 = enzyme_site.charac[0]
             cut2 = enzyme_site.charac[1]
             enzyme_site = enzyme_site.charac[4]
@@ -957,12 +1037,12 @@ class Sequence(DoubleLinkedList):
 
     def __repr__(self):
         max_width = 30
-        replace = '...'
+        replace = "..."
         display = int((max_width - len(replace)) / 2.0)
         s = str(self)
         if len(s) > display * 2:
             # diff = display*2 - len(s)
-            s = s[:display] + '...' + s[-display:]
+            s = s[:display] + "..." + s[-display:]
         return "Sequence('{}')".format(s)
 
 

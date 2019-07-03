@@ -1,8 +1,10 @@
 [tool.poetry]
 name = "jdna"
-version = "0.1.1"
+version = "0.1.0a"
 description = ""
 authors = ["Justin Vrana <justin.vrana@gmail.com>"]
+homepage = 'https://jvrana.github.io/jdna/'
+repository = 'https://github.com/jvrana/jdna'
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -18,6 +20,8 @@ black = {version = "^18.3-alpha.0",allows-prereleases = true}
 pytest = "^5.0"
 pre-commit = "^1.17"
 toml = "^0.10.0"
+pytest-benchmark = "^3.2"
+guzzle_sphinx_theme = "^0.7.11"
 
 [tool.poetry.scripts]
 upver = 'jdna:_version.pull_version'
