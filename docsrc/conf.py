@@ -12,11 +12,9 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-
 import os
 import sys
 
@@ -69,7 +67,7 @@ master_doc = "index"
 # General information about the project.
 project = jdna.__title__
 copyright = "2017, University of Washington"
-author = jdna.__author__[0]
+author = jdna.__authors__[0]
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
