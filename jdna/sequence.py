@@ -4,6 +4,13 @@ import re
 from collections import defaultdict
 from copy import copy
 from enum import IntFlag
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Sequence as TypingSequence
+from typing import Tuple
+from typing import Union
 
 import primer3
 from Bio import Restriction
@@ -103,11 +110,11 @@ class Feature:
 class BindPos(LinkedListMatch):
     def __init__(
         self,
-        template_bounds,
-        query_bounds,
-        template,
-        query,
-        direction,
+        template_bounds: Tuple["Nucleotide", "Nucleotide"],
+        query_bounds: Tuple["Nucleotide", "Nucleotide"],
+        template: "Sequence",
+        query: "Sequence",
+        direction: int,
         strand=SequenceFlags.TOP,
     ):
         """Makes a sequence binding position.
@@ -279,13 +286,13 @@ class Nucleotide(Node):
 
     def feature_fwd(self, feature):
         def stop(x):
-            return feature not in x.features_list
+            return feature not in x.features
 
         return self._propogate(lambda x: x.next(), stop_criteria=stop)
 
     def feature_rev(self, feature):
         def stop(x):
-            return feature not in x.features_list
+            return feature not in x.features
 
         return self._propogate(lambda x: x.prev(), stop_criteria=stop)
 
@@ -294,7 +301,7 @@ class Nucleotide(Node):
         self.remove_feature(old_feature)
 
     def copy_features_from(self, other):
-        for f in other.features_list:
+        for f in other.features:
             if f not in self.features:
                 self.add_feature(f)
         self._remove_overlapping_features()
@@ -302,7 +309,7 @@ class Nucleotide(Node):
     def get_feature_span(self, feature):
         start = self.feature_rev(feature)[-1]
         end = self.feature_fwd(feature)[-1]
-        return (start.features_list[feature], end.features_list[feature])
+        return (start.features[feature], end.features[feature])
 
     # def update_feature_span(self, feature, delta_i):
     #     start = self.feature_rev(feature)[-1]
@@ -439,12 +446,12 @@ class Sequence(DoubleLinkedList):
 
     def __init__(
         self,
-        sequence=None,
-        first=None,
-        name=None,
-        description="",
-        metadata=None,
-        cyclic=False,
+        sequence: TypingSequence[Any] = None,
+        first: Nucleotide = None,
+        name: str = None,
+        description: str = "",
+        metadata: dict = None,
+        cyclic: bool = False,
         alphabet=DEFAULTS.ALPHABET,
     ):
         """
@@ -518,6 +525,7 @@ class Sequence(DoubleLinkedList):
             features_set.update(n.features)
         return tuple(features_set)
 
+    @property
     def features(self, with_nodes=False):
         """Return a list of feature positions.
 
@@ -615,7 +623,7 @@ class Sequence(DoubleLinkedList):
         :rtype: list
         """
         found = []
-        for feature in self.features():
+        for feature in self.features:
             if feature.name == name:
                 found.append(feature)
         return found
@@ -690,9 +698,10 @@ class Sequence(DoubleLinkedList):
 
     def __copy__(self):
         copied = super().__copy__()
+        copied.name = self.name
         copied._global_id = next(self.counter)
         copied.clear_features()
-        feature_positions = self.features()
+        feature_positions = self.features
         for feature, positions in feature_positions.items():
             copied.add_multipart_feature(positions, copy(feature))
         return copied
@@ -756,12 +765,9 @@ class Sequence(DoubleLinkedList):
     def format(self, width=75, spacer=""):
         return format_sequence(str(self), width=width, spacer=spacer)
 
-    # def _print_alignment_helper(self, sequences, name=''):
-    #     for a in
-
     @classmethod
     def _apply_features_to_view(cls, sequence, view):
-        for feature, positions in sequence.features().items():
+        for feature, positions in sequence.features.items():
             for pos in positions:
                 direction = None
                 if feature.strand == SequenceFlags.FORWARD:
@@ -979,7 +985,7 @@ class Sequence(DoubleLinkedList):
     def json(self):
         """Print sequence to a json dictionary."""
         annotations = []
-        for feature, positions in self.features().items():
+        for feature, positions in self.features.items():
             for start, end in positions:
                 annotations.append(
                     {
@@ -1050,7 +1056,7 @@ class Sequence(DoubleLinkedList):
                 cut_sites += self._collect_cut_sites(enzyme)
         return self.cut(cut_sites)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         max_width = 30
         replace = "..."
         display = int((max_width - len(replace)) / 2.0)

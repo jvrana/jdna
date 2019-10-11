@@ -7,6 +7,11 @@ homepage = 'https://github.com/jvrana/jdna'
 repository = 'https://github.com/jvrana/jdna'
 documentation = 'https://jvrana.github.io/jdna/'
 readme = 'README.md'
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Development Status :: 4 - Beta"
+]
 
 [tool.poetry.dependencies]
 python = "^3.5"
@@ -16,6 +21,8 @@ networkx = "^2.3"
 primer3-py = "^0.6.0"
 colorama = "^0.4.1"
 webcolors = "^1.9"
+tox = "^3.14"
+tox-conda = "^0.2.1"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^18.3-alpha.0", python = "^3.6", allows-prereleases = true}

@@ -454,12 +454,6 @@ def test_print():
     s.print(complement=True)
 
 
-def test_align():
-    s1 = Sequence.random(100)
-    s2 = Sequence.random(50) + s1[:50] + Sequence.random(50)
-    s1.print_alignment(s2)
-
-
 def test_compare():
     s1 = Sequence.random(200)
     s1.cyclic = True

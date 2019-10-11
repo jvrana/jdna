@@ -32,7 +32,7 @@ class TestFeatureProperties:
         f1 = test_seq.annotate(1, len(test_seq) - 1, "feature", "type")
         f2 = test_seq.annotate(2, len(test_seq) - 2, "feature", "type")
         f3 = test_seq.annotate(3, len(test_seq) - 3, "feature", "type")
-        fpos = test_seq.features()
+        fpos = test_seq.features
         assert len(fpos) == 3
         assert fpos[f1] == [[1, len(test_str) - 1]]
         assert fpos[f2] == [[2, len(test_str) - 2]]
@@ -83,8 +83,8 @@ class TestFeatureManipulations:
         assert len(fragments[1].features_list) == 1
 
         feature = list(fragments[0].features_list)[0]
-        assert dict(fragments[0].features()) == {feature: [[s, c - 1]]}
-        assert dict(fragments[1].features()) == {feature: [[0, e - c]]}
+        assert dict(fragments[0].features) == {feature: [[s, c - 1]]}
+        assert dict(fragments[1].features) == {feature: [[0, e - c]]}
 
         # print(feature.segments())
         # assert len(feature.segments()) == 2
@@ -103,7 +103,7 @@ class TestFeatureManipulations:
         assert len(test_seq.features_list) == 2
         Nucleotide.fuse_features(test_seq.get(j), test_seq.get(k))
         assert len(test_seq.features_list) == 1
-        assert test_seq.features() == {f1: [[i, l]]}
+        assert test_seq.features == {f1: [[i, l]]}
 
     def test_feature_fusion_unsuccessful(self, test_seq):
         f1 = Feature(name="myfeature", type="myfeature")
@@ -127,10 +127,10 @@ class TestFeatureManipulations:
 
         test_seq.add_feature(i, j, f1)
         test_seq.add_feature(k, l, f1)
-        assert test_seq.features() == {f1: [[k, l], [i, j]]}
+        assert test_seq.features == {f1: [[k, l], [i, j]]}
 
         test_seq.cyclic = True
-        assert test_seq.features() == {f1: [[i, l]]}
+        assert test_seq.features == {f1: [[i, l]]}
 
         # for start in range(1, len(test_seq)):
         #     for end in range(start, len(test_seq)):
@@ -155,18 +155,18 @@ class TestFeatureManipulations:
         start = 10
         end = 1
         test_seq.add_feature(start, end, f)
-        assert test_seq.features() == {f: [[10, 1]]}
+        assert test_seq.features == {f: [[10, 1]]}
 
     def test_copying_features(self, test_seq):
         f = Feature(name="alfjl", type="lkdjflkj")
         test_seq.add_feature(0, 5, f)
         seq_copy = copy(test_seq)
 
-        assert id(f) not in [id(_f) for _f in list(seq_copy.features().keys())]
-        assert len(seq_copy.features()) == 1
-        assert f in test_seq.features()
+        assert id(f) not in [id(_f) for _f in list(seq_copy.features.keys())]
+        assert len(seq_copy.features) == 1
+        assert f in test_seq.features
         print(seq_copy.features_list[0])
-        print(seq_copy.features())
+        print(seq_copy.features)
 
     def test_multiple_features(self, test_seq):
         f1 = Feature(name="feature 1", type="test")
@@ -175,19 +175,19 @@ class TestFeatureManipulations:
         s2, e2 = (5, 15)
         test_seq.add_feature(s1, e1, f1)
         test_seq.add_feature(s2, e2, f2)
-        assert test_seq.features() == {f1: [[s1, e1]], f2: [[s2, e2]]}
-        assert f1 in test_seq.nodes[7].features_list
-        assert f2 in test_seq.nodes[7].features_list
+        assert test_seq.features == {f1: [[s1, e1]], f2: [[s2, e2]]}
+        assert f1 in test_seq.nodes[7].features
+        assert f2 in test_seq.nodes[7].features
 
     def test_maintain_features_after_reverse(self, test_seq, test_str):
         f1 = Feature(name="feature 1", type="test")
         test_seq.add_feature(5, 10, f1)
-        assert len(test_seq.features_list) == 1
+        assert len(test_seq.features) == 1
         test_seq.reverse()
         # assert str(test_seq) == test_str[::-1]
         assert len(test_seq) == len(test_str)
-        print(test_seq.features_list)
+        print(test_seq.features)
         assert (
-            len(test_seq.features_list) == 1
+            len(test_seq.features) == 1
         ), "Sequence should have one feature after reversal"
         # assert test_seq.feature_positions() == {f1: [(len(test_seq) - 1 - 10, len(test_seq) - 1 - 5), (5, 0)]}
