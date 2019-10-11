@@ -155,7 +155,7 @@ def test_cutting():
         while "" in expected:
             expected.remove("")
         fragments = seq.cut(c)
-        assert set([str(x) for x in fragments]) == set(expected)
+        assert {str(x) for x in fragments} == set(expected)
 
     test_cut([1, 5, 7])
     test_cut((5, len(seq) - 1))
@@ -206,7 +206,7 @@ def test_cyclic_cutting():
         fragments = seq.cut(c)
         for f in fragments:
             assert ~f.cyclic
-        assert set([str(x) for x in fragments]) == set(expected)
+        assert {str(x) for x in fragments} == set(expected)
 
     test_cut([1])
     test_cut([1, 5, 7])
@@ -419,14 +419,16 @@ def test_anneal_with_overhang(reverse_complement):
 
     template = Sequence.random(200)
     anneal = template[20:50]
-    overhang = Sequence.random(20) + Sequence("N" * 5)
+    overhang = Sequence("N" * 5) + Sequence.random(20)
     if reverse_complement:
         anneal.reverse_complement()
     primer = overhang + anneal
-
+    print(primer)
     for b in template.anneal(primer):
         print(b.span)
         print(b.query_span)
+        print(b.anneal)
+        print(b.five_prime_overhang)
         assert str(b.five_prime_overhang) == str(overhang)
 
 

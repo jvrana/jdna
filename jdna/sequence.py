@@ -1,7 +1,4 @@
-"""
-Represent linear or circularized nucleotides
-"""
-
+"""Represent linear or circularized nucleotides."""
 import itertools
 import re
 from collections import defaultdict
@@ -12,14 +9,19 @@ import primer3
 from Bio import Restriction
 
 from jdna.align import AlignInterface
-from jdna.alphabet import AmbiguousDNA, UnambiguousDNA
+from jdna.alphabet import AmbiguousDNA
+from jdna.alphabet import UnambiguousDNA
 from jdna.format import format_sequence
+from jdna.io import IOInterface
+from jdna.linked_list import DoubleLinkedList
+from jdna.linked_list import LinkedListMatch
+from jdna.linked_list import Node
+from jdna.utils import random_color
+from jdna.viewer import SequenceViewer
+from jdna.viewer import StringColumn
+from jdna.viewer import ViewerAnnotationFlag
 
 # from jdna.align import Align
-from jdna.io import IOInterface
-from jdna.linked_list import Node, DoubleLinkedList, LinkedListMatch
-from jdna.utils import random_color
-from jdna.viewer import SequenceViewer, ViewerAnnotationFlag, StringColumn
 
 
 class SequenceFlags(IntFlag):
@@ -31,7 +33,7 @@ class SequenceFlags(IntFlag):
     BOTTOM = -1
 
 
-class Feature(object):
+class Feature:
     """An annotation for a sequence."""
 
     def __init__(self, name, type=None, strand=None, color=None):
@@ -47,18 +49,19 @@ class Feature(object):
         self.color = color
         # self._nodes = set()
 
-    def reverse(self):
-        self.strand = -self.strand
+    def reverse(self) -> "Sequence":
+        self.strand = -1 * self.strand
+        return self
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "<Feature name='{name}' type='{tp}' color='{color}'".format(
             name=self.name, tp=self.type, color=self.color
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
-    def __copy__(self):
+    def __copy__(self) -> "Sequence":
         return self.__class__(self.name, self.type, self.strand, self.color)
 
     # @property
@@ -81,7 +84,7 @@ class Feature(object):
     #         pairs.add((head, tail))
     # return pairs
 
-    def is_multipart(self):
+    def is_multipart(self) -> bool:
         if len(self.segments) > 1:
             return True
         return False
@@ -107,8 +110,7 @@ class BindPos(LinkedListMatch):
         direction,
         strand=SequenceFlags.TOP,
     ):
-        """
-        Makes a sequence binding position.
+        """Makes a sequence binding position.
 
         :param template_bounds_list: list of 2 len tuples containing starts and ends from a template
         :type template_bounds_list: template DoubleLinkedList
@@ -159,8 +161,8 @@ class BindPos(LinkedListMatch):
     def from_match(
         cls, linked_list_match, template, query, direction, strand=SequenceFlags.TOP
     ):
-        """
-        Return a binding pos
+        """Return a binding pos.
+
         :param linked_list_match: the linked list match
         :type linked_list_match: LinkedListMatch
         :return:
@@ -204,24 +206,26 @@ class BindPos(LinkedListMatch):
 
 
 class Nucleotide(Node):
-    """Represents a biological nucleotide. Serves a :class:`Node` in teh :class:`Sequence` object."""
+    """Represents a biological nucleotide.
+
+    Serves a :class:`Node` in teh :class:`Sequence` object.
+    """
 
     __slots__ = ["data", "__next", "__prev", "_features", "alphabet"]
 
     def __init__(self, base, alphabet=AmbiguousDNA):
-        """
-        Nucleotide constructor
+        """Nucleotide constructor.
 
         :param base: base as a single character string
         :type base: basestring
         """
-        super(Nucleotide, self).__init__(base)
+        super().__init__(base)
         self._features = set()
         self.alphabet = alphabet
 
     @classmethod
     def random(cls):
-        """Generate a random sequence"""
+        """Generate a random sequence."""
         return cls(UnambiguousDNA.random())
 
     @property
@@ -239,12 +243,12 @@ class Nucleotide(Node):
 
     def set_next(self, nucleotide):
         self.cut_next()
-        super(Nucleotide, self).set_next(nucleotide)
+        super().set_next(nucleotide)
         Nucleotide.fuse_features(self, nucleotide)
 
     def set_prev(self, nucleotide):
         self.cut_prev()
-        super(Nucleotide, self).set_prev(nucleotide)
+        super().set_prev(nucleotide)
         Nucleotide.fuse_features(nucleotide, self)
 
     def cut_prev(self):
@@ -274,11 +278,15 @@ class Nucleotide(Node):
         self.features.remove(feature)
 
     def feature_fwd(self, feature):
-        stop = lambda x: feature not in x.features
+        def stop(x):
+            return feature not in x.features_list
+
         return self._propogate(lambda x: x.next(), stop_criteria=stop)
 
     def feature_rev(self, feature):
-        stop = lambda x: feature not in x.features
+        def stop(x):
+            return feature not in x.features_list
+
         return self._propogate(lambda x: x.prev(), stop_criteria=stop)
 
     def replace_feature(self, old_feature, new_feature):
@@ -286,8 +294,7 @@ class Nucleotide(Node):
         self.remove_feature(old_feature)
 
     def copy_features_from(self, other):
-        for f in other.features:
-            i = other.features[f]
+        for f in other.features_list:
             if f not in self.features:
                 self.add_feature(f)
         self._remove_overlapping_features()
@@ -295,7 +302,7 @@ class Nucleotide(Node):
     def get_feature_span(self, feature):
         start = self.feature_rev(feature)[-1]
         end = self.feature_fwd(feature)[-1]
-        return (start.features[feature], end.features[feature])
+        return (start.features_list[feature], end.features_list[feature])
 
     # def update_feature_span(self, feature, delta_i):
     #     start = self.feature_rev(feature)[-1]
@@ -398,18 +405,25 @@ class Nucleotide(Node):
                 for n in frag2:
                     n.replace_feature(f, f2)
 
+    def _clear_features(self):
+        self._features = set()
+
     def copy(self):
-        copied = super(Nucleotide, self).copy()
+        copied = super().copy()
+        copied._features = set()
         for f in self.features:
             copied.add_feature(f)
         return copied
 
 
 class Sequence(DoubleLinkedList):
-    """Represents a biological sequence as a double linked list. Can be annotated with features."""
+    """Represents a biological sequence as a double linked list.
 
-    class DEFAULTS(object):
-        """Sequence defaults"""
+    Can be annotated with features.
+    """
+
+    class DEFAULTS:
+        """Sequence defaults."""
 
         MIN_ANNEAL_BASES = 13
         FOREGROUND_COLORS = ["blue", "red"]
@@ -453,7 +467,7 @@ class Sequence(DoubleLinkedList):
         """
 
         self.alphabet = alphabet
-        super(Sequence, self).__init__(data=sequence, first=first, cyclic=cyclic)
+        super().__init__(data=sequence, first=first, cyclic=cyclic)
         if name is None:
             name = ""
         self.name = name
@@ -484,7 +498,7 @@ class Sequence(DoubleLinkedList):
 
     @classmethod
     def random(cls, length):
-        """Generate a random sequence"""
+        """Generate a random sequence."""
         seq = ""
         for i in range(length):
             seq += UnambiguousDNA.random().upper()
@@ -493,32 +507,33 @@ class Sequence(DoubleLinkedList):
         return cls(sequence=seq)
 
     @property
-    def features(self):
-        """
-        Returns set of features contained in sequence.
+    def features_list(self):
+        """Returns set of features contained in sequence.
 
         :return: set of features in this sequence
         :rtype: set
         """
         features_set = set()
         for i, n in enumerate(self):
-            features_set.update(n.features)
-        return features_set
+            features_set.update(n.features_list)
+        return tuple(features_set)
 
-    def feature_positions(self, with_nodes=False):
-        """
-        Return a list of feature positions.
+    def features(self, with_nodes=False):
+        """Return a list of feature positions.
 
-        :param with_nodes: if True, will return a tuple composed of a feature to position dictionary and a feature to
-                            start and end node. If False, will just return a feature to position dictionary
+        :param with_nodes: if True, will return a tuple composed of a feature to
+                            position dictionary and a feature to
+                            start and end node. If False, will just return a feature to
+                            position dictionary
         :type with_nodes: bool
-        :return: feature positions dictionary OR tuple of feature positions dictionary and feature node dictionary
+        :return: feature positions dictionary OR tuple of feature positions dictionary
+                            and feature node dictionary
         :rtype: tuple
         """
         index = 0
         feature_pos = defaultdict(list)
         feature_nodes = defaultdict(list)
-        l = len(self)
+        length = len(self)
         for n in self:
             for f in n.features:
                 if feature_pos[f] and feature_pos[f][-1][-1] + 1 == index:
@@ -535,7 +550,7 @@ class Sequence(DoubleLinkedList):
                 positions = feature_pos[k]
                 nodes = feature_nodes[k]
                 if len(nodes) > 1:
-                    if positions[0][0] == 0 and positions[-1][-1] == l - 1:
+                    if positions[0][0] == 0 and positions[-1][-1] == length - 1:
                         nodes[0][0] = nodes[-1][0]
                         positions[0][0] = positions[-1][0]
                         nodes.pop()
@@ -546,11 +561,10 @@ class Sequence(DoubleLinkedList):
         return feature_pos
 
     def feature_nodes(self):
-        return self.feature_positions(with_nodes=True)[-1]
+        return self.features(with_nodes=True)[-1]
 
     def add_feature(self, start, end, feature):
-        """
-        Add a feature to the start and end positions (inclusive)
+        """Add a feature to the start and end positions (inclusive)
 
         :param start: start
         :type start: int
@@ -576,8 +590,7 @@ class Sequence(DoubleLinkedList):
         return feature
 
     def add_multipart_feature(self, positions, feature):
-        """
-        Add a multi-part feature (i.e. a disjointed feature)
+        """Add a multi-part feature (i.e. a disjointed feature)
 
         :param positions: list of start and ends as tuples ([(1,100), (110,200)]
         :type positions: list
@@ -594,8 +607,7 @@ class Sequence(DoubleLinkedList):
     #     raise NotImplementedError()
 
     def find_feature_by_name(self, name):
-        """
-        Find features by name
+        """Find features by name.
 
         :param name: feature name
         :type name: basestring
@@ -603,14 +615,13 @@ class Sequence(DoubleLinkedList):
         :rtype: list
         """
         found = []
-        for feature in self.feature_positions():
+        for feature in self.features():
             if feature.name == name:
                 found.append(feature)
         return found
 
     def annotate(self, start, end, name, feature_type=None, color=None, strand=None):
-        """
-        Annotate a regions
+        """Annotate a regions.
 
         :param start: start
         :type start: int
@@ -643,7 +654,7 @@ class Sequence(DoubleLinkedList):
         return self
 
     def complement(self):
-        """Complement the sequence in place"""
+        """Complement the sequence in place."""
         if self.is_empty():
             return self
         curr = self.head
@@ -655,31 +666,35 @@ class Sequence(DoubleLinkedList):
         return self
 
     def c(self):
-        """Complement the sequence in place"""
+        """Complement the sequence in place."""
         return self.complement()
 
     def reverse_complement(self):
-        """Reverse complement the sequence in place"""
+        """Reverse complement the sequence in place."""
         self.reverse()
         self.complement()
         return self
 
     def rc(self):
-        """Reverse complement the sequence in place"""
+        """Reverse complement the sequence in place."""
         return self.reverse_complement()
 
     def cut(self, i, cut_prev=True):
-        fragments = super(Sequence, self).cut(i, cut_prev)
+        fragments = super().cut(i, cut_prev)
         fragments = [Sequence(first=f.head) for f in fragments]
         return fragments
 
+    def clear_features(self):
+        for n in self:
+            n._clear_features()
+
     def __copy__(self):
-        copied = super(Sequence, self).__copy__()
+        copied = super().__copy__()
         copied._global_id = next(self.counter)
-        copied.name = self.name
-        # feature_positions = self.feature_positions()
-        # for feature, positions in feature_positions.items():
-        #     copied.add_multipart_feature(positions, copy(feature))
+        copied.clear_features()
+        feature_positions = self.features()
+        for feature, positions in feature_positions.items():
+            copied.add_multipart_feature(positions, copy(feature))
         return copied
 
     # def anneal_to_bottom_strand(self, other, min_bases=10):
@@ -695,7 +710,7 @@ class Sequence(DoubleLinkedList):
     #         yield match
 
     def anneal_forward(self, other, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
-        """Anneal a sequence in the forward direction"""
+        """Anneal a sequence in the forward direction."""
         for match in self.find_iter(
             other,
             min_query_length=min_bases,
@@ -707,7 +722,7 @@ class Sequence(DoubleLinkedList):
             )
 
     def anneal_reverse(self, other, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
-        """Anneal a sequence in the reverse direction"""
+        """Anneal a sequence in the reverse direction."""
         for match in self.find_iter(
             other,
             min_query_length=min_bases,
@@ -720,14 +735,16 @@ class Sequence(DoubleLinkedList):
             )
 
     def anneal(self, ssDNA, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
-        """Simulate annealing a single stranded piece of DNA to a double_stranded template"""
+        """Simulate annealing a single stranded piece of DNA to a
+        double_stranded template."""
         for match in self.anneal_forward(ssDNA, min_bases=min_bases, depth=depth):
             yield match
         for match in self.anneal_reverse(ssDNA, min_bases=min_bases, depth=depth):
             yield match
 
     def dsanneal(self, dsDNA, min_bases=DEFAULTS.MIN_ANNEAL_BASES, depth=None):
-        """Simulate annealing a double stranded piece of DNA to a double_stranded template"""
+        """Simulate annealing a double stranded piece of DNA to a
+        double_stranded template."""
         for binding in self.anneal(dsDNA, min_bases=min_bases, depth=depth):
             yield binding
         for binding in self.anneal(
@@ -744,7 +761,7 @@ class Sequence(DoubleLinkedList):
 
     @classmethod
     def _apply_features_to_view(cls, sequence, view):
-        for feature, positions in sequence.feature_positions().items():
+        for feature, positions in sequence.features().items():
             for pos in positions:
                 direction = None
                 if feature.strand == SequenceFlags.FORWARD:
@@ -788,9 +805,9 @@ class Sequence(DoubleLinkedList):
         features=True,
         **kwargs
     ):
-        """
-        Create a :class:`SequenceViewer` instance from this sequence. Printing the view object with
-        annotations and complement will produce an output similar to the following:
+        """Create a :class:`SequenceViewer` instance from this sequence.
+        Printing the view object with annotations and complement will produce
+        an output similar to the following:
 
         .. code::
 
@@ -891,57 +908,57 @@ class Sequence(DoubleLinkedList):
         features=True,
         **kwargs
     ):
+        """Create and print a :class:`SequenceViewer` instance from this
+        sequence. Printing the view object with annotations and complement will
+        produce an output similar to the following:
+
+        .. code::
+
+
+            > "Unnamed" (550bp)
+
+
+                                                                        ----------------GFP----------------
+                                                                        |<START
+                                                                        ----      -----------RFP-----------
+            0         CCCAGGACTAGCGACTTTCCGTAACGCGACCTAACACCGGCCGTTCCTTCGAGCCAGGCAAATGTTACGTCACTTCCTTAGATTT
+                      GGGTCCTGATCGCTGAAAGGCATTGCGCTGGATTGTGGCCGGCAAGGAAGCTCGGTCCGTTTACAATGCAGTGAAGGAATCTAAA
+
+                      ------GFP------
+                      -----------------------------------------RFP-----------------------------------------
+            85        TGAACAGCGCCGTACCCCGATATGATATTTAGATATATAGCAGTTACACTTGGGGTTGCTATGGACTTAGATCTGCTGTATGTTT
+                      ACTTGTCGCGGCATGGGGCTATACTATAAATCTATATATCGTCAATGTGAACCCCAACGATACCTGAATCTAGACGACATACAAA
+
+                      -----------------------------------------RFP-----------------------------------------
+            170       TCTTACCTTCCGCATCAGGGGACAATTCGCCAGTAGAATTCAGTTTGTGCGTGAGAACATAAGATTGAATCCCACGCAGGCACAA
+                      AGAATGGAAGGCGTAGTCCCCTGTTAAGCGGTCATCTTAAGTCAAACACGCACTCTTGTATTCTAACTTAGGGTGCGTCCGTGTT
+
+                      ---------------------RFP----------------------
+            255       GCAGGGCGGGCAGACTCTATAGGTCCTAAGACCCTGAGACTGCGTCCTCAAGATACAGGTTAACAATCCCCGTATGGAGCCGTTC
+                      CGTCCCGCCCGTCTGAGATATCCAGGATTCTGGGACTCTGACGCAGGAGTTCTATGTCCAATTGTTAGGGGCATACCTCGGCAAG
+
+            340       TTAGCATGACCCGACAGGTGGGCTTGGCTCGCGTAAGTTGAGTGTTGCAGATACCTGCTGCTGCGCGGTCTAGGGGGAATCGCCG
+                      AATCGTACTGGGCTGTCCACCCGAACCGAGCGCATTCAACTCACAACGTCTATGGACGACGACGCGCCAGATCCCCCTTAGCGGC
+
+            425       ATTTTGACGTAGGATCGGTAATGGGCAGTAAACCCGCAACTATTTTCAGCACCAGATGCAAGTTTCCCTAGAAAGCGTCATGGTT
+                      TAAAACTGCATCCTAGCCATTACCCGTCATTTGGGCGTTGATAAAAGTCGTGGTCTACGTTCAAAGGGATCTTTCGCAGTACCAA
+
+            510       TGCAATCTCCTTAGGTCACAGCAAACATAGCAGCCCCTGT
+                      ACGTTAGAGGAATCCAGTGTCGTTTGTATCGTCGGGGACA
+
+        :param indent: indent between left column and base pairs view windo
+        :type indent: int
+        :param width: width of the view window
+        :type width: int
+        :param spacer: string to intersperse between sequence rows (default is newline)
+        :type spacer: basestring
+        :param complement: whether to include the complementary strand in the view
+        :type complement: bool
+        :param include_annotations: whether to include annotations/features in the view instance
+        :type include_annotations: bool
+        :return: the viewer object
+        :rtype: SequenceViewer
         """
-         Create and print a :class:`SequenceViewer` instance from this sequence. Printing the view object
-         with annotations and complement will produce an output similar to the following:
-
-         .. code::
-
-
-             > "Unnamed" (550bp)
-
-
-                                                                         ----------------GFP----------------
-                                                                         |<START
-                                                                         ----      -----------RFP-----------
-             0         CCCAGGACTAGCGACTTTCCGTAACGCGACCTAACACCGGCCGTTCCTTCGAGCCAGGCAAATGTTACGTCACTTCCTTAGATTT
-                       GGGTCCTGATCGCTGAAAGGCATTGCGCTGGATTGTGGCCGGCAAGGAAGCTCGGTCCGTTTACAATGCAGTGAAGGAATCTAAA
-
-                       ------GFP------
-                       -----------------------------------------RFP-----------------------------------------
-             85        TGAACAGCGCCGTACCCCGATATGATATTTAGATATATAGCAGTTACACTTGGGGTTGCTATGGACTTAGATCTGCTGTATGTTT
-                       ACTTGTCGCGGCATGGGGCTATACTATAAATCTATATATCGTCAATGTGAACCCCAACGATACCTGAATCTAGACGACATACAAA
-
-                       -----------------------------------------RFP-----------------------------------------
-             170       TCTTACCTTCCGCATCAGGGGACAATTCGCCAGTAGAATTCAGTTTGTGCGTGAGAACATAAGATTGAATCCCACGCAGGCACAA
-                       AGAATGGAAGGCGTAGTCCCCTGTTAAGCGGTCATCTTAAGTCAAACACGCACTCTTGTATTCTAACTTAGGGTGCGTCCGTGTT
-
-                       ---------------------RFP----------------------
-             255       GCAGGGCGGGCAGACTCTATAGGTCCTAAGACCCTGAGACTGCGTCCTCAAGATACAGGTTAACAATCCCCGTATGGAGCCGTTC
-                       CGTCCCGCCCGTCTGAGATATCCAGGATTCTGGGACTCTGACGCAGGAGTTCTATGTCCAATTGTTAGGGGCATACCTCGGCAAG
-
-             340       TTAGCATGACCCGACAGGTGGGCTTGGCTCGCGTAAGTTGAGTGTTGCAGATACCTGCTGCTGCGCGGTCTAGGGGGAATCGCCG
-                       AATCGTACTGGGCTGTCCACCCGAACCGAGCGCATTCAACTCACAACGTCTATGGACGACGACGCGCCAGATCCCCCTTAGCGGC
-
-             425       ATTTTGACGTAGGATCGGTAATGGGCAGTAAACCCGCAACTATTTTCAGCACCAGATGCAAGTTTCCCTAGAAAGCGTCATGGTT
-                       TAAAACTGCATCCTAGCCATTACCCGTCATTTGGGCGTTGATAAAAGTCGTGGTCTACGTTCAAAGGGATCTTTCGCAGTACCAA
-
-             510       TGCAATCTCCTTAGGTCACAGCAAACATAGCAGCCCCTGT
-                       ACGTTAGAGGAATCCAGTGTCGTTTGTATCGTCGGGGACA
-
-         :param indent: indent between left column and base pairs view windo
-         :type indent: int
-         :param width: width of the view window
-         :type width: int
-         :param spacer: string to intersperse between sequence rows (default is newline)
-         :type spacer: basestring
-         :param complement: whether to include the complementary strand in the view
-         :type complement: bool
-         :param include_annotations: whether to include annotations/features in the view instance
-         :type include_annotations: bool
-         :return: the viewer object
-         :rtype: SequenceViewer
-         """
         self.view(
             indent=indent,
             width=width,
@@ -952,8 +969,7 @@ class Sequence(DoubleLinkedList):
         ).print()
 
     def tm(self):
-        """
-        Calculate the Tm of this sequence using primer3 defaults
+        """Calculate the Tm of this sequence using primer3 defaults.
 
         :return: the tm of the sequence
         :rtype: float
@@ -961,9 +977,9 @@ class Sequence(DoubleLinkedList):
         return primer3.calcTm(str(self).upper())
 
     def json(self):
-        """Print sequence to a json dictionary"""
+        """Print sequence to a json dictionary."""
         annotations = []
-        for feature, positions in self.feature_positions().items():
+        for feature, positions in self.features().items():
             for start, end in positions:
                 annotations.append(
                     {
@@ -986,7 +1002,7 @@ class Sequence(DoubleLinkedList):
 
     @classmethod
     def load(cls, data):
-        """Load a sequence from a json formatted dictionary"""
+        """Load a sequence from a json formatted dictionary."""
         sequence = cls(data["bases"], name=data["name"])
         sequence.cyclic = data["isCircular"]
         sequence.name = data["name"]
@@ -1012,8 +1028,7 @@ class Sequence(DoubleLinkedList):
         return cut_sites
 
     def digest(self, enzymes, as_names=False):
-        """
-        Supply either a Bio.RestrictionSite or a tuple of (seq, cut1, cut2)
+        """Supply either a Bio.RestrictionSite or a tuple of (seq, cut1, cut2)
 
         e.g. ('GTTTAAAC', 4, -4)
 
