@@ -1,4 +1,9 @@
 {
+  "0.1.5": {
+    "description": "bug fixes to assembly prints",
+    "date": "2019-10-11T13:59:06.171290",
+    "changes": []
+  },
   "0.1.4": {
     "description": "update dependencies",
     "date": "2019-10-11T09:27:32.038836",
