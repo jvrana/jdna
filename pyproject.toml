@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jdna"
-version = "0.1.2"
+version = "0.1.3"
 description = ""
 authors = ["Justin Vrana <justin.vrana@gmail.com>"]
 homepage = 'https://github.com/jvrana/jdna'
@@ -26,6 +26,7 @@ pytest-benchmark = "^3.2"
 guzzle_sphinx_theme = "^0.7.11"
 flake8 = "^3.7"
 docformatter = "^1.3"
+keats = "^0.2.26"
 
 [tool.poetry.scripts]
 upver = 'jdna:_version.pull_version'

@@ -515,7 +515,7 @@ class Sequence(DoubleLinkedList):
         """
         features_set = set()
         for i, n in enumerate(self):
-            features_set.update(n.features_list)
+            features_set.update(n.features)
         return tuple(features_set)
 
     def features(self, with_nodes=False):
