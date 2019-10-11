@@ -1,30 +1,28 @@
-"""
-Simulate molecular reactions
-"""
-
+"""Simulate molecular reactions."""
 import itertools
 from collections import namedtuple
+from decimal import Decimal
 
 import networkx as nx
-
-from jdna.sequence import Sequence, SequenceFlags
-from jdna.viewer import SequenceViewer
 import primer3
-from decimal import Decimal
+
+from jdna.sequence import Sequence
+from jdna.sequence import SequenceFlags
+from jdna.viewer import SequenceViewer
 
 
 class ReactionException(Exception):
-    """Generic reaction exception"""
+    """Generic reaction exception."""
 
 
 class PCRException(ReactionException):
-    """Exception with pcr"""
+    """Exception with pcr."""
 
 
 BindingEvent = namedtuple("BindingEvent", ["template", "primer", "position"])
 
 
-class Assembly(object):
+class Assembly:
     """Stores a DNA assembly.
 
     Assembly can be printed to display relevant assembly information:
@@ -41,7 +39,9 @@ class Assembly(object):
           Overhang Tms (°C): 53.65, 53.79, 54.96, 56.37
           Junction Lengths (bp): 20, 20, 20, 20
           Junction ΔG: -1.91e+4, -1.93e+4, -1.98e+4, -2.05e+4
-          Junction ΔG (hairpin): (0.0, 232.50050218543765), (203.8205043739763, -84.3344956260189), (0.0, -60.91449781456504), (-1026.7134934374844, -622.0224934343823)
+          Junction ΔG (hairpin): (0.0, 232.50050218543765), (203.8205043739763,
+          -84.3344956260189), (0.0, -60.91449781456504),
+          (-1026.7134934374844, -622.0224934343823)
           Competing ΔG: -2.18e+4, -2.11e+4, -1.92e+4, -2.01e+4
           Product length (bp): 300
 
@@ -78,11 +78,10 @@ class Assembly(object):
         (1) 250   --------------------------------------------------
         (2) 250   --------------------------------------------------
         (3) 250   CCGAAGTCACATAGCGGCATGTTAGGTAGCTGTACACCCGTACTGCTACA
-        """
+    """
 
     def __init__(self, templates, junctions, cyclic):
-        """
-        Assembly constructor
+        """Assembly constructor.
 
         :param templates: list of templates
         :type templates: list
@@ -91,12 +90,24 @@ class Assembly(object):
         :param cyclic: whether assembly is cyclic
         :type cyclic: bool
         """
-        self.templates = [t.copy() for t in templates]
-        self.junctions = [o.copy() for o in junctions]
-        self.cyclic = cyclic
+        self._templates = tuple([t.copy() for t in templates])
+        self._junctions = tuple([o.copy() for o in junctions])
+        self._cyclic = cyclic
+
+    @property
+    def templates(self):
+        return tuple(t.copy() for t in self._templates)
+
+    @property
+    def junctions(self):
+        return tuple(j.copy() for j in self._junctions)
+
+    @property
+    def cyclic(self):
+        return self._cyclic
 
     def tms(self):
-        """Return the tms of the junctions"""
+        """Return the tms of the junctions."""
         return [round(o.tm(), 2) for o in self.junctions]
 
     @property
@@ -117,13 +128,13 @@ class Assembly(object):
         seqs = []
         positions = [0]
         pos = 0
-        junctions = self.junctions[:]
+        junctions = list(self.junctions)
         for jxn in junctions:
             jxn.annotate(None, None, "Tm: {}°C".format(round(jxn.tm(), 1)))
         if self.cyclic:
             junctions.append(junctions[0])
         else:
-            junctions = [Sequence()] + junctions
+            junctions = [Sequence()] + list(junctions)
         for i, t in enumerate(self.templates):
             seq = junctions[i] + t + junctions[i + 1]
             seqs.append(seq)
@@ -199,11 +210,12 @@ class Assembly(object):
 
     def competing_deltaGs(self):
         gs = []
-        for jxn in self.junctions:
+        jxns = list(self.junctions)
+        for jxn in jxns:
             total = 0
             total += self._hairpin(jxn).dg
             total += self._hairpin(jxn.copy().rc()).dg
-            others = self.junctions[:]
+            others = jxns[:]
             others.remove(jxn)
             for other in others:
                 dg1 = self._heterodimer(jxn, other.copy().rc()).dg
@@ -224,7 +236,8 @@ class Assembly(object):
                   Overhang Tms (°C): 61.49, 58.37, 54.72, 45.91
                   Junction Lengths (bp): 20, 20, 20, 20
                   Junction ΔG: -2.30e+4, -2.18e+4, -1.97e+4, -1.54e+4
-                  Junction ΔG (hairpin): (-1542.5069956260231, -1787.4319956260224), (-1832.7404978145642, -708.4919956260237), (0.0, 0.0), (0.0, 0.0)
+                  Junction ΔG (hairpin): (-1542.5069956260231, -1787.4319956260224),
+                  (-1832.7404978145642, -708.4919956260237), (0.0, 0.0), (0.0, 0.0)
                   Competing ΔG: -3.39e+4, -2.43e+4, -2.19e+4, -1.33e+4
                   Length: 300bp
 
@@ -261,13 +274,12 @@ class Assembly(object):
         return str(self.view())
 
 
-class Reaction(object):
+class Reaction:
     MIN_BASES = 13
 
     @classmethod
     def pcr(cls, template, primers, min_bases=MIN_BASES):
-        """
-        Make a pcr product from a template and primers.
+        """Make a pcr product from a template and primers.
 
         :param template: template
         :type template: Sequence
@@ -294,9 +306,8 @@ class Reaction(object):
 
         if not forward_bindings or not reverse_bindings:
             raise PCRException(
-                "Some primers did not bind. Number of forward bindings: {}. Number of rev bindings: {}".format(
-                    len(forward_bindings), len(reverse_bindings)
-                )
+                "Some primers did not bind. Number of forward bindings: {}. Number of "
+                "rev bindings: {}".format(len(forward_bindings), len(reverse_bindings))
             )
         products = []
         for fwd, rev in itertools.product(forward_bindings, reverse_bindings):
@@ -317,14 +328,14 @@ class Reaction(object):
         max_bases=None,
         only_ends=False,
     ):
-        """
-        Make an interaction graph from a list of sequences
+        """Make an interaction graph from a list of sequences.
 
         :param sequences: list of sequences
         :type sequences: list
         :param min_bases: minimum number of bases to bind
         :type min_bases: int
-        :param bind_reverse_complement: whether to reverse complement each sequence and check interactions
+        :param bind_reverse_complement: whether to reverse complement each sequence and
+                check interactions
         :type bind_reverse_complement: int
         :param max_bases: max number of bases to search
         :type max_bases: int
@@ -388,7 +399,7 @@ class Reaction(object):
 
     @classmethod
     def linear_paths(cls, G):
-        """Find linear paths from an interaction graph"""
+        """Find linear paths from an interaction graph."""
         paths = []
         subgraph = G.subgraph(G.nodes).copy()
         for _ in nx.simple_cycles(G):
@@ -403,7 +414,7 @@ class Reaction(object):
 
     @classmethod
     def cyclic_paths(cls, G):
-        """Find cyclic paths from an interaction graph"""
+        """Find cyclic paths from an interaction graph."""
         paths = []
         for path in nx.simple_cycles(G.copy()):
             paths.append(path)
@@ -459,16 +470,18 @@ class Reaction(object):
     def linear_assemblies(
         cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, max_bases=None
     ):
-        """
-        Finds all unique, longest linear assemblies. If cyclic assemblies are found, returns empty list.
+        """Finds all unique, longest linear assemblies. If cyclic assemblies
+        are found, returns empty list.
 
         :param sequences: list of sequences
         :type sequences: list
         :param min_bases: minimum junction length
         :type min_bases: int
-        :param max_bases: maximum junction length. Smaller values will result in faster search, but may miss valid
+        :param max_bases: maximum junction length. Smaller values will result in faster
+                    search, but may miss valid
                             assemblies.
-        :return: list of Assembly instances. Sequence can be accessed using `assembly.product`
+        :return: list of Assembly instances. Sequence can be accessed using
+                    `assembly.product`
         :rtype: list
         """
         G = cls.interaction_graph(
@@ -491,17 +504,19 @@ class Reaction(object):
     def cyclic_assemblies(
         cls, sequences, min_bases=Sequence.DEFAULTS.MIN_ANNEAL_BASES, max_bases=None
     ):
-        """
-        Finds all unique, longest cyclic assemblies. If no cyclic assemblies found, returns empty list.
+        """Finds all unique, longest cyclic assemblies. If no cyclic assemblies
+        found, returns empty list.
 
         :param sequences: list of sequences
         :type sequences: list
         :param min_bases: minimum junction length
         :type min_bases: int
-        :param max_bases: maximum junction length. Smaller values will result in faster search, but may miss valid
+        :param max_bases: maximum junction length. Smaller values will result in faster
+                search, but may miss valid
                             assemblies.
         :type max_bases: int
-        :return: list of Assembly instances. Sequence can be accessed using `assembly.product`
+        :return: list of Assembly instances. Sequence can be accessed using
+                    `assembly.product`
         :rtype: list
         """
         G = cls.interaction_graph(

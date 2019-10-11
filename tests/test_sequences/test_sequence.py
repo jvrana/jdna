@@ -419,7 +419,7 @@ def test_anneal_with_overhang(reverse_complement):
 
     template = Sequence.random(200)
     anneal = template[20:50]
-    overhang = Sequence("N" * 5) + Sequence("XX") + Sequence.random(20)
+    overhang = Sequence("N" * 5) + Sequence.random(20)
     if reverse_complement:
         anneal.reverse_complement()
     primer = overhang + anneal
