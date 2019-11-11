@@ -13,7 +13,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>jdna.reaction &#8212; jdna 0.1.4 documentation</title>
+    <title>jdna.reaction &#8212; jdna 0.1.5 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="jdna.viewer.html" title="jdna.viewer"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.1.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.1.5 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api_reference.html" accesskey="U">API Reference</a> &#187;</li> 
       </ul>
     </div>
@@ -64,7 +64,7 @@
     </div>
 </div>
 
-<p align="center" class="sidebar-subtitle">version: <a href="https://github.com/jvrana/jdna">0.1.4</a></p>
+<p align="center" class="sidebar-subtitle">version: <a href="https://github.com/jvrana/jdna">0.1.5</a></p>
 <div>
 
 </div>
@@ -119,7 +119,7 @@
             
   <div class="section" id="module-jdna.reaction">
 <span id="jdna-reaction"></span><h1>jdna.reaction<a class="headerlink" href="#module-jdna.reaction" title="Permalink to this headline">¶</a></h1>
-<p>Simulate molecular reactions</p>
+<p>Simulate molecular reactions.</p>
 <p class="rubric">Classes</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -146,10 +146,10 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#jdna.reaction.PCRException" title="jdna.reaction.PCRException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCRException</span></code></a></p></td>
-<td><p>Exception with pcr</p></td>
+<td><p>Exception with pcr.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#jdna.reaction.ReactionException" title="jdna.reaction.ReactionException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReactionException</span></code></a></p></td>
-<td><p>Generic reaction exception</p></td>
+<td><p>Generic reaction exception.</p></td>
 </tr>
 </tbody>
 </table>
@@ -168,7 +168,9 @@
   Overhang Tms (°C): 53.65, 53.79, 54.96, 56.37
   Junction Lengths (bp): 20, 20, 20, 20
   Junction ΔG: -1.91e+4, -1.93e+4, -1.98e+4, -2.05e+4
-  Junction ΔG (hairpin): (0.0, 232.50050218543765), (203.8205043739763, -84.3344956260189), (0.0, -60.91449781456504), (-1026.7134934374844, -622.0224934343823)
+  Junction ΔG (hairpin): (0.0, 232.50050218543765), (203.8205043739763,
+  -84.3344956260189), (0.0, -60.91449781456504),
+  (-1026.7134934374844, -622.0224934343823)
   Competing ΔG: -2.18e+4, -2.11e+4, -1.92e+4, -2.01e+4
   Product length (bp): 300
 
@@ -207,7 +209,7 @@
 (3) 250   CCGAAGTCACATAGCGGCATGTTAGGTAGCTGTACACCCGTACTGCTACA
 </pre></div>
 </div>
-<p>Assembly constructor</p>
+<p>Assembly constructor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -226,7 +228,8 @@
       Overhang Tms (°C): 61.49, 58.37, 54.72, 45.91
       Junction Lengths (bp): 20, 20, 20, 20
       Junction ΔG: -2.30e+4, -2.18e+4, -1.97e+4, -1.54e+4
-      Junction ΔG (hairpin): (-1542.5069956260231, -1787.4319956260224), (-1832.7404978145642, -708.4919956260237), (0.0, 0.0), (0.0, 0.0)
+      Junction ΔG (hairpin): (-1542.5069956260231, -1787.4319956260224),
+      (-1832.7404978145642, -708.4919956260237), (0.0, 0.0), (0.0, 0.0)
       Competing ΔG: -3.39e+4, -2.43e+4, -2.19e+4, -1.33e+4
       Length: 300bp
 
@@ -262,7 +265,7 @@
 <dl class="method">
 <dt id="jdna.reaction.Assembly.tms">
 <code class="sig-name descname">tms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jdna/reaction.html#Assembly.tms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.reaction.Assembly.tms" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the tms of the junctions</p>
+<dd><p>Return the tms of the junctions.</p>
 </dd></dl>
 
 </dd></dl>
@@ -327,7 +330,7 @@
 <dt id="jdna.reaction.PCRException">
 <em class="property">exception </em><code class="sig-prename descclassname">jdna.reaction.</code><code class="sig-name descname">PCRException</code><a class="reference internal" href="../../_modules/jdna/reaction.html#PCRException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.reaction.PCRException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jdna.reaction.ReactionException" title="jdna.reaction.ReactionException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jdna.reaction.ReactionException</span></code></a></p>
-<p>Exception with pcr</p>
+<p>Exception with pcr.</p>
 <dl class="method">
 <dt id="jdna.reaction.PCRException.with_traceback">
 <code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.reaction.PCRException.with_traceback" title="Permalink to this definition">¶</a></dt>
@@ -341,7 +344,7 @@ set self.__traceback__ to tb and return self.</p>
 <dt id="jdna.reaction.ReactionException">
 <em class="property">exception </em><code class="sig-prename descclassname">jdna.reaction.</code><code class="sig-name descname">ReactionException</code><a class="reference internal" href="../../_modules/jdna/reaction.html#ReactionException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jdna.reaction.ReactionException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-<p>Generic reaction exception</p>
+<p>Generic reaction exception.</p>
 <dl class="method">
 <dt id="jdna.reaction.ReactionException.with_traceback">
 <code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jdna.reaction.ReactionException.with_traceback" title="Permalink to this definition">¶</a></dt>
@@ -386,7 +389,7 @@ set self.__traceback__ to tb and return self.</p>
         <li class="right" >
           <a href="jdna.viewer.html" title="jdna.viewer"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.1.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.1.5 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api_reference.html" >API Reference</a> &#187;</li> 
       </ul>
     </div>

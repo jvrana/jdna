@@ -1,4 +1,11 @@
 # jdna change log
+## 0.1.5
+**2019-10-11T13:59:06.171290**
+bug fixes to assembly prints
+
+
+
+
 ## 0.1.4
 **2019-10-11T09:27:32.038836**
 update dependencies

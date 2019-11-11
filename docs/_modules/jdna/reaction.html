@@ -13,7 +13,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>jdna.reaction &#8212; jdna 0.1.4 documentation</title>
+    <title>jdna.reaction &#8212; jdna 0.1.5 documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.1.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.1.5 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>
@@ -56,7 +56,7 @@
     </div>
 </div>
 
-<p align="center" class="sidebar-subtitle">version: <a href="https://github.com/jvrana/jdna">0.1.4</a></p>
+<p align="center" class="sidebar-subtitle">version: <a href="https://github.com/jvrana/jdna">0.1.5</a></p>
 <div>
 
 </div>
@@ -107,33 +107,31 @@
           <div class="document clearer body">
             
   <h1>Source code for jdna.reaction</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Simulate molecular reactions</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
+<span></span><span class="sd">&quot;&quot;&quot;Simulate molecular reactions.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
 
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-
-<span class="kn">from</span> <span class="nn">jdna.sequence</span> <span class="k">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">SequenceFlags</span>
-<span class="kn">from</span> <span class="nn">jdna.viewer</span> <span class="k">import</span> <span class="n">SequenceViewer</span>
 <span class="kn">import</span> <span class="nn">primer3</span>
-<span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
+
+<span class="kn">from</span> <span class="nn">jdna.sequence</span> <span class="k">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">jdna.sequence</span> <span class="k">import</span> <span class="n">SequenceFlags</span>
+<span class="kn">from</span> <span class="nn">jdna.viewer</span> <span class="k">import</span> <span class="n">SequenceViewer</span>
 
 
 <div class="viewcode-block" id="ReactionException"><a class="viewcode-back" href="../../developer/_autosummary/jdna.reaction.html#jdna.reaction.ReactionException">[docs]</a><span class="k">class</span> <span class="nc">ReactionException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generic reaction exception&quot;&quot;&quot;</span></div>
+    <span class="sd">&quot;&quot;&quot;Generic reaction exception.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="PCRException"><a class="viewcode-back" href="../../developer/_autosummary/jdna.reaction.html#jdna.reaction.PCRException">[docs]</a><span class="k">class</span> <span class="nc">PCRException</span><span class="p">(</span><span class="n">ReactionException</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception with pcr&quot;&quot;&quot;</span></div>
+    <span class="sd">&quot;&quot;&quot;Exception with pcr.&quot;&quot;&quot;</span></div>
 
 
 <span class="n">BindingEvent</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;BindingEvent&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;template&quot;</span><span class="p">,</span> <span class="s2">&quot;primer&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="Assembly"><a class="viewcode-back" href="../../developer/_autosummary/jdna.reaction.html#jdna.reaction.Assembly">[docs]</a><span class="k">class</span> <span class="nc">Assembly</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Assembly"><a class="viewcode-back" href="../../developer/_autosummary/jdna.reaction.html#jdna.reaction.Assembly">[docs]</a><span class="k">class</span> <span class="nc">Assembly</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Stores a DNA assembly.</span>
 
 <span class="sd">    Assembly can be printed to display relevant assembly information:</span>
@@ -150,7 +148,9 @@
 <span class="sd">          Overhang Tms (°C): 53.65, 53.79, 54.96, 56.37</span>
 <span class="sd">          Junction Lengths (bp): 20, 20, 20, 20</span>
 <span class="sd">          Junction ΔG: -1.91e+4, -1.93e+4, -1.98e+4, -2.05e+4</span>
-<span class="sd">          Junction ΔG (hairpin): (0.0, 232.50050218543765), (203.8205043739763, -84.3344956260189), (0.0, -60.91449781456504), (-1026.7134934374844, -622.0224934343823)</span>
+<span class="sd">          Junction ΔG (hairpin): (0.0, 232.50050218543765), (203.8205043739763,</span>
+<span class="sd">          -84.3344956260189), (0.0, -60.91449781456504),</span>
+<span class="sd">          (-1026.7134934374844, -622.0224934343823)</span>
 <span class="sd">          Competing ΔG: -2.18e+4, -2.11e+4, -1.92e+4, -2.01e+4</span>
 <span class="sd">          Product length (bp): 300</span>
 
@@ -187,11 +187,10 @@
 <span class="sd">        (1) 250   --------------------------------------------------</span>
 <span class="sd">        (2) 250   --------------------------------------------------</span>
 <span class="sd">        (3) 250   CCGAAGTCACATAGCGGCATGTTAGGTAGCTGTACACCCGTACTGCTACA</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">templates</span><span class="p">,</span> <span class="n">junctions</span><span class="p">,</span> <span class="n">cyclic</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Assembly constructor</span>
+        <span class="sd">&quot;&quot;&quot;Assembly constructor.</span>
 
 <span class="sd">        :param templates: list of templates</span>
 <span class="sd">        :type templates: list</span>
@@ -200,12 +199,24 @@
 <span class="sd">        :param cyclic: whether assembly is cyclic</span>
 <span class="sd">        :type cyclic: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">junctions</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">junctions</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span> <span class="o">=</span> <span class="n">cyclic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_templates</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_junctions</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">o</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">junctions</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cyclic</span> <span class="o">=</span> <span class="n">cyclic</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">templates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_templates</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">junctions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">j</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_junctions</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cyclic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cyclic</span>
 
 <div class="viewcode-block" id="Assembly.tms"><a class="viewcode-back" href="../../developer/_autosummary/jdna.reaction.html#jdna.reaction.Assembly.tms">[docs]</a>    <span class="k">def</span> <span class="nf">tms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the tms of the junctions&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Return the tms of the junctions.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">tm</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">junctions</span><span class="p">]</span></div>
 
     <span class="nd">@property</span>
@@ -226,13 +237,13 @@
         <span class="n">seqs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">junctions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">junctions</span><span class="p">[:]</span>
+        <span class="n">junctions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">junctions</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">jxn</span> <span class="ow">in</span> <span class="n">junctions</span><span class="p">:</span>
             <span class="n">jxn</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Tm: </span><span class="si">{}</span><span class="s2">°C&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">jxn</span><span class="o">.</span><span class="n">tm</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyclic</span><span class="p">:</span>
             <span class="n">junctions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">junctions</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">junctions</span> <span class="o">=</span> <span class="p">[</span><span class="n">Sequence</span><span class="p">()]</span> <span class="o">+</span> <span class="n">junctions</span>
+            <span class="n">junctions</span> <span class="o">=</span> <span class="p">[</span><span class="n">Sequence</span><span class="p">()]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">junctions</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">):</span>
             <span class="n">seq</span> <span class="o">=</span> <span class="n">junctions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">t</span> <span class="o">+</span> <span class="n">junctions</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
             <span class="n">seqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
@@ -308,11 +319,12 @@
 
     <span class="k">def</span> <span class="nf">competing_deltaGs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">gs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">jxn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">junctions</span><span class="p">:</span>
+        <span class="n">jxns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">junctions</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">jxn</span> <span class="ow">in</span> <span class="n">jxns</span><span class="p">:</span>
             <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">total</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hairpin</span><span class="p">(</span><span class="n">jxn</span><span class="p">)</span><span class="o">.</span><span class="n">dg</span>
             <span class="n">total</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hairpin</span><span class="p">(</span><span class="n">jxn</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">rc</span><span class="p">())</span><span class="o">.</span><span class="n">dg</span>
-            <span class="n">others</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">junctions</span><span class="p">[:]</span>
+            <span class="n">others</span> <span class="o">=</span> <span class="n">jxns</span><span class="p">[:]</span>
             <span class="n">others</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">jxn</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="n">others</span><span class="p">:</span>
                 <span class="n">dg1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_heterodimer</span><span class="p">(</span><span class="n">jxn</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">rc</span><span class="p">())</span><span class="o">.</span><span class="n">dg</span>
@@ -333,7 +345,8 @@
 <span class="sd">                  Overhang Tms (°C): 61.49, 58.37, 54.72, 45.91</span>
 <span class="sd">                  Junction Lengths (bp): 20, 20, 20, 20</span>
 <span class="sd">                  Junction ΔG: -2.30e+4, -2.18e+4, -1.97e+4, -1.54e+4</span>
-<span class="sd">                  Junction ΔG (hairpin): (-1542.5069956260231, -1787.4319956260224), (-1832.7404978145642, -708.4919956260237), (0.0, 0.0), (0.0, 0.0)</span>
+<span class="sd">                  Junction ΔG (hairpin): (-1542.5069956260231, -1787.4319956260224),</span>
+<span class="sd">                  (-1832.7404978145642, -708.4919956260237), (0.0, 0.0), (0.0, 0.0)</span>
 <span class="sd">                  Competing ΔG: -3.39e+4, -2.43e+4, -2.19e+4, -1.33e+4</span>
 <span class="sd">                  Length: 300bp</span>
 
@@ -370,13 +383,12 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">())</span></div>
 
 
-<span class="k">class</span> <span class="nc">Reaction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Reaction</span><span class="p">:</span>
     <span class="n">MIN_BASES</span> <span class="o">=</span> <span class="mi">13</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">pcr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">primers</span><span class="p">,</span> <span class="n">min_bases</span><span class="o">=</span><span class="n">MIN_BASES</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Make a pcr product from a template and primers.</span>
+        <span class="sd">&quot;&quot;&quot;Make a pcr product from a template and primers.</span>
 
 <span class="sd">        :param template: template</span>
 <span class="sd">        :type template: Sequence</span>
@@ -403,9 +415,8 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">forward_bindings</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">reverse_bindings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">PCRException</span><span class="p">(</span>
-                <span class="s2">&quot;Some primers did not bind. Number of forward bindings: </span><span class="si">{}</span><span class="s2">. Number of rev bindings: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="n">forward_bindings</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">reverse_bindings</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="s2">&quot;Some primers did not bind. Number of forward bindings: </span><span class="si">{}</span><span class="s2">. Number of &quot;</span>
+                <span class="s2">&quot;rev bindings: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">forward_bindings</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">reverse_bindings</span><span class="p">))</span>
             <span class="p">)</span>
         <span class="n">products</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">fwd</span><span class="p">,</span> <span class="n">rev</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">forward_bindings</span><span class="p">,</span> <span class="n">reverse_bindings</span><span class="p">):</span>
@@ -426,14 +437,14 @@
         <span class="n">max_bases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">only_ends</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Make an interaction graph from a list of sequences</span>
+        <span class="sd">&quot;&quot;&quot;Make an interaction graph from a list of sequences.</span>
 
 <span class="sd">        :param sequences: list of sequences</span>
 <span class="sd">        :type sequences: list</span>
 <span class="sd">        :param min_bases: minimum number of bases to bind</span>
 <span class="sd">        :type min_bases: int</span>
-<span class="sd">        :param bind_reverse_complement: whether to reverse complement each sequence and check interactions</span>
+<span class="sd">        :param bind_reverse_complement: whether to reverse complement each sequence and</span>
+<span class="sd">                check interactions</span>
 <span class="sd">        :type bind_reverse_complement: int</span>
 <span class="sd">        :param max_bases: max number of bases to search</span>
 <span class="sd">        :type max_bases: int</span>
@@ -497,7 +508,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">linear_paths</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find linear paths from an interaction graph&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Find linear paths from an interaction graph.&quot;&quot;&quot;</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">subgraph</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">simple_cycles</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
@@ -512,7 +523,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">cyclic_paths</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find cyclic paths from an interaction graph&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Find cyclic paths from an interaction graph.&quot;&quot;&quot;</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">simple_cycles</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()):</span>
             <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
@@ -568,16 +579,18 @@
     <span class="k">def</span> <span class="nf">linear_assemblies</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">sequences</span><span class="p">,</span> <span class="n">min_bases</span><span class="o">=</span><span class="n">Sequence</span><span class="o">.</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">MIN_ANNEAL_BASES</span><span class="p">,</span> <span class="n">max_bases</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Finds all unique, longest linear assemblies. If cyclic assemblies are found, returns empty list.</span>
+        <span class="sd">&quot;&quot;&quot;Finds all unique, longest linear assemblies. If cyclic assemblies</span>
+<span class="sd">        are found, returns empty list.</span>
 
 <span class="sd">        :param sequences: list of sequences</span>
 <span class="sd">        :type sequences: list</span>
 <span class="sd">        :param min_bases: minimum junction length</span>
 <span class="sd">        :type min_bases: int</span>
-<span class="sd">        :param max_bases: maximum junction length. Smaller values will result in faster search, but may miss valid</span>
+<span class="sd">        :param max_bases: maximum junction length. Smaller values will result in faster</span>
+<span class="sd">                    search, but may miss valid</span>
 <span class="sd">                            assemblies.</span>
-<span class="sd">        :return: list of Assembly instances. Sequence can be accessed using `assembly.product`</span>
+<span class="sd">        :return: list of Assembly instances. Sequence can be accessed using</span>
+<span class="sd">                    `assembly.product`</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">G</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">interaction_graph</span><span class="p">(</span>
@@ -600,17 +613,19 @@
     <span class="k">def</span> <span class="nf">cyclic_assemblies</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">sequences</span><span class="p">,</span> <span class="n">min_bases</span><span class="o">=</span><span class="n">Sequence</span><span class="o">.</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">MIN_ANNEAL_BASES</span><span class="p">,</span> <span class="n">max_bases</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Finds all unique, longest cyclic assemblies. If no cyclic assemblies found, returns empty list.</span>
+        <span class="sd">&quot;&quot;&quot;Finds all unique, longest cyclic assemblies. If no cyclic assemblies</span>
+<span class="sd">        found, returns empty list.</span>
 
 <span class="sd">        :param sequences: list of sequences</span>
 <span class="sd">        :type sequences: list</span>
 <span class="sd">        :param min_bases: minimum junction length</span>
 <span class="sd">        :type min_bases: int</span>
-<span class="sd">        :param max_bases: maximum junction length. Smaller values will result in faster search, but may miss valid</span>
+<span class="sd">        :param max_bases: maximum junction length. Smaller values will result in faster</span>
+<span class="sd">                search, but may miss valid</span>
 <span class="sd">                            assemblies.</span>
 <span class="sd">        :type max_bases: int</span>
-<span class="sd">        :return: list of Assembly instances. Sequence can be accessed using `assembly.product`</span>
+<span class="sd">        :return: list of Assembly instances. Sequence can be accessed using</span>
+<span class="sd">                    `assembly.product`</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">G</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">interaction_graph</span><span class="p">(</span>
@@ -659,7 +674,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.1.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">jdna 0.1.5 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>

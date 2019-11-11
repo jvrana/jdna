@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jdna"
-version = "0.1.5"
+version = "0.1.6"
 description = ""
 authors = ["Justin Vrana <justin.vrana@gmail.com>"]
 homepage = 'https://github.com/jvrana/jdna'
