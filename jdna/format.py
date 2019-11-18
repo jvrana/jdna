@@ -1,10 +1,9 @@
 import functools
-from enum import Flag
 import itertools
 import operator
 
 
-class NumberStrategy(Flag):
+class NumberStrategy:
     NUM = "line_number"
     LENGTH = "line_length"
 
@@ -21,7 +20,7 @@ def chunks(iterable, n):
 
 
 def to_lines(string, width):
-    """Converts a string to lines of length <= width"""
+    """Converts a string to lines of length <= width."""
     lines = []
     for i in range(0, len(string), width):
         lines.append(string[i : i + width])
@@ -31,7 +30,7 @@ def to_lines(string, width):
 def rows_to_chunks(rows, width=75):
     if not rows:
         return []
-    lengths = set([len(r) for r in rows])
+    lengths = {len(r) for r in rows}
     if len(lengths) > 1:
         raise Exception("Cannot format rows that have different lengths")
 
@@ -98,11 +97,11 @@ def number_lines(lines, indent=None, numbering_strategy=NumberStrategy.LENGTH, s
         indent = 10
     index = 0
     indices = []
-    for i, l in enumerate(lines):
+    for i, line in enumerate(lines):
         if i % step == 0:
             indices.append(index)
             if numbering_strategy == NumberStrategy.LENGTH:
-                index += len(l)
+                index += len(line)
             elif numbering_strategy == NumberStrategy.NUM:
                 index += 1
         else:
@@ -118,10 +117,10 @@ def number_lines(lines, indent=None, numbering_strategy=NumberStrategy.LENGTH, s
 
 
 def interleaf(rows, width=75, spacer=None, number=False, indent=None):
-    """Interleaf lines that have the same lengths"""
+    """Interleaf lines that have the same lengths."""
     if not rows:
         return ""
-    lengths = set([len(r) for r in rows])
+    lengths = {len(r) for r in rows}
     if len(lengths) > 1:
         raise Exception("Cannot format rows that have different lengths")
 
@@ -146,9 +145,9 @@ def interleaf(rows, width=75, spacer=None, number=False, indent=None):
 def group_by_line_lengths(lines):
     # group by line len
     groups = [[]]
-    l = len(lines[0])
+    length = len(lines[0])
     for line in lines:
-        if len(line) != l:
+        if len(line) != length:
             groups.append([])
         if line:
             groups[-1].append(line)
