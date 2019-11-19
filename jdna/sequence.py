@@ -806,7 +806,7 @@ class Sequence(DoubleLinkedList):
         spacer=None,
         complement=False,
         features=True,
-        **kwargs
+        **kwargs,
     ):
         """Create a :class:`SequenceViewer` instance from this sequence.
         Printing the view object with annotations and complement will produce
@@ -883,7 +883,7 @@ class Sequence(DoubleLinkedList):
             width=width,
             spacer=spacer,
             foreground_colors=colors,
-            **kwargs
+            **kwargs,
         )
         viewer.metadata.update(self.metadata)
         if features:
@@ -909,7 +909,7 @@ class Sequence(DoubleLinkedList):
         spacer=None,
         complement=False,
         features=True,
-        **kwargs
+        **kwargs,
     ):
         """Create and print a :class:`SequenceViewer` instance from this
         sequence. Printing the view object with annotations and complement will
@@ -968,7 +968,7 @@ class Sequence(DoubleLinkedList):
             spacer=spacer,
             complement=complement,
             features=features,
-            **kwargs
+            **kwargs,
         ).print()
 
     def tm(self):

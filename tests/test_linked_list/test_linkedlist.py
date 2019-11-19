@@ -348,7 +348,7 @@ def test_compare(linked_list):
     assert not s2.compare(s3)
 
 
-class TestLinkedListMagic(object):
+class TestLinkedListMagic:
     @pytest.mark.parametrize("i", [0, 2, 3, -2, 7, -10, None])
     @pytest.mark.parametrize("j", [0, 2, 3, 4, 7, -2, -10, None])
     @pytest.mark.parametrize("circular", [False])

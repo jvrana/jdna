@@ -1,4 +1,5 @@
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 
 
 class ClassInterface(ABC):
@@ -10,7 +11,7 @@ class ClassInterface(ABC):
         pass
 
 
-class Interface(object):
+class Interface:
     def __init__(self, instance, class_interface):
         self._inst = instance
         self._class_interface = class_interface

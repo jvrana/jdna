@@ -1,17 +1,13 @@
-"""
-class representing base pairs and their complements
-"""
-
+"""class representing base pairs and their complements."""
 import random
-from Bio.Alphabet import IUPAC
-from Bio.Seq import Seq
 import re
 
+from Bio.Alphabet import IUPAC
+from Bio.Seq import Seq
 
-class Alphabet(object):
-    """
-    A dictionary class that retrieves complementary base pairs
-    """
+
+class Alphabet:
+    """A dictionary class that retrieves complementary base pairs."""
 
     __slots__ = ["_chr", "_comp", "__complementary", "__ambiguous"]
 
@@ -39,15 +35,12 @@ class Alphabet(object):
         return self.__complementary.keys()
 
     def random(self):
-        """
-        Return random character
-        """
+        """Return random character."""
         return random.choice(list(self.__complementary.keys()))
 
     def compare(self, s1, s2, ignore_case=True):
-        """
-        Compare two sequences. If the second sequence has ambiguous bases, convert
-        second sequence to a regex to compare with the first sequence.
+        """Compare two sequences. If the second sequence has ambiguous bases,
+        convert second sequence to a regex to compare with the first sequence.
 
         :param s1:
         :type s1:

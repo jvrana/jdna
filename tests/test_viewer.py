@@ -1,6 +1,8 @@
 import pytest
+
 from jdna import Sequence
-from jdna.viewer import SequenceViewer, ViewerAnnotationFlag
+from jdna.viewer import SequenceViewer
+from jdna.viewer import ViewerAnnotationFlag
 
 
 def test_viewer():
