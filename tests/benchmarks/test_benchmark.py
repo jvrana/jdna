@@ -1,7 +1,9 @@
-import pytest
-from jdna.sequence import Sequence
-from jdna.reaction import Reaction
 import random
+
+import pytest
+
+from jdna.reaction import Reaction
+from jdna.sequence import Sequence
 
 
 @pytest.mark.parametrize("direction", [1, -1])

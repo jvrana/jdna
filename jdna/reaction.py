@@ -159,7 +159,7 @@ class Assembly:
             *args,
             sequence_labels=labels,
             foreground_colors="RANDOM",
-            **kwargs
+            **kwargs,
         )
         for seq in aligned_seqs:
             Sequence._apply_features_to_view(seq, viewer)

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jdna"
-version = "0.1.6"
+version = "0.1.7"
 description = ""
 authors = ["Justin Vrana <justin.vrana@gmail.com>"]
 homepage = 'https://github.com/jvrana/jdna'
@@ -32,6 +32,25 @@ flake8 = "^3.7"
 docformatter = "^1.3"
 tox = "^3.14"
 tox-conda = "^0.2.1"
+
+[tool.black]
+line-length = 88
+target-version = ['py36', 'py37', 'py38']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
 
 [build-system]
 requires = ["poetry>=0.12"]

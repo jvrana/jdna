@@ -1,9 +1,12 @@
-from Bio import pairwise2, SeqIO
-from Bio.Align.Applications import MafftCommandline
-from jdna.viewer import SequenceViewer
-
-from jdna.interface import ClassInterface, Interface
 import tempfile
+
+from Bio import pairwise2
+from Bio import SeqIO
+from Bio.Align.Applications import MafftCommandline
+
+from jdna.interface import ClassInterface
+from jdna.interface import Interface
+from jdna.viewer import SequenceViewer
 
 
 class AlignInterface(ClassInterface):
@@ -51,8 +54,7 @@ class AlignInterface(ClassInterface):
 
 class AlignInstanceInterface(Interface):
     def pairwise(self, other):
-        """
-        Perform a pairwise alignment using BioPython.
+        """Perform a pairwise alignment using BioPython.
 
         :param other: the other sequence
         :type other: Sequence | basestring
@@ -65,9 +67,8 @@ class AlignInstanceInterface(Interface):
         return alignments
 
     def print_alignment(self, other, max=1):
-        """
-        Print an alignment with another sequence as a view object. Output will be similar
-        to the following:
+        """Print an alignment with another sequence as a view object. Output
+        will be similar to the following:
 
         .. code::
 

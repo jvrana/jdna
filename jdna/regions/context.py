@@ -1,16 +1,18 @@
 from jdna.regions.exceptions import RegionError
 
 
-class Context(object):
-    """ Abstract sequence. Circular or linear. """
+class Context:
+    """Abstract sequence.
+
+    Circular or linear.
+    """
 
     DEFAULT_START_INDEX = 0
 
     def __init__(
         self, length, circular, name=None, id=None, start_index=DEFAULT_START_INDEX
     ):
-        """
-        Context constructor
+        """Context constructor.
 
         :param length: length of context
         :type length: int
@@ -27,18 +29,17 @@ class Context(object):
 
     @property
     def circular(self):
-        """Whether this context is circular"""
+        """Whether this context is circular."""
         return self.__circular
 
     @property
     def length(self):
-        """The length of this context"""
+        """The length of this context."""
         return len(self)
 
     @property
     def start(self):
-        """
-        Start index of allowable positions on context sequence
+        """Start index of allowable positions on context sequence.
 
         :return:
         :rtype:
@@ -47,8 +48,7 @@ class Context(object):
 
     @property
     def end(self):
-        """
-        End index of allowable positions on context sequence
+        """End index of allowable positions on context sequence.
 
         :return:
         :rtype:
@@ -90,8 +90,8 @@ class Context(object):
         return int(m + 2)
 
     def within_bounds(self, pos, inclusive=True):
-        """
-        Whether a position is withing the bounds of acceptable indices given the context sequence.
+        """Whether a position is withing the bounds of acceptable indices given
+        the context sequence.
 
         :param pos: position
         :type pos: int
@@ -142,7 +142,7 @@ class Context(object):
         return pos
 
     def __eq__(self, other):
-        """Whether another context is functionally equivalent"""
+        """Whether another context is functionally equivalent."""
         return (
             self.circular == other.circular
             and self.start == other.start
@@ -151,7 +151,7 @@ class Context(object):
         )
 
     def __len__(self):
-        """The length of the context"""
+        """The length of the context."""
         return self.__length
 
     def __str__(self):

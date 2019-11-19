@@ -1,9 +1,9 @@
-"""
-Methods for converting jdna objects to other formats
-"""
+"""Methods for converting jdna objects to other formats."""
 from Bio import SeqIO
+
+from jdna.interface import ClassInterface
+from jdna.interface import Interface
 from jdna.viewer import FASTAViewer
-from jdna.interface import ClassInterface, Interface
 
 
 class IOInterface(ClassInterface):

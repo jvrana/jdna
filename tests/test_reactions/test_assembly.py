@@ -1,7 +1,10 @@
-import pytest
-from jdna.reaction import Reaction, Assembly
-from jdna.sequence import Sequence
 import random
+
+import pytest
+
+from jdna.reaction import Assembly
+from jdna.reaction import Reaction
+from jdna.sequence import Sequence
 
 
 @pytest.fixture(scope="function")
@@ -11,8 +14,8 @@ def seq():
 
 @pytest.fixture(scope="function")
 def generate_sequences(seq):
-    """
-    A number of overlapping sequences
+    """A number of overlapping sequences.
+
     :param test_str:
     :type test_str:
     :return:
