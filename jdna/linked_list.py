@@ -1,6 +1,5 @@
 """Linked list model to represent linear or circular sequences."""
 from copy import copy
-from enum import IntFlag
 from functools import reduce
 from typing import Any
 from typing import Callable
@@ -428,7 +427,7 @@ class LinkedListMatch:
 class DoubleLinkedList:
     """A generic double linked list class."""
 
-    class Direction(IntFlag):
+    class Direction:
         FORWARD = 1
         REVERSE = -1
 

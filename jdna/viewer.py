@@ -1,5 +1,4 @@
-"""
-Classes to view sequences.
+"""Classes to view sequences.
 
 The viewer can display sequences and annotations, as in the following:
 
@@ -37,25 +36,25 @@ The viewer can display sequences and annotations, as in the following:
     510       TGCAATCTCCTTAGGTCACAGCAAACATAGCAGCCCCTGT
               ACGTTAGAGGAATCCAGTGTCGTTTGTATCGTCGGGGACA
 """
-
-import re
 import functools
 import itertools
+import re
 from collections import OrderedDict
 
 from networkx import nx
 
-from jdna.utils import random_color, colored, colored_background
+from jdna.utils import colored
+from jdna.utils import colored_background
+from jdna.utils import random_color
 
 
-class StringColumn(object):
-    """Class for managing string columns"""
+class StringColumn:
+    """Class for managing string columns."""
 
     FILL = " "
 
     def __init__(self, strings=None, color=None, background=None, fill=None):
-        """
-        StringColumn constructor.
+        """StringColumn constructor.
 
         :param strings: list of strings
         :type strings: list
@@ -87,14 +86,13 @@ class StringColumn(object):
 
     @staticmethod
     def remove_formatting(string):
-        pattern = "\\x1b\[\d\dm"
+        pattern = r"\\x1b\[\d\dm"
         return re.sub(pattern, "", string)
 
     @classmethod
     def string_length(cls, string):
-        """String length, ignoring terminal formatting"""
+        """String length, ignoring terminal formatting."""
         subbed = cls.remove_formatting(string)
-        l = len(subbed)
         return len(subbed)
 
     @property
@@ -118,9 +116,9 @@ class StringColumn(object):
     def center(self, span):
         diff = span - self.length
         if diff > 0:
-            l = int(diff / 2)
-            r = l + diff % 2
-            return self.indent(l).indent_right(r)
+            x = int(diff / 2)
+            r = x + diff % 2
+            return self.indent(x).indent_right(r)
         return self.copy()
 
     def flip(self):
@@ -237,9 +235,9 @@ class StringColumn(object):
 
     @classmethod
     def condense(cls, rows):
-        """
-        Condense a list of :class:`StringColumn` into the minimum number of StringColumns comprising of columns stripped
-        of white space. Briefly, this is similar to the following procedure:
+        """Condense a list of :class:`StringColumn` into the minimum number of
+        StringColumns comprising of columns stripped of white space. Briefly,
+        this is similar to the following procedure:
 
         .. code-block::
 
@@ -316,7 +314,7 @@ class StringColumn(object):
 
 
 def chunkify(iterable, n):
-    """Break an interable into chunks of size at most 'n'"""
+    """Break an interable into chunks of size at most 'n'."""
     chunk = None
     for i, x in enumerate(iterable):
         if i % n == 0:
@@ -328,7 +326,7 @@ def chunkify(iterable, n):
 
 
 def to_lines(string, width):
-    """Converts a string to lines of length <= width"""
+    """Converts a string to lines of length <= width."""
     lines = []
     for i in range(0, len(string), width):
         lines.append(string[i : i + width])
@@ -336,8 +334,7 @@ def to_lines(string, width):
 
 
 def prepend_lines(lines, label_iterable, indent, fill=" ", align="<"):
-    """
-    Prepend lines with a label
+    """Prepend lines with a label.
 
     :param lines: lines to prepend
     :type lines: list
@@ -360,7 +357,7 @@ def prepend_lines(lines, label_iterable, indent, fill=" ", align="<"):
 
 
 def indent(string, indent):
-    """Indent lines"""
+    """Indent lines."""
     lines = string.split("\n")
     new_lines = prepend_lines(lines, [""] * len(lines), indent)
     return "\n".join(new_lines)
@@ -387,23 +384,25 @@ def indent(string, indent):
 #     return prepend_lines(lines, labels, indent)
 
 
-class ViewerAnnotationFlag(object):
-    """Flags for annotation directions"""
+class ViewerAnnotationFlag:
+    """Flags for annotation directions."""
 
     FORWARD = ">"
     REVERSE = "<"
     BOTH = "-"
 
 
-class SequenceRow(object):
-    """A row in a :class:`SequenceViewer` instance. Can be comprised of multiple sequences (i.e. lines)
-    and can be annotated with 'features'."""
+class SequenceRow:
+    """A row in a :class:`SequenceViewer` instance.
+
+    Can be comprised of multiple sequences (i.e. lines) and can be
+    annotated with 'features'.
+    """
 
     def __init__(
         self, lines, labels, indent, start, end, line_colors=None, line_backgrounds=None
     ):
-        """
-        SequenceRow constructor
+        """SequenceRow constructor.
 
         :param lines: list of lines to display. Lengths of all lines must all be equivalent.
         :type lines: list
@@ -416,7 +415,7 @@ class SequenceRow(object):
         :param end: end bp of this row
         :type end: int
         """
-        lengths = set([len(r) for r in lines])
+        lengths = {len(r) for r in lines}
         if len(lengths) > 1:
             raise Exception("Cannot format rows that have different lengths")
         self._lines = lines
@@ -453,8 +452,8 @@ class SequenceRow(object):
 
     @staticmethod
     def make_annotation(label, span, fill="*", color=None, background=None):
-        """
-        Make an annotation with 'label' spanning inclusive base pairs indices 'span'
+        """Make an annotation with 'label' spanning inclusive base pairs
+        indices 'span'.
 
         :param label: annotation label
         :type label: basestring
@@ -494,9 +493,8 @@ class SequenceRow(object):
     def absolute_annotate(
         self, start, end, fill, label, color=None, background=None, top=True
     ):
-        """
-        Applyt annotation to this row using absolute start and ends for
-        THIS row.
+        """Applyt annotation to this row using absolute start and ends for THIS
+        row.
 
         :param start: inclusive start
         :type start: int
@@ -529,10 +527,9 @@ class SequenceRow(object):
         top=True,
         wrap=False,
     ):
-        """
-        Annotate the sequence row. If 'start' or 'end' is beyond,
-        the expected start or end for this row, the annotation will
-        automatically be truncated.
+        """Annotate the sequence row. If 'start' or 'end' is beyond, the
+        expected start or end for this row, the annotation will automatically
+        be truncated.
 
         :param start: inclusive start
         :type start: int
@@ -552,8 +549,7 @@ class SequenceRow(object):
         )
 
     def in_bounds(self, x):
-        """
-        Checks if the index 'x' is in between row start and end (inclusive)
+        """Checks if the index 'x' is in between row start and end (inclusive)
 
         :param x: index
         :type x: int
@@ -600,7 +596,7 @@ class SequenceRow(object):
 #         return "{0:{fill}{align}{indent}".format(label, fill=' ', align='<', indent=self.indent)
 
 
-class SequenceViewer(object):
+class SequenceViewer:
     """A class that views longs sets of sequences."""
 
     class DEFAULTS:
@@ -633,24 +629,27 @@ class SequenceViewer(object):
         description="",
         metadata=None,
     ):
-        """
-        SequenceViewer constructor
+        """SequenceViewer constructor.
 
         :param sequences: list of sequences to view
         :type sequences: list
-        :param sequence_labels: optional labels to apply to sequence. Include the '{index}' to enumerate the base pairs.
+        :param sequence_labels: optional labels to apply to sequence. Include the
+            '{index}' to enumerate the base pairs.
         :type sequence_labels: list
-        :param foreground_colors: optional list base pair foreground colors (hex or common name) to apply to each sequence. If a string
-                                    is provided, color will be applied to all sequences. If provided with "RANDOM",
+        :param foreground_colors: optional list base pair foreground colors (hex or
+            common name) to apply to each sequence. If a string
+                                    is provided, color will be applied to all sequences.
+                                     If provided with "RANDOM",
                                     a random color will be assigned to each sequence.
         :type foreground_colors: list
-        :param background_colors: optional list base pair background colors (hex or common name) to apply to each sequence.
-                                    Usage is analogous to `foreground_colors` parameter.
+        :param background_colors: optional list base pair background colors (hex or
+            common name) to apply to each sequence.
+            Usage is analogous to `foreground_colors` parameter.
         :type background_colors: list
         :param indent: spacing before start of string and start of base pairs
         :type indent: int
-        :param width: width of the view window for the sequences (e.g. width=100 would mean rows of at most len 100
-                        characters
+        :param width: width of the view window for the sequences (e.g. width=100 would
+            mean rows of at most len 100 characters
         :type width: string
         :param spacer: string to apply inbetween rows (default is newline)
         :type spacer: string
@@ -664,7 +663,7 @@ class SequenceViewer(object):
         :type metadata: dict
         """
         assert isinstance(sequences, list)
-        seq_lens = set([len(s) for s in sequences])
+        seq_lens = {len(s) for s in sequences}
         if len(seq_lens) > 1:
             raise Exception(
                 "Sequence must be same length but found lengths {}".format(
@@ -705,7 +704,7 @@ class SequenceViewer(object):
             self.metadata.update(metadata)
 
     def set_window(self, start, end):
-        """Sets the inclusive viewing window"""
+        """Sets the inclusive viewing window."""
         self.window = (start, end)
         return self
 
@@ -715,7 +714,7 @@ class SequenceViewer(object):
 
     @property
     def header(self):
-        """Return the formatted header and metadata"""
+        """Return the formatted header and metadata."""
         metadata = "\n".join(
             "{key}: {val}".format(key=key, val=val)
             for key, val in self.metadata.items()
@@ -755,8 +754,8 @@ class SequenceViewer(object):
     def annotate(
         self, start, end, label=None, fill=None, color=None, background=None, top=True
     ):
-        """
-        Annotates this viewer object starting from 'start' to 'end' inclusively.
+        """Annotates this viewer object starting from 'start' to 'end'
+        inclusively.
 
         :param start: inclusive start
         :type start: int
@@ -790,7 +789,7 @@ class SequenceViewer(object):
         )
 
     def _annotate_rows(self, rows):
-        """Annotate the rows using the viewer's annotations"""
+        """Annotate the rows using the viewer's annotations."""
         for a in self.annotations:
             for row in rows:
                 if a["end"] >= row.start and a["start"] <= row.end:
@@ -831,7 +830,7 @@ class FASTAItem(SequenceViewer):
         return ">{}".format(self.name)
 
 
-class FASTAViewer(object):
+class FASTAViewer:
     def __init__(self, sequences):
         self.views = [FASTAItem(sequence) for sequence in sequences]
 

@@ -3,7 +3,6 @@ import itertools
 import re
 from collections import defaultdict
 from copy import copy
-from enum import IntFlag
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -28,10 +27,8 @@ from jdna.viewer import SequenceViewer
 from jdna.viewer import StringColumn
 from jdna.viewer import ViewerAnnotationFlag
 
-# from jdna.align import Align
 
-
-class SequenceFlags(IntFlag):
+class SequenceFlags:
     """Constants/Flags for sequences."""
 
     FORWARD = 1

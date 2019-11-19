@@ -8,13 +8,17 @@ Description: Basic functionality for defining regions of linear, circularized, o
 regions of a sequence.
 
 """
-from jdna.regions.exceptions import RegionError
 from jdna.regions.context import Context
+from jdna.regions.exceptions import RegionError
 
 
 def force_same_context(error=False):
-    """ Wrapper that returns False or raises Error if other Region has a different context. If error==False,
-    then wrapped function returns False. If error=True, then raises a RegionError. """
+    """Wrapper that returns False or raises Error if other Region has a
+    different context.
+
+    If error==False, then wrapped function returns False. If error=True,
+    then raises a RegionError.
+    """
 
     def context_wrapper(fxn):
         def check_context(*args, **kwargs):
@@ -34,10 +38,10 @@ def force_same_context(error=False):
     return context_wrapper
 
 
-class Region(object):
-    """
-    Classifies an abstract region of a sequence. A region is defined by the inclusive "start" and "end"
-    positions in context of an arbitrary sequence defined by the start_index and length.
+class Region:
+    """Classifies an abstract region of a sequence. A region is defined by the
+    inclusive "start" and "end" positions in context of an arbitrary sequence
+    defined by the start_index and length.
 
     Regions can be circular or linear. For circular regions, negative indicies and indicies greater
     than the length are allowable and will be converted to appropriate indices.
@@ -83,12 +87,12 @@ class Region(object):
     BOTH = 2
 
     def __init__(self, start, end, context, direction=FORWARD, name=""):
-        """
-        Annotates some region from a contextual sequence with either circular or linear topologies.
+        """Annotates some region from a contextual sequence with either
+        circular or linear topologies.
 
         Making a forward region:
             Region(1, 5, context=Context(length=10, circular=False, start_index=1))
-            
+
         Making a reverse region:
             Region(5, 1, direction=Region.REVERSE, context=Context(length=10, circular=False, start_index=1))
 
@@ -130,14 +134,14 @@ class Region(object):
 
     @staticmethod
     def create_from_ends(left_end, right_end, context, direction=FORWARD, name=""):
-        """Creates a region from the endpoints"""
+        """Creates a region from the endpoints."""
         s, e = left_end, right_end
         if direction == Region.REVERSE:
             s, e = e, s
         return Region(s, e, context=context, direction=direction, name=name)
 
     def _validate_direction(self):
-        """Validates that the direction key is understood"""
+        """Validates that the direction key is understood."""
         if self.direction not in [Region.FORWARD, Region.REVERSE, Region.BOTH]:
             raise RegionError(
                 "Direction {} not understood. Direction must be Region.FORWARD = {}, Region.REVERSE = {},\
@@ -147,7 +151,8 @@ class Region(object):
             )
 
     def _validate_region(self):
-        """Validates that the start and end regions are within the bounds of its context."""
+        """Validates that the start and end regions are within the bounds of
+        its context."""
         if (
             not self.context.circular
             and self.start > self.end
@@ -163,27 +168,30 @@ class Region(object):
 
     @property
     def start_index(self):
-        """The minimum index for this region (defined by context). Alias of bounds_start"""
+        """The minimum index for this region (defined by context).
+
+        Alias of bounds_start
+        """
         return self.bounds_start
 
     @property
     def bounds_start(self):
-        """The maximum index for the context of this region"""
+        """The maximum index for the context of this region."""
         return self.context.start
 
     @property
     def bounds_end(self):
-        """The maximum index for the context of this region"""
+        """The maximum index for the context of this region."""
         return self.context.end
 
     @property
     def context_length(self):
-        """The length of the context this region is in"""
+        """The length of the context this region is in."""
         return self.context.length
 
     @property
     def length(self):
-        """The length of this region"""
+        """The length of this region."""
         if self._spans_origin():
             return self.context.span(
                 self.rp, self.lp
@@ -197,10 +205,8 @@ class Region(object):
 
     @property
     def start(self):
-        """
-        Gets the start position of the region. Internally
-        reverses the start and end positions if direction is
-        reversed.
+        """Gets the start position of the region. Internally reverses the start
+        and end positions if direction is reversed.
 
         :return:
         """
@@ -208,10 +214,8 @@ class Region(object):
 
     @start.setter
     def start(self, x):
-        """
-        Sets the start position of the region. Internally
-        reverses the start and end positions if direction is
-        reversed.
+        """Sets the start position of the region. Internally reverses the start
+        and end positions if direction is reversed.
 
         :return:
         """
@@ -219,10 +223,8 @@ class Region(object):
 
     @property
     def end(self):
-        """
-        Gets the end position of the region. Internally
-        reverses the start and end positions if direction is
-        reversed.
+        """Gets the end position of the region. Internally reverses the start
+        and end positions if direction is reversed.
 
         :return:
         """
@@ -230,10 +232,8 @@ class Region(object):
 
     @end.setter
     def end(self, x):
-        """
-        Sets the end position of the region. Internally
-        reverses the start and end positions if direction is
-        reversed.
+        """Sets the end position of the region. Internally reverses the start
+        and end positions if direction is reversed.
 
         :return:
         """
@@ -241,17 +241,23 @@ class Region(object):
 
     @property
     def rp(self):
-        """The right most point. The maximum index in the region."""
+        """The right most point.
+
+        The maximum index in the region.
+        """
         return max(self.start, self.end)
 
     @property
     def lp(self):
-        """The left most point. The minimum index in the region."""
+        """The left most point.
+
+        The minimum index in the region.
+        """
         return min(self.start, self.end)
 
     @lp.setter
     def lp(self, v):
-        """ Sets the left most point """
+        """Sets the left most point."""
         if self.start < self.end:
             self.start = v
         elif self.end < self.start:
@@ -262,7 +268,7 @@ class Region(object):
 
     @rp.setter
     def rp(self, v):
-        """ Sets the right most point """
+        """Sets the right most point."""
         if self.start > self.end:
             self.start = v
         elif self.end > self.start:
@@ -273,13 +279,12 @@ class Region(object):
 
     @property
     def direction(self):
-        """Direction of the region"""
+        """Direction of the region."""
         return self.__direction
 
     @property
     def left_end(self):
-        """
-        Returns left end stop
+        """Returns left end stop.
 
         e.g. ::
 
@@ -299,9 +304,7 @@ class Region(object):
 
     @property
     def right_end(self):
-        """
-        Returns left end stop
-        e.g. ::
+        """Returns left end stop e.g. ::
 
             |--------|
             ^L       ^R
@@ -318,7 +321,7 @@ class Region(object):
 
     @left_end.setter
     def left_end(self, x):
-        """Sets the left end stop"""
+        """Sets the left end stop."""
         if self.left_end == self.start:
             self.start = x
         elif self.left_end == self.end:
@@ -326,24 +329,27 @@ class Region(object):
 
     @right_end.setter
     def right_end(self, x):
-        """Sets the right end stop"""
+        """Sets the right end stop."""
         if self.right_end == self.start:
             self.start = x
         elif self.right_end == self.end:
             self.end = x
 
     def is_forward(self):
-        """Whether this region is pointed 'forward'"""
+        """Whether this region is pointed 'forward'."""
         d = self.direction
         return d in [Region.FORWARD]
 
     def is_reverse(self):
-        """Whether this region is pointed in 'reverse'"""
+        """Whether this region is pointed in 'reverse'."""
         d = self.direction
         return d in [Region.REVERSE]
 
     def _spans_origin(self):
-        """Returns whether region spans origin. Agnostic as to self.circular. """
+        """Returns whether region spans origin.
+
+        Agnostic as to self.circular.
+        """
         if self.start > self.end and self.direction == Region.FORWARD:
             return True
         if self.end > self.start and self.direction == Region.REVERSE:
@@ -351,8 +357,8 @@ class Region(object):
         return False
 
     def _valid_indices(self, inclusive=True):
-        """
-        Returns tuples of valid indices within this region. Handles circular regions. ::
+        """Returns tuples of valid indices within this region. Handles circular
+        regions. ::
 
             E.g. |---------|
                  123456789
@@ -404,8 +410,8 @@ class Region(object):
             return ranges
 
     def within_region(self, pos, inclusive=True):
-        """
-        Returns whether a position is within the region. Handles circular regions.
+        """Returns whether a position is within the region. Handles circular
+        regions.
 
         :param pos: index
         :type pos: int
@@ -419,8 +425,8 @@ class Region(object):
         return any(x)
 
     def sub_region(self, s, e):
-        """
-        Creates a sub region with the same context_length and direction as this region.
+        """Creates a sub region with the same context_length and direction as
+        this region.
 
         :param s: start index
         :type s: int
@@ -445,8 +451,8 @@ class Region(object):
             )
 
     def same_context(self, other):
-        """
-        Compares the context properties (length, bounds_start, bounds_ends) between two Regions.
+        """Compares the context properties (length, bounds_start, bounds_ends)
+        between two Regions.
 
         :param other: The other Region
         :type other: Region
@@ -457,8 +463,7 @@ class Region(object):
 
     # TODO: Why not __copy__?
     def copy(self):
-        """
-        Creates another region with identical properties.
+        """Creates another region with identical properties.
 
         :return: Copied region
         :rtype: Region
@@ -473,9 +478,8 @@ class Region(object):
     # TODO: Why does this copy itself??
     @force_same_context(error=True)
     def get_overlap(self, other):
-        """
-        Returns a region representing the overlap with another region
-        e.g. ::
+        """Returns a region representing the overlap with another region e.g.
+        ::
 
                 |--------|         self
                       |--------|   other
@@ -507,10 +511,9 @@ class Region(object):
 
     @force_same_context(error=True)
     def end_overlaps_with(self, other):
-        """
-         Whether this region overlaps the next region it this regions end. Other needs some kind of overhang to
-         return True.
-         False if context is different. ::
+        """Whether this region overlaps the next region it this regions end.
+        Other needs some kind of overhang to return True. False if context is
+        different. ::
 
              True
                  self   |------|
@@ -539,9 +542,8 @@ class Region(object):
 
     @force_same_context(error=True)
     def get_gap(self, other):
-        """
-        Gets the gap region. Returns None if there is no gap or Regions are not consecutive. Always are in the
-        forward direction. ::
+        """Gets the gap region. Returns None if there is no gap or Regions are
+        not consecutive. Always are in the forward direction. ::
 
             Context:        |----------------------|
             This Region:        |-------|
@@ -574,8 +576,8 @@ class Region(object):
 
     @force_same_context(error=True)
     def get_gap_span(self, other):
-        """
-        Returns span of gap. Returns 0 if regions are consecutive, negative if regions overlap, positive for gaps.
+        """Returns span of gap. Returns 0 if regions are consecutive, negative
+        if regions overlap, positive for gaps.
 
         e.g. ::
 
@@ -620,8 +622,8 @@ class Region(object):
 
     @force_same_context(error=True)
     def consecutive_with(self, other, ignore_direction=True):
-        """
-        Returns whether the right_end is consecutive with the other region's left_end ::
+        """Returns whether the right_end is consecutive with the other region's
+        left_end ::
 
             |-------||----|
 
@@ -648,8 +650,8 @@ class Region(object):
 
     @force_same_context(error=True)
     def fuse(self, other, inplace=True):
-        """
-        Fuses this region with other region. If regions are not consecutive, raises RegionError ::
+        """Fuses this region with other region. If regions are not consecutive,
+        raises RegionError ::
 
             |-----------| (1)
                          |-----------| (2)
@@ -672,8 +674,8 @@ class Region(object):
             #         "Cannot fuse regions [{}-{}] with [{}-{}].".format(self.start, self.end, other.start, other.end))
 
     def extend_start(self, x):
-        """
-        Extends the start by x amount. Retracts start if negative. Raises error if retracts past end.
+        """Extends the start by x amount. Retracts start if negative. Raises
+        error if retracts past end.
 
         e.g. extend start by +4 ::
 
@@ -690,8 +692,8 @@ class Region(object):
         self._extend(x, self.start)
 
     def extend_end(self, x):
-        """
-        Extends the end by x amount. Retracts end if negative. Raises error if retracts past start.
+        """Extends the end by x amount. Retracts end if negative. Raises error
+        if retracts past start.
 
         e.g. extend end by +4 ::
 
@@ -708,25 +710,25 @@ class Region(object):
         self._extend(x, self.end)
 
     def extend_left_end(self, x):
-        """ Extends (or retracts) the left end by x amount. """
+        """Extends (or retracts) the left end by x amount."""
         self._extend(x, self.left_end)
 
     def extend_right_end(self, x):
-        """ Extends (or retracts) the right end by x amount. """
+        """Extends (or retracts) the right end by x amount."""
         self._extend(x, self.right_end)
 
     def _extend(self, x, end_pos):
-        """ Extends or retracts by x amount at end_pos. """
+        """Extends or retracts by x amount at end_pos."""
         if x < -self.length + 1:
             raise RegionError(
-                "Cannot retract end past region start (start: {0}, end: {1}, x: {2})".format(
+                "Cannot retract end past region start (start: {}, end: {}, x: {})".format(
                     self.start, self.end, x
                 )
             )
         if x > self.context.length - self.length:
             raise RegionError(
-                "Cannot extend end around origin and past other end (start: {0}, end: {1}, "
-                "x: {2})".format(self.start, self.end, x)
+                "Cannot extend end around origin and past other end (start: {}, end: {}, "
+                "x: {})".format(self.start, self.end, x)
             )
         if end_pos == self.right_end:
             self.right_end += x
@@ -734,21 +736,24 @@ class Region(object):
             self.left_end -= x
         else:
             raise RegionError(
-                "Position at {0} not at either end. Cannot extend.".format(end_pos)
+                "Position at {} not at either end. Cannot extend.".format(end_pos)
             )
 
     def set_forward(self):
-        """ Reverses direction of region if region is reverse """
+        """Reverses direction of region if region is reverse."""
         if not self.is_forward():
             self.reverse_direction()
 
     def set_reverse(self):
-        """ Reverses direction of region if region is forward """
+        """Reverses direction of region if region is forward."""
         if self.is_forward():
             self.reverse_direction()
 
     def reverse_direction(self):
-        """ Reverses the direction of this region. Reverses the start and end indices. """
+        """Reverses the direction of this region.
+
+        Reverses the start and end indices.
+        """
         self.end, self.start = self.start, self.end
         if self.is_forward():
             self.__direction = Region.REVERSE
