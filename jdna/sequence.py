@@ -1,15 +1,10 @@
 """Represent linear or circularized nucleotides."""
 import itertools
-import re
 from collections import defaultdict
 from copy import copy
 from typing import Any
-from typing import Callable
-from typing import Dict
-from typing import List
 from typing import Sequence as TypingSequence
 from typing import Tuple
-from typing import Union
 
 import primer3
 from Bio import Restriction
@@ -68,26 +63,6 @@ class Feature:
     def __copy__(self) -> "Sequence":
         return self.__class__(self.name, self.type, self.strand, self.color)
 
-    # @property
-    # def nodes(self):
-    #     return self._nodes
-    #
-    # def segments(self):
-    #     return Sequence.segments(self.nodes)
-    # visited = set()
-    # pairs = set()
-    # stop = lambda x: x not in self._nodes
-    # for n in self._nodes:
-    #     if n not in visited:
-    #         tail = n
-    #         for tail in n.fwd(stop_criteria=stop):
-    #             visited.add(tail)
-    #         head = n
-    #         for head in n.rev(stop_criteria=stop):
-    #             visited.add(head)
-    #         pairs.add((head, tail))
-    # return pairs
-
     def is_multipart(self) -> bool:
         if len(self.segments) > 1:
             return True
@@ -95,13 +70,6 @@ class Feature:
 
     def _bind(self, nodes):
         pass
-        # for n in nodes:
-        #     self._nodes.add(n)
-
-    # def _unbind(self, nodes):
-    #     for n in nodes:
-    #         if n in self._nodes:
-    #             self._nodes.remove(n)
 
 
 class BindPos(LinkedListMatch):
@@ -227,10 +195,9 @@ class Nucleotide(Node):
         self._features = set()
         self.alphabet = alphabet
 
-    @classmethod
-    def random(cls):
+    def random(self):
         """Generate a random sequence."""
-        return cls(UnambiguousDNA.random())
+        return self.__class__(self.alphabet.random())
 
     @property
     def base(self):

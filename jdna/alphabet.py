@@ -2,7 +2,6 @@
 import random
 import re
 
-from Bio.Alphabet import IUPAC
 from Bio.Seq import Seq
 
 
@@ -23,10 +22,8 @@ class Alphabet:
         self.__ambiguous = ambiguous_characters
 
     @classmethod
-    def from_biopython_alphabet(
-        cls, biopython_alphabet: IUPAC.Alphabet, ambiguous_characters=None
-    ):
-        seq = Seq(biopython_alphabet.letters)
+    def from_alphabet(cls, biopython_alphabet: str, ambiguous_characters=None):
+        seq = Seq(biopython_alphabet)
         seq_letters = str(seq)
         c_seq_letters = str(seq.complement())
         return cls(seq_letters, c_seq_letters, ambiguous_characters)
@@ -95,5 +92,5 @@ for k, v in _iupacdict.items():
     iupacdict[k.lower()] = v.lower()
     iupacdict[k.upper()] = v.upper()
 
-AmbiguousDNA = Alphabet.from_biopython_alphabet(IUPAC.ambiguous_dna, iupacdict)
-UnambiguousDNA = Alphabet.from_biopython_alphabet(IUPAC.unambiguous_dna, {})
+AmbiguousDNA = Alphabet.from_alphabet("agctyrwskmdvhbxn", iupacdict)
+UnambiguousDNA = Alphabet.from_alphabet("agct", {})
